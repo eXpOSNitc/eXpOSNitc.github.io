@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Open System Call</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Open System Call</h1> 
+        <p>Description: The Open system call is used to open a file present in the eXpFS disk. </p>
+        <p>Arguments: <b><i>Filename</i></b></p>
+        <p>Return Value: <b><i>PerProcessIndex</i></b></p>
+        <dl>
+            <dt>1. Inode table validation</dt>
+            <dd>The memory copy of Inode table is searched for <b><i>Filename</i></b>.If the entry is not found, error XFS_INVFNAM is returned, indicating failure. If found, check if the file type is DATA or ROOT. If not, error XFS_INVFNAM is returned, indicating failure. Otherwise, store the index of the Inode Table entry in <b><i>InodeIndex</i></b>.</dd>
+            <dt>2. Allocating entry in Per-Process Resource Table</dt>
+            <dd>Find the PID of the process and find the location of the PT of the current process. Search for a free entry in the Per-Process Resource table of the process. If there are no free entries, error code XFS_NOPSP is returned. Otherwise, store the index of the Per-Process Resource table entry in <b><i>PerProcessIndex</i></b>. </dd>
+            <dt>3. Allocating entry in File Table</dt>
+            <dd>Check if the file is already open. For this search for an entry in the File Table entry with Inode Index field as <b><i>InodeIndex</i></b>. If found store the index of the File Table entry in <b><i>FTIndex</i></b>. If the file is not already opened, an entry in the File Table needs to be created. Search the File Table for a free entry. If there are no free entries, error code XFS_NOFTSP is returned. If a free entry is found, store the index of that File Table entry in <b><i>FTIndex</i></b>.</dd>
+            <dt>4. Update the Per-Process Resource Table entry.</dt>
+            <dd>Set the first field (Index of File Table) of this entry <b><i>FTIndex</i></b>. Set LSEEK Position field to 0. 
+</dd>
+<dt>5. Update the File Table entry.</dt>
+ <dd>Set the Inode Index field of the File Table entry <b><i>FTIndex</i></b>, with <b><i>InodeIndex</i></b>. Increment the File Open Count field in the File Table. Set the Locking PID field to -1.
+</dd> 
+<dt>6. <b><i>PerProcessIndex</i></b> is returned.</dt>
+ 
+
+        </dl>
+    </body>
+</html>
