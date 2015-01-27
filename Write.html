@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Write System Call</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Write System Call</h1>
+        <p>Description: **To be changed** The Open system call is used to open a file present in the XFS disk. </p>
+        <p>Arguments: <b><i>fileDescriptor</i></b> and <b><i>wordtoWrite</i></b></p>
+        <p>Return Value: 0 (success)</p>
+        <dl>
+            <dt>1. Per-Process Resource table validation</dt>
+            <dd>Check if the argument <b><i>fileDescriptor</i></b> is valid. A valid fileDescriptor will have value from 0 to XFS_MAXFDES. If not valid, return from the system call with error XFS_INVFDES, indicating failure.</dd>
+            <dd>Find the PID of the process and store it in <b><i>CurrentPID</i></b>. Using <b><i>CurrentPID</i></b> find the location of its Per-Process Resource Table. Check whether the entry in Per-Process Resource Table corresponding to <b><i>fileDescriptor</i></b> is valid. If the entry is invalid, indicated by a -1, return from the system call with error code XFS_INVFDES. If a valid entry exists, store the Index to File Table Entry field and LSEEK position field in <b><i>FTIndex</i></b> and <b><i>Lseek</i></b>.</dd>
+            <dt>2. Locking the file</dt>
+            <dd>In the File Table, lookup the entry corresponding to <b><i>FTIndex</i></b> and check whether Locking PID is -1 or not.If the file is locked (Locking PID not equal to -1), check whether the Locking PID is same as the PID of the current process.If so, proceed to step 3. If not, the state of the process is changed to (WAIT_FILE, <b><i>FTIndex</i></b>) and scheduler is called. Repeat this step until file is found to be unlocked. When the file is found to be unlocked, set Locking PID to PID of the current process and store the Inode Index of the entry in <b><i>InodeIndex</i></b>.</dd>
+            <dt>3. File Pointer Validation </dt>
+            <dd> Store the values <b><i>Lseek</i></b> / XFS_MAXBSIZE in <b><i>BlockNum</i></b> and <b><i>Lseek</i></b> % XFS_MAXBSIZE in <b><i>Offset</i></b>. The <b><i>BlockNum</i></b> gives the index of the block in which word is to be written and <b><i> Offset</i></b> gives the position where word will be written. </dd>
+            <dd>In the Inode table, check the data block entry corresponding to <b><i>BlockNum</i></b>. If it is -1, then allocate a new data block using following steps. 
+                <ol type="a">
+                    <li>Find a free block in the disk, which is indicated by 0 in the memory copy of the Disk Free List (Swap Area should not be used).If no free block is available, return from the system call with return value error code XFS_NODSKSP.</li>
+                    <li>If a free block is available, set 1 in the entry for the free block in the Disk Free List.</li>
+                    <li>Add this block number to the data blocks of the file and Increment the file size in the Inode table entry by 1. </li>
+                </ol>
+            </dd>
+            <dt>4. Locating the data block </dt>
+            <dd>Store the value  <b><i>BlockNum</i></b> % MAXBUFSIZE in <b><i>BufNum</i></b>.<b><i>BufNum</i></b> gives the index of the buffer to which the block is mapped. In the Buffer Table entry corresponding to <b><i>BufNum</i></b>, check if the Locking PID is -1 or not. </dd>
+            <dd>4.1 If it is not -1,then do the following.<ul>
+                    <li>If Locking PID is equal to <b><i>CurrentPID</i></b>, then check if Block Number field is same as <b><i>BlockNum</i></b>. If yes, then go to step 5.</li>
+                    <li>If Locking PID is equal to <b><i>CurrentPID</i></b> and Block Number field is not same as <b><i>BlockNum</i></b> then go to step 4.3.</li>
+                    <li>If Locking PID is not same as <b><i>CurrentPID</i></b>, then, change the state of the process to (WAIT_BUFFER, <b><i>BufNum</i></b>) and call the scheduler.
+                Repeat this step until the buffer is found to be unlocked. 
+                Once the file is found to be unlocked, go to 4.2.</li>
+                </ul></dd>
+                <dd>4.2 If LockingPID is -1, then change the field to <b><i>CurrentPID</i></b>.Now check if Block Number is equal to <b><i>BlockNum</i></b>.If yes,then go to Step 5.</dd>
+                    <dd>4.3 Else, check for dirty bit.If the dirty bit is set, store the block in the buffer to the disk. 
+                        Load the required data block into buffer.
+                        <ul><li>For loading and storing by synchronous method<ul>
+                                    <li>Use load and store instructions directly
+                                    </li>
+                                </ul>
+                                    
+                            </li>
+                            <li> For loading and storing by asynchronous method<ul>
+                                    <li> Check if the device/disk is busy. If the device is busy, change the state of the process to (WAIT_DISK, __) and call the scheduler.</li>
+                                    <li>Repeat the above until the device is found to be not busy.</li>
+                                    <li> If the device is not busy, update the Disk Status Table and issue the instruction to store(/load) the block in the buffer (/in the disk) to the disk(/buffer).</li>
+                                </ul>
+                        </ul> 
+                    </dd>
+                    <dt>5. Writing into the data block </dt>
+                    <dd> LSEEK modulo XFS_MAXBSIZE will give the offset in the block, to which the word is to be written.</dd>
+                    <dd>Set dirty bit of the buffer to 1.</dd>
+                    <dt>6. Post-Write Procedure</dt>
+                    <dd>Increment LSEEK Position by 1 in the Per-Process Resource Table entry found in Step 2.</dd>
+                <dd>Unlock the file and wake up all processes waiting for the file.Scan through the Process Table.Check for those processes who state is (WAIT_FILE, <b><i>FTIndex</i></b>). Change the state of those process to (READY, __).</dd>
+
+                <dd> Return with 0, indicating success.</dd>
+
+        </dl>
+ 
+    </body>
+</html>
+
