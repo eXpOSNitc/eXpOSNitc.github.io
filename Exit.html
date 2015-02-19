@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Exit System Call</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div id="Exit">
+            <h1>Exit System Call</h1>
+            <p>Description: To destroy the process invoking the call.</p>
+            <p>Argument: None</p>
+            <p>Return value: -1 on failure, exits on success</p>
+            <dl>
+                <dt>1. Finding the next ready process. </dt>
+                <dd> Search through the Process Table , from PID 1 onwards, to find the next ready process. If not found, call Shutdown system call. If found, store the index in <b><i>NextPID</i></b></dd>
+                <dt> 2. Deallocating Resources </dt>
+                <dd> Find the PID of the current process and store it in <b><i>CurrentPID</i></b>. Find the PT entry of the current process. Close all files opened by the process as done for Close system call<a href="API.html#Close">(Close System Call)</a>.Release all the semaphores used by the process<a href="API.html#Semrelease">(Semrelease System Call)</a>. The entries of pages occupied by this process in the memory free list must be decremented .Invalidate the page table entry </dd>
+                <dt>3. Waking up waiting processes</dt>
+                <dd>Search for all processes with state as (WAIT_PROCESS,<b><i>CurrentPID</i></b>) in the PT. Set the state field of such processes to READY.</dd>
+                <dt>4. Schedule process with PID <b><i>NextPID</i></b>(Follow instructions given in Timer Interrupt ) </dt>
+                <dt>5. Return from System Call.</dt>
+            </dl>
+        </div>
+        
+    </body>
+</html>
+      
