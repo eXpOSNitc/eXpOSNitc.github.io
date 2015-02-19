@@ -11,23 +11,23 @@
 <dl> 
 	<dt>1. Obtaining the space for child in Process Table</dt>
 	<dd> Find a free PT entry in the PT. If no such entry is found, return from the system call indicating error XOS_PROCLIMIT.</dd>
-	<dd>If a free PT is found, the index of this PT entry is stored in a register as <b><i>ChildPID</i></b>. Store the PID of current process s <b><i>ParentPID</i></b></dd>
+	<dd>If a free PT is found, the index of this PT entry is stored in a register as <b><i>ChildPID</i></b>. Store the PID of current process as <b><i>ParentPID</i></b></dd>
 	<dt>2. Duplication of information from Parent Process.</dt>
-	<dd>Set the PPID field of the PT of the child process to <b><i>ParentPID </i></b>.The code and heap pages need to be shared which is done in Step 3.</dd>
+	<dd>Set the PPID field of the PT of the child process to <b><i>ParentPID </i></b>. The code and heap pages need to be shared which is done in Step 3.</dd>
 	<dd>The stack pages are duplicated in following way: 
 		<ul>
 			<li>The page table of the parent process is checked to count the number of stack pages.The Memory Free List is checked to find an equal number of free pages.
 			</li>
-			<li>If enough free pages are not available,then change the state  of the process to "(WAIT_MEM, _)" .Call Scheduler.Repeat until enough pages are available.</li>
+			<li>If enough free pages are not available,then change the state of the process to "(WAIT_MEM, _)". Call Scheduler. Repeat until enough pages are available.</li>
 			<li>If enough free pages are available, equal number of stack pages are allocated for the new child process. To do this, first update the memory free list by setting the corresponding entries for required number of free pages to 1, indicating used.</li>
-			<li>The contents needs to be copied word-by-word to the corresponding free page allocated.Set physical page number field of the valid page table entries of the child process with the physical page numbers of the corresponding pages from the <b>**child** </b> process.</li>
+			<li>The contents needs to be copied word-by-word to the corresponding free page allocated. Set valid page table entries of the child process with the free page numbers.</li>
 		</ul>
 	</dd>
 	<dd>Check whether shared library was used by the parent process. If so, include the page numbers for shared library in the page table of the child process.</dd>
 	<dd>The auxillary information of the parent process' pages are copied into the page table of the child process.</dd>
 	<dd>Update the Machine state and Per-Process Resource Table of child process by copying from parent process.</dd>
 	<dt>3. Sharing valid pages and resources.</dt>
-	<dd>The physical page number corresponding to the code and heap is copied to the Page Table of the child process.Increment by 1 the reference count for page corresponding to Code and Heap in the Memory Free List </dd>
+	<dd>The physical page number corresponding to the code and heap is copied to the Page Table of the child process. Increment the reference count for page corresponding to Code and Heap in the Memory Free List </dd>
 	<dd>For each entry for a file in the per-process resource table, increment the File Open Count for the file's entry in the File table and for each entry for a semaphore in the resource table ,increment the process count for the semaphore's entry in the Semaphore table. </dd>
 	<dt>4. Returning back</dt>
 	<dd>Set the State field in the PT of the child process as READY.</dd>
