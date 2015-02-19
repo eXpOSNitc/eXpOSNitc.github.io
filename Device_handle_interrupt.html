@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Device Handler Interrupt</title>	
+</head>
+
+<body>
+	<h1>Device Handler Interrupt</h1>
+	<p>Description: It handles interrupt from I/O devices</p>
+	<dl>
+		<dt> Change the device status register contents to 0.</dt>
+		<dt>Check the who issued the load/store instruction using Disk Status Table.</dt>
+		<dd>If the load/store instruction was issued by the timer interrupt, wake up all the processes in WAIT_MEM state.</dd>
+		<dd>If the load/store instruction was issued by a process, go through the Process Table and wake up those processes whose state is WAIT_DISK.</dd>
+	</dl>
+</body>
+
+</html>
