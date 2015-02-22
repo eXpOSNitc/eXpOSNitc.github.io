@@ -114,12 +114,12 @@
                 <h2 class="wow fadeInLeftBig">Experimental File System(eXpFS)</h2>
                 <br/>
                 <br/>
-                <p> eXpOS assumes that the disk is a sequence of blocks, where each block can store a sequence of words.The number of words in a block is hardware dependent.Generally, the hardware comes with machine instructions to transfer a block from the disk to a contiguous space in memory and back.  
+                <p> eXpOS assumes that the disk is a sequence of blocks, where each block can store a sequence of words.The number of words in a block is hardware dependent. Generally, the hardware comes with machine instructions to transfer a block from the disk to a contiguous space in memory and back.  
 </p>
-<p>The eXpFS logical file system provides a file abstraction that allows application programs to think of each data (or executable) file stored in the disk as a continuous stream of data (or machine instructions) without having to worry about the details of disk block allocation.Thus eXpFS hides the details of physical storage from application programs.
-eXpOS provides a sequence of file system calls through which application programs can create/read/write files.These system calls are OS routines that does the translation of the user request into physical disk block operations.  </p>
+<p>The eXpFS logical file system provides a file abstraction that allows application programs to think of each data (or executable) file stored in the disk as a continuous stream of data (or machine instructions) without having to worry about the details of disk block allocation. Thus eXpFS hides the details of physical storage from application programs.
+eXpOS provides a sequence of file system calls through which application programs can create/read/write files. These system calls are OS routines that does the translation of the user request into physical disk block operations.  </p>
 <p>
-    In addition to the eXpOS system call interface, the eXpFS specification also requires that there is an external interface through which executable and data files can be loaded into the file system externally.  The details of the external interface are implementation specific.   The external interface for eXpOS implementation on the XSM machine is described <a href="xfs_interface.html" style="color: blue">here</a>
+    In addition to the eXpOS system call interface, the eXpFS specification also requires that there is an external interface through which executable and data files can be loaded into the file system externally.  The details of the external interface are implementation specific.   The external interface for eXpOS implementation on the XSM machine is described in <a href="xfs_interface.html" style="color: blue">XFS Interface</a>
 </p>
 <p>In this section we discuss the abstract logical view provided by eXpFS to the eXpOS application programmer.  
 </p>
@@ -144,9 +144,9 @@ eXpOS provides a sequence of file system calls through which application program
                              <p>
 The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
 
-As noted already, Every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - name, size and type, each attribute being one word long.   The filename must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
+As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size and type</b>, each attribute being one word long.   The filename must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
 
-There are three types of eXpFS files -the root, data files and executable files. Each file in eXpFS has an entry in the root called the root entry.  
+There are three types of eXpFS files - <b>the root, data files and executable files</b>. Each file in eXpFS has an entry in the root called its <b>root entry</b>.  
 </p>
 
                             </div>
