@@ -164,11 +164,11 @@ There are three types of eXpFS files - <b>the root, data files and executable fi
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-The root file has name root and contains the meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - filename, file-size and file-type.  This triple is called the root entry for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation. (The maximum size of the root file is defined by XFS_ROOTSIZE.).  
+The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - <b>filename, file-size and file-type</b>.  This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation. (The maximum size of the root file is defined by XFS_ROOTSIZE.).  
 
-Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, program.xsm, of 1025 words, the root file will contain the following information assuming block size of 512.  </p>
+Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, <b>confirm this </b>program.xexe, of 1025 words, the root file will contain the following information.  </p>
 <img src="img/root_entry.png" alt="Root entry">
-<p>The operations on the root file:  Open, Close, Read and Seek.  
+<p>The operations on the root file are <b>Open, Close, Read and Seek</b>.  
 
 Since the operations on the root file is a subset of the operations on data files, with the same syntax and semantics, these operations are discussed together with other operations on data files.  
 </p>
@@ -186,12 +186,12 @@ Since the operations on the root file is a subset of the operations on data file
                           </div>
                           <div id="ThreecollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>A data file is a sequence of words.  The maximum number of words permissible in a file is defined by the constant XFS_DATASIZE.   (It is a recommended programming convention to use the extension ".dat" for data files.)   eXpFS treats every file other than root and executable files (will be described later) as a data file.  The Create system call automatically sets the file type field in the root entry for any file created through the open system call to DATA (.dat).   </p>    
+                                <p>A data file is a sequence of words.  The maximum number of words permissible in a file is defined by the constant XFS_DATASIZE.   (It is a recommended programming convention to use the extension ".dat" for data files).   eXpFS treats every file other than root and executable files (will be described later) as a data file.  The Create system call automatically sets the file type field in the root entry for any file created through the create system call to DATA.   </p>    
 
-<p>eXpOS allows an application program to perform the following operations (by invoking appropriate system calls) on data files:    Create, Delete, Open, Close, FLock, FUnlock, Read, Write, Seek.
-Application programs can create only data files using the create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface.   
-In addition to the above, the description of the operations  FLock and FUnlock are discussed in Section 5.  
-A detailed specification of the file system calls is given <a href="#systemcallinterface" style="color: blue">here</a>.</p>
+<p>eXpOS allows an application program to perform the following operations (by invoking appropriate system calls) on data files:    <b>Create</b>, <b>Delete</b>, <b>Open, Close, FLock, FUnlock, Read, Write, Seek</b>.
+Application programs can create only data files using the Create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface (see <a href="XFSinterface.html" style="color: blue">XFS Interface</a>).   
+In addition to the above, the description of the operations  FLock and FUnlock are discussed in <a href="synchronization.html" style="color: blue">Section 5</a> .  
+A detailed specification of the file system calls is given <a href="systemcallinterface.html" style="color: blue">here</a>.</p>
                             </div>
                           </div>
                         </div>
@@ -208,13 +208,13 @@ A detailed specification of the file system calls is given <a href="#systemcalli
                           <div id="ThreecollapseFour" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type EXEC in the root file entry.    eXpFS specification does not allow executable files to be created by application programs.  They can only be created externally and loaded using the external interface.  However, application programs can read or modify executable files like data files.  
+These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type is EXEC in the root entry. <b>eXpFS specification does not allow executable files to be created by application programs</b>.  They can only be created externally and loaded using the external interface (see <a href="XFSinterface.html" style="color: blue">XFS Interface</a> for XSM architecture.)  However, application programs can read or modify executable files like data files.  
 </p>
-<p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the executable file format).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
-    Typically, an application program written in a high level language (like <a href="apl.html" style="color: blue">APL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well the target machine.  
+<p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the <b>executable file format</b>).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
+    Typically, an application program written in a high level language (like <a href="apl.html" style="color: blue">eXpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
 </p>
-<p>An OS implementation on a particular machine specifies an application binary interface (ABI).  The ABI defines the following:
-<ol>
+<p>An OS implementation on a particular machine specifies an <b>application binary interface (ABI)</b>.  The ABI defines the following:
+<ol style="margin-left: 60px">
 <li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
 </li>
 <li>
@@ -223,12 +223,13 @@ These contain executable code for programs that can be loaded and run by the ope
 <li>
 The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
 </li>
+<li>A low level system call interface which specifies how a system call is mapped to an XSM code.</li>
 </ol>
 <p>
     The eXpOS ABI for XSM machine is specified <a href="abi.html" style="color: blue">here</a> 
 </p>
 <p>
-    <i>Important Note:</i>  Application programs are typically written in a high level language like APL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.   This document describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the APL programming language together with its eXpOS API are <a href="apl.html" style="color: blue">APL</a> and <a href="os_design.html" style="color: blue">API</a>.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for the compiler back end design.   
+    <i>Important Note:</i>  Application programs are typically written in a high level language like eXpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.   This document describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the APL programming language together with its eXpOS API are <a href="apl.html" style="color: blue">APL</a> and <a href="os_design.html" style="color: blue">API</a>.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for the compiler back end design.   
 </p>
 <p>
 The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
