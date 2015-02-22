@@ -214,28 +214,29 @@ These contain executable code for programs that can be loaded and run by the ope
     Typically, an application program written in a high level language (like <a href="apl.html" style="color: blue">eXpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
 </p>
 <p>An OS implementation on a particular machine specifies an <b>application binary interface (ABI)</b>.  The ABI defines the following:
+<b>GET THE SENTENCES FROM ABI - (Govind)</b>
 <ol style="margin-left: 60px">
 <li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
 </li>
 <li>
- A logical division of the memory address space into regions - text, data, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
+ A logical division of the memory address space into regions - text, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
 </li>
 <li>
 The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
 </li>
-<li>A low level system call interface which specifies how a system call is mapped to an XSM code.</li>
+<li><b>check from Govind !@#$$%^^&*</b>A low level system call interface which specifies how a system call is mapped to an XSM code.</li>
 </ol>
 <p>
     The eXpOS ABI for XSM machine is specified <a href="abi.html" style="color: blue">here</a> 
 </p>
 <p>
-    <i>Important Note:</i>  Application programs are typically written in a high level language like eXpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.   This document describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the APL programming language together with its eXpOS API are <a href="apl.html" style="color: blue">APL</a> and <a href="os_design.html" style="color: blue">API</a>.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for the compiler back end design.   
+    <b><i>Important Note:</i></b>  Application programs are typically written in a high level language like eXpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.  API describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the <a href="apl.html" style="color: blue">eXpL </a> programming language and eXpOS <a href="os_design.html" style="color: blue">API</a> are  given.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for compiler back end design.   
 </p>
 <p>
 The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
 </p>
 <p>
-An application program can read/modify an executable file like a data file using the standard system calls on data files.  In addition to this, the exec system call invokes the eXpOS loader that loads an executable file in correct XEXE format into memory for execution.  
+An application program can read/modify an executable file like a data file using the standard system calls on data files.  In addition to this, the <b>Exec </b>system call invokes the eXpOS loader that loads an executable file in XEXE format into memory for execution.  
 </p>
                             </div>
                           </div>

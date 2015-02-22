@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>eXpOS Specification</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="#">eXpOS<span>NITC</span></a>
+                       
+                   
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#Documentation">Documentation</a></li> 
+              <li><a href="Roadmap.html">Roadmap</a></li>
+               <li><a href="index.html#pricing">FAQ</a></li> <!--Change here--> 
+              <li><a href="index.html#team">Team</a></li>            
+              <li><a href="index.html#contact">Contacts</a></li>                           
+            </ul>           
+          </div><!--/.nav-collapse -->
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+       
+    <!--=========== BEGIN SECTION 2 ================-->
+    <section id="expos_abstractions">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">eXpOS Abstractions</h2>
+                <br/>
+                <br/>
+                <p>eXpOS provides the following fundamental abstractions to an application program: </p>
+                <ol style="margin-left: 90px;">
+	<li>The eXpFS logical <i>file system</i></li>
+	<li>The <i>process</i> abstraction for programs in execution</li>
+	<li>Methods of resource sharing</li>
+	<li>Primitives for concurrent access control and  process synchronization</li>
+	<li>The <b>system call interface</b> that specifies the interface through which application programs can invoke the system calls and access the OS services.  </li>
+</ol>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        
+                        
+                     <!-- START SINGLE FEATURED ITEM #1 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseOne">
+                                 <span class="fa fa-check-square-o"></span>The eXpFS logical file system. 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>The eXpOS kernal provides a hardware independent logical file system model (called the <b>experimental file system or eXpFS</b>) for application programs.       The application program views files as being organized and stored in the eXpFS logical file system.  Application programs are not permitted to access files directly.  Instead, they must invoke the appropriate <b>file system call</b> for creating, modifying or accessing files.   The OS routine implementing each system call internally translates the request into disk block operations, hiding the hardware details from the application program.</p>
+<p>XFS support three kinds of files - <b>data files, program files </b> (executable files) and a special file called the <b>root file. </b> The root file is a meta-data file that contains the list of all files in the file system.  A data file consists of a sequence of words.  A program contains a header, a sequence of machine instructions called text and static data, if any. </p>
+<p>eXpOS does not provide any mechanisms for application programs to create <b>executable files</b>.    Executable files have to be pre-loaded into the disk using some other external disk access mechanism before OS bootstrap.   Since such mechanisms are implementation dependent, they are not part of the OS specification.  For instance, the <a href="xfs_interface.html" style="color: blue">XFS-Interface</a> tool for eXpOS implementation on the XSM machine is one such mechanism. </p>
+<p>Executable files follow certain format called the <a href="XEXE-format.html"><b>experimental executable format or XEXE format</b></a>.  The OS will execute only program files stored in the file system in the XEXE format.  Hence system programs like compilers that translate high level application programs must ensure that the executable files adhere to the XEXE format.  </p>
+<p>Application programs can create, modify and delete data files using appropriate OS system calls.  These are discussed <a href="#systemcallinterface" style="color: blue">here</a>.</p>
+<p>A detailed discussion of the file system structure, file system calls and XEXE format is given in <a href="#expfs" style="color: blue">Section 3</a>.</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                     <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseTwo">
+                                <span class="fa fa-check-square-o"></span>The eXpOS process Abstraction
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>It was noted earlier that at the end of bootstrap, eXpOS loads into memory a program stored in a pre-determined part of the disk and create the first process called the INIT process.  Once a process is created, it can spawn new processes using the <b>fork </b> system call.    When a process spawns a new process, the former is called the <b>parent process</b> and the later is called the <b>child process</b>.  A process can decide to terminate itself using the <b>exit</b> system call.  </p>
+<p>Associated with each process, there is a (virtual) address space (or logical memory space).  This address space is a sequence of memory locations, each of which can store a word.    eXpOS logically divides the address space of a process is into four regions - <b>(shared) library, code, stack and heap</b>. </p>
+<p>When a process is created using the fork system call, the OS creates a virtual address space for the new process.   Each process is given a view that it has its own virtual address space containing its code, library, stack and heap.  The virtual address space is a continuous address space starting from address 0 up to a maximum limit that is implementation dependent.  Internally, the OS maps the virtual address space into the machine memory using hardware mechanisms available in the machine like paging/segmentation.( Check mapping <a href="paging_translation.html" style="color: blue">here</a>)</p>
+<p>The code region of a process contains the machine instructions that are to be executed.    This code consists of instructions stored in some executable file in the file system. When a new process is created using the fork system call, <i>the child process shares the library, code and heap with the parent</i>.  This means that any modifications to memory words in these regions by one process will result in modification of the contents for both the processes.  The stack and the data regions of the parent and the child will be separate. The parent and the child concurrently proceeds execution from the instruction immediately following the fork system call in the code. </p>
+<p>The stack region of a process stores the variables and stack frames during the execution of the program. Since our implementation of eXpOS does not explicitly provide an area for storing static data, they are stored on the stack.  Dynamic memory allocation is normally done from the heap region.  Variables to be shared between different processes could also be allocated in the heap.   Finally all (standard) library code (which is typically shared by all applications) is mapped to the library region.  </p>
+<p>A process can load an XEXE executable file from the file system into the virtual address space (of the calling process) using the <b>exec</b> system call. During loading, the original code, stack and heap regions are overlayed by those of the newly loaded program.  However, if the original process had shared its heap with its parent  process (or any other process), the OS ensures that other processes do not lose their shared heap data. Finally, the (shared) library is common to every application. </p>
+<p>The OS expects that executable files respect the programming conventions laid down by the OS (defined in the <b><a href="abi.html"style="color: blue">Application Binary Interface-ABI</a></b>) like the division of memory into stack, code, heap and library.  Each XEXE executable file must have a header which specifies how much size must be allocated by the OS for each region when the program is loaded for execution.  Application programs are typically written in high level languages like <a href="apl.html" style="color: blue">APL</a> , eXpOS expects the compiler to generate code respecting the ABI specification.  </p>
+<p>It must be noted here that an application program is free to violate the ABI conventions and decide to use its virtual address space in its own way.  It is only required that the executable file follows XEXE format in order to ensure that exec system call does not fail.  As long as such a process operates within its own address space, the OS permits the process to execute.  However, if at any point during its execution, the process generates a virtual address beyond its permitted virtual address space, a hardware exception will be generated and the OS routine handling the exception will terminate the process. </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                     
+                     <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseThree">
+                                 <span class="fa fa-check-square-o"></span>Access Control and Synchronization 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>Two concurrently executing processes sharing resources like files or memory (for example, parent and child processes sharing the heap) would like to ensure that only one of them execute critical section code that access/modify a resource that is shared between them. </p>
+<p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29" style="color: blue">semaphores</a>. A process can acquire a semaphore using the <b>Semget</b> system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the <b>SemLock </b>system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the <b>SemUnlock</b> system call.  </p>
+<p>A process can lock a (data) file using the <b>flock</b> system call.  Once locked, every other process trying to execute any system call on the file will be blocked by the OS till the file is unlocked by the original process using the <b>funlock</b> system call. </p>
+<p>The <b>wait</b> system call allows a process to suspend its own execution until another process wakes it up using the <b>signal</b> system call.  This primitive is useful when a process must be made to wait at a point during its execution until another related process signals it to continue.</p>
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     <!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseFour">
+                                 <span class="fa fa-check-square-o"></span>Resource Sharing in eXpOS 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                          <p>A process can open data files using the <b>open</b> system call.  The open system call returns a <b>file handle</b>.  The file handle advances as data is read from the file.  Similarly, a process can acquire a <a href="#Access_Control" style="color: blue">semaphore</a> using the semget system call.</p>
+<p>When a process executes the fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the fork, the file pointers of both processes get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the other. </p> 
+<p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
+<p>Thus, eXpOS does not support any explicit primitives for file or memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
+
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     
+                     <!-- START SINGLE FEATURED ITEM #5 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseFive">
+                                 <span class="fa fa-check-square-o"></span>System Calls
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseFive" class="panel-collapse collapse">
+                            <div class="panel-body">
+                          <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded into the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating new processes , sending a signal to another process etc. </p>
+<p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines. System calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
+<p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface.html" style="color: blue">here</a></p>
+<h3>File system calls</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="systemcallinterface.html#create" style="color: blue">Create</a></td>
+    <td>Create an XFS file</td>		
+  <tr>
+    <td><a href="systemcallinterface.html#delete" style="color: blue">Delete</a></td>
+    <td>Delete an XFS  file</td>		
+    
+  </tr>
+  <tr>
+    <td><a href="systemcallinterface.html#open" style="color: blue">Open</a></td>
+    <td>Open an XFS file and return a file handle to the calling process</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#close" style="color: blue">Close</a></td>
+	  <td>Close an XFS file already opened by the calling process</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#read" style="color: blue">Read</a></td>
+	  <td>Read one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#write" style="color: blue">Write</td>
+	  <td>Write one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#seek" style="color: blue">Seek</td>
+	  <td>Change the position of the file handle</td>
+  </tr>
+</table>
+<h3>Process system calls</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="systemcallinterface.html#fork" style="color: blue">Fork</a></td>
+    <td>Create a child process allocating a new address space.  </td></tr>		
+  <tr>
+    <td><a href="systemcallinterface.html#exec" style="color: blue">Exec</a></td>
+    <td>Load and execute an XFS executable file into the virtual address space of the present process.  </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="systemcallinterface.html#exit" style="color: blue">Exit</a></td>
+    <td>Destroy the process invoking the call</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="#getpid" style="color: blue">Getpid</a></td>
+	  <td>Get the Process ID of the invoking Process</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#getppid" style="color: blue">Getppid</a></td>
+	  <td>Get the process ID of the parent process of the invoking process.</td>
+  </tr>
+  
+</table>
+<h3>System calls for access control and synchronization:</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="systemcallinterface.html#signal" style="color: blue">Signal</a></td>
+    <td>Send a signal to a process specified in the call. </td>		
+  <tr>
+    <td><a href="systemcallinterface.html#wait" style="color: blue">Wait</a></td>
+    <td>Suspend execution of the current process until the process specified sends a signal or terminates. </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="systemcallinterface.html#flock" style="color: blue">FLock</a></td>
+    <td>Get exclusive access permission to file specified. (Process blocks till lock is obtained.)  </td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#funlock" style="color: blue">FunLock</a></td>
+	  <td>Release the lock on a file already acquired.</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#semget" style="color: blue">Semget</a></td>
+	  <td>Acquire a new semaphore</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#semrelease" style="color: blue">Semrelease</a></td>
+	  <td>Release a semaphore already acquired by the process</td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#semlock" style="color: blue">SemLock</a></td>
+	  <td>Get exclusive access permission to semaphore specified. (Process blocks till lock is obtained.) </td>
+  </tr>
+  <tr>
+	  <td><a href="systemcallinterface.html#semunlock" style="color: blue">SemunLock</a></td>
+	  <td>Release the lock on a semaphore already acquired</td>
+  </tr>
+  
+</table>
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       
+    </section>
+    <!--=========== END ABOUT SECTION 2================-->
+    
+        
+    
+    <!--=========== BEGAIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_right">
+               <ul class="social_nav">
+                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                 <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+               </ul>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>
+
