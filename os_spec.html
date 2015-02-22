@@ -459,51 +459,51 @@
                             <div class="panel-body">
                           <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded into the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating new processes , sending a signal to another process etc. </p>
 <p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines. System calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
-<p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface">here</a></p>
+<p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface.html" style="color: blue">here</a></p>
 <h3>File system calls</h3>
 <table class="table table-bordered">
   <tr>
-    <td><a href="#create" style="color: blue">Create</a></td>
+    <td><a href="systemcallinterface.html#create" style="color: blue">Create</a></td>
     <td>Create an XFS file</td>		
   <tr>
-    <td><a href="#delete" style="color: blue">Delete</a></td>
+    <td><a href="systemcallinterface.html#delete" style="color: blue">Delete</a></td>
     <td>Delete an XFS  file</td>		
     
   </tr>
   <tr>
-    <td><a href="#open" style="color: blue">Open</a></td>
+    <td><a href="systemcallinterface.html#open" style="color: blue">Open</a></td>
     <td>Open an XFS file and return a file handle to the calling process</td>		
     
   </tr>
   <tr>
-	  <td><a href="#close" style="color: blue">Close</a></td>
+	  <td><a href="systemcallinterface.html#close" style="color: blue">Close</a></td>
 	  <td>Close an XFS file already opened by the calling process</td>
   </tr>
   <tr>
-	  <td><a href="#read" style="color: blue">Read</a></td>
+	  <td><a href="systemcallinterface.html#read" style="color: blue">Read</a></td>
 	  <td>Read one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
   </tr>
   <tr>
-	  <td><a href="#write" style="color: blue">Write</td>
+	  <td><a href="systemcallinterface.html#write" style="color: blue">Write</td>
 	  <td>Write one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
   </tr>
   <tr>
-	  <td><a href="#seek" style="color: blue">Seek</td>
+	  <td><a href="systemcallinterface.html#seek" style="color: blue">Seek</td>
 	  <td>Change the position of the file handle</td>
   </tr>
 </table>
 <h3>Process system calls</h3>
 <table class="table table-bordered">
   <tr>
-    <td><a href="#fork" style="color: blue">Fork</a></td>
+    <td><a href="systemcallinterface.html#fork" style="color: blue">Fork</a></td>
     <td>Create a child process allocating a new address space.  </td></tr>		
   <tr>
-    <td><a href="#exec" style="color: blue">Exec</a></td>
+    <td><a href="systemcallinterface.html#exec" style="color: blue">Exec</a></td>
     <td>Load and execute an XFS executable file into the virtual address space of the present process.  </td>		
     
   </tr>
   <tr>
-    <td><a href="#exit" style="color: blue">Exit</a></td>
+    <td><a href="systemcallinterface.html#exit" style="color: blue">Exit</a></td>
     <td>Destroy the process invoking the call</td>		
     
   </tr>
@@ -512,7 +512,7 @@
 	  <td>Get the Process ID of the invoking Process</td>
   </tr>
   <tr>
-	  <td><a href="#getppid" style="color: blue">Getppid</a></td>
+	  <td><a href="systemcallinterface.html#getppid" style="color: blue">Getppid</a></td>
 	  <td>Get the process ID of the parent process of the invoking process.</td>
   </tr>
   
@@ -520,36 +520,36 @@
 <h3>System calls for access control and synchronization:</h3>
 <table class="table table-bordered">
   <tr>
-    <td><a href="#signal" style="color: blue">Signal</a></td>
+    <td><a href="systemcallinterface.html#signal" style="color: blue">Signal</a></td>
     <td>Send a signal to a process specified in the call. </td>		
   <tr>
-    <td><a href="#wait" style="color: blue">Wait</a></td>
-    <td>Suspend execution of the current process until a signal is received from the process specified or the process specified terminates. </td>		
+    <td><a href="systemcallinterface.html#wait" style="color: blue">Wait</a></td>
+    <td>Suspend execution of the current process until the process specified sends a signal or terminates. </td>		
     
   </tr>
   <tr>
-    <td><a href="#flock" style="color: blue">FLock</a></td>
+    <td><a href="systemcallinterface.html#flock" style="color: blue">FLock</a></td>
     <td>Wait until an exclusive access permission to file is obtained.  </td>		
     
   </tr>
   <tr>
-	  <td><a href="#funlock" style="color: blue">FunLock</a></td>
+	  <td><a href="systemcallinterface.html#funlock" style="color: blue">FunLock</a></td>
 	  <td>Release the lock on a file already acquired.</td>
   </tr>
   <tr>
-	  <td><a href="#semget" style="color: blue">Semget</a></td>
+	  <td><a href="systemcallinterface.html#semget" style="color: blue">Semget</a></td>
 	  <td>Acquire a new semaphore</td>
   </tr>
   <tr>
-	  <td><a href="#semrelease" style="color: blue">Semrelease</a></td>
+	  <td><a href="systemcallinterface.html#semrelease" style="color: blue">Semrelease</a></td>
 	  <td>Release a semaphore already acquired by the process</td>
   </tr>
   <tr>
-	  <td><a href="#semlock" style="color: blue">SemLock</a></td>
+	  <td><a href="systemcallinterface.html#semlock" style="color: blue">SemLock</a></td>
 	  <td>Wait till the process get exclusive lock of the semaphore</td>
   </tr>
   <tr>
-	  <td><a href="#semunlock" style="color: blue">SemunLock</a></td>
+	  <td><a href="systemcallinterface.html#semunlock" style="color: blue">SemunLock</a></td>
 	  <td>Release the lock on a semaphore already acquired</td>
   </tr>
   
