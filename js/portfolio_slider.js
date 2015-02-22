@@ -50,7 +50,7 @@ $("#elastic_grid_demo").elastic_grid({
 			'title' : 'Design',
 			'description'   : 'The Design consists of 2 parts - Data Structures used by the OS and Algorithms for Interuppts and bootstrap loader. It is for people who want to implement the eXpOS and is architecture independent.',
 			'thumbnail' : ['img/doc_gallery/small/os-design.jpg','img/doc_gallery/small/os-design-ds.jpg', 'img/doc_gallery/small/os-design-algo.jpg'],
-			'large' : ['img/doc_gallery/large/1.jpg','img/doc_gallery/large/1.jpg', 'img/doc_gallery/large/1.jpg'],
+			'large' : ['img/doc_gallery/large/os-design.png','img/doc_gallery/large/1.jpg', 'img/doc_gallery/large/1.jpg'],
 			'button_list'   :
 			[
 			{ 'title':'Read Online', 'url' : 'os_design.html' },
