@@ -55,10 +55,7 @@
     </div>
     <!-- END PRELOADER -->
 
-    <!-- SCROLL TOP BUTTON -->
-    <a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
-    <!-- END SCROLL TOP BUTTON -->
-
+   
     <!--=========== BEGIN HEADER SECTION ================-->
     <header id="header">
       <!-- BEGIN MENU -->
@@ -419,7 +416,7 @@
                           <div id="TwocollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>Two concurrently executing processes sharing resources like files or memory (for example, parent and child processes sharing the heap) would like to ensure that only one of them execute critical section code that access/modify a resource that is shared between them. </p>
-<p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29" style="color: blue">semaphores</a>. A process can acquire a semaphore using the semget system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the semlock system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the semunlock system call.  </p>
+<p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29" style="color: blue">semaphores</a>. A process can acquire a semaphore using the <b>Semget</b> system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the <b>SemLock </b>system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the <b>SemUnlock</b> system call.  </p>
 <p>A process can lock a (data) file using the <b>flock</b> system call.  Once locked, every other process trying to execute any system call on the file will be blocked by the OS till the file is unlocked by the original process using the <b>funlock</b> system call. </p>
 <p>The <b>wait</b> system call allows a process to suspend its own execution until another process wakes it up using the <b>signal</b> system call.  This primitive is useful when a process must be made to wait at a point during its execution until another related process signals it to continue.</p>
 
@@ -439,7 +436,7 @@
                           <div id="TwocollapseFour" class="panel-collapse collapse">
                             <div class="panel-body">
                           <p>A process can open data files using the <b>open</b> system call.  The open system call returns a <b>file handle</b>.  The file handle advances as data is read from the file.  Similarly, a process can acquire a <a href="#Access_Control" style="color: blue">semaphore</a> using the semget system call.</p>
-<p>When a process executes the fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the fork, the file pointers of both process get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the parent. </p> 
+<p>When a process executes the fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the fork, the file pointers of both processes get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the other. </p> 
 <p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
 <p>Thus, eXpOS does not support any explicit primitives for file or memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
 
@@ -460,8 +457,8 @@
                           </div>
                           <div id="TwocollapseFive" class="panel-collapse collapse">
                             <div class="panel-body">
-                          <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded to the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating a new processes , sending a signal to another process etc. </p>
-<p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines.  The system calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
+                          <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded into the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating new processes , sending a signal to another process etc. </p>
+<p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines. System calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
 <p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface">here</a></p>
 <h3>File system calls</h3>
 <table class="table table-bordered">
