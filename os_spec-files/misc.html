@@ -6,47 +6,41 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>eXpOS Specification</title>
+     <title>Miscellaneous</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
 
     <!-- CSS
     ================================================== -->       
     <!-- Bootstrap css file-->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
     <!-- Superslide css file-->
-    <link rel="stylesheet" href="css/superslides.css">
+    <link rel="stylesheet" href="../css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="css/slick.css" rel="stylesheet"> 
+    <link href="../css/slick.css" rel="stylesheet"> 
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="css/animate.css">  
+    <link rel="stylesheet" href="../css/animate.css">  
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
     <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
-    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
-    <link href="style.css" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
   <body> 
      <!-- BEGAIN PRELOADER -->
@@ -55,6 +49,7 @@
     </div>
     <!-- END PRELOADER -->
 
+  
     <!--=========== BEGIN HEADER SECTION ================-->
     <header id="header">
       <!-- BEGIN MENU -->
@@ -74,19 +69,18 @@
 
             <!-- TEXT BASED LOGO -->
             <a class="navbar-brand" href="#">eXpOS<span>NITC</span></a>
-                       
-                   
+            
+                              
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="index.html#Documentation">Documentation</a></li> 
-              <li><a href="Roadmap.html">Roadmap</a></li>
-               <li><a href="index.html#pricing">FAQ</a></li> <!--Change here--> 
-              <li><a href="index.html#team">Team</a></li>            
-              <li><a href="index.html#contact">Contacts</a></li>                           
+              <li class="active"><a href="../index.html">Home</a></li>
+              <li><a href="../Roadmap.html">Roadmap</a></li>
+              <li><a href="../Documentation.html">Documentation</a></li> 
+               <li><a href="#pricing">Downloads</a></li> <!--Change here--> 
+              <li><a href="#team">About Us</a></li>                                     
             </ul>           
-          </div><!--/.nav-collapse -->
+          </div>
           </div>     
         </nav>  
       </div>
@@ -94,9 +88,9 @@
 
       
     </header>
-    <!--=========== End HEADER SECTION ================--> 
-    
-        
+		<!--=========== End HEADER SECTION ================--> 
+		
+	
     <!--=========== BEGIN SECTION 6================-->
     <section id="miscellaneous">
 		<br>
@@ -133,7 +127,7 @@
                             </h4>
                           </div>
                           <div id="SixcollapseOne" class="panel-collapse collapse">
-                            <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the hardware timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" style="color: blue">round robin scheduling</a> is employed.  This means that a round robin scheduling is employed, but a process may go to <b>sleep </b>inside a system call when:</p>
+                            <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the hardware timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling">round robin scheduling</a> is employed.  This means that a round robin scheduling is employed, but a process may go to <b>sleep </b>inside a system call when:</p>
                             <ol style="margin-left: 60px;">
 		 <li>The resource which the process is trying to access (like a file or semaphore) is locked by another process (or even internally locked by another OS system call in concurrent execution).   </li>
 		 <li>There is a disk or I/O device access in a system call which is slow.  If the wait for the device access is to be avoided, there must be hardware support from the device to send a hardware interrupt upon completion of the device operation so that the OS can put the process on sleep for now, continue scheduling the remaining processes in round robin fashion and then wake up the sleeping process when the device sends the interrupt.  Such hardware support is desirable, but not necessary to implement eXpOS.  </li> 
@@ -172,7 +166,7 @@
                             
 		 <p>eXpOS treats the disk as a special <b>block device </b>and assumes that the hardware provides <b>block transfer instructions </b>to transfer disk blocks to memory (pages) and back.  The details are hardware specific and not part of the OS specification.  The OS system call routines are required to interface with the disk device drivers or low level disk routines. </p>
      <p>All other data handling devices (other than the disk) are treated as <b>stream devices. </b> This means that each device allows transfer of only one word from memory to the device or back at a time.  Some devices may permit only write (like a printer) whereas some devices may permit only read.  It is assumed that for each device there are associated low level driver routines that can be invoked by the OS to transfer words.  The low level details are hardware specific and are to be handled by the OS routines in an implementation specific way.  Here we are concerned about the device interface to application programmers.  </p>
-     <p>For each device part of the hardware, the OS assigns a unique device identifier (<b>devid</b>) which is announced to the application programmer.  (The device identifiers are specific to the particular installation).  It is assumed that device identifiers are distinguishable from file handles.     A user program can write a word into a device using the <b>write </b>system call.   The <b>read </b>system call is used when the device allows a word to be read. <a href="systemcallinterface.html" style="color: blue">(System Call Interface)</a></p>
+     <p>For each device part of the hardware, the OS assigns a unique device identifier (<b>devid</b>) which is announced to the application programmer.  (The device identifiers are specific to the particular installation).  It is assumed that device identifiers are distinguishable from file handles.     A user program can write a word into a device using the <b>write </b>system call.   The <b>read </b>system call is used when the device allows a word to be read. <a href="systemcallinterface.html">(System Call Interface)</a></p>
 
      <p>    
          The <b>standard input </b>and the <b>standard output </b>are two special stream devices with predefined identifiers STDIN and STDOUT.  Standard output only permits <b>write </b>and standard input only permits <b>read. </b> </p>
@@ -189,15 +183,13 @@
               </div>
             </div>
           </div>
-        </div>       
-     </section>
-       
-   
-    <!--=========== END SECTION 6================-->
-    
+        </div> 
         
-    
-    <!--=========== BEGAIN FOOTER ================-->
+         <a href="../os_spec.html"><img src="../img/spec_icon.jpg"  style="float:right;margin-right: 80px;"/></a>      
+     </section>
+    <!--=========== END SECTION 6================-->
+	   
+      <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
          <div class="row">
@@ -206,20 +198,11 @@
                <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
              </div>
            </div>
-           <div class="col-lg-6 col-md-6 col-sm-6">
-             <div class="footer_right">
-               <ul class="social_nav">
-                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                 <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-               </ul>
-             </div>
-           </div>
          </div>
        </div>
       </footer>
       <!--=========== END FOOTER ================-->
+
      <!-- Javascript Files
      ================================================== -->
   
@@ -227,24 +210,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Google map -->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <script src="js/jquery.ui.map.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
-    <script src="js/wow.min.js"></script> 
+    <script src="../js/wow.min.js"></script> 
     <!-- Bootstrap js -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
     <!-- superslides slider -->
-    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
     <!-- slick slider -->
-    <script src="js/slick.min.js"></script>    
+    <script src="../js/slick.min.js"></script>    
     <!-- for circle counter -->
     <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->
-    <script src="js/modernizr.custom.js"></script>
-    <script src="js/classie.js"></script>
-    <script src="js/elastic_grid.min.js"></script>
-    <script src="js/portfolio_slider.js"></script>
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
 
     <!-- Custom js-->
-    <script src="js/custom.js"></script>
+    <script src="../js/custom.js"></script>
   </body>
 </html>
