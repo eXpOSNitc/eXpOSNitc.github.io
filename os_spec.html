@@ -182,7 +182,7 @@
                  <div class="col-lg-6 col-md-6 col-sm-6">
                   <div class="single_section wow fadeInLeft">
                     <div class="section_titlearea">
-                        <h3 class="section_title"><a href="#expfs">eXpFS</a></h3>
+                        <h3 class="section_title"><a href="eXpFS.html">eXpFS</a></h3>
                     </div>
                     <p>Describes the logical file system of eXpOS called the Experimental File System (eXpFS), the various types of files supported by eXpFS and the operations on files.</p>
                   </div>
@@ -193,7 +193,7 @@
                  <div class="col-lg-6 col-md-6 col-sm-6">
                   <div class="single_section wow fadeInRight">
                     <div class="section_titlearea">
-                        <h3 class="section_title"><a href="#processmodel">Process Model</a></h3>
+                        <h3 class="section_title"><a href="processmodel.html">Process Model</a></h3>
                     </div>
                     <p>Describes the structure of eXpOS processes and the operations on processes.    This section also discusses the special processes INIT and the shell.</p>
                   </div>
@@ -204,7 +204,7 @@
             <div class="col-lg-6 col-md-6 col-sm-6">
                   <div class="single_section wow fadeInLeft">
                     <div class="section_titlearea">
-                        <h3 class="section_title"><a href="#synchronization">Synchronization</a></h3>
+                        <h3 class="section_title"><a href="synchronization.html">Synchronization</a></h3>
                     </div>
                     <p>Describes the mechanisms for handling synchronization and resource access control  (necessary when processes execute concurrently). </p>
                   </div>
@@ -576,162 +576,7 @@
        
     </section>
     <!--=========== END ABOUT SECTION 2================-->
-    
-    
-    <!--=========== BEGIN SECTION 3================-->
-    <section id="expfs">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <div class="about_area">
-             
-                <!-- START ABOUT HEADING -->
-              <div class="heading">
-                <h2 class="wow fadeInLeftBig">Experimental File System(eXpFS)</h2>
-                <br/>
-                <br/>
-                <p> eXpOS assumes that the disk is a sequence of blocks, where each block can store a sequence of words.The number of words in a block is hardware dependent.Generally, the hardware comes with machine instructions to transfer a block from the disk to a contiguous space in memory and back.  
-</p>
-<p>The eXpFS logical file system provides a file abstraction that allows application programs to think of each data (or executable) file stored in the disk as a continuous stream of data (or machine instructions) without having to worry about the details of disk block allocation.Thus eXpFS hides the details of physical storage from application programs.
-eXpOS provides a sequence of file system calls through which application programs can create/read/write files.These system calls are OS routines that does the translation of the user request into physical disk block operations.  </p>
-<p>
-    In addition to the eXpOS system call interface, the eXpFS specification also requires that there is an external interface through which executable and data files can be loaded into the file system externally.  The details of the external interface are implementation specific.   The external interface for eXpOS implementation on the XSM machine is described <a href="xfs_interface.html" style="color: blue">here</a>
-</p>
-<p>In this section we discuss the abstract logical view provided by eXpFS to the eXpOS application programmer.  
-</p>
-              </div>
-
-              <!-- START ABOUT CONTENT -->
-              <div class="about_content">
-                <div class="row">
-                   <div class="about_featured">
-                      <div class="panel-group" id="accordion">
-                        <!-- START SINGLE FEATURED ITEM #1-->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseOne">
-                                 <span class="fa fa-check-square-o"></span>eXpFS File system organization
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="ThreecollapseOne" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             <p>
-The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
-
-As noted already, Every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - name, size and type, each attribute being one word long.   The filename must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
-
-There are three types of eXpFS files -the root, data files and executable files. Each file in eXpFS has an entry in the root called the root entry.  
-</p>
-
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #2 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseTwo">
-                                 <span class="fa fa-check-square-o"></span>The eXpFS Root File
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="ThreecollapseTwo" class="panel-collapse collapse">
-                            <div class="panel-body">
-                           <p>
-The root file has name root and contains the meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - filename, file-size and file-type.  This triple is called the root entry for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation. (The maximum size of the root file is defined by XFS_ROOTSIZE.).  
-
-Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, program.xsm, of 1025 words, the root file will contain the following information assuming block size of 512.  </p>
-<img src="img/root_entry.png" alt="Root entry">
-<p>The operations on the root file:  Open, Close, Read and Seek.  
-
-Since the operations on the root file is a subset of the operations on data files, with the same syntax and semantics, these operations are discussed together with other operations on data files.  
-</p>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #3 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseThree">
-                                <span class="fa fa-check-square-o"></span>eXpFS Data files
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="ThreecollapseThree" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <p>A data file is a sequence of words.  The maximum number of words permissible in a file is defined by the constant XFS_DATASIZE.   (It is a recommended programming convention to use the extension ".dat" for data files.)   eXpFS treats every file other than root and executable files (will be described later) as a data file.  The Create system call automatically sets the file type field in the root entry for any file created through the open system call to DATA (.dat).   </p>    
-
-<p>eXpOS allows an application program to perform the following operations (by invoking appropriate system calls) on data files:    Create, Delete, Open, Close, FLock, FUnlock, Read, Write, Seek.
-Application programs can create only data files using the create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface.   
-In addition to the above, the description of the operations  FLock and FUnlock are discussed in Section 5.  
-A detailed specification of the file system calls is given <a href="#systemcallinterface" style="color: blue">here</a>.</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- START SINGLE FEATURED ITEM #4 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseFour">
-                                <span class="fa fa-check-square-o"></span>eXpFS Executable files
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="ThreecollapseFour" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             <p>
-These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type EXEC in the root file entry.    eXpFS specification does not allow executable files to be created by application programs.  They can only be created externally and loaded using the external interface.  However, application programs can read or modify executable files like data files.  
-</p>
-<p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the executable file format).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
-    Typically, an application program written in a high level language (like <a href="apl.html" style="color: blue">APL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well the target machine.  
-</p>
-<p>An OS implementation on a particular machine specifies an application binary interface (ABI).  The ABI defines the following:
-<ol>
-<li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
-</li>
-<li>
- A logical division of the memory address space into regions - text, data, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
-</li>
-<li>
-The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
-</li>
-</ol>
-<p>
-    The eXpOS ABI for XSM machine is specified <a href="abi.html" style="color: blue">here</a> 
-</p>
-<p>
-    <i>Important Note:</i>  Application programs are typically written in a high level language like APL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.   This document describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the APL programming language together with its eXpOS API are <a href="apl.html" style="color: blue">APL</a> and <a href="os_design.html" style="color: blue">API</a>.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for the compiler back end design.   
-</p>
-<p>
-The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
-</p>
-<p>
-An application program can read/modify an executable file like a data file using the standard system calls on data files.  In addition to this, the exec system call invokes the eXpOS loader that loads an executable file in correct XEXE format into memory for execution.  
-</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        
-                      </div>
-                    </div>
-               
-                  
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>       
-      </div>
-       
-    </section>
-    <!--=========== END ABOUT SECTION 3================-->
-    
-    
+  
 <!--=========== BEGIN SECTION 4================-->
     <section id="processmodel">
       <div class="container">
@@ -818,101 +663,7 @@ The parent and the child continue execution from here on.  </li>
     </section>
     <!--=========== END SECTION 4================-->
     
-    
-    <!--=========== BEGIN SECTION 5================-->
-    <section id="synchronization">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <div class="about_area">
-             
-                <!-- START ABOUT HEADING -->
-              <div class="heading">
-                <h2 class="wow fadeInLeftBig">Synchronization and Access control</h2>
-                <br/>
-                <br/>
-                <p>eXpOS assumes a single processor multi programming environment.  This means that all processes exist concurrently in the machine and the OS time shares the machine between various processes.  The OS specification requires that <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" style="color: blue">round robin scheduling</a> is used with co-operative time-sharing.    This is discussed in <a href="#miscellaneous" style="color: blue"> Section 6 </a>. The OS does not provide any promise to the application program about the order in which processes will be executed.  </p>
-	<p>However, application programs often need to stop and wait for another process to execute certain operations before proceeding.  The OS provides system calls that allow user processes to <b>synchronize execution. </b>   </p>
-              </div>
-
-              <!-- START ABOUT CONTENT -->
-              <div class="about_content">
-                <div class="row">
-                   <div class="about_featured">
-                      <div class="panel-group" id="accordion">
-                        <!-- START SINGLE FEATURED ITEAM #1-->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#FivecollapseOne">
-                                 <span class="fa fa-check-square-o"></span>Process Synchronization
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="FivecollapseOne" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             <p>eXpOS provides the <b>wait</b> and <b>signal</b> system calls for process synchronization.  When a process executes the wait system call specifying the process id of another process as argument, the OS puts the calling process to <b>sleep.</b>   This means, the OS will schedule the process out and won't execute it until one of the following events occur:</p>
-                             <ol style="margin-left: 60px;">
-		<li>The process specified as argument terminates by the <b>exit </b>system call.</li>
-		<li>The process specified executes a <b>signal </b>system call specifying the original process id as argument. The specification of signal and wait system calls are given <a href="API.html#Signal">here</a>   </li>
-	</ol>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #2 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#FivecollapseTwo">
-                                 <span class="fa fa-check-square-o"></span>Access Control
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="FivecollapseTwo" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <p> A second major concurrency related requirement is that when multiple processes access the same data (in memory or files), it is often required to have some kind of locking mechanism to ensure that when one processes is accessing the shared data, no other process is allowed to modify the same.  This is to ensure data integrity and this issue is called the <a href="http://en.wikipedia.org/wiki/Critical_section" style="color: blue">critical section problem</a>.    </p>
-    <p>eXpOS provides (binary) <b>semaphores </b>to allow application programs to handle the critical section problem.  A (binary) semaphore is conceptually a binary-valued variable whose value can be set or reset only by the OS through designated system call.   (Internally how it is implemented is an OS concern and is oblivious to the application programmer). </p>
-    <p>A process can acquire a semaphore using the <b>semget </b>system call, which returns a unique <b>semid </b>for the semaphore.  The semaphore is initially not set.   A process may open several files and semaphores and execute the fork system call multiple times to create an several process that shares all the opened file handles, the heap memory region and all the semaphores acquired by the parent.  </p>
-    <p>Any of these processes sharing a semaphore identifier can set the semaphore (called locking) using the <b>semlock </b>system call giving the semid as an argument. </p> 
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEAM #3 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#FivecollapseThree">
-                                <span class="fa fa-check-square-o"></span>Semantics of Semlock
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="FivecollapseThree" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             <ol>
-		<li>If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.</li>
-        <li>Otherwise, lock the semaphore and continue execution. </li> 
-        <p><b>Semunlock </b>will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore.  </p>
-        <p>Just like semaphores, files can also be locked using the <b>fLock </B>and <b>funlock </b>system calls.  They are discussed <a href="#systemcallinterface" style="color: blue">here</a>. </p>
-
-    </ol>
-                            </div>
-                          </div>
-                        </div>
-                        
-                      </div>
-                    </div>
-               
-                  
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>       
-      </div>
-       
-    </section>
-    <!--=========== END SECTION 5================-->
-
+ 
     
    <!--=========== BEGIN SECTION 7================-->
     <section id="systemcallinterface">
