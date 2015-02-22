@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>eXpOS Specification</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+    <!-- SCROLL TOP BUTTON -->
+    <a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
+    <!-- END SCROLL TOP BUTTON -->
+
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="#">eXpOS<span>NITC</span></a>
+                       
+                   
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#Documentation">Documentation</a></li> 
+              <li><a href="Roadmap.html">Roadmap</a></li>
+               <li><a href="index.html#pricing">FAQ</a></li> <!--Change here--> 
+              <li><a href="index.html#team">Team</a></li>            
+              <li><a href="index.html#contact">Contacts</a></li>                           
+            </ul>           
+          </div><!--/.nav-collapse -->
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+    
+    <!--heading of the page---->
+     <div class="container" style="margin-top: 80px;">
+                <h1 class="wow fadeInLeftBig">eXpOS Specification</h1>
+    
+     </div>     
+    
+    <!--=========== BEGIN Intro SECTION ================-->
+    
+    <section id="about">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+              <!-- START ABOUT HEADING -->
+               <div class="heading">
+                <h2 class="wow fadeInLeftBig">Who should read this document?</h2>
+                <br/>
+                <br/>
+                <p>This document must be read by anyone wishing to write eXpOS application programs in a high level language or assembly language.  This OS specification is prepared in a programming language and target machine independent manner.  </p>
+                <p>The document is also informative for system programmers like compiler designers who wishes to write the application programmer's interface for a high level language like <a href="apl.html" style="color: blue">APL</a> to be run on eXpOS.  The application binary interface <a href="abi.html" style="color: blue">ABI</a>  is the must-read document for the compiler designer.  
+</p>
+            <p>Finally, this document must be read by anyone who wants to implement eXpOS on some machine because one needs to know the specification for the OS before getting started with its implementation! 
+</p>
+                <h2 class="wow fadeInLeftBig">Introduction</h2>
+                <br/>
+                <br/>
+                <p>This document gives application programmer's documentation for the eXperimental Operating  System (eXpOS). 
+	</p> 
+	<p><b>eXpOS </b> is a tiny multiprogramming operating system.  It has a very simple specification that allows a junior undergraduate computer science student to implement it in a few months, subject to availability of adequate hardware and programming platform support.  
+</p>
+        <p>This specification is prepared from the perspective of the user/application programmer and is not hardware specific.   Assumptions about the underlying hardware features necessary for the operating system to work are discussed in the first section of this document.  
+</p>
+        <p>This document contains the following sections:</p>
+    
+              </div>
+                   
+                    </div>
+                  </div>
+                </div>
+              </div>
+           
+       
+    </section>
+    <!--=========== END Intro SECTION ================-->
+
+    <!--=========== BEGIN contents SECTION ================-->
+    <section id="sections">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <!-- BEGIN Sections  -->
+            <div class="section_area">
+              <div class="row">
+                
+                 
+                  <!-- BEGIN Section 1 -->
+                  <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInLeft">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="#overview">Overview</a></h3>
+                    </div>
+                      <p>Provides an overview of the system.</p>
+                  </div>
+                </div>
+                 
+                  
+                 
+                  <!-- BEGIN Section 2-->
+                  <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInRight">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="#expos_abstractions">eXpOS Abstractions</a></h3>
+                    </div>
+                    <p>Discusses the fundamental abstractions provided by the eXpOS.</p>
+                  </div>
+                 </div>
+                 
+                 
+                 <!-- BEGIN Section 3-->
+                 <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInLeft">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="expfs.html">eXpFS</a></h3>
+                    </div>
+                    <p>Describes the logical file system of eXpOS called the Experimental File System (eXpFS), the various types of files supported by eXpFS and the operations on files.</p>
+                  </div>
+               </div>
+                
+                 
+                 <!-- BEGIN Section 4-->
+                 <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInRight">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="processmodel.html">Process Model</a></h3>
+                    </div>
+                    <p>Describes the structure of eXpOS processes and the operations on processes.    This section also discusses the special processes INIT and the shell.</p>
+                  </div>
+                </div>
+                 
+                
+             <!-- BEGIN  Section 5-->
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInLeft">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="synchronization.html">Synchronization</a></h3>
+                    </div>
+                    <p>Describes the mechanisms for handling synchronization and resource access control  (necessary when processes execute concurrently). </p>
+                  </div>
+             </div>
+                
+                   
+             <!-- BEGIN  Section 6-->
+             <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInRight">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="misc.html">Miscellaneous</a></h3>
+                    </div>
+                    <p>This is a "miscellaneous" section that discusses special processes/routines like the INIT process, the shell, the scheduler, the exception handler, I/O and disk devices and handlers etc..</p>
+                  </div>
+              </div>
+               
+          
+                          <!-- BEGIN Section 7-->
+                          <div class="col-lg-6 col-md-6 col-sm-6">
+                  <div class="single_section wow fadeInLeft">
+                    <div class="section_titlearea">
+                        <h3 class="section_title"><a href="systemcallinterface.html">System Call Interface</a></h3>
+                    </div>
+                    <p>Provides a detailed specification of the application programmer's system call interface. </p>
+                  </div>
+                 </div>
+          
+              </div>
+           </div>
+          </div>
+          </div>
+           </div>
+            
+    </section>
+    <!--=========== END SECTION ================-->
+
+    
+    
+    <!--=========== BEGIN SECTION 1================-->
+    <section id="overview">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">Overview</h2>
+                
+              </div>
+              <br/>
+              <br/>
+              
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#OnecollapseOne">
+                                 <span class="fa fa-check-square-o"></span>Terminology
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="OnecollapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p>It is assumed that the reader has some working familiarity with the following terms and concepts. 
+                             (The description of the machine used in this experiment is given <a href="#">here</a>. However reading the description is NOT a prerequisite for this document.) </p>
+ <ul style="list-style-type:square;line-height: 25px;margin-left: 80px;">
+	 <li><strong>Machine: </strong> The hardware/machine (computer) on which the operating system is running.  </li>
+	 <li><strong>(Physical) Memory: </strong> The physical memory (primary memory) of the machine.</li>
+	 <li><strong>Word: </strong> The fundamental unit of memory access/storage recognized by the eXpOS.  A word is assumed to be able to store an integer or a character string.</li>
+	 <li><strong>Page: </strong> The memory is assumed to be divided into pages of contiguous memory words.  It is assumed that the machine supports <a href="http://en.wikipedia.org/wiki/Paging" style="color: blue">paging hardware. </a></li>
+	 <li><strong>Disk: </strong> The secondary storage where data and program files are stored.  The operating system also is stored in the disk and is loaded from the disk to the memory at the time of bootstrap. </li>
+	 <li><strong>Block: </strong> The basic unit of disk access.    A block can store a sequence of words.  The number of words per block is hardware dependent.  </li>
+	 <li><strong>File: </strong> Each file is a sequence of words, stored in the disk.   The most important file types are <b>program </b>files (or <b>executable</b> files or application programs) and data files.  </li>
+	 <li><strong>Process: </strong>  An application program under execution is called a <a href="http://en.wikipedia.org/wiki/Process_%28computing%29" style="color: blue">process.</a> </li>
+	 <li><strong>Kernel: </strong> The core part of the eXpOS operating system that forms a layer between the hardware and application programs.  The kernel essentially is a collection of routines residing in the memory of the machine.   In this document, the term operating system normally refers to the <a href="http://en.wikipedia.org/wiki/Kernel_%28operating_system%29" style="color: blue">kernel.</a></li>
+	 <li><strong>System Calls: </strong> These are kernel routines which application programs can invoke to do actions which only the OS reserves right to perform (Example: creating/modifying files or creating/destroying processes).  </li>
+	 <li><strong>Multiprogramming: </strong> Multiple processes reside in the memory simultaneously and the OS time-shares the machine between the processes by <b>link reqd scheduling</b>.  The processes are said to execute concurrently.  An OS that supports concurrent execution of processes is called a multiprogramming OS</li>
+	 <li><strong>Timer: </strong> The hardware device that interrupts the machine periodically.  The scheduler is generally invoked by the timer interrupt service routine. </li>
+ </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#OnecollapseTwo">
+                                 <span class="fa fa-check-square-o"></span>Primitives
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="OnecollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>The OS specification assumes a generic hardware model described below.  </p>
+                           <img src="img/hw_model.png">
+ <p>The basic Machine model consists of memory, disk and the CPU.  A small part of memory is assumed to contain a <b>bootstrap loader</b> stored permanently in ROM memory.  These are machine instructions to load into the memory an <b>OS startup code </b> stored in a pre-defined area in the disk.  The ROM code then transfers control to this newly loaded code.  This code loads the operating system routines stored in (pre-defined areas of) the disk into memory and sets up the Operating system.   This includes all the OS code for various system calls, the scheduler, the exception handler, device drivers etc.  Further hardware support required like the timer, disk controller, Input-output system etc. are discussed later.</p>
+ <p>For eXpOS to work, the machine should support two <b>privilege levels</b> of program execution.  These are called <b>the user mode</b> (unprivileged mode) and the <b>system mode </b>(privileged mode).  User programs (or application programs) run in user mode whereas OS routines run in system mode.   The collection of OS routines that run in system mode is called the <b>kernel </b>of the operating system.  A user program in execution is called a <b>process</b>.  (Sometimes the term "program" may be (ab)used to refer to the corresponding process).   An application process has access only to a limited set of machine instructions and can only access a limited set of memory addresses called the <b>virtual address space</b> of the process.    This restricted machine model provided by the OS (of course, using the support from the machine architecture) is called the <b>virtual machine model</b>.  </p>
+ <p>The eXpOS logically divides the virtual address space of a process into <b>library, code, stack and heap </b> regions.   eXpOS assumes  that the machine provides <b>paging  </b>hardware to implement the mapping of the virtual address space of a process into the physical memory of the machine.  The following <a href="paging_translation.html"><b>**@#$%^&&**</b>link </a> discusses how such mapping is done.    If the machine supports <a href="http://en.wikipedia.org/wiki/Memory_segmentation#Segmentation_with_paging" style="color: blue">segmented paging</a>,  the feature can be used profitably.  However, the discussion here assumes no segmentation support.  </p>
+ <p>Data and program files are stored in the disk.  The disk is typically divided into <b>blocks</b> and the machine provides instructions to transfer blocks into and out of memory.   These instructions can be accessed only in the system mode.   The specific mechanisms available are hardware dependent.  (The disk access model for <a href="#" style="color: blue">XSM </a> is discussed <a href="disk_access.html" style="color: blue">here</a> ).   Note that since processes run in user mode, they can access disk files only through invoking the designated system calls for the purpose.</p>
+ <p>User programs are generally stored as <b>executable files</b> in the disk.  Typically the user writes the application programs in a high level language and a compiler generates the executable file.  The eXpOS expects that executable files follow certain format and compilers must adhere to the format.   This allows the eXpOS to figure out how much space must be allocated for library, stack, code and heap in the virtual address space when the program is loaded into memory for execution.  The virtual machine model as well as the executable file format for eXpOS implementation in XSM are described in the eXpOS <a href="ABI.html" style="color: blue">application binary interface </a> documentation. </p> 
+ <p>At the end of the bootstrap process, the OS startup code hand-creates the first user process called the <b> INIT process </b> in memory.  Thereafter, new processes can be created by existing processes by invoking the OS system calls for the purpose. Recall that the system call routines would have been set up in the memory during the bootstrap process.     The INIT process creates a special user process called the <b>shell process </b>by loading and executing a <b>shell program </b> from the disk.    The shell program repetitively reads user commands from the input and executes programs specified by the user and the OS becomes functional.   The specification of the INIT and the shell process are described in this <a href="shell_spec.html" style="color: blue">link</a>. </p>
+ <p>eXpOS treats the standard input and output devices just like special files.   Hence user processes must use the system calls to read/write files to perform I/O operations.   The underlying implementation details are hardware dependent and are left unspecified in the OS specification.  </p>
+ <p>Finally, eXpOS assumes that the machine is equipped with a <b>hardware timer </b> device that can interrupt the machine at pre-defined regular intervals.  The timer is crucial for multiprogramming.  The timer interrupt handler is the eXpOS kernel's <b>scheduler</b> routine which is responsible for <b>timesharing</b> the machine between processes.   Similarly, disk/input-output devices may require handler interrupt service routines.  These are hardware dependent and hence left unspecified in the OS specification.   A discussion of these issues is taken up in <a href="#miscellaneous" style="color: blue"> Section 6</a>.  
+</p>
+                          </div>
+                        </div>
+                        
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       
+    </section>
+    
+   
+    <!--=========== BEGIN SECTION 2 ================-->
+    <section id="expos_abstractions">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">eXpOS Abstractions</h2>
+                <br/>
+                <br/>
+                <p>eXpOS provides the following fundamental abstractions to an application program: </p>
+                <ol style="margin-left: 90px;">
+	<li>The eXpFS logical <i>file system</i></li>
+	<li>The <i>process</i> abstraction for programs in execution</li>
+	<li>Methods of resource sharing</li>
+	<li>Primitives for concurrent access control and  process synchronization</li>
+	<li>The <b>system call interface</b> that specifies the interface through which application programs can invoke the system calls and access the OS services.  </li>
+</ol>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        
+                        
+                     <!-- START SINGLE FEATURED ITEM #1 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseOne">
+                                 <span class="fa fa-check-square-o"></span>The eXpFS logical file system. 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>The eXpOS kernal provides a hardware independent logical file system model (called the <b>experimental file system or eXpFS</b>) for application programs.       The application program views files as being organized and stored in the eXpFS logical file system.  Application programs are not permitted to access files directly.  Instead, they must invoke the appropriate <b>file system call</b> for creating, modifying or accessing files.   The OS routine implementing each system call internally translates the request into disk block operations, hiding the hardware details from the application program.</p>
+<p>XFS support three kinds of files - <b>data files, program files </b> (executable files) and a special file called the <b>root file. </b> The root file is a meta-data file that contains the list of all files in the file system.  A data file consists of a sequence of words.  A program contains a header, a sequence of machine instructions called text and static data, if any. </p>
+<p>eXpOS does not provide any mechanisms for application programs to create <b>executable files</b>.    Executable files have to be pre-loaded into the disk using some other external disk access mechanism before OS bootstrap.   Since such mechanisms are implementation dependent, they are not part of the OS specification.  For instance, the <a href="xfs_interface.html" style="color: blue">XFS-Interface</a> tool for eXpOS implementation on the XSM machine is one such mechanism. </p>
+<p>Executable files follow certain format called the <a href="XEXE-format.html"><b>experimental executable format or XEXE format</b></a>.  The OS will execute only program files stored in the file system in the XEXE format.  Hence system programs like compilers that translate high level application programs must ensure that the executable files adhere to the XEXE format.  </p>
+<p>Application programs can create, modify and delete data files using appropriate OS system calls.  These are discussed <a href="#systemcallinterface" style="color: blue">here</a>.</p>
+<p>A detailed discussion of the file system structure, file system calls and XEXE format is given in <a href="#expfs" style="color: blue">Section 3</a>.</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                     <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseTwo">
+                                <span class="fa fa-check-square-o"></span>The eXpOS process Abstraction
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>It was noted earlier that at the end of bootstrap, eXpOS loads into memory a program stored in a pre-determined part of the disk and create the first process called the INIT process.  Once a process is created, it can spawn new processes using the <b>fork </b> system call.    When a process spawns a new process, the former is called the <b>parent process</b> and the later is called the <b>child process</b>.  A process can decide to terminate itself using the <b>exit</b> system call.  </p>
+<p>Associated with each process, there is a (virtual) address space (or logical memory space).  This address space is a sequence of memory locations, each of which can store a word.    eXpOS logically divides the address space of a process is into four regions - <b>(shared) library, code, stack and heap</b>. </p>
+<p>When a process is created using the fork system call, the OS creates a virtual address space for the new process.   Each process is given a view that it has its own virtual address space containing its code, library, stack and heap.  The virtual address space is a continuous address space starting from address 0 up to a maximum limit that is implementation dependent.  Internally, the OS maps the virtual address space into the machine memory using hardware mechanisms available in the machine like paging/segmentation.( Check mapping <a href="paging_translation.html" style="color: blue">here</a>)</p>
+<p>The code region of a process contains the machine instructions that are to be executed.    This code consists of instructions stored in some executable file in the file system. When a new process is created using the fork system call, <i>the child process shares the library, code and heap with the parent</i>.  This means that any modifications to memory words in these regions by one process will result in modification of the contents for both the processes.  The stack and the data regions of the parent and the child will be separate. The parent and the child concurrently proceeds execution from the instruction immediately following the fork system call in the code. </p>
+<p>The stack region of a process stores the variables and stack frames during the execution of the program. Since our implementation of eXpOS does not explicitly provide an area for storing static data, they are stored on the stack.  Dynamic memory allocation is normally done from the heap region.  Variables to be shared between different processes could also be allocated in the heap.   Finally all (standard) library code (which is typically shared by all applications) is mapped to the library region.  </p>
+<p>A process can load an XEXE executable file from the file system into the virtual address space (of the calling process) using the <b>exec</b> system call.  The exec system call determines the size of the code, stack and heap regions using the information in the <b>header</b> of the executable file. During such loading, the original code, stack and heap regions are overlayed by those of the newly loaded program.  However, if the original process had shared its heap with its parent  process (or any other process), the OS ensures that the heap area is allocated separately so that other processes do not lose their shared heap data. Finally, the (shared) library is common to every application. </p>
+<p>The OS expects that executable files respect the programming conventions laid down by the OS (called the <b>Application Binary Interface-ABI</b>) like the division of memory into stack, data, code, heap and library.  Each XEXE executable file must have a header which specifies the how much size must be allocated by the OS for each region when the program is loaded for execution.  Application programs are typically written in high level languages like <a href="apl.html" style="color: blue">APL</a> , eXpOS expects the compiler to generate code respecting the ABI specification.  </p>
+<p>It must be noted here that an application program is free to violate the ABI conventions and decide to use its virtual address space in its own way.  It is only required that the executable file follows XEXE format in order to ensure that exec system call does not fail.  As long as such a process operates within its own address space, the OS permits the process to execute.  However, if at any point during its execution, the process generates a virtual address beyond its permitted virtual address space, a hardware exception will be generated and the OS routine handling the exception will terminate the process. </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                     
+                     <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseThree">
+                                 <span class="fa fa-check-square-o"></span>Access Control and Synchronization 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>Two concurrently executing processes sharing resources like files or memory (for example, parent and child processes sharing the heap) would like to ensure that only one of them execute critical section code that access/modify a resource that is shared between them. </p>
+<p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29" style="color: blue">semaphores</a>. A process can acquire a semaphore using the semget system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the semlock system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the semunlock system call.  </p>
+<p>A process can lock a (data) file using the <b>flock</b> system call.  Once locked, every other process trying to execute any system call on the file will be blocked by the OS till the file is unlocked by the original process using the <b>funlock</b> system call. </p>
+<p>The <b>wait</b> system call allows a process to suspend its own execution until another process wakes it up using the <b>signal</b> system call.  This primitive is useful when a process must be made to wait at a point during its execution until another related process signals it to continue.</p>
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     <!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseFour">
+                                 <span class="fa fa-check-square-o"></span>Resource Sharing in eXpOS 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                          <p>A process can open data files using the <b>open</b> system call.  The open system call returns a <b>file handle</b>.  The file handle advances as data is read from the file.  Similarly, a process can acquire a <a href="#Access_Control" style="color: blue">semaphore</a> using the semget system call.</p>
+<p>When a process executes the fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the fork, the file pointers of both process get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the parent. </p> 
+<p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
+<p>Thus, eXpOS does not support any explicit primitives for file or memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
+
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     
+                     <!-- START SINGLE FEATURED ITEM #5 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#TwocollapseFive">
+                                 <span class="fa fa-check-square-o"></span>System Calls
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="TwocollapseFive" class="panel-collapse collapse">
+                            <div class="panel-body">
+                          <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded to the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating a new processes , sending a signal to another process etc. </p>
+<p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines.  The system calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
+<p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface">here</a></p>
+<h3>File system calls</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="#create" style="color: blue">Create</a></td>
+    <td>Create an XFS file</td>		
+  <tr>
+    <td><a href="#delete" style="color: blue">Delete</a></td>
+    <td>Delete an XFS  file</td>		
+    
+  </tr>
+  <tr>
+    <td><a href="#open" style="color: blue">Open</a></td>
+    <td>Open an XFS file and return a file handle to the calling process</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="#close" style="color: blue">Close</a></td>
+	  <td>Close an XFS file already opened by the calling process</td>
+  </tr>
+  <tr>
+	  <td><a href="#read" style="color: blue">Read</a></td>
+	  <td>Read one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="#write" style="color: blue">Write</td>
+	  <td>Write one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="#seek" style="color: blue">Seek</td>
+	  <td>Change the position of the file handle</td>
+  </tr>
+</table>
+<h3>Process system calls</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="#fork" style="color: blue">Fork</a></td>
+    <td>Create a child process allocating a new address space.  </td></tr>		
+  <tr>
+    <td><a href="#exec" style="color: blue">Exec</a></td>
+    <td>Load and execute an XFS executable file into the virtual address space of the present process.  </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="#exit" style="color: blue">Exit</a></td>
+    <td>Destroy the process invoking the call</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="#getpid" style="color: blue">Getpid</a></td>
+	  <td>Get the Process ID of the invoking Process</td>
+  </tr>
+  <tr>
+	  <td><a href="#getppid" style="color: blue">Getppid</a></td>
+	  <td>Get the process ID of the parent process of the invoking process.</td>
+  </tr>
+  
+</table>
+<h3>System calls for access control and synchronization:</h3>
+<table class="table table-bordered">
+  <tr>
+    <td><a href="#signal" style="color: blue">Signal</a></td>
+    <td>Send a signal to a process specified in the call. </td>		
+  <tr>
+    <td><a href="#wait" style="color: blue">Wait</a></td>
+    <td>Suspend execution of the current process until a signal is received from the process specified or the process specified terminates. </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="#flock" style="color: blue">FLock</a></td>
+    <td>Wait until an exclusive access permission to file is obtained.  </td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="#funlock" style="color: blue">FunLock</a></td>
+	  <td>Release the lock on a file already acquired.</td>
+  </tr>
+  <tr>
+	  <td><a href="#semget" style="color: blue">Semget</a></td>
+	  <td>Acquire a new semaphore</td>
+  </tr>
+  <tr>
+	  <td><a href="#semrelease" style="color: blue">Semrelease</a></td>
+	  <td>Release a semaphore already acquired by the process</td>
+  </tr>
+  <tr>
+	  <td><a href="#semlock" style="color: blue">SemLock</a></td>
+	  <td>Wait till the process get exclusive lock of the semaphore</td>
+  </tr>
+  <tr>
+	  <td><a href="#semunlock" style="color: blue">SemunLock</a></td>
+	  <td>Release the lock on a semaphore already acquired</td>
+  </tr>
+  
+</table>
+
+                            </div>
+                          </div>
+                        </div>
+                     
+                     
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       
+    </section>
+    <!--=========== END ABOUT SECTION 2================-->
+    
+    
+    <!--=========== BEGIN SECTION 3================-->
+    <section id="expfs">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">Experimental File System(eXpFS)</h2>
+                <br/>
+                <br/>
+                <p> eXpOS assumes that the disk is a sequence of blocks, where each block can store a sequence of words.The number of words in a block is hardware dependent.Generally, the hardware comes with machine instructions to transfer a block from the disk to a contiguous space in memory and back.  
+</p>
+<p>The eXpFS logical file system provides a file abstraction that allows application programs to think of each data (or executable) file stored in the disk as a continuous stream of data (or machine instructions) without having to worry about the details of disk block allocation.Thus eXpFS hides the details of physical storage from application programs.
+eXpOS provides a sequence of file system calls through which application programs can create/read/write files.These system calls are OS routines that does the translation of the user request into physical disk block operations.  </p>
+<p>
+    In addition to the eXpOS system call interface, the eXpFS specification also requires that there is an external interface through which executable and data files can be loaded into the file system externally.  The details of the external interface are implementation specific.   The external interface for eXpOS implementation on the XSM machine is described <a href="xfs_interface.html" style="color: blue">here</a>
+</p>
+<p>In this section we discuss the abstract logical view provided by eXpFS to the eXpOS application programmer.  
+</p>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseOne">
+                                 <span class="fa fa-check-square-o"></span>eXpFS File system organization
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="ThreecollapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p>
+The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
+
+As noted already, Every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - name, size and type, each attribute being one word long.   The filename must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
+
+There are three types of eXpFS files -the root, data files and executable files. Each file in eXpFS has an entry in the root called the root entry.  
+</p>
+
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseTwo">
+                                 <span class="fa fa-check-square-o"></span>The eXpFS Root File
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="ThreecollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>
+The root file has name root and contains the meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - filename, file-size and file-type.  This triple is called the root entry for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation. (The maximum size of the root file is defined by XFS_ROOTSIZE.).  
+
+Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, program.xsm, of 1025 words, the root file will contain the following information assuming block size of 512.  </p>
+<img src="img/root_entry.png" alt="Root entry">
+<p>The operations on the root file:  Open, Close, Read and Seek.  
+
+Since the operations on the root file is a subset of the operations on data files, with the same syntax and semantics, these operations are discussed together with other operations on data files.  
+</p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseThree">
+                                <span class="fa fa-check-square-o"></span>eXpFS Data files
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="ThreecollapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>A data file is a sequence of words.  The maximum number of words permissible in a file is defined by the constant XFS_DATASIZE.   (It is a recommended programming convention to use the extension ".dat" for data files.)   eXpFS treats every file other than root and executable files (will be described later) as a data file.  The Create system call automatically sets the file type field in the root entry for any file created through the open system call to DATA (.dat).   </p>    
+
+<p>eXpOS allows an application program to perform the following operations (by invoking appropriate system calls) on data files:    Create, Delete, Open, Close, FLock, FUnlock, Read, Write, Seek.
+Application programs can create only data files using the create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface.   
+In addition to the above, the description of the operations  FLock and FUnlock are discussed in Section 5.  
+A detailed specification of the file system calls is given <a href="#systemcallinterface" style="color: blue">here</a>.</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#ThreecollapseFour">
+                                <span class="fa fa-check-square-o"></span>eXpFS Executable files
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="ThreecollapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p>
+These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type EXEC in the root file entry.    eXpFS specification does not allow executable files to be created by application programs.  They can only be created externally and loaded using the external interface.  However, application programs can read or modify executable files like data files.  
+</p>
+<p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the executable file format).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
+    Typically, an application program written in a high level language (like <a href="apl.html" style="color: blue">APL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well the target machine.  
+</p>
+<p>An OS implementation on a particular machine specifies an application binary interface (ABI).  The ABI defines the following:
+<ol>
+<li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
+</li>
+<li>
+ A logical division of the memory address space into regions - text, data, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
+</li>
+<li>
+The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
+</li>
+</ol>
+<p>
+    The eXpOS ABI for XSM machine is specified <a href="abi.html" style="color: blue">here</a> 
+</p>
+<p>
+    <i>Important Note:</i>  Application programs are typically written in a high level language like APL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.   This document describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the APL programming language together with its eXpOS API are <a href="apl.html" style="color: blue">APL</a> and <a href="os_design.html" style="color: blue">API</a>.  The APL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for the compiler back end design.   
+</p>
+<p>
+The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
+</p>
+<p>
+An application program can read/modify an executable file like a data file using the standard system calls on data files.  In addition to this, the exec system call invokes the eXpOS loader that loads an executable file in correct XEXE format into memory for execution.  
+</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       
+    </section>
+    <!--=========== END ABOUT SECTION 3================-->
+    
+    
+<!--=========== BEGIN SECTION 4================-->
+    <section id="processmodel">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">The eXpOS Process Model</h2>
+                <br/>
+                <br/>
+                <p>A program under execution is called a process.   A process is newly created when a process already in execution invokes the <b>fork</b> system call.    The first process, the INIT process, is created by the OS during bootstrap by loading a code stored in a pre-defined disk location to memory and setting up a process.   The OS assigns a unique integer identifier called <b>process id</b> for each process when it is created.  The process id does not change during the lifetime of the process.  The process that creates the new process is called the <b>parent process</b> of the newly created process. </p>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#FourcollapseOne">
+                                 <span class="fa fa-check-square-o"></span>The structure of Processes
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="FourcollapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>The OS associates a <b>virtual (memory) address space</b> for each process.  The address space of a process is a contiguous sequence of memory addresses staring from zero accessible to a process.  The maximum limit on the address space of a process is specified by the constant <b>XOS_MAXPSIZE</b>. The OS logically partition the address space into five regions <b>library, code, data, stack and heap</b>. These regions are mapped into physical memory using hardware mechanisms like paging/segmentation.<a href="paging_translation.html" style="color: blue">(Mapping virtual to physical address)</a>.</p>
+	<p>Every process corresponds to some executable file stored in XEXE format stored in the XFS file system.  The XEXE header of the executable file contains the information about how much space must be allocated for the various memory regions.  (Link to XEXE format).  When the program is loaded into memory by the operating system, the OS reads the header and sets up the regions of the virtual address space accordingly.   Once the layout of the virtual address space is clear, the OS maps the virtual address space into the physical memory.  The part of the OS which does all these tasks is called the <b>OS loader</b>.  The eXpOS loader is the interrupt service routine corresponding to the <b>exec</b> system call.  </p>
+	<p>Apart from the process id and the virtual address space, a process may open files or semaphores.  The OS associates a <b>file handle</b> with each open instance of a file.     The semantics of file handle is discussed <a href="#systemcallinterface" style="color: blue">here</a>.  Similarly, the OS assigns a semaphore identifier (<b>semid</b>) for each semaphore acquired by the process. <a href="#systemcallinterface" style="color: blue">(System calls for semaphores)</a>  The file handles and semids acquired by a process are also attributes of a process.  </p>
+	<p><b>Note:</b>  In addition to the above attributes of a process that are visible to application/system programs, a process under execution at any given point of time has an execution <b>context</b>.  The context of a process refers to the contents of the registers, instruction pointer, contents of the memory etc.  These are hardware dependent and are managed internally by the OS.  In fact, managing the execution contexts of multiple processes simultaneously and running them all in one machine is the main challenge in the design and implementation of a multiprogramming OS.  However, the OS hides these internal details from the application programs as well as system programs like compilers.   Hence, they are part of this documentation.</p>
+	<p>A process can get its process id using the <b>getpid</b> system call.  The pid of the parent process can be obtained using the <b>getppid</b> system call.<a href="#systemcallinterface" style="color: blue">(Process system calls)</a> </p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#FourcollapseTwo">
+                                 <span class="fa fa-check-square-o"></span>Operations on Processes
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="FourcollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>The two most fundamental operations associated with process are <b>fork and exec</b>.   The remaining operations are exit, wait, signal, getpid and getppid.</p>
+	<p>When a process executes a <b>exec</b> system call with an executable file name as a parameter, the following are the actions taking place which are relevant to application programs.</p>
+        <h3>Semantics of exec operation:</h3>
+	<ol>
+		<li>The OS closes all files and semaphores opened by the process.    A new address space is created replacing the existing one.  ( what happens to the original address space is  irrelevant to the application/system programmer.  But it is important to know that any other process sharing code/heap/library regions with this process will not be affected. This is discussed in <a href="#synchronization" style="color: blue">Section 5</a>.).</li>
+		<li>The code and static data of the executable file are loaded into the code and data regions of the new address space.   The system library is mapped to the library region and stack is initialized to empty. </li>  
+        <li>The machine instruction pointer is set to the location specified in the executable header.  The machine stack pointer is initialized to the beginning of the stack.  (These details are hidden from the application programmer by the compiler if a high level language is used for writing the application.). From here, execution continues with the newly loaded program.</li>
+	</ol>
+	
+	<p>When a process executes the <b>fork</b> system call, the following sequence of events occur.</p>
+	<h3>Semantics of fork operation:</h3>
+	<ol>
+		<li>A new process child with a new process id and address space is created which is an exact replica of the original process with the same library, code, data, stack and heap regions.  (The OS assigns a new process id of the child and returns this value to the parent as the return parameter of the fork system call.)  The <b>heap, code and library regions of the parent are shared by the child.</b>  This means, any modification of contents of these regions by one process during subsequent execution will change the other as well.   Note that both processes are in concurrent execution subsequent to the fork operation.  Data and stack are separate for the child and are not shared.</li>
+        <li><b>All open file handles and semaphores are shared by the parent and the child.</b>  This means that if one of the processes write/read into/from or adjust the file handle using the lseek system call, the corresponding file handle of the other process also get automatically updated.  See further discussion in <a href="#synchronization" style="color: blue">Section 5</a>.  Note that file handles (or semaphore identifiers) of files (or semaphores) that are opened (or created) subsequent to the fork operation by the parent or the child will be exclusive to the particular process and will not be shared.  
+The parent and the child continue execution from here on.  </li>
+	</ol>
+	<p>The <b>exit</b> system call terminates a process after closing all files and semaphores.  The <b>wait</b> system call suspends the execution of a process till another process exits or executes a <b>signal</b> system call. <a href="#systemcallinterface" style="color: blue">(System calls for access control and synchronization)</a>  The <b>signal</b> system call resumes the execution of a process that was suspended by wait.   Wait and Signal operations are discussed in more detail in the next section</p>
+	
+                          </div>
+                        </div>
+                        
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       
+    </section>
+    <!--=========== END SECTION 4================-->
+    
+ 
+    
+   <!--=========== BEGIN SECTION 7================-->
+    <section id="systemcallinterface">
+      <div class="container" style="padding-top: 60px;">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">System Call Interface</h2>
+                <br/>
+                <br/>
+                <p>Application programmer interacts with the Operating System using system calls. System calls are stored in the disk and loaded into memory when the OS is loaded by bootstrap loader. When a process invokes a system call, the process is interrupted and control goes to the kernel. Therefore, system calls can also be considered as interrupts. Once the system call is carried out, the control goes back to user mode.</p>
+      <p>There are system calls associated with processes, files and semaphores. In eXpOS, there are three process system calls, nine file system calls and four system calls related to semaphores.</p>
+      
+     <!-- START SINGLE FEATURED ITEM #1 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                            <h4 class="panel-title" style="padding-top: 20px">File System Calls</h4>
+                          
+                          <div class="panel-body">
+                          
+                         <!--start file system calls --->   
+                         <!-- create system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" id="create">Create</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Create allows application programs to create new data files.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOSP</td>
+                                                        <td>No space for file</td>
+                                                    </tr> 
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end create system call-->
+                         
+                         <!-- delete system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Delete</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Delete is used to delete a file from the eXpFS disk.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFNAM</td>
+                                                        <td>File not found</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_FOPEN</td>
+                                                        <td>File is open</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end delete system call-->
+      
+                         <!-- open system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Open</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse3" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Open is used to open a file present in the eXpFS disk.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0 - XFS_MAXFDES</td>
+                                                        <td>Success, the return value is the file descriptor for the opened file.  </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFNAM</td>
+                                                        <td>File not found or file is of invalid type</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOPSP</td>
+                                                        <td>Process has reached its limit of resources</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>XFS_NOFTSP</td>
+                                                        <td>System has reached its limit of open files</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end open system call-->
+          
+                         
+                         <!-- close system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Close</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse4" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Close is used to close a file.</p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end close system call-->
+          
+                         <!-- read system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Read</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse5" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Read reads a word from a data file.</p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_EOF</td>
+                                                        <td>File pointer has reached the end of file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end read system call-->
+          
+                         <!-- write system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Write</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse6" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Write writes a word into the file at the position of the file pointer.</p>
+                                                <p>Arguments: File Descriptor and Word to be written</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NODSKSP</td>
+                                                        <td>No disk space</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end write system call-->
+                        
+                          <!-- seek system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Seek</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position.</p>
+                                                <p>Arguments: File Descriptor and Offset specifying the number of positions by which the file pointer has to be shifted (an Offset of 0 will reset the pointer to the start of the file)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVOFF</td>
+                                                        <td>Offset value moves the file pointer to a position outside the file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end seek system call-->
+                           
+                          </div>
+                        </div>
+                         <!--end file system calls-->   
+		
+                         <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          
+                            
+                            <h4 class="panel-title" >Process System Calls</h4>
+                          
+                         
+                          
+                            <div class="panel-body">
+                          
+                         <!--start process system calls --->   
+     
+                         <!-- fork system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Fork</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse8" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Replicates the process invoking the system call. </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0 - (XOS_PCOUNT - 1)</td>
+                                                        <td>Success, the return value to the parent is the process descriptor of the child process.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success, the return value to the child.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_PROCLIMIT</td>
+                                                        <td>Number of process has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end fork system call-->
+     
+                         <!-- exec system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Exec</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse9" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. the process data structures and memory of the current process is used by the new process. </p>
+                                                <p>Arguments: File Name of the executable file</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>XFS_INVFNAM)</td>
+                                                        <td>File not found or file is of invalid type</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exec system call-->
+     
+                           <!-- exit system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse10">Exit</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse10" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Destroys the process invoking the call </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exit system call-->
+     
+                         <!-- getpid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Getpid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse11" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  Returns the process identifier of the invoking process.</p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Process Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr>                                                   
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getpid system call-->
+     
+                         <!-- getppid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse12">Getppid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse12" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  Returns the process Identifier of the parent of the invoking process.</p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Parent Process Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr>    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getppid system call-->
+                         
+                           
+                          </div>
+                        </div>
+                         <!--end process system calls-->
+                         
+                         <!--synchronization and access control system calls-->
+                         
+                         <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          
+                            <h4 class="panel-title">
+                              System Calls for access control and synchronization
+                            </h4>
+                          </div>
+                          
+                            <div class="panel-body">
+                          
+                         <!--start system calls --->   
+     
+                         <!-- wait system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse13">Wait</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse13" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits </p>
+                                                <p>Arguments: Identifier</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVPID</td>
+                                                        <td>Given process identifier is invalid or it is the pid of the invoking  process.</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end wait system call-->
+     
+                         <!-- signal system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse14">Signal</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse14" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  All processes waiting for the current process are resumed.  </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end signal system call-->
+     
+                         <!-- flock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse15">FLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse15" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked.  </p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                       
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end flock system call-->
+         
+                             <!-- funlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse16">FunLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse16" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. </p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOLOCK</td>
+                                                        <td>File is already locked by some other process</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end funlock system call-->
+     
+                             <!-- semget system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse17">Semget</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse17" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to obtain a semaphore for a resource.</p>
+                                                <p>Argument: None</p>
+                                                <p>Return Value : </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0- (MAXSEM-1)</td>
+                                                        <td>Success, returns the semaphore descriptor</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_NOPSP</td>
+                                                        <td>Process has reached its limit of resources </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_NOSTSP</td>
+                                                        <td>Number of semaphores has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semget system call-->
+     
+                         <!-- semrelease system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse18">Semrelease</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse18" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to free the semaphore so that other processes can use it. </p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semrelease system call-->
+     
+                         <!-- semlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse19">SemLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse19" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  This system call is used to lock the semaphore.</p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semlock system call-->
+     
+                         <!-- semunlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse20">SemunLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse20" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to unlock the semaphore. </p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semunlock system call-->
+     
+                         
+                          </div>
+                        </div>
+  
+                         <!-- end syn and access control system calls-->
+                         
+                         
+      
+              </div>
+
+              
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              
+            </section>
+    <!--=========== END SECTION 7================-->
+     
+    
+    <!--=========== BEGAIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_right">
+               <ul class="social_nav">
+                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                 <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+               </ul>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>

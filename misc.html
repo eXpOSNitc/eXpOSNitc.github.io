@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>eXpOS Specification</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+    <!-- SCROLL TOP BUTTON -->
+    <a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
+    <!-- END SCROLL TOP BUTTON -->
+
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="#">eXpOS<span>NITC</span></a>
+                       
+                   
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#Documentation">Documentation</a></li> 
+              <li><a href="Roadmap.html">Roadmap</a></li>
+               <li><a href="index.html#pricing">FAQ</a></li> <!--Change here--> 
+              <li><a href="index.html#team">Team</a></li>            
+              <li><a href="index.html#contact">Contacts</a></li>                           
+            </ul>           
+          </div><!--/.nav-collapse -->
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+    
+        
+    <!--=========== BEGIN SECTION 6================-->
+    <section id="miscellaneous">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">Miscellaneous</h2>
+                <br/>
+                <br/>
+                <p>Parts of the OS specification which does not fit into other sections of this documentation has been collected here.  The topics discussed here are internal to the operating system, but part of the OS specification.  Some of these details are hidden from application/system programs and have more hardware dependency than most other parts of this documentation.</p>  
+     <p>When the machine is powered on, the system is configured to start executing a ROM code in privileged mode.  This code is called the <b>bootstrap loader. </b>This ROM code loads the first block of the disk into a pre-defined area in memory and transfers control to the new loaded code.  This code is called the <b>OS startup code. </b> </p>  
+     <p>The OS startup code loads the system call routines into memory and sets up the system call interrupt handlers.  In addition to these, there are three special modules that are to be loaded, timer interrupt handler, exception handler(s) and Device interrupt handler(s)</p>
+    
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEAM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseOne">
+                                 <span class="fa fa-check-square-o"></span>Timer interrupt handler
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="SixcollapseOne" class="panel-collapse collapse">
+                            <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the hardware timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" style="color: blue">round robin scheduling</a>is employed.  This means that a round robin scheduling is employed, but a process may go to <b>sleep </b>inside a system call when:</p>
+                            <ol style="margin-left: 60px;">
+		 <li>The resource which the process is trying to access (like a file or semaphore) is locked by another process or (even internally locked by another OS system call in concurrent execution).   </li>
+		 <li>There is a disk or I/O device access in a system call which is slow.  If wait for the device access is to be avoided, there must be hardware support from the device to send a hardware interrupt upon completion of the device operation so that the OS can put the process on sleep for now, continue scheduling the remaining processes in round robin fashion and then wake up the sleeping process when the device sends the interrupt.  Such hardware support is desirable, but not necessary to implement eXpOS.  </li> 
+     </ol>
+     
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseTwo">
+                                 <span class="fa fa-check-square-o"></span>Exception handler
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="SixcollapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            <p>If a process generates an illegal instruction, generates an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception.  The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes.</p>   
+                            <p>The <b>swapper </b>module which handles <b>demand paging </b>(if the machine hardware supports demand paging) is invoked by the exception handler when there is a <b>page fault. </b> eXpOS  specification does not require implementation of demand paging.  However, most machines are equipped with hardware support for demand paging and using the feature can improve machine throughput considerably.      A discussion of demand paging is given <a href="DemandPaging.html" style="color: blue">here</a></p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseThree">
+                                <span class="fa fa-check-square-o"></span>Device Handlers
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="SixcollapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                            
+		 <p>eXpOS treats the disk as a special <b>block device </b>and assumes that the hardware provides <b>block transfer instructions </b>to transfer a disk blocks to memory (pages) and back.  The details are hardware specific and not part of the OS specification.  The OS system call routines are required to do the interface with the disk device drivers or low level disk routines for handling these. </p>
+     <p>All other data handling devices (other than the disk) are treated as <b>stream devices. </b> This means that each device allows transfer of only one word from memory to the device or back at a time.  Some devices may permit only write (like a printer) whereas some devices may permit only read.  It is assumed that for each device there are associated low level driver routines that that can be invoked by the OS to transfer words.  The low level details are hardware specific and are to be handled by the OS routines in an implementation specific way.  Here we are concerned about the device interface to application programmers.  </p>
+     <p>For each device part of the hardware, the OS assigns a unique device identifier (<b>devid</b>) which is announced to the application programmer.  (The device identifiers are specific to the particular installation).  It is assumed that device identifiers are distinguishable from file handles.     A user program can write a word into a device using the <b>write </b>system call.   The <b>read </b>system call is used when the device allows a word to be read. <a href="#systemcallinterface" style="color: blue">(System Call Interface)</a></p>
+
+     <p>    
+         The <b>standard input </b>and the <b>standard output </b>are two special stream devices with predefined identifiers XOS_STDIN and XOS_STDOUT.  Standard output only permits <b>write </b>and standard input only permits <b>read. </b> </p>
+
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+     </section>
+       
+   
+    <!--=========== END SECTION 6================-->
+    
+        
+    
+    <!--=========== BEGAIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_right">
+               <ul class="social_nav">
+                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                 <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+               </ul>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>

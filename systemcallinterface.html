@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>eXpOS Specification</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+    <!-- SCROLL TOP BUTTON -->
+    <a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
+    <!-- END SCROLL TOP BUTTON -->
+
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="#">eXpOS<span>NITC</span></a>
+                       
+                   
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html#Documentation">Documentation</a></li> 
+              <li><a href="Roadmap.html">Roadmap</a></li>
+               <li><a href="index.html#pricing">FAQ</a></li> <!--Change here--> 
+              <li><a href="index.html#team">Team</a></li>            
+              <li><a href="index.html#contact">Contacts</a></li>                           
+            </ul>           
+          </div><!--/.nav-collapse -->
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+    
+    
+   <!--=========== BEGIN SECTION 7================-->
+    <section id="systemcallinterface">
+    <br>
+    <br>
+    <br>
+      <div class="container" style="padding-top: 60px;">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">System Call Interface</h2>
+                <br/>
+                <br/>
+                <p>Application programmer interacts with the Operating System using system calls. System calls are stored in the disk and loaded into memory when the OS is loaded by bootstrap loader. When a process invokes a system call, the process is interrupted and control goes to the kernel. Therefore, system calls can also be considered as interrupts. Once the system call is carried out, the control goes back to user mode.</p>
+      <p>There are system calls associated with processes, files and semaphores. In eXpOS, there are three process system calls, nine file system calls and four system calls related to semaphores.</p>
+      
+     <!-- START SINGLE FEATURED ITEM #1 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                            <h4 class="panel-title" style="padding-top: 20px">File System Calls</h4>
+                          
+                          <div class="panel-body">
+                          
+                         <!--start file system calls --->   
+                         <!-- create system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" id="create">Create</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Create allows application programs to create new data files.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOSP</td>
+                                                        <td>No space for file</td>
+                                                    </tr> 
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end create system call-->
+                         
+                         <!-- delete system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Delete</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Delete is used to delete a file from the eXpFS disk.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFNAM</td>
+                                                        <td>File not found</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_FOPEN</td>
+                                                        <td>File is open</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end delete system call-->
+      
+                         <!-- open system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Open</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse3" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Open is used to open a file present in the eXpFS disk.</p>
+                                                <p>Arguments: Filename </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0 - XFS_MAXFDES</td>
+                                                        <td>Success, the return value is the file descriptor for the opened file.  </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFNAM</td>
+                                                        <td>File not found or file is of invalid type</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOPSP</td>
+                                                        <td>Process has reached its limit of resources</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>XFS_NOFTSP</td>
+                                                        <td>System has reached its limit of open files</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end open system call-->
+          
+                         
+                         <!-- close system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Close</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse4" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Close is used to close a file.</p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end close system call-->
+          
+                         <!-- read system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Read</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse5" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Read reads a word from a data file.</p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_EOF</td>
+                                                        <td>File pointer has reached the end of file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end read system call-->
+          
+                         <!-- write system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Write</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse6" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Write writes a word into the file at the position of the file pointer.</p>
+                                                <p>Arguments: File Descriptor and Word to be written</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NODSKSP</td>
+                                                        <td>No disk space</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end write system call-->
+                        
+                          <!-- seek system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Seek</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position.</p>
+                                                <p>Arguments: File Descriptor and Offset specifying the number of positions by which the file pointer has to be shifted (an Offset of 0 will reset the pointer to the start of the file)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVOFF</td>
+                                                        <td>Offset value moves the file pointer to a position outside the file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end seek system call-->
+                           
+                          </div>
+                        </div>
+                         <!--end file system calls-->   
+		
+                         <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          
+                            
+                            <h4 class="panel-title" >Process System Calls</h4>
+                          
+                         
+                          
+                            <div class="panel-body">
+                          
+                         <!--start process system calls --->   
+     
+                         <!-- fork system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Fork</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse8" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Replicates the process invoking the system call. </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0 - (XOS_PCOUNT - 1)</td>
+                                                        <td>Success, the return value to the parent is the process descriptor of the child process.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success, the return value to the child.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_PROCLIMIT</td>
+                                                        <td>Number of process has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end fork system call-->
+     
+                         <!-- exec system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Exec</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse9" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. the process data structures and memory of the current process is used by the new process. </p>
+                                                <p>Arguments: File Name of the executable file</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>XFS_INVFNAM)</td>
+                                                        <td>File not found or file is of invalid type</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exec system call-->
+     
+                           <!-- exit system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse10">Exit</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse10" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Destroys the process invoking the call </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exit system call-->
+     
+                         <!-- getpid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Getpid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse11" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  Returns the process identifier of the invoking process.</p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Process Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr>                                                   
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getpid system call-->
+     
+                         <!-- getppid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse12">Getppid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse12" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  Returns the process Identifier of the parent of the invoking process.</p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Parent Process Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr>    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getppid system call-->
+                         
+                           
+                          </div>
+                        </div>
+                         <!--end process system calls-->
+                         
+                         <!--synchronization and access control system calls-->
+                         
+                         <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          
+                            <h4 class="panel-title">
+                              System Calls for access control and synchronization
+                            </h4>
+                          </div>
+                          
+                            <div class="panel-body">
+                          
+                         <!--start system calls --->   
+     
+                         <!-- wait system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse13">Wait</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse13" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits </p>
+                                                <p>Arguments: Identifier</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVPID</td>
+                                                        <td>Given process identifier is invalid or it is the pid of the invoking  process.</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end wait system call-->
+     
+                         <!-- signal system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse14">Signal</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse14" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  All processes waiting for the current process are resumed.  </p>
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end signal system call-->
+     
+                         <!-- flock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse15">FLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse15" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked.  </p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                       
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end flock system call-->
+         
+                             <!-- funlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse16">FunLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse16" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. </p>
+                                                <p>Arguments: File Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_INVFDES</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XFS_NOLOCK</td>
+                                                        <td>File is already locked by some other process</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end funlock system call-->
+     
+                             <!-- semget system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse17">Semget</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse17" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to obtain a semaphore for a resource.</p>
+                                                <p>Argument: None</p>
+                                                <p>Return Value : </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0- (MAXSEM-1)</td>
+                                                        <td>Success, returns the semaphore descriptor</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_NOPSP</td>
+                                                        <td>Process has reached its limit of resources </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_NOSTSP</td>
+                                                        <td>Number of semaphores has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semget system call-->
+     
+                         <!-- semrelease system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse18">Semrelease</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse18" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to free the semaphore so that other processes can use it. </p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semrelease system call-->
+     
+                         <!-- semlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse19">SemLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse19" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description:  This system call is used to lock the semaphore.</p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semlock system call-->
+     
+                         <!-- semunlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse20">SemunLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse20" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p>Description: This system call is used to unlock the semaphore. </p>
+                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>XOS_INVSEM</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semunlock system call-->
+     
+                         
+                          </div>
+                        </div>
+  
+                         <!-- end syn and access control system calls-->
+                         
+                         
+      
+              </div>
+
+              
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              
+            </section>
+    <!--=========== END SECTION 7================-->
+     
+    
+    
+        
+    
+    <!--=========== BEGAIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_right">
+               <ul class="social_nav">
+                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                 <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+               </ul>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>
