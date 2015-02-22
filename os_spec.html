@@ -215,7 +215,7 @@
              <div class="col-lg-6 col-md-6 col-sm-6">
                   <div class="single_section wow fadeInRight">
                     <div class="section_titlearea">
-                        <h3 class="section_title"><a href="#miscellaneous">Miscellaneous</a></h3>
+                        <h3 class="section_title"><a href="misc.html">Miscellaneous</a></h3>
                     </div>
                     <p>This is a "miscellaneous" section that discusses special processes/routines like the INIT process, the shell, the scheduler, the exception handler, I/O and disk devices and handlers etc..</p>
                   </div>
@@ -268,7 +268,7 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse" data-parent="#accordion" href="#OnecollapseOne">
-                                 <span class="fa fa-check-square-o"></span>Primitives
+                                 <span class="fa fa-check-square-o"></span>Terminology
                               </a>
                             </h4>
                           </div>
@@ -298,7 +298,7 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse" data-parent="#accordion" href="#OnecollapseTwo">
-                                 <span class="fa fa-check-square-o"></span>Operations on Processes
+                                 <span class="fa fa-check-square-o"></span>Primitives
                               </a>
                             </h4>
                           </div>
@@ -309,7 +309,7 @@
  <p>The basic Machine model consists of memory, disk and the CPU.  A small part of memory is assumed to contain a <b>bootstrap loader</b> stored permanently in ROM memory.  These are machine instructions to load into the memory an <b>OS startup code </b> stored in a pre-defined area in the disk.  The ROM code then transfers control to this newly loaded code.  This code loads the operating system routines stored in (pre-defined areas of) the disk into memory and sets up the Operating system.   This includes all the OS code for various system calls, the scheduler, the exception handler, device drivers etc.  Further hardware support required like the timer, disk controller, Input-output system etc. are discussed later.</p>
  <p>For eXpOS to work, the machine should support two <b>privilege levels</b> of program execution.  These are called <b>the user mode</b> (unprivileged mode) and the <b>system mode </b>(privileged mode).  User programs (or application programs) run in user mode whereas OS routines run in system mode.   The collection of OS routines that run in system mode is called the <b>kernel </b>of the operating system.  A user program in execution is called a <b>process</b>.  (Sometimes the term "program" may be (ab)used to refer to the corresponding process).   An application process has access only to a limited set of machine instructions and can only access a limited set of memory addresses called the <b>virtual address space</b> of the process.    This restricted machine model provided by the OS (of course, using the support from the machine architecture) is called the <b>virtual machine model</b>.  </p>
  <p>The eXpOS logically divides the virtual address space of a process into <b>library, code, stack and heap </b> regions.   eXpOS assumes  that the machine provides <b>paging  </b>hardware to implement the mapping of the virtual address space of a process into the physical memory of the machine.  The following <a href="paging_translation.html"><b>**@#$%^&&**</b>link </a> discusses how such mapping is done.    If the machine supports <a href="http://en.wikipedia.org/wiki/Memory_segmentation#Segmentation_with_paging" style="color: blue">segmented paging</a>,  the feature can be used profitably.  However, the discussion here assumes no segmentation support.  </p>
- <p>Data and program files are stored in the disk.  The disk is typically divided into <b>blocks</b> and the machine provides instructions to transfer blocks into and out of memory.   These instructions can be accessed only in the system mode.   The specific mechanisms available are hardware dependent.  The disk access model for XSM is discussed <a href="disk_access.html" style="color: blue">here</a> .   Note that since processes run in user mode, they can access disk files only through invoking the designated system calls for the purpose.</p>
+ <p>Data and program files are stored in the disk.  The disk is typically divided into <b>blocks</b> and the machine provides instructions to transfer blocks into and out of memory.   These instructions can be accessed only in the system mode.   The specific mechanisms available are hardware dependent.  (The disk access model for <a href="#" style="color: blue">XSM </a> is discussed <a href="disk_access.html" style="color: blue">here</a> ).   Note that since processes run in user mode, they can access disk files only through invoking the designated system calls for the purpose.</p>
  <p>User programs are generally stored as <b>executable files</b> in the disk.  Typically the user writes the application programs in a high level language and a compiler generates the executable file.  The eXpOS expects that executable files follow certain format and compilers must adhere to the format.   This allows the eXpOS to figure out how much space must be allocated for library, stack, code and heap in the virtual address space when the program is loaded into memory for execution.  The virtual machine model as well as the executable file format for eXpOS implementation in XSM are described in the eXpOS <a href="ABI.html" style="color: blue">application binary interface </a> documentation. </p> 
  <p>At the end of the bootstrap process, the OS startup code hand-creates the first user process called the <b> INIT process </b> in memory.  Thereafter, new processes can be created by existing processes by invoking the OS system calls for the purpose. Recall that the system call routines would have been set up in the memory during the bootstrap process.     The INIT process creates a special user process called the <b>shell process </b>by loading and executing a <b>shell program </b> from the disk.    The shell program repetitively reads user commands from the input and executes programs specified by the user and the OS becomes functional.   The specification of the INIT and the shell process are described in this <a href="shell_spec.html" style="color: blue">link</a>. </p>
  <p>eXpOS treats the standard input and output devices just like special files.   Hence user processes must use the system calls to read/write files to perform I/O operations.   The underlying implementation details are hardware dependent and are left unspecified in the OS specification.  </p>
@@ -373,10 +373,10 @@
                           </div>
                           <div id="TwocollapseOne" class="panel-collapse collapse">
                             <div class="panel-body">
-                            <p>The eXpOS kernal provides a hardware independent logical file system model (called the <b>experimental file system or eXpFS</b>) for the application programs.       The application program views files as being organized and stored in the eXpFS logical file system.  Application programs are not permitted to access files directly.  Instead, they must invoke the appropriate <b>file system call</b> for creating, modifying or accessing files.   The OS routine implementing each system call internally translates the request into disk block operations, hiding the hardware details from the application program.</p>
-<p>XFS support three kinds of files - <b>data files, program files </b> (executable files) and a special file called the <b>root file. </b> The root file is a meta-data file that contains the list of all files in the file system.  A data file consists of a sequence of words.  A program contains the sequence of machine instructions of the program together with the static data of the program and a header. </p>
+                            <p>The eXpOS kernal provides a hardware independent logical file system model (called the <b>experimental file system or eXpFS</b>) for application programs.       The application program views files as being organized and stored in the eXpFS logical file system.  Application programs are not permitted to access files directly.  Instead, they must invoke the appropriate <b>file system call</b> for creating, modifying or accessing files.   The OS routine implementing each system call internally translates the request into disk block operations, hiding the hardware details from the application program.</p>
+<p>XFS support three kinds of files - <b>data files, program files </b> (executable files) and a special file called the <b>root file. </b> The root file is a meta-data file that contains the list of all files in the file system.  A data file consists of a sequence of words.  A program contains a header, a sequence of machine instructions called text and static data, if any. </p>
 <p>eXpOS does not provide any mechanisms for application programs to create <b>executable files</b>.    Executable files have to be pre-loaded into the disk using some other external disk access mechanism before OS bootstrap.   Since such mechanisms are implementation dependent, they are not part of the OS specification.  For instance, the <a href="xfs_interface.html" style="color: blue">XFS-Interface</a> tool for eXpOS implementation on the XSM machine is one such mechanism. </p>
-<p>Executable files follow certain format called the <b>experimental executable format or XEXE format</b>.  The OS will execute only program files stored in the file system in the XEXE format.  Hence system programs like compilers that translate high level application programs must ensure that the executable files adhere to the XEXE format.  </p>
+<p>Executable files follow certain format called the <a href="XEXE-format.html"><b>experimental executable format or XEXE format</b></a>.  The OS will execute only program files stored in the file system in the XEXE format.  Hence system programs like compilers that translate high level application programs must ensure that the executable files adhere to the XEXE format.  </p>
 <p>Application programs can create, modify and delete data files using appropriate OS system calls.  These are discussed <a href="#systemcallinterface" style="color: blue">here</a>.</p>
 <p>A detailed discussion of the file system structure, file system calls and XEXE format is given in <a href="#expfs" style="color: blue">Section 3</a>.</p>
                             </div>
@@ -395,8 +395,8 @@
                           <div id="TwocollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                             <p>It was noted earlier that at the end of bootstrap, eXpOS loads into memory a program stored in a pre-determined part of the disk and create the first process called the INIT process.  Once a process is created, it can spawn new processes using the <b>fork </b> system call.    When a process spawns a new process, the former is called the <b>parent process</b> and the later is called the <b>child process</b>.  A process can decide to terminate itself using the <b>exit</b> system call.  </p>
-<p>Associated with each process, there is a (virtual) address space (or logical memory space).  This address space is a sequence of memory locations, each of which can store a word.    XOS logically divides the address space of a process is into four regions -(shared) library, code, stack and heap. </p>
-<p>When a process is created using the fork system call, the OS creates a virtual address space for the new process.   Each process is given a view that it has its own virtual address space containing its code, data, library, stack and heap.  The virtual address space is a continuous address space starting from address 0 up to a maximum limit that is implementation dependent.  Internally, the OS maps the virtual address space into the machine memory using hardware mechanisms available in the machine like paging/segmentation.( Check mapping <a href="paging_translation.html" style="color: blue">here</a>)</p>
+<p>Associated with each process, there is a (virtual) address space (or logical memory space).  This address space is a sequence of memory locations, each of which can store a word.    eXpOS logically divides the address space of a process is into four regions - (shared) library, code, stack and heap. </p>
+<p>When a process is created using the fork system call, the OS creates a virtual address space for the new process.   Each process is given a view that it has its own virtual address space containing its code, library, stack and heap.  The virtual address space is a continuous address space starting from address 0 up to a maximum limit that is implementation dependent.  Internally, the OS maps the virtual address space into the machine memory using hardware mechanisms available in the machine like paging/segmentation.( Check mapping <a href="paging_translation.html" style="color: blue">here</a>)</p>
 <p>The code region of a process contains the machine instructions that are to be executed.    This code consists of the instructions stored in some executable file in the file system. When a new process is created using the fork system call, the child process shares the library, code and heap with the parent.  This means that any modifications to memory words in these regions by one process will result in modification of the contents for both processes.  The stack and the data regions of the parent and the child will be separate. The parent and the child concurrently proceeds execution from the instruction immediately after the fork system call in the code. </p>
 <p>The stack and the data regions of a process stores the variables (including static variables) and stack frames during the execution of the program.   Dynamic memory allocation is normally done from the heap region.  Variables to be shared between different processes could also be allocated in the heap.   Finally all (standard) library code (which is typically shared by all applications) is mapped to the library region.  </p>
 <p>A process can load a XEXE executable file from the file system into the virtual address space (of the calling process) using the <b>exec</b> system call.  The exec system call determines the size of the code, stack and heap regions for the loaded program using the information in the <b>header</b> of the executable file. During such loading, the original code, data and heap regions are overlayed by those of the newly loaded program.  However, if the original process had shared its heap with its parent  process (or any other process), the OS ensures that the heap area is allocated separately so that other processes do not lose their shared heap data. Finally, the (shared) library is common to every application. </p>
@@ -460,7 +460,7 @@
                           </div>
                           <div id="TwocollapseFive" class="panel-collapse collapse">
                             <div class="panel-body">
-                          <p>The XOS system calls are software interrupt routines of the eXpOS kernal which are loaded to the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating a new processes , sending a signal to another process etc. </p>
+                          <p>The eXpOS system calls are software interrupt routines of the eXpOS kernal which are loaded to the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating a new processes , sending a signal to another process etc. </p>
 <p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines.  The system calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
 <p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="systemcallinterface">here</a></p>
 <h3>File system calls</h3>
@@ -912,102 +912,7 @@ The parent and the child continue execution from here on.  </li>
        
     </section>
     <!--=========== END SECTION 5================-->
-    
-    <!--=========== BEGIN SECTION 6================-->
-    <section id="miscellaneous">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <div class="about_area">
-             
-                <!-- START ABOUT HEADING -->
-              <div class="heading">
-                <h2 class="wow fadeInLeftBig">Miscellaneous</h2>
-                <br/>
-                <br/>
-                <p>Parts of the OS specification which does not fit into other sections of this documentation has been collected here.  The topics discussed here are internal to the operating system, but part of the OS specification.  Some of these details are hidden from application/system programs and have more hardware dependency than most other parts of this documentation.</p>  
-     <p>When the machine is powered on, the system is configured to start executing a ROM code in privileged mode.  This code is called the <b>bootstrap loader. </b>This ROM code loads the first block of the disk into a pre-defined area in memory and transfers control to the new loaded code.  This code is called the <b>OS startup code. </b> </p>  
-     <p>The OS startup code loads the system call routines into memory and sets up the system call interrupt handlers.  In addition to these, there are three special modules that are to be loaded, timer interrupt handler, exception handler(s) and Device interrupt handler(s)</p>
-    
-              </div>
 
-              <!-- START ABOUT CONTENT -->
-              <div class="about_content">
-                <div class="row">
-                   <div class="about_featured">
-                      <div class="panel-group" id="accordion">
-                        <!-- START SINGLE FEATURED ITEAM #1-->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseOne">
-                                 <span class="fa fa-check-square-o"></span>Timer interrupt handler
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="SixcollapseOne" class="panel-collapse collapse">
-                            <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the hardware timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" style="color: blue">round robin scheduling</a>is employed.  This means that a round robin scheduling is employed, but a process may go to <b>sleep </b>inside a system call when:</p>
-                            <ol style="margin-left: 60px;">
-		 <li>The resource which the process is trying to access (like a file or semaphore) is locked by another process or (even internally locked by another OS system call in concurrent execution).   </li>
-		 <li>There is a disk or I/O device access in a system call which is slow.  If wait for the device access is to be avoided, there must be hardware support from the device to send a hardware interrupt upon completion of the device operation so that the OS can put the process on sleep for now, continue scheduling the remaining processes in round robin fashion and then wake up the sleeping process when the device sends the interrupt.  Such hardware support is desirable, but not necessary to implement eXpOS.  </li> 
-     </ol>
-     
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #2 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseTwo">
-                                 <span class="fa fa-check-square-o"></span>Exception handler
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="SixcollapseTwo" class="panel-collapse collapse">
-                            <div class="panel-body">
-                            <p>If a process generates an illegal instruction, generates an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception.  The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes.</p>   
-                            <p>The <b>swapper </b>module which handles <b>demand paging </b>(if the machine hardware supports demand paging) is invoked by the exception handler when there is a <b>page fault. </b> eXpOS  specification does not require implementation of demand paging.  However, most machines are equipped with hardware support for demand paging and using the feature can improve machine throughput considerably.      A discussion of demand paging is given <a href="DemandPaging.html" style="color: blue">here</a></p>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #3 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#SixcollapseThree">
-                                <span class="fa fa-check-square-o"></span>Device Handlers
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="SixcollapseThree" class="panel-collapse collapse">
-                            <div class="panel-body">
-                            
-		 <p>eXpOS treats the disk as a special <b>block device </b>and assumes that the hardware provides <b>block transfer instructions </b>to transfer a disk blocks to memory (pages) and back.  The details are hardware specific and not part of the OS specification.  The OS system call routines are required to do the interface with the disk device drivers or low level disk routines for handling these. </p>
-     <p>All other data handling devices (other than the disk) are treated as <b>stream devices. </b> This means that each device allows transfer of only one word from memory to the device or back at a time.  Some devices may permit only write (like a printer) whereas some devices may permit only read.  It is assumed that for each device there are associated low level driver routines that that can be invoked by the OS to transfer words.  The low level details are hardware specific and are to be handled by the OS routines in an implementation specific way.  Here we are concerned about the device interface to application programmers.  </p>
-     <p>For each device part of the hardware, the OS assigns a unique device identifier (<b>devid</b>) which is announced to the application programmer.  (The device identifiers are specific to the particular installation).  It is assumed that device identifiers are distinguishable from file handles.     A user program can write a word into a device using the <b>write </b>system call.   The <b>read </b>system call is used when the device allows a word to be read. <a href="#systemcallinterface" style="color: blue">(System Call Interface)</a></p>
-
-     <p>    
-         The <b>standard input </b>and the <b>standard output </b>are two special stream devices with predefined identifiers XOS_STDIN and XOS_STDOUT.  Standard output only permits <b>write </b>and standard input only permits <b>read. </b> </p>
-
-                            </div>
-                          </div>
-                        </div>
-                        
-                      </div>
-                    </div>
-               
-                  
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>       
-     </section>
-       
-   
-    <!--=========== END SECTION 6================-->
-    
     
    <!--=========== BEGIN SECTION 7================-->
     <section id="systemcallinterface">
