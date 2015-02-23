@@ -140,7 +140,7 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: Create allows application programs to create new data files. </p>
+                                                <p>Description: Create allows application programs to create a new data file with the Filename specified in the argument or simply returns if a file already exists with the given Filename. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -174,7 +174,7 @@
                                                         <td>File is open</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: Delete is used to delete a file from the eXpFS disk.</p>
+                                                <p>Description: Delete is used to delete a file from the eXpFS disk. This operation cannot be done if the file has any open instances.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -196,7 +196,7 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>0 - XFS_MAXFDES</td>
+                                                        <td>FileDescriptor</td>
                                                         <td>Success, the return value is the file descriptor for the opened file.  </td>
                                                     </tr> 
                                                     <tr>
@@ -261,8 +261,8 @@
                                         </div>
                                         <div id="collapse5" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Read reads a word from a data file.</p>
-                                                <p>Arguments: File Descriptor and Buffer to which the word is read</p>
+                                                
+                                                <p>Arguments: Integer indicating FileDescriptor and Buffer to which the word is read</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -279,6 +279,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description: Read reads a word from a data file and places it in the Buffer passed as argument.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -295,8 +296,8 @@
                                         </div>
                                         <div id="collapse6" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Write writes a word into the file at the position of the file pointer.</p>
-                                                <p>Arguments: File Descriptor and Word to be written</p>
+                                                
+                                                <p>Arguments: Integer indicating FileDescriptor and a String indicating the Word to be written</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -313,6 +314,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description: Write writes a word into the file at the position of the file pointer.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -329,7 +331,7 @@
                                         </div>
                                         <div id="collapse7" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position.</p>
+                                                
                                                 <p>Arguments: File Descriptor and Offset specifying the number of positions by which the file pointer has to be shifted (an Offset of 0 will reset the pointer to the start of the file)</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -338,15 +340,16 @@
                                                         <td>Success</td>
                                                     </tr> 
                                                     <tr>
-                                                        <td>XFS_INVFDES</td>
+                                                        <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
                                                     <tr>
-                                                        <td>XFS_INVOFF</td>
+                                                        <td>-2</td>
                                                         <td>Offset value moves the file pointer to a position outside the file</td>
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position and an Offset of 0 will reset the pointer to the start of the file.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -379,7 +382,7 @@
                                         </div>
                                         <div id="collapse8" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Replicates the process invoking the system call. </p>
+                                               
                                                 <p>Arguments: None</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -397,6 +400,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child.  All open file handles and semaphores are also shared by the parent and the child.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -413,7 +417,7 @@
                                         </div>
                                         <div id="collapse9" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. the process data structures and memory of the current process is used by the new process. </p>
+                                                
                                                 <p>Arguments: File Name of the executable file</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -423,6 +427,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
+                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. the process data structures and memory of the current process is used by the new process.All open instances of file and semaphores of parent process is closed. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -439,7 +444,7 @@
                                         </div>
                                         <div id="collapse10" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Destroys the process invoking the call. If successful, it does not return any value </p>
+                                                
                                                 <p>Arguments: None</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -449,6 +454,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
+                                                <p>Description: Destroys the process invoking the call.  If successful, it does not return any value. If the current process is the only process that has not terminated, system is made to shutdown. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -465,7 +471,7 @@
                                         </div>
                                         <div id="collapse11" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description:  Returns the process identifier of the invoking process.</p>
+                                                
                                                 <p>Arguments: None</p>
                                                 <p>Return Value: </p>
                                                 <table class="table table-bordered">
@@ -478,6 +484,7 @@
                                                         <td>Failure</td>
                                                     </tr>                                                   
                                                 </table>
+                                                <p>Description:  Returns the process identifier of the invoking process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -494,7 +501,7 @@
                                         </div>
                                         <div id="collapse12" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description:  Returns the process Identifier of the parent of the invoking process.</p>
+                                                
                                                 <p>Arguments: None</p>
                                                 <p>Return Value: </p>
                                                 <table class="table table-bordered">
@@ -507,6 +514,7 @@
                                                         <td>Failure</td>
                                                     </tr>    
                                                 </table>
+                                                <p>Description:  Returns the process Identifier of the parent of the invoking process.</p>
                                             </div>
                                         </div>
                                     </div>
