@@ -146,32 +146,23 @@
                             <div class="panel-body">
                                 <p> A second major concurrency related requirement is that when multiple processes access the same data (in memory or files), it is often required to have some kind of locking mechanism to ensure that when one process is accessing the shared data, no other process is allowed to modify the same.  This is to ensure data integrity and this issue is called the <a href="http://en.wikipedia.org/wiki/Critical_section">critical section problem</a>.    </p>
     <p>eXpOS provides (binary) <b>semaphores </b>to allow application programs to handle the critical section problem.  A (binary) semaphore is conceptually a binary-valued variable whose value can be set or reset only by the OS through designated system call.   (Internally how it is implemented is an OS concern and is oblivious to the application programmer). </p>
-    <p>A process can acquire a semaphore using the <b>Semget </b>system call, which returns a unique <b>semid </b>for the semaphore.  The semaphore is initially not set.   A process may open several files and semaphores and execute the fork system call multiple times to create an several process that shares all the opened file handles, the heap memory region and all the semaphores acquired by the parent.  </p>
-    <p>Any of these processes sharing a semaphore identifier can set the semaphore (called locking) using the <b>semlock </b>system call giving the semid as an argument. </p> <b>merge second and third sections #$%&*(%^&5)</b>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEAM #3 -->
-                        <div class="panel panel-default wow fadeInLeft">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#FivecollapseThree">
-                                <span class="fa fa-check-square-o"></span>Semantics of Semlock
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="FivecollapseThree" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             <ol style="margin-left:60px">
-		<li>If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.</li>
-        <li>Otherwise, lock the semaphore and continue execution. </li> 
-        <p><b>Semunlock </b>will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore.  </p>
-        <p>Just like semaphores, files can also be locked using the <b>fLock </B>and <b>funlock </b>system calls.  They are discussed <a href="systemcallinterface.html">here</a>. </p>
-
+    <p>A process can acquire a semaphore using the <b>Semget </b>system call, which returns a unique <b>semid </b>for the semaphore.  The semaphore is initially not set.   A process may open several files and semaphores and execute the Fork system call multiple times to create an several process that shares all the opened file handles, the heap memory region and all the semaphores acquired by the parent.  </p>
+    <p>Any of these processes sharing a semaphore identifier can set the semaphore (called locking) using the <b>SemLock </b>system call giving the semid as an argument. <b>SemUnLock </b>will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore. </p> 
+          <p>Just like semaphores, files can also be locked using the <b>FLock </B>and <b>FUnLock </b>system calls.  They are discussed <a href="systemcallinterface.html">here</a>. </p>
+    <p><h3>Semantics of Locking operation for files and semaphores</h3>
+        <ol style="margin-left:80px">
+		<li>If the semaphore/file is already locked, the process goes to sleep and wakes up only when the semaphore/file is free.</li>
+                <li>Otherwise, process locks the semaphore/file and continues execution. </li> </p>
+        
     </ol>
+   
+
+    
+   
                             </div>
                           </div>
                         </div>
+                        
                         
                       </div>
                     </div>

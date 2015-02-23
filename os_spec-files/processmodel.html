@@ -131,7 +131,7 @@
 	<p>Every process corresponds to some executable file stored in XEXE format stored in the XFS file system.  The XEXE header of the executable file contains the information about how much space must be allocated for the various memory regions.  <b>(Link to XEXE format)$^&*)&^(_</b>.  When the program is loaded into memory by the operating system, the OS reads the header and sets up the regions of the virtual address space accordingly.   Once the layout of the virtual address space is clear, the OS maps the virtual address space into the physical memory.  The part of the OS which does all these tasks is called the <b>OS loader</b>.  The eXpOS loader is the interrupt service routine corresponding to the <b>Exec</b> system call.  </p>
 	<p>A process may open files or semaphores.  The OS associates a <b>file handle</b> with each open instance of a file.     The semantics of file handle is discussed <a href="systemcallinterface.html">here</a>.  Similarly, the OS assigns a semaphore identifier (<b>semid</b>) for each semaphore acquired by the process. The file handles and semids acquired by a process are also attributes of a process.  </p>
 	<p><b>Note:</b>  In addition to the above attributes of a process that are visible to application/system programs, a process under execution at any given point of time has an execution <b>context</b>.  The context of a process refers to the contents of the registers, instruction pointer, contents of the memory etc.  These are hardware dependent and are managed internally by the OS.  In fact, managing the execution contexts of multiple processes simultaneously and running them all in one machine is the main challenge in the design and implementation of a multiprogramming OS.  However, the OS hides these internal details from the application programs as well as system programs like compilers.   Hence, they are part of this documentation.</p>
-	<p>A process can get its process id using the <b>getpid</b> system call.  The pid of the parent process can be obtained using the <b>getppid</b> system call.</p>
+	<p>A process can get its process id using the <b>Getpid</b> system call.  The pid of the parent process can be obtained using the <b>Getppid</b> system call.</p>
                             </div>
                           </div>
                         </div>
@@ -146,23 +146,23 @@
                           </div>
                           <div id="FourcollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
-                            <p>The two most fundamental operations associated with process are <b>fork and exec</b>.   The remaining operations are <b>exit, wait, signal, getpid and getppid.</b></p>
+                            <p>The two most fundamental operations associated with process are <b>fork and exec</b>.   The remaining operations are <b>Exit, Wait, Signal, Getpid and Getppid.</b></p>
 	<p>When a process executes the <b>Exec</b> system call with an executable file name as parameter, the following actions takes place :</p>
-        <h3>Semantics of exec operation:</h3>
+        <h3>Semantics of Exec operation:</h3>
 	<ol style="margin-left: 60px">
 		<li>The OS closes all files and semaphores opened by the process.    A new address space is created replacing the existing one.  ( what happens to the original address space is  irrelevant to the application/system programmer.  But it is important to know that any other process sharing code/heap/library regions with this process will not be affected. This is discussed in <a href="synchronization.html">Section 5</a>.).</li>
 		<li>The code (and static data, if any) of the executable file are loaded into the code (and stack) regions of the new address space.   The system library is mapped to the library region and stack is initialized to empty. </li>  
         <li>The machine instruction pointer is set to the location specified in the executable header.  The machine stack pointer is initialized to the beginning of the stack.  (These details are hidden from the application programmer by the compiler if a high level language is used for writing the application.). From here, execution continues with the newly loaded program.</li>
 	</ol>
 	
-	<p>When a process executes the <b>fork</b> system call, the following sequence of events occur.</p>
-	<h3>Semantics of fork operation:</h3>
+	<p>When a process executes the <b>Fork</b> system call, the following sequence of events occur.</p>
+	<h3>Semantics of Fork operation:</h3>
 	<ol style="margin-left: 60px">
 		<li>A new child process with a new process id and address space is created which is an exact replica of the original process with the same library, code,stack and heap regions.  (The OS assigns a new process id for the child and returns this value to the parent as the return parameter of the fork system call.)  The <b>heap, code and library regions of the parent are shared by the child.</b>  This means, any modification of contents of these regions by one process during subsequent execution will change the other as well.   Note that both processes are in concurrent execution subsequent to the fork operation.  Stack is separate for the child and is not shared.</li>
         <li><b>All open file handles and semaphores are shared by the parent and the child.</b>  This means that if one of the processes write/read into/from or adjust the file handle using the lseek system call, the corresponding file handle of the other process also gets automatically updated.  See further discussion in <a href="synchronization.html" >Section 5</a>.  Note that file handles (or semaphore identifiers) of files (or semaphores) that are opened (or created) subsequent to the fork operation by the parent or the child will be exclusive to the particular process and will not be shared.  
 The parent and the child continue execution from here on.  </li>
 	</ol>
-	<p>The <b>exit</b> system call terminates a process after closing all files and semaphores.  The <b>Wait</b> system call suspends the execution of a process till another process exits or executes a <b>Signal</b> system call. <a href="systemcallinterface.html">(System calls for access control and synchronization)</a>.  The <b>Signal</b> system call resumes the execution of a process that was suspended by wait. Wait and Signal operations are discussed in more detail in the next section.</p>
+	<p>The <b>Exit</b> system call terminates a process after closing all files and semaphores.  The <b>Wait</b> system call suspends the execution of a process till another process exits or executes a <b>Signal</b> system call. <a href="systemcallinterface.html">(System calls for access control and synchronization)</a>.  The <b>Signal</b> system call resumes the execution of a process that was suspended by wait. Wait and Signal operations are discussed in more detail in the next section.</p>
 	
                           </div>
                         </div>
