@@ -127,22 +127,22 @@
                           <div id="FourcollapseOne" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <p>eXpOS associates a <b>virtual (memory) address space</b> for each process.</p>
-                                <table class="table table-bordered" style="margin-left: 90px;width: 100px;" >
-                                    <tr>
+                                <table class="table table-bordered" style="margin-left: 90px;width: 200px;text-align: center;border: 2px solid black;" >
+                                    <tr style="border: 2px solid black;">
                                         <td>Shared Library</td>
                                     </tr>
-                                    <tr>
+                                    <tr style="border: 2px solid black;">
                                         <td>Heap</td>
                                     </tr>
-                                    <tr>
+                                    <tr style="border: 2px solid black;">
                                         <td>Text/Code</td>
                                     </tr>
-                                    <tr>
+                                    <tr style="border: 2px solid black;">
                                         <td>Stack</td>
                                     </tr>
                                 </table>
-                                 The address space of a process is a contiguous sequence of memory addresses, starting from zero, accessible to a process.  The maximum limit on the address space of a process is specified by the constant <b>XOS_MAXPSIZE</b>. The eXpOS logically partitions the address space into four regions <b>library, code, stack and heap</b>. These regions are mapped into physical memory using hardware mechanisms like paging/segmentation.<a href="../page_translation.html" >(Mapping virtual to physical address in XSM)</a>.</p>
-	<p>Every process corresponds to some executable file stored in XEXE format stored in the XFS file system.  The XEXE header of the executable file contains the information about how much space must be allocated for the various memory regions.  <b>(Link to XEXE format)$^&*)&^(_</b>.  When the program is loaded into memory by the operating system, the OS reads the header and sets up the regions of the virtual address space accordingly.   Once the layout of the virtual address space is clear, the OS maps the virtual address space into the physical memory.  The part of the OS which does all these tasks is called the <b>OS loader</b>.  The eXpOS loader is the interrupt service routine corresponding to the <b>Exec</b> system call.  </p>
+                                <p> The address space of a process is a contiguous sequence of memory addresses, starting from zero, accessible to a process.  The maximum limit on the address space of a process is specified by the constant <b>XOS_MAXPSIZE</b>. The eXpOS logically partitions the address space into four regions <b>library, heap, code and stack</b>. These regions are mapped into physical memory using hardware mechanisms like paging/segmentation.<a href="../page_translation.html" >(Mapping virtual to physical address in XSM)</a>.</p>
+                                <p>Every process corresponds to some executable file stored in <a href="../XEXE-format.html">XEXE</a> format stored in the XFS file system.  The XEXE header of the executable file contains the information about how much space must be allocated for the various memory regions.  When the program is loaded into memory by the operating system, the OS reads the header and sets up the regions of the virtual address space accordingly.   Once the layout of the virtual address space is clear, the OS maps the virtual address space into the physical memory.  The part of the OS which does all these tasks is called the <b>OS loader</b>.  The eXpOS loader is the interrupt service routine corresponding to the <b>Exec</b> system call.  </p>
 	<p>A process may open files or semaphores.  The OS associates a <b>file handle</b> with each open instance of a file.     The semantics of file handle is discussed <a href="systemcallinterface.html#synsystemcalls">here</a>.  Similarly, the OS assigns a semaphore identifier (<b>semid</b>) for each semaphore acquired by the process. The file handles and semids acquired by a process are also attributes of a process.  </p>
 	<p><b>Note:</b>  In addition to the above attributes of a process that are visible to application/system programs, a process under execution at any given point of time has an execution <b>context</b>.  The context of a process refers to the contents of the registers, instruction pointer, contents of the memory etc.  These are hardware dependent and are managed internally by the OS.  In fact, managing the execution contexts of multiple processes simultaneously and running them all in one machine is the main challenge in the design and implementation of a multiprogramming OS.  However, the OS hides these internal details from the application programs as well as system programs like compilers.   Hence, they are part of this documentation.</p>
 	<p>A process can get its process id using the <b>Getpid</b> system call.  The pid of the parent process can be obtained using the <b>Getppid</b> system call.</p>
@@ -160,8 +160,8 @@
                           </div>
                           <div id="FourcollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
-                            <p>The two most fundamental operations associated with process are <b>fork and exec</b>.   The remaining operations are <b>Exit, Wait, Signal, Getpid and Getppid.</b></p>
-	<p>When a process executes the <b>Exec</b> system call with an executable file name as parameter, the following actions takes place :</p>
+                            <p>The two most fundamental operations associated with process are <b>Fork and Exec</b>.   The remaining operations are <b>Exit, Wait, Signal, Getpid and Getppid.</b></p>
+	
         <h3>Semantics of Exec operation:</h3>
 	<ol style="margin-left: 60px">
 		<li>The OS closes all files and semaphores opened by the process.    A new address space is created replacing the existing one.  ( what happens to the original address space is  irrelevant to the application/system programmer.  But it is important to know that any other process sharing code/heap/library regions with this process will not be affected. This is discussed in <a href="synchronization.html">Section 5</a>).</li>
