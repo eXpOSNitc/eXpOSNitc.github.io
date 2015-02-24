@@ -550,8 +550,8 @@
                                         </div>
                                         <div id="collapse13" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits </p>
-                                                <p>Arguments: Process Identifier of the process for which the current process has to wait.</p>
+                                                
+                                                <p>Arguments: Integer indicating Process Identifier of the process for which the current process has to wait.</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -564,6 +564,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits. It is to be noted that error will occur if a process is found to wait for itself. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -580,7 +581,7 @@
                                         </div>
                                         <div id="collapse14" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description:  All processes waiting for the current process are resumed.  </p>
+                                                
                                                 <p>Arguments: None</p>
                                                 <p>Return Value: 0</p>
                                                 <table class="table table-bordered">
@@ -595,6 +596,7 @@
                                                     
                                                     
                                                 </table>
+                                                <p>Description:  All processes waiting for the current process are resumed.  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -611,7 +613,7 @@
                                         </div>
                                         <div id="collapse15" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked.  </p>
+                                                
                                                 <p>Arguments: File Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -625,6 +627,7 @@
                                                     </tr> 
                                                                                                        
                                                 </table>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked.  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -641,8 +644,8 @@
                                         </div>
                                         <div id="collapse16" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. </p>
-                                                <p>Arguments: File Descriptor</p>
+                                                
+                                                <p>Arguments: Integer indicating FileDescriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -659,6 +662,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -675,7 +679,7 @@
                                         </div>
                                         <div id="collapse17" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: This system call is used to obtain a semaphore for a resource.</p>
+                                                
                                                 <p>Argument: None</p>
                                                 <p>Return Value : </p>
                                                 <table class="table table-bordered">
@@ -693,6 +697,7 @@
                                                     </tr> 
                                                     
                                                 </table>
+                                                <p>Description: This system call is used to obtain a semaphore for a resource. The semaphore thus acquired can later become shared in case of forking.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -709,7 +714,7 @@
                                         </div>
                                         <div id="collapse18" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: This system call is used to free the semaphore so that other processes can use it. </p>
+                                                
                                                 <p>Arguments: Semaphore Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -723,6 +728,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
+                                                <p>Description: This system call is used to free the semaphore so that other processes can use it. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -739,8 +745,8 @@
                                         </div>
                                         <div id="collapse19" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description:  This system call is used to lock the semaphore.</p>
-                                                <p>Arguments: Semaphore Descriptor</p>
+                                                
+                                                <p>Arguments: Integer indicating SemaphoreDescriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -754,6 +760,9 @@
                                                     
                                                     
                                                 </table>
+                                                <p>Description:  This system call is used to lock the semaphore.If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.Otherwise, lock the semaphore and continue execution.  
+</p>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -770,7 +779,7 @@
                                         </div>
                                         <div id="collapse20" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>Description: This system call is used to unlock the semaphore. </p>
+                                                
                                                 <p>Arguments: Semaphore Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
@@ -785,6 +794,7 @@
                                                     
                                                     
                                                 </table>
+                                                <p>Description: This system call is used to unlock the semaphore.It will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore.  </p>
                                             </div>
                                         </div>
                                     </div>
