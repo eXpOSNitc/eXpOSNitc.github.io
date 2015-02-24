@@ -20,11 +20,11 @@ and open the template in the editor.
                 <dt>1. Identifying the cause of exception</dt>
                 <dd>If Exception Cause (EC) bit is not 0, display the cause of the error according to the value in the EC bit and exit the process. </dd>
                 <dt>2. Handling page fault</dt>
-                <dd>If the Exception Page Number register is -1, the current process is made to exit with error “XOS_INVPAGENUM”. Otherwise, store the logical page number corresponding to EPN in <b><i>LogicalPage</i></b> and allocate a free page by searching through the memory free list. If a free page is not found, change the state of the process to (WAIT_MEM,_) and call the scheduler. Repeat this step until a free page is found. </dd>
-                <dd>If a free page is found, update the memory free list entry. The page number is stored in <b><i>FreePage</i></b>.</dd>
+                <dd>If the Exception Page Number register is -1, the current process is made to exit with error “XOS_INVPAGENUM”. Otherwise, store the logical page number corresponding to EPN in <b><i>LogicalPage</i></b> and allocate a free page by searching through the memory free list. If a free page is not found, change the state of the process to (WAIT_MEM,_), increment WAIT_MEM_COUNT and call the scheduler. Repeat this step until a free page is found. </dd>
+                <dd>If a free page is found, update the memory free list entry. Decrement MEM_FREE_COUNT. The page number is stored in <b><i>FreePage</i></b>.</dd>
                 <dd>If the Physical Page Number field corresponding to <b><i>LogicalPage</i></b> is a disk block number, load the disk block to <b><i>FreePage</i></b>. Check if the device is busy. If the device is busy, change the state of the process to (WAIT_DISK,_) and call the scheduler. Repeat this step until the device is found to be free. If the device is free, update the Disk Status Table and issue the instruction to load the block from disk to the memory.</dd>
                 <dt>3. Returning back </dt>
-                <dd>Decrement the reference count of the disk block loaded in the Disk Free List by 1. Set the page table entry corresponding to <b><i>LogicalPage</i></b> with <b><i>FreePage</i></b> and set the Auxiliary information as Referenced and Valid. Place IP stored in EIP on top of the stack of the current process. Return to USER Mode.</dd>
+                <dd>Decrement the reference count of the disk block loaded in the Disk Free List by 1. Set the page table entry corresponding to <b><i>LogicalPage</i></b> with <b><i>FreePage</i></b> and set the Auxiliary information as Referenced and Valid. Return to USER Mode.</dd>
                 
             </dl>
         </div>

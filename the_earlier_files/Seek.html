@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Seek System Call</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div id="Seek">
+            <h1>Seek System Call</h1>
+            
+           <p>Arguments: 1. fileDescriptor 2. newLseek 
+Return Value: 0 (Success) </p>
+
+            <dl>
+                <dt>1. Per-Process Resource table validation</dt>
+            <dd>Check if the argument <b><i>fileDescriptor</i></b> is valid. A valid fileDescriptor will have value from 0 to XFS_MAXFDES. If not valid, return from the system call with error XFS_INVFDES, indicating failure.</dd>
+            <dd>Find the PID of the process and store it in <b><i>CurrentPID</i></b>. Using <b><i>CurrentPID</i></b> find the location of its Per-Process Resource Table. Check whether the entry in Per-Process Resource Table corresponding to <b><i>fileDescriptor</i></b> is valid. If the entry is invalid, indicated by a -1, return from the system call with error code XFS_INVFDES. If a valid entry exists, store the Index to File Table Entry field and LSEEK position field in <b><i>FTIndex</i></b> and <b><i>Lseek</i></b>.</dd>
+            <dt>2. Locking the file</dt>
+            <dd>In the File Table, lookup the entry corresponding to <b><i>FTIndex</i></b> and check whether Locking PID is -1 or not.If the file is locked (Locking PID not equal to -1), check whether the Locking PID is same as the PID of the current process.If so, proceed to step 3. If not, the state of the process is changed to (WAIT_FILE, <b><i>FTIndex</i></b>) and scheduler is called. Repeat this step until file is found to be unlocked. When the file is found to be unlocked, set Locking PID to PID of the current process and store the Inode Index of the entry in <b><i>InodeIndex</i></b>.</dd>
+            <dt>3. Check whether the new LSEEK position is valid.</dt>
+            <dd>4.1.Using the index of File Table Entry, index to the File Table to get the Inode Index Entry. 
+                4.2 Fetch the file size of the file from the Inode Table and store it in a register. </dd>
+            </dl>
+            
+        </div>
+    </body>
+</html>
+
+
+4. 
+
+4.3 LSEEK position is valid if it takes a value from 0 to file size. 
+4.4. If it is not valid, return from the system call with XFS_INVINT. 
+5. Change the LSEEK in the Per-Process File Table entry to newLseek.
+6. Unlock the file and wake up all processes waiting for the file.
+7. Return with 0 (indicating success).
+

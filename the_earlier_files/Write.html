@@ -59,7 +59,7 @@ and open the template in the editor.
                     <dd> LSEEK modulo XFS_MAXBSIZE will give the offset in the block, to which the word is to be written.</dd>
                     <dd>Set dirty bit of the buffer to 1.</dd>
                     <dt>6. Post-Write Procedure</dt>
-                    <dd>Increment LSEEK Position by 1 in the Per-Process Resource Table entry found in Step 2.</dd>
+                    <dd>Increment LSEEK Position by 1 in the Per-Process Resource Table entry found in Step 2. Increment file size of entry corresponding to InodeIndex. Increment file size of root entry corresponding to InodeIndex.</dd>
                 <dd>Unlock the file and wake up all processes waiting for the file.Scan through the Process Table.Check for those processes who state is (WAIT_FILE, <b><i>FTIndex</i></b>). Change the state of those process to (READY, __).</dd>
 
                 <dd> Return with 0, indicating success.</dd>
