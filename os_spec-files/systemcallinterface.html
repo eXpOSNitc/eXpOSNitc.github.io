@@ -522,6 +522,33 @@
                                 </div>
                          <!--end getppid system call-->
                          
+                         <!-- shutdown system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse21">Shutdown</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse21" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                <p>Description: Shutdown system call terminates all processes, writes modified(dirty) pages and memory copy of disk data structures to the disk, and then halts the machine. In case the system call failed, an error is returned to the invoking process. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end shutdown system call-->
+     
                            
                           </div>
                         </div>
@@ -777,7 +804,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse20">SemunLock</a>
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse20">SemUnLock</a>
                                             </h4>
                                         </div>
                                         <div id="collapse20" class="panel-collapse collapse">
@@ -794,10 +821,13 @@
                                                         <td>-1</td>
                                                         <td>Semaphore Descriptor is invalid</td>
                                                     </tr> 
-                                                    
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Semaphore is locked by some other process</td>
+                                                    </tr> 
                                                     
                                                 </table>
-                                                <p>Description: This system call is used to unlock the semaphore. It will reset the semaphore, waking up all processes which went to sleep trying to lock the semaphore.  </p>
+                                                <p>Description: This system call is used to unlock the semaphore. It will reset the semaphore, waking up all processes which went to sleep trying to lock the semaphore. Note that it is a SERIOUS implementation error if the semaphore is found to be locked by some other process.  </p>
                                             </div>
                                         </div>
                                     </div>
