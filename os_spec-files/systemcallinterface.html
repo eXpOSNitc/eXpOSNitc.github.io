@@ -112,7 +112,7 @@
       
      <!-- START SINGLE FEATURED ITEM #1 -->
                         <div class="panel panel-default wow fadeInLeft">
-                            <h4 class="panel-title" style="padding-top: 20px">File System Calls</h4>
+                            <h4 class="panel-title" style="padding-top: 20px" id="filesystemcalls">File System Calls</h4>
                           
                           <div class="panel-body">
                           
@@ -140,7 +140,7 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: Create allows application programs to create a new data file with the Filename specified in the argument or simply returns if a file already exists with the given Filename. </p>
+                                                <p>Description: Create allows application programs to create a new data file with the Filename specified in the argument. It returns successfully when the file has been created or if a file, with the given Filename, already exists. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -174,7 +174,7 @@
                                                         <td>File is open</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: Delete is used to delete a file from the eXpFS disk. This operation cannot be done if the file has any open instances.</p>
+                                                <p>Description: Delete is used to delete a file from the eXpFS disk. It returns successfully when the file has been deleted from the disk. This operation fails if the file has any open instances or if file does not exist in the disk.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -196,12 +196,12 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>FileDescriptor</td>
+                                                        <td>File Descriptor</td>
                                                         <td>Success, the return value is the file descriptor for the opened file.  </td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>File not found or file is not a data file</td>
+                                                        <td>File not found or file is not a data or root file</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
@@ -212,7 +212,7 @@
                                                         <td>System has reached its limit of open files</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: Open is used to open a file present in the eXpFS disk.</p>
+                                                <p>Description: Open is used to open a file present in the eXpFS disk. When it returns successfully, the process will have an open instance of the file which can be accessed using the File Descriptor. Only data and root files can be opened.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -244,7 +244,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Close is used to close a file.</p>
+                                                <p>Description: Close is used to close a file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -262,7 +262,7 @@
                                         <div id="collapse5" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Integer indicating FileDescriptor and Buffer to which the word is read</p>
+                                                <p>Arguments: Integer indicating FileDescriptor and a String Buffer to which the word is read</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -305,16 +305,16 @@
                                                         <td>Success</td>
                                                     </tr> 
                                                     <tr>
-                                                        <td>XFS_INVFDES</td>
+                                                        <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
                                                     <tr>
-                                                        <td>XFS_NODSKSP</td>
+                                                        <td>-2</td>
                                                         <td>No disk space</td>
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Write writes a word into the file at the position of the file pointer.</p>
+                                                <p>Description: Write writes the Word given into the file at the position of the file pointer.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -332,7 +332,7 @@
                                         <div id="collapse7" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Descriptor and Offset specifying the number of positions by which the file pointer has to be shifted (an Offset of 0 will reset the pointer to the start of the file)</p>
+                                                <p>Arguments: Integer indicating File Descriptor and an integer Offset specifying the number of positions by which the file pointer has to be shifted</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -349,7 +349,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position and an Offset of 0 will reset the pointer to the start of the file.</p>
+                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position. An Offset of 0 will reset the pointer to the start of the file. A negative Offset will move the pointer backwards.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -364,7 +364,7 @@
                         <div class="panel panel-default wow fadeInLeft">
                           
                             
-                            <h4 class="panel-title" >Process System Calls</h4>
+                            <h4 class="panel-title" id="processsystemcalls">Process System Calls</h4>
                           
                          
                           
@@ -388,7 +388,7 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>PID</td>
-                                                        <td>Success, the return value to the parent is the process descriptor of the child process.</td>
+                                                        <td>Success, the return value to the parent is the process descriptor(PID) of the child process.</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>0</td>
@@ -400,7 +400,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child.  All open file handles and semaphores are also shared by the parent and the child.</p>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the data in the parent stack is copied into the child stack. All open file handles and semaphores are shared between the parent and the child.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -418,7 +418,7 @@
                                         <div id="collapse9" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Name of the executable file</p>
+                                                <p>Arguments: String indicating File Name of the executable file</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -427,7 +427,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
-                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. the process data structures and memory of the current process is used by the new process.All open instances of file and semaphores of parent process is closed. </p>
+                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. code and stack regions of the current process is used by the new process. The heap pages of the current process will be freed, if they are not shared with any other process. For the new process, no heap pages are allocated .All open instances of file and semaphores of parent process is closed. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -531,7 +531,7 @@
                          <!-- START SINGLE FEATURED ITEM #3 -->
                         <div class="panel panel-default wow fadeInLeft">
                           
-                            <h4 class="panel-title">
+                            <h4 class="panel-title" id="synsystemcalls">
                               System Calls for access control and synchronization
                             </h4>
                           </div>
@@ -596,7 +596,7 @@
                                                     
                                                     
                                                 </table>
-                                                <p>Description:  All processes waiting for the current process are resumed.  </p>
+                                                <p>Description:  All processes waiting for the signaling process are resumed.  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -614,7 +614,7 @@
                                         <div id="collapse15" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Descriptor</p>
+                                                <p>Arguments: String indicating File Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -627,7 +627,7 @@
                                                     </tr> 
                                                                                                        
                                                 </table>
-                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked.  </p>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked. If the file is found to be locked by some other process, the current process waits till the file is free and then locks it.   </p>
                                             </div>
                                         </div>
                                     </div>
@@ -658,11 +658,11 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>File is already locked by some other process</td>
+                                                        <td>File is locked by some other process</td>
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. </p>
+                                                <p>Description: Funlock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. Note that it is a SERIOUS implementation error if the file is found to be locked by some other process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -685,7 +685,7 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>Integer indicating the SEMID</td>
-                                                        <td>Success, returns the semaphore descriptor</td>
+                                                        <td>Success, returns the semaphore descriptor(SEMID)</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
@@ -715,7 +715,7 @@
                                         <div id="collapse18" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Semaphore Descriptor</p>
+                                                <p>Arguments: Integer indicating Semaphore Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -746,7 +746,7 @@
                                         <div id="collapse19" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Integer indicating SemaphoreDescriptor</p>
+                                                <p>Arguments: Integer indicating Semaphore Descriptor</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -760,7 +760,7 @@
                                                     
                                                     
                                                 </table>
-                                                <p>Description:  This system call is used to lock the semaphore.If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.Otherwise, lock the semaphore and continue execution.  
+                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.Otherwise, it locks the semaphore and continues execution.  
 </p>
                                                 
                                             </div>
@@ -794,7 +794,7 @@
                                                     
                                                     
                                                 </table>
-                                                <p>Description: This system call is used to unlock the semaphore.It will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore.  </p>
+                                                <p>Description: This system call is used to unlock the semaphore. It will reset the semaphore, waking up all processes which went to sleep trying to lock the semaphore.  </p>
                                             </div>
                                         </div>
                                     </div>

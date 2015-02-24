@@ -127,12 +127,13 @@
                             </h4>
                           </div>
                           <div id="SixcollapseOne" class="panel-collapse collapse">
+                              <div class="panel-body">
                             <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the hardware timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling">round robin scheduling</a> is employed.  This means that a round robin scheduling is employed, but a process may go to <b>sleep </b>inside a system call when:</p>
                             <ol style="margin-left: 60px;">
 		 <li>The resource which the process is trying to access (like a file or semaphore) is locked by another process (or even internally locked by another OS system call in concurrent execution).   </li>
 		 <li>There is a disk or I/O device access in a system call which is slow.  If the wait for the device access is to be avoided, there must be hardware support from the device to send a hardware interrupt upon completion of the device operation so that the OS can put the process on sleep for now, continue scheduling the remaining processes in round robin fashion and then wake up the sleeping process when the device sends the interrupt.  Such hardware support is desirable, but not necessary to implement eXpOS.  </li> 
      </ol>
-     
+       </div>
                             </div>
                           </div>
                         </div>
@@ -148,7 +149,7 @@
                           <div id="SixcollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                             <p>If a process generates an illegal instruction, an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception.  The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes.</p>   
-                            <p>The exception handler is invoked when a page required by the process is not present in the memory. This condition is known as a page fault<b>WIKI LINK #$%@#$!@#</b>. The module which handles <b>demand paging </b>(if the machine hardware supports demand paging) is invoked by the exception handler when there is a <b>page fault. </b> eXpOS  specification does not require implementation of demand paging.  However, most machines are equipped with hardware support for demand paging and using the feature can improve machine throughput considerably.      A discussion of demand paging is given <a href="#"><b>WIKI LINK #$%@#$%</b>here</a></p>
+                            <p>The exception handler is invoked when a page required by the process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault">page fault</a>. The module which handles <b>demand paging </b>(if the machine hardware supports demand paging) is invoked by the exception handler when there is a <b>page fault</b>. eXpOS  specification does not require implementation of demand paging.  However, most machines are equipped with hardware support for demand paging and using the feature can improve machine throughput considerably.      A discussion of demand paging is given <a href="http://en.wikipedia.org/wiki/Demand_paging">here</a>.</p>
                             </div>
                           </div>
                         </div>
