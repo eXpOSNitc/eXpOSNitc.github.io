@@ -140,7 +140,7 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: Create allows application programs to create a new data file with the Filename specified in the argument. It returns successfully when the file has been created or if a file, with the given Filename, already exists. </p>
+                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name.  It also creates the root entry for the file and makes sure that every file has a unique name. Note that the file name must be a character string and must not be named “root”. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -174,7 +174,7 @@
                                                         <td>File is open</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: Delete is used to delete a file from the eXpFS disk. It returns successfully when the file has been deleted from the disk. This operation fails if the file has any open instances or if file does not exist in the disk.</p>
+                                                <p>Description: Delete removes the file from the file system and removes its root entry.   A file that is currently opened by any application cannot be deleted.  Root file also cannot be deleted.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -212,7 +212,7 @@
                                                         <td>System has reached its limit of open files</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: Open is used to open a file present in the eXpFS disk. When it returns successfully, the process will have an open instance of the file which can be accessed using the File Descriptor. Only data and root files can be opened.</p>
+                                                <p>Description: For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor.   The file descriptor conceptually refers to the location of the file which will be referred to by other file operations. The file pointer initially points to the first word in the file when Open system call is completed. An application can open the same file several times and each time a different descriptor will be returned by the Open operation.   </p>
                                             </div>
                                         </div>
                                     </div>
@@ -244,7 +244,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Close is used to close a file. </p>
+                                                <p>Description: After all the operations are done, the user closes the file using Close system call.  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -279,7 +279,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Read reads a word from a data file and places it in the Buffer passed as argument.</p>
+                                                <p>Description: Read reads one word into a string/integer variable from the position pointed by file pointer in the file specified by the input file descriptor. After each read is performed, the file pointer advances to the next word in the file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -314,7 +314,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Write writes the Word given into the file at the position of the file pointer.</p>
+                                                <p>Description: Write writes one word from a string/integer variable provided by the user, to the position pointed by input file pointer.  After each write is performed, the file pointer advances to the next word in the file.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -349,7 +349,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description:Seek allows the application program to change the location pointed to by the file pointer so that next Read/Write is performed from the new position. An Offset of 0 will reset the pointer to the start of the file. A negative Offset will move the pointer backwards.</p>
+                                                <p>Description: SIf user wants to change the file pointer without reading/writing, Seek system call is used. The Seek operation allows the application program to change the location pointed to by the file pointer from the current position to a different position in the file so that next Read/Write is performed from the new position. An Offset of 0 will reset the pointer to the start of the file. A negative Offset will move the pointer backwards.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -400,7 +400,8 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the data in the parent stack is copied into the child stack. All open file handles and semaphores are shared between the parent and the child.</p>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the data in the parent stack is copied into the child stack.</p>
+                                                 <p>When a process executes the Fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Note that semaphores and the files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -427,7 +428,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
-                                                <p>Description: Loads and runs a new process in the space of a currently running process. The current process is overwritten by new process i.e. code and stack regions of the current process is used by the new process. The heap pages of the current process will be freed, if they are not shared with any other process. For the new process, no heap pages are allocated .All open instances of file and semaphores of parent process is closed. </p>
+                                                <p>Description: Exec loads the executable program into the memory address space of the calling process, overlaying the calling application with the newly loaded program. After the fork system call, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact. A successful Exec operation results in extinction of the calling application and never returns to the caller application. For the new process, no heap pages are allocated. All open instances of file and semaphores of parent process is closed. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -454,7 +455,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
-                                                <p>Description: Destroys the process invoking the call.  If successful, it does not return any value. If the current process is the only process that has not terminated, system is made to shutdown. </p>
+                                                <p>Description: Exit system call terminates the execution of the process which invoked it and removes it from the memory. It schedules the next ready process and starts executing it. When there is no other ready process to run, it halts the machine. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -697,7 +698,8 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: This system call is used to obtain a semaphore for a resource. The semaphore thus acquired can later become shared in case of forking.</p>
+                                                <p>Description: Semget does not take any input and gives the semaphore handle as the output. eXpOS has a fixed number of semaphores. An error code is produced if there are no available semaphores in the system.</p>
+                                                <p>This system call, if successful, is used to obtain a semaphore for a resource. The semaphore thus acquired can later become shared in case of forking.</p>
                                             </div>
                                         </div>
                                     </div>
