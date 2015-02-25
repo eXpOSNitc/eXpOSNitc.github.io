@@ -14,7 +14,7 @@ and open the template in the editor.
         <div id="Seek">
             <h1>Seek System Call</h1>
             
-           <p>Arguments: 1. fileDescriptor 2. newLseek 
+           <p>Arguments: 1. fileDescriptor 2. Offset 
 Return Value: 0 (Success) </p>
 
             <dl>
@@ -24,20 +24,16 @@ Return Value: 0 (Success) </p>
             <dt>2. Locking the file</dt>
             <dd>In the File Table, lookup the entry corresponding to <b><i>FTIndex</i></b> and check whether Locking PID is -1 or not.If the file is locked (Locking PID not equal to -1), check whether the Locking PID is same as the PID of the current process.If so, proceed to step 3. If not, the state of the process is changed to (WAIT_FILE, <b><i>FTIndex</i></b>) and scheduler is called. Repeat this step until file is found to be unlocked. When the file is found to be unlocked, set Locking PID to PID of the current process and store the Inode Index of the entry in <b><i>InodeIndex</i></b>.</dd>
             <dt>3. Check whether the new LSEEK position is valid.</dt>
-            <dd>4.1.Using the index of File Table Entry, index to the File Table to get the Inode Index Entry. 
-                4.2 Fetch the file size of the file from the Inode Table and store it in a register. </dd>
+            <dd>Using the index of File Table Entry, index to the File Table to get the Inode Index Entry. Fetch the file size of the file from the Inode Table and store it in a <i><b>FileSize</b></i>. The new LSEEK position is valid only if (current LSEEK + Offset) takes a value from 0 to <i><b>FileSize</b></i>-1. If it is not valid, return from the system call with XFS_INVINT. If valid, go to step 4.</dd>
             </dl>
+           <dt>4. Updating LSEEK</dt>
+           <dd>If the Offset is 0, set LSEEK value in Per-Process Resource Table to 0. Otherwise, change the LSEEK to LSEEK+Offset.</dd>
+           <dt>5. Returning back</dt>
+           <dd>Unlock the file and wake up all processes waiting for the file. Return with 0 (indicating success).
+</dd>
             
         </div>
     </body>
 </html>
 
-
-4. 
-
-4.3 LSEEK position is valid if it takes a value from 0 to file size. 
-4.4. If it is not valid, return from the system call with XFS_INVINT. 
-5. Change the LSEEK in the Per-Process File Table entry to newLseek.
-6. Unlock the file and wake up all processes waiting for the file.
-7. Return with 0 (indicating success).
 

@@ -5,35 +5,35 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>eXpOS NITC</title>
+     <title>Process Table</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
 
     <!-- CSS
     ================================================== -->       
     <!-- Bootstrap css file-->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
     <!-- Superslide css file-->
-    <link rel="stylesheet" href="css/superslides.css">
+    <link rel="stylesheet" href="../css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="css/slick.css" rel="stylesheet"> 
+    <link href="../css/slick.css" rel="stylesheet"> 
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="css/animate.css">  
+    <link rel="stylesheet" href="../css/animate.css">  
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
     <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
-    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
-    <link href="style.css" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
@@ -96,75 +96,126 @@
     <!--=========== End HEADER SECTION ================--> 
     <br><br><br>
 
- <!--=========== BEGIN SERVICE SECTION ================-->
-    <section id="service">
+ <!--=========== BEGIN  SECTION ================-->
+    <section id="process_table">
       <div class="container">
         <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <!-- BEGAIN SERVICE HEADING -->
+        
+            
             <div class="heading">
-              <h2 class="wow fadeInLeftBig">Datastructures</h2>
-              <p>eXpOS uses various data structures to maintain information about files, processes, and semaphores along with memory pages and disk blocks.There are two kinds of data structures which include: Disk Data Structures and Memory Data Structures. </p>
-            </div>
-          </div>          
-        </div>
-        <div class="row">
-          <div class="col-lg-12 col-md-12">
-            <!-- BEGAIN SERVICE  -->
-            <div class="service_area">
-              <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                  <!-- BEGAIN SINGLE SERVICE -->
-                  <div class="single_service wow fadeInLeft">
-                    <div class="service_iconarea">
-                      <span class="fa fa-line-chart service_icon"></span>
-                    </div>
-                    <h3 class="service_title">Disk Data Structures</h3>
-                    <p>Those data structure which will be stored in the disk and will be retained after machine shuts down. A memory copy of these structures are maintained by XOS when it is run. </p>
-                 <div>
-		<div class="section_area">
-    <ul class="list-group">
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/overview.html">Disk Free List</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/expos_abstractions.html">Inode Table</a></h3></li>
-   
-</ul>
+              <h2 class="wow fadeInLeftBig">Process Table</h2>
+               <br>
+                            <br>
+              <p>The Process Table(PT) contains an entry for each process.  Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT i.e., maximum number of processes allowed to exist at a single point of time in eXpOS, is MAX_PROC_NUM. </p>
+              <p>Each entry in the Process Table has a constant size, defined by the constant PT_ENTRY_SIZE.  Any entry of PT has the following fields:</p>
+              <table class="table table-bordered" >
+                  <tr >
+                      <td style="border: 1px solid black">TICK</td>
+                      <td style="border: 1px solid black">PID</td>
+                      <td style="border: 1px solid black">PPID</td>
+                      <td style="border: 1px solid black">STATE</td>
+                      <td style="border: 1px solid black">MACHINE STATE</td>
+                      <td style="border: 1px solid black">PTBR</td>
+                      <td style="border: 1px solid black">PTLR</td>
+                      <td style="border: 1px solid black">PER-PROCESS RESOURCE TABLE</td>
+                      <td style="border: 1px solid black">INODE INDEX</td>
+                      <td style="border: 1px solid black">KERNEL STACK POINTER</td>
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>TICK </b>- keeps track of how long the process was in memory. </li>
+                   <li><b>PID</b> - process descriptor, a number that is unique to each process. </li>
+                  <li><b>PPID </b>- process descriptor of the parent process. </li>
+                  <li><a href="#state"><b>STATE</b></a> - a two tuple that describes the current state of the process. </li>
+                  <li><a href="#machine_state"><b>MACHINE STATE</b></a> - pointer to a structure that gives the machine state when the process was last executed.</li>
+                  <li><b>PTBR </b>- Page Table Base RegisteR stores the starting address of the page table of a process. </li>
+                  <li><b>PTLR</b> - Page Table Length Register stores the number of entries in the page table of a process and determines the size of the virtual address space of the process. (size of the virtual address space is page table length register entry times page size).</li>
+                  <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> - pointer to the Per-Process Resource Table that contains information about the files opened by the process as well as semaphores used by the process. </li>
+                  <li><b>INODE INDEX </b>- a reference to the Inode entry of the executable file </li>
+                  <li><b>KERNEL STACK POINTER</b> - pointer to the process's kernel stack. A process uses its kernel stack to save the return address when it decides to voluntarily schedule out itself inside a blocking system call. </li>
+              </ul>
+       
+              
+              
+              <!-- START ITEM #1 -->
+                        <div class="panel panel-default wow fadeInLeft" id="state">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">STATE</h4>
+                          
+                          <div class="panel-body">
+                              <p>The tuple can take the following values</p>
+                      <ul style="list-style-type: circle;line-height: 25px;margin-left: 100px;">
+                          <li>(RUNNING,___) – The process is in execution. </li>
+                          <li>(READY,___) – The process is ready to be scheduled.</li>
+                          <li>(WAIT_PROCESS,WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID.  </li>
+                          <li>(WAIT_FILE, FTENTRY) - The process is waiting for accessing a file whose file table entry index is FTENTRY. </li>
+                          <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process.  </li>
+                          <li>(WAIT_SEMAPHORE,SEMID) - The process is waiting for a semaphore (whose descriptor is SEMID) that was locked by some other process.   </li>
+                          <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>
+                          <li>(SWAPPED,___) – The stack page of the process has been swapped out to disk</li>
+                          <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for buffer of index BUFFERID to be unlocked. </li>
+                      </ul>
+
+                          </div>
+                        </div>
+              
+              
+              <!-- START ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft" id="machine_state">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">MACHINE STATE</h4>
+                          
+                          <div class="panel-body">
+                              <p>This part is machine dependent.  The OS scheduler can schedule out a process in execution and save its machine state here.  Later, the scheduler can restore the machine state to start execution from where it was stopped.   The initial values of this structure are fixed by the OS loader (exec system call) and the values get updated whenever the process is preempted. </p>
+                              <p>The MACHINE STATE consists of USER CONTEXT and SYSTEM CONTEXT. Each would contain the following information.</p>
+                              <table class="table table-bordered" >
+                  <tr>
+                      <td style="border: 1px solid black">SP</td>
+                      <td style="border: 1px solid black">BP</td>
+                      <td style="border: 1px solid black">IP</td>
+                      <td style="border: 1px solid black">REGISTERS</td>
+                  </tr>
+              </table>
+                              <p>USER CONTEXT is updated when a process is preempted when it is in user mode. SYSTEM CONTEXT is updated when a there is a context switch from kernel mode to kernel mode.</p>
+
+                          </div>
+                        </div>
+              
+              <!-- START ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft" id="per_process_table">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>
+                          
+                          <div class="panel-body">
+                              <p>For every file opened by the process, it stores the index of the File Table entry for the file, and the LSEEK position of the open instance of a file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. </p>
+<p>Similarly, for every semaphore used by the process, the per-process resource table stores the index of Semaphore Table entry.
+ </p>
+ <p>Thus the per-process resource table looks like </p>
+                              
+               <table class="table table-bordered" >
+                  <tr>
+                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry</td>
+                      <td style="border: 1px solid black">LSEEK</td>
+                      
+                  </tr>
+              </table>
+ <p>The index of the per-process resource table entry for each file is known as the file descriptor.</p>
+                             </div>
+                        </div>
+              
+                            
 </div>
- 
- </div> 
-                 </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                  <!-- BEGAIN SINGLE SERVICE -->
-                  <div class="single_service wow fadeInRight">
-                    <div class="service_iconarea">
-                      <span class="fa fa-suitcase service_icon"></span>
-                    </div>
-                    <h3 class="service_title">Memory Data Structures</h3>
-                    <p>Those data structures which are stored in the main memory of the machine and are required only when the operating system is running. They are lost when the system shuts down</p>
-                  <div>
-		<div class="section_area">
-    <ul class="list-group">
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/overview.html"></a>Process Table</h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/expos_abstractions.html">Global File Table</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/eXpFS.html">Global Semaphore Table</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="os_spec-files/processmodel.html">System Status Table</a></h3></li>
-   
-</ul>
-</div>
- 
- </div>
-         
-                  </div>
                   
-                </div>
-                
-              </div>
-            </div>
-          </div>
         </div>
+        
       </div>
     </section>
-    <!--=========== END SERVICE SECTION ================-->
+ 
+   
+    <!--=========== END SECTION ================-->
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
@@ -186,24 +237,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Google map -->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <script src="js/jquery.ui.map.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
-    <script src="js/wow.min.js"></script> 
+    <script src="../js/wow.min.js"></script> 
     <!-- Bootstrap js -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
     <!-- superslides slider -->
-    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
     <!-- slick slider -->
-    <script src="js/slick.min.js"></script>    
+    <script src="../js/slick.min.js"></script>    
     <!-- for circle counter -->
     <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->
-    <script src="js/modernizr.custom.js"></script>
-    <script src="js/classie.js"></script>
-    <script src="js/elastic_grid.min.js"></script>
-    <script src="js/portfolio_slider.js"></script>
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
 
     <!-- Custom js-->
-    <script src="js/custom.js"></script>
+    <script src="../js/custom.js"></script>
   </body>
 </html>
