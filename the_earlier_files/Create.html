@@ -17,7 +17,7 @@ and open the template in the editor.
         <p>Return Value: 0 (Success)</p>
         <dl>
             <dt>1. Inode Table Validation</dt>
-            <dd>The memory copy of Inode table is searched for <b><i>Filename</i></b>. If the entry is found, return from the system call with 0, indicating success. If not, check for free entry in Inode Table. If there is no free entry, return from system call with error code XFS_NOSP. If an entry is found, store the index in <b><i>InodeIndex</i></b>.
+            <dd>The memory copy of Inode table is searched for <b><i>Filename</i></b>. If the entry is found, return from the system call with 0, indicating success. If not, check for free entry in Inode Table. If there is no free entry, return from system call with error code -1. If an entry is found, store the index in <b><i>InodeIndex</i></b>.
 </dd>
             <dt>2. Updating Inode Table</dt>
             <dd>In the entry corresponding to <b><i>InodeIndex</i></b>, set the file name field with <b><i>Filename</i></b>. The File size field is initialized to 0. Set the file type field as “DATA ”. 
