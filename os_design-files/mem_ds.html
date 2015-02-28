@@ -106,7 +106,13 @@
               <h2 class="wow fadeInLeftBig">File Table</h2>
                <br>
                <br>
-              <p>File Table has information about all the files that are currently open.  It is initialized by the OS startup code.  Initially, there are no open files. It consists of a maximum of MAX_OPENFILE_NUM entries. Therefore, there can be at most MAX_OPENFILE_NUM open files in the system at any time.  </p>
+              <p>The File Table stores the information about all the files that are currently open while the OS is running.  It consists of MAX_OPENFILE_NUM (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_OPENFILE_NUM = 32 open files in the system at any time. </p>
+              <p>
+              The Open system call creates an entry in the File table when a process opens a file that is not opened by any process in execution.  If the file is opened again by some other process (or the same process), the Open system call updates the same file table entry.  The first field (Inode Index) of the File table entry for a file is set to the index of the Inode Table entry for the file.  The second field (File Open Count) stores the number of open instances of the file and is incremented/decremented when a process opens/closes the file.  The third field (Locking PID) is set to the PID of the process that has locked the file using the Flock system call (if locked).  If the file is not locked by any process, this field contains -1.  
+              </p><p>
+              If the file open count reaches zero (that is if the last open instance has been closed) then, all fields of 
+              the corresponding file table entry is invalidated by setting to -1.   </p>
+              
               <p>Every entry of the File Table has the following format :</p>
               <table class="table table-bordered  table-responsive" >
                   <tr >
