@@ -142,7 +142,7 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name.  It also creates the root entry for the file and makes sure that every file has a unique name. Note that the file name must be a character string and must not be named “root”. </p>
+                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -214,7 +214,7 @@
                                                         <td>System has reached its limit of open files</td>
                                                     </tr>
                                                 </table>
-                                                <p>Description: For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor.   The file descriptor conceptually refers to the location of the file which will be referred to by other file operations. The file pointer initially points to the first word in the file when Open system call is completed. An application can open the same file several times and each time a different descriptor will be returned by the Open operation.   </p>
+                                                <p>Description: For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. The file descriptor must be passed as argument to other file system calls, to identify the open instance of the file.</p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -246,7 +246,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: After all the operations are done, the user closes the file using Close system call.  </p>
+                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.   </p>
                                             </div>
                                         </div>
                                     </div>
@@ -264,7 +264,7 @@
                                         <div id="collapse5" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Descriptor (Integer) and a Buffer (String) to which the word is read</p>
+                                                <p>Arguments: File Descriptor (Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -281,7 +281,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Read reads one word into a string/integer variable from the position pointed by file pointer in the file specified by the input file descriptor. After each read is performed, the file pointer advances to the next word in the file. </p>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer.   After each read operation, the file pointer advances to the next word in the file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -316,7 +316,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Write writes one word from a string/integer variable provided by the user, to the position pointed by input file pointer.  After each write is performed, the file pointer advances to the next word in the file.</p>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -351,7 +351,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: If user wants to change the file pointer without reading/writing, Seek system call is used. The Seek operation allows the application program to change the location pointed to by the file pointer from the current position to a different position in the file so that next Read/Write is performed from the new position. An Offset of 0 will reset the pointer to the start of the file. A negative Offset will move the pointer backwards.</p>
+                                                <p>Description: The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards).  An Offset of 0 will reset the pointer to the beginning of the file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -396,12 +396,12 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>Number of process has reached its maximum</td>
+                                                        <td>Failure, Number of processes has reached the maximum limit. Returns to the parent</td>
                                                     </tr> 
                                                     
                                                 </table>
-                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the data in the parent stack is copied into the child stack.</p>
-                                                 <p>When a process executes the Fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Note that semaphores and the files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
+                                                 <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -428,7 +428,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
-                                                <p>Description: Exec loads the executable program into the memory address space of the calling process, overlaying the calling application with the newly loaded program. After the Fork system call, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact. A successful Exec operation results in extinction of the calling application and never returns to the caller application. For the new process, no heap pages are allocated. All open instances of file and semaphores of parent process is closed. </p>
+                                                <p>Description: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -447,15 +447,9 @@
                                             <div class="panel-body">
                                                 
                                                 <p>Arguments: None</p>
-                                                <p>Return Value:</p>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr> 
-                                                                                                        
-                                                </table>
-                                                <p>Description: Exit system call terminates the execution of the process which invoked it and removes it from the memory. It schedules the next ready process and starts executing it. When there is no other ready process to run, it halts the machine. </p>
+                                                <p>Return Value: None</p>
+                                                
+                                                <p>Description: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -480,12 +474,9 @@
                                                         <td>Process Identifier (Integer) </td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                     <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr>                                                   
+                                                                                                      
                                                 </table>
-                                                <p>Description:  Returns the process identifier of the invoking process.</p>
+                                                <p>Description:  Returns the process identifier of the invoking process. The system call does not fail.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -510,12 +501,9 @@
                                                         <td>Parent Process Identifier (Integer)</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                     <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr>    
+                                                     
                                                 </table>
-                                                <p>Description:  Returns the process Identifier of the parent of the invoking process.</p>
+                                                <p>Description:  Returns to the calling process the value of the process identifier of its parent. The system call does not fail.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -534,15 +522,9 @@
                                             <div class="panel-body">
                                                 
                                                 <p>Arguments: None</p>
-                                                <p>Return Value:</p>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr> 
-                                                                                                        
-                                                </table>
-                                                <p>Description: Shutdown system call terminates all processes, writes modified(dirty) pages and memory copy of disk data structures to the disk, and then halts the machine. In case the system call failed, an error is returned to the invoking process. </p>
+                                                <p>Return Value:None</p>
+                                                
+                                                <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -593,7 +575,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits. It is to be noted that error will occur if a process is found to wait for itself. </p>
+                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits. Note that the system call will fail if a process attempts to wait for itself. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -612,20 +594,16 @@
                                             <div class="panel-body">
                                                 
                                                 <p>Arguments: None</p>
-                                                <p>Return Value: 0</p>
+                                                <p>Return Value: </p>
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
                                                         <td>Success</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr>
-                                                    
+                                                   
                                                     
                                                 </table>
-                                                <p>Description:  All processes waiting for the signaling process are resumed.  </p>
+                                                <p>Description:  All processes waiting for the signaling process are resumed. The system call does not fail </p>
                                             </div>
                                         </div>
                                     </div>
@@ -656,7 +634,7 @@
                                                     </tr> 
                                                                                                        
                                                 </table>
-                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the file is unlocked. If the file is found to be locked by some other process, the current process waits till the file is free and then locks it.   </p>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.)  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -687,11 +665,11 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>File is locked by some other process</td>
+                                                        <td>File was not locked by the calling process</td>
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: FUnLock operation allow an application program to unlock a file the application had locked earlier so that other applications are no longer restricted from accessing the file. Note that it is a SERIOUS implementation error if the file is found to be locked by some other process.</p>
+                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -714,7 +692,7 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>SEMID (Integer) </td>
-                                                        <td>Success, returns the semaphore descriptor(SEMID)</td>
+                                                        <td>Success, returns a semaphore descriptor(SEMID)</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
@@ -726,8 +704,8 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: Semget does not take any input and gives the semaphore handle as the output. eXpOS has a fixed number of semaphores. An error code is produced if there are no available semaphores in the system.</p>
-                                                <p>This system call, if successful, is used to obtain a semaphore for a resource. The semaphore thus acquired can later become shared in case of forking.</p>
+                                                <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
+                                           The calling process can share the semaphore with its child processes using the fork system call</p>
                                             </div>
                                         </div>
                                     </div>
@@ -758,7 +736,7 @@
                                                     </tr> 
                                                                                                         
                                                 </table>
-                                                <p>Description: This system call is used to free the semaphore so that other processes can use it. </p>
+                                                <p>Description: This system call is used to release a semaphore descriptor held by the process. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -781,7 +759,7 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
-                                                        <td>Success</td>
+                                                        <td>Success or the semaphore is already locked by the current process</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
@@ -790,7 +768,7 @@
                                                     
                                                     
                                                 </table>
-                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.Otherwise, it locks the semaphore and continues execution.  
+                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution.  
 </p>
                                                 
                                             </div>
@@ -823,11 +801,11 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>Semaphore is locked by some other process</td>
+                                                        <td>Semaphore was not locked by the calling process</td>
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: This system call is used to unlock the semaphore. It will reset the semaphore, waking up all processes which went to sleep trying to lock the semaphore. Note that it is a SERIOUS implementation error if the semaphore is found to be locked by some other process.  </p>
+                                                <p>Description: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. </p>
                                             </div>
                                         </div>
                                     </div>

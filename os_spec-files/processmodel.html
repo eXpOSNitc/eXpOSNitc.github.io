@@ -164,8 +164,8 @@
 	
         <h3>Semantics of Exec operation:</h3>
 	<ol style="margin-left: 60px">
-		<li>The OS closes all files and semaphores opened by the process.    A new address space is created replacing the existing one.  ( what happens to the original address space is  irrelevant to the application/system programmer.  But it is important to know that any other process sharing code/heap/library regions with this process will not be affected. This is discussed in <a href="synchronization.html">Section 5</a>).</li>
-		<li>The code (and static data, if any) of the executable file are loaded into the code (and stack) regions of the new address space.   The system library is mapped to the library region and stack is initialized to empty. The heap pages are freed and it is the responsibility of the new process to allocate its own heap if required.</li>  
+		<li>The OS closes all files and semaphores opened by the process.    A new address space is created replacing the existing one. ( what happens to the original address space is  irrelevant to the application/system programmer.  But it is important to know that any other process sharing code/heap/library regions with this process will not be affected. This is discussed in <a href="synchronization.html">Section 5</a>). <b>The new process inherits the process id of the calling process.</b></li>
+		<li>The code (and static data, if any) of the executable file are loaded into the code (and stack) regions of the new address space.   The system library is mapped to the library region and stack is initialized to empty. </li>  
         <li>The machine instruction pointer is set to the location specified in the executable header.  The machine stack pointer is initialized to the beginning of the stack.  (These details are hidden from the application programmer by the compiler if a high level language is used for writing the application.). From here, execution continues with the newly loaded program.</li>
 	</ol>
 	
