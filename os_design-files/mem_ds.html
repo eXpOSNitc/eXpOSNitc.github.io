@@ -106,7 +106,7 @@
               <h2 class="wow fadeInLeftBig">File Table</h2>
                <br>
                <br>
-              <p>File Table consists of a maximum of MAX_OPENFILE_NUM entries. Therefore, there can be at most MAX_OPENFILE_NUM open files in the system at any time.  </p>
+              <p>File Table has information about all the files that are currently open.  It is initialized by the OS startup code.  Initially, there are no open files. It consists of a maximum of MAX_OPENFILE_NUM entries. Therefore, there can be at most MAX_OPENFILE_NUM open files in the system at any time.  </p>
               <p>Every entry of the File Table has the following format :</p>
               <table class="table table-bordered  table-responsive" >
                   <tr >
@@ -202,8 +202,9 @@
               <h2 class="wow fadeInLeftBig">Buffer Table</h2>
                <br>
                <br>
+               <p>To minimize the number of load and store operations, eXpOS provides a buffer cache in memory which would temporarily store disk blocks. Each disk block is mapped to a unique buffer. The disk blocks will be stored back to the disk when some other blocks replace it. Only modified blocks are written back to disk.</p>
               <p> It keeps the information about disk blocks present in the buffer. There are MAX_BUFFER number of buffers available so the BUFFER TABLE will have that many entries. </p>
-              <p> Every entry of the Disk Status Table has the following format:</p>
+              <p> Every entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">BLOCK NUMBER</td>
@@ -233,7 +234,7 @@
               <h2 class="wow fadeInLeftBig">System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about no: of free pages in memory, no:of processes waiting for memory pages and also no: of processes in swapped state. </p>
+              <p> It keeps the information about no: of free pages in memory, no: of processes waiting for memory pages and also no: of processes in swapped state. </p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
