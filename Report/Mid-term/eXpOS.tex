@@ -1,7 +1,8 @@
-\documentclass[10pt]{article}
-\usepackage{graphicx}
-\usepackage{algorithm}
-\usepackage{algorithmic}
+\documentclass[11pt ,twosided]{article}
+%\usepackage{graphicx}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage[margin=0.9in]{geometry}
 
 \title{Enhancement to eXpOS Operating System and eXpFS File System}
 
@@ -9,7 +10,6 @@
 
 \usepackage{epsfig}
 \begin{document}
-	
 \maketitle
 	
 
@@ -87,7 +87,7 @@ The OS data structures store information about processes, files and semaphores. 
 Inode Table is the record of the files stored in the disk. The entry of an Inode table has the following format:
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{Inode_table.png}
+\includegraphics[scale=0.60]{Inode_table.png}
 \caption{\footnotesize Structure of the Inode Table}
 \label{fig_1}
 \end{figure}
@@ -100,7 +100,7 @@ For each block in the disk there is an entry in the Disk Free List which contain
 The Process Table contains an entry for each process.  Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries is equal to maximum number of processes allowed to exist at a single point of time in eXpOS.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{Process_table.png}
+\includegraphics[scale=0.60]{Process_table.png}
 \caption{\footnotesize Structure of the Process Table}
 \label{fig_2}
 \end{figure}
@@ -127,7 +127,7 @@ Each process has its own kernel stack. The pointer to the kernel stack is given 
 This table stores information about the resources (files/semaphores) acquired by the process. For every file opened by the process, it stores the index of the File Table entry for the file, and the LSEEK position of the open instance of a file. The LSEEK position indicates the location in the file where the next read/write operation occurs. Similarly, for every semaphore used by the process, the Per-Process resource table stores the index of Semaphore Table entry. 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.70]{PerProcessResource_table.png}
+\includegraphics[scale=0.60]{PerProcessResource_table.png}
 \caption{\footnotesize Structure of the Per-Process Resource Table}
 \label{fig_3}
 \end{figure}
@@ -136,7 +136,7 @@ This table stores information about the resources (files/semaphores) acquired by
 The Page Table contains information relating to the actual location of the pages of the process in the memory. The page table contains physical page numbers corresponding to logical pages in the virtual address space of the process. Each entry has a reference bit and a valid bit. Reference bit indicates whether the page is referenced by the process or not. Valid bit indicates whether the page is present in memory or not.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.70]{Page_table.png}
+\includegraphics[scale=0.60]{Page_table.png}
 \caption{\footnotesize Structure of Page Table}
 \label{fig_4}
 \end{figure}
@@ -145,7 +145,7 @@ The Page Table contains information relating to the actual location of the pages
 File Table has information about all the files that are currently open.  The Open system call creates an entry in the File table when a process opens a file that is not opened by any process in execution. If the file is opened again by some other process (or the same process), the Open system call updates the same file table entry.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{File_table.png}
+\includegraphics[scale=0.60]{File_table.png}
 \caption{\footnotesize Structure of the File Table}
 \label{fig_5}
 \end{figure}
@@ -154,7 +154,7 @@ File Table has information about all the files that are currently open.  The Ope
 Semaphore Table contains details about all the semaphores used by the processes. For every semaphore opened by a process, there is an entry in the Per-Process resource table,  and this entry points to a corresponding entry in the semaphore table.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{Semaphore_Table.png}
+\includegraphics[scale=0.60]{Semaphore_Table.png}
 \caption{\footnotesize Structure of the Semaphore Table}
 \label{fig_6}
 \end{figure}
@@ -163,18 +163,17 @@ Semaphore Table contains details about all the semaphores used by the processes.
 eXpOS makes use of Disk Status Table to keep track of load and store operations. It consists of a bit to determine the type of disk operation (load/store), the numbers of page and block involved in the disk operation and the process identifier of the process which initiated disk transfer.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{Disk_Status.png}
+\includegraphics[scale=0.60]{Disk_Status.png}
 \caption{\footnotesize Structure of the Disk Status Table}
 \label{fig_7}
 \end{figure}
-\\ \\
 \subsubsection{Buffer Table}
 
 To minimize the number of load and store operations, eXpOS provides a buffer cache in memory which would temporarily store disk blocks. Each disk block is mapped to a unique buffer. The disk blocks will be stored back to the disk when some other blocks replace it. Only modified blocks are written back to disk.
 Buffer Table keeps the information about disk blocks present in the buffer.
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.50]{Buffer_table.png}
+\includegraphics[scale=0.60]{Buffer_table.png}
 \caption{\footnotesize Structure of the Buffer Table}
 \label{fig_8}
 \end{figure}
@@ -187,13 +186,14 @@ The Memory free list is a data structure used for keeping track of used and unus
 \subsection{Algorithms}
 \subsubsection{File System Calls}
 %%%%% Create System Call %%%%%%%%%%%%%%%
-\textbf{Create System Call}
+\textbf{1. Create System Call}
 \vspace{3mm}\\
 The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success). Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. 
 \begin{description}
 \item[Arguments]: Filename
 \item[Return Value]: 0 (Success) or -1 (No Space for file)
 \end{description}
+\iffalse
 \vspace{3mm}
 \begin{algorithm}
 \caption{Create system call}
@@ -212,13 +212,15 @@ The Create operation takes as input a filename and creates an empty file by that
 \RETURN 0 
 \end{algorithmic}
 \end{algorithm}
-\textbf{Delete System Call}
+\fi
+\textbf{2. Delete System Call}
 \vspace{3mm}\\
 Delete removes the file from the file system and removes its root entry. A file that is currently opened by any application cannot be deleted. Root file also cannot be deleted.
 \begin{description}
 	\item[Arguments]: Filename
 	\item[Return Value]: 0 (Success) or -1 (File not found) or -2 (File is open)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Delete system call}
 \begin{algorithmic}
@@ -237,7 +239,8 @@ Delete removes the file from the file system and removes its root entry. A file 
 \RETURN 0 
 \end{algorithmic}
 \end{algorithm}
-\textbf{Open System Call}
+\fi
+\textbf{3. Open System Call}
 \vspace{3mm}\\
 For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. The file descriptor must be passed as argument to other file system calls, to identify the open instance of the file.
 \vspace{2mm}\\
@@ -247,6 +250,7 @@ The OS associates a file pointer with every open instance of a file. The file po
 	\item[Arguments]: Filename
 	\item[Return Value]: File Descriptor (Success) or -1 (File not found) or -2 (Process has reached its limit of resources) or -3 ( 	System has reached its limit of open files)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Open system call}
 \begin{algorithmic}
@@ -278,13 +282,15 @@ The OS associates a file pointer with every open instance of a file. The file po
 \end{algorithmic}
 \end{algorithm}
 \vspace{5mm}
-\textbf{Close System Call}
+\fi
+\textbf{4. Close System Call}
 \vspace{2mm}\\
  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. 
 \begin{description}
 	\item[Arguments]: File Descriptor
 	\item[Return Value]: 0 (Success) or -1 (File Descriptor is invalid)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Close system call}
 \begin{algorithmic}
@@ -307,13 +313,15 @@ The OS associates a file pointer with every open instance of a file. The file po
 \RETURN 0
 \end{algorithmic}
 \end{algorithm}
-\textbf{Read System Call}
+\fi
+\textbf{5. Read System Call}
 \vspace{2mm}\\
 The file descriptor is used to identify an open instance of the file. The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer. After each read operation, the file pointer advances to the next word in the file. 
 \begin{description}
 	\item[Arguments]: File Descriptor and a Buffer (a String/Integer variable) into which a word is to be read from the file
 	\item[Return Value]: 0 (Success) or -1 (File Descriptor is invalid) or -2 (File pointer has reached the end of file)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Read system call}
 \begin{algorithmic}
@@ -364,13 +372,15 @@ The file descriptor is used to identify an open instance of the file. The Read o
 \end{algorithmic}
 \end{algorithm}
 \vspace{3mm}
-\textbf{Write System Call}
+\fi
+\textbf{6. Write System Call}
 \vspace{2mm}\\
 The file descriptor is used to identify an open instance of the file. The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file.
 \begin{description}
 	\item[Arguments]:File Descriptor and a Word to be written
 	\item[Return Value]: 0 (Success) or -1 (File Descriptor given is invalid) or -2 (No disk space)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Write system call}
 \begin{algorithmic}
@@ -421,13 +431,15 @@ The file descriptor is used to identify an open instance of the file. The Write 
 \end{algorithmic}
 \end{algorithm}
 \vspace{3mm}
-\textbf{Seek System Call}
+\fi
+\textbf{7. Seek System Call}
 \vspace{3mm}\\
 The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. 
 \begin{description}
 	\item[Arguments]: File Descriptor and Offset
 	\item[Return Value]: 0 (Success) or -1 (File Descriptor given is invalid) or -2 (Offset value moves the file pointer to a position outside the file)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Seek system call}
 \begin{algorithmic}
@@ -463,9 +475,10 @@ The Seek operation allows the application program to change the value of the fil
 \end{algorithmic}
 \end{algorithm}
 \vspace{15mm}
+\fi
 \subsubsection{Process System Calls}
-\textbf{Fork System Call}
-\\ \\
+\textbf{1. Fork System Call}
+\\
 Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.
 \\
 When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent. Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.
@@ -473,6 +486,7 @@ When a process executes the Fork system call, the child process shares with the 
 \item[Arguments]: None
 \item[Return Value]: Process Identifier to the parent process and 0 to child process (Success) or -1 (Number of processes has reached its maximum, returned to parent)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Fork system call}
 \begin{algorithmic}
@@ -501,14 +515,14 @@ When a process executes the Fork system call, the child process shares with the 
 \end{algorithm}
 \vspace{22mm}
 \textbf{Exec System Call}
-\\ \\
+\\
 Exec destroys the present process and loads the executable file given as input into a new memory address space. A successful Exec operation results in the extinction of the invoking application and hence never returns to it. All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.
 \begin{description}
 \item[Arguments]: Filename
 \item[Return Value]: -1 (File not found or file is of invalid type)
 \end{description} 
 \begin{algorithm}
-\caption{Exec system call}
+\caption{2. Exec system call}
 \begin{algorithmic}
 \IF{file not found in Inode Table}
     \RETURN -1
@@ -531,13 +545,15 @@ Exec destroys the present process and loads the executable file given as input i
 \RETURN 0 
 \end{algorithmic}
 \end{algorithm}
-\textbf{Exit System Call}
+\fi
+\textbf{3. Exit System Call}
 \vspace{2mm}\\
  Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: -1 (Failure)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Exit system call}
 \begin{algorithmic}
@@ -556,25 +572,29 @@ Exec destroys the present process and loads the executable file given as input i
 \end{algorithmic}
 \end{algorithm}
 \vspace{16mm}
-\textbf{Getpid System Call}\\ \\
+\fi
+\textbf{4. Getpid System Call}\\
  Returns the process identifier of the invoking process. The system call does not fail.
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: Process Identifier (Success) 
 \end{description} 
+\iffalse
 \begin{algorithm}
-\caption{Getpid system call}
+\caption{ Getpid system call}
 \begin{algorithmic}
 \STATE Find the PID of the current process by using PTBR value.
 \RETURN PID of current process
 \end{algorithmic}
 \end{algorithm}
-\textbf{Getppid System Call}\\ \\
+\fi
+\textbf{5. Getppid System Call}\\
  Returns to the calling process the value of the process identifier of its parent. The system call does not fail.
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: Process Identifier (Success) 
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Getppid system call}
 \begin{algorithmic}
@@ -583,12 +603,14 @@ Exec destroys the present process and loads the executable file given as input i
 \RETURN PPID of current process
 \end{algorithmic}
 \end{algorithm}
-\textbf{Shutdown System Call}
-\\ \\
+\fi
+\textbf{6. Shutdown System Call}
+\\
 Shutdown system call terminates all processes and halts the machine. \begin{description}
 \item[Arguments]: None
 \item[Return Value]: None
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Shutdown system call}
 \begin{algorithmic}
@@ -604,14 +626,17 @@ Shutdown system call terminates all processes and halts the machine. \begin{desc
 \end{algorithmic}
 \end{algorithm}
 \vspace{20mm}
+\fi
+
 \subsubsection{System calls for access control and synchronization}
-\textbf{Wait System Call}
-\\ \\
+\textbf{1. Wait System Call}
+\\
 The current process is blocked till the process with PID given as argument executes a Signal system call or exits. Note that the system call will fail if a process attempts to wait for itself.  
 \begin{description}
 \item[Arguments]: Process Identifier of the process for which the current process has to wait.
 \item[Return Value]: 0 (Success) or -1 (Given process identifier is invalid or it is the pid of the invoking process)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Wait system call}
 \begin{algorithmic}
@@ -623,13 +648,15 @@ The current process is blocked till the process with PID given as argument execu
 \RETURN 0
 \end{algorithmic}
 \end{algorithm}
-\textbf{Signal System Call}
-\\ \\
+\fi
+\textbf{2. Signal System Call}
+\\
 All processes waiting for the signaling process are resumed. The system call does not fail.
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: 0 (Success) 
 \end{description}
+\iffalse
 \begin{algorithm}
 \caption{Signal system call}
 \begin{algorithmic}
@@ -638,8 +665,8 @@ All processes waiting for the signaling process are resumed. The system call doe
 \end{algorithmic}
 \end{algorithm}
 \vspace{8mm}
-\textbf{FLock System Call}
-\\ \\
+\textbf{3. FLock System Call}
+\\
 To lock a file so that other applications running concurrently are not permitted to access the file till the calling process unlocks it. If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.   
 \begin{description}
 \item[Arguments]: File Descriptor
@@ -668,13 +695,15 @@ To lock a file so that other applications running concurrently are not permitted
 \RETURN 0
 \end{algorithmic}
 \end{algorithm}
-\textbf{FUnLock System Call}
-\\ \\
+\fi
+\textbf{4. FUnLock System Call}
+\\
 FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file.   
 \begin{description}
 \item[Arguments]: File Descriptor
 \item[Return Value]: 0 (Success) or -1 (File Descriptor is invalid) or -2 (File was not locked by the calling process)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{FUnLock system call}
 \begin{algorithmic}
@@ -698,13 +727,15 @@ FUnLock operation allows an application program to unlock a file which the appli
 \end{algorithmic}
 \end{algorithm}
 \vspace{33mm}
-\textbf{Semget System Call}
-\\ \\
+\fi
+\textbf{5. Semget System Call}
+\\
 This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores. The calling process can share the semaphore with its child processes using the fork system call. 
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]:  semaphore descriptor (Success) or -1 (Process has reached its limit of resources) or -2 (Number of semaphores has reached its maximum)
-\end{description} 
+\end{description}
+\iffalse 
 \begin{algorithm}
 \caption{Semget system call}
 \begin{algorithmic}
@@ -723,13 +754,15 @@ This system call is used to obtain a binary semaphore. eXpOS has a fixed number 
 \RETURN \textit{STIndex}
 \end{algorithmic}
 \end{algorithm}
-\textbf{Semrelease System Call}
-\\ \\
+\fi 
+\textbf{6. Semrelease System Call}
+\\
 This system call is used to release a semaphore descriptor held by the process.  
 \begin{description}
 \item[Arguments]: Semaphore Descriptor
 \item[Return Value]: 0 (Success) or -1 (Semaphore Descriptor is invalid) 
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{Semrelease system call}
 \begin{algorithmic}
@@ -748,13 +781,15 @@ This system call is used to release a semaphore descriptor held by the process.
 \end{algorithmic}
 \end{algorithm}
 \vspace{3mm}
-\textbf{SemLock System Call}
-\\ \\
+\fi
+\textbf{7. SemLock System Call}
+\\
 This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. 
 \begin{description}
 \item[Arguments]: Semaphore Descriptor
 \item[Return Value]: 0 (Success or the semaphore is already locked by the current process) or -1 (Semaphore Descriptor is invalid)
 \end{description} 
+\iffalse
 \begin{algorithm}
 \caption{SemLock system call}
 \begin{algorithmic}
@@ -777,13 +812,15 @@ This system call is used to lock the semaphore. If the semaphore is already lock
 \end{algorithmic}
 \end{algorithm}
 \vspace{3mm}
-\textbf{SemUnLock System Call}
-\\ \\
+\fi
+\textbf{8. SemUnLock System Call}
+\\
 This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. 
 \begin{description}
 \item[Arguments]: Semaphore Descriptor
 \item[Return Value]: 0 (Success) or -1 (Semaphore Descriptor is invalid) or -2 (Semaphore was not locked by the calling process)
-\end{description} 
+\end{description}
+\iffalse 
 \begin{algorithm}
 \caption{SemUnLock system call}
 \begin{algorithmic}
@@ -803,12 +840,14 @@ This system call is used to unlock a semaphore that was previously locked by the
 \end{algorithmic}
 \end{algorithm}
 \vspace{8mm}
+\fi
 \subsubsection{Miscellaneous}
-\textbf{Exception Handler}
-\\ \\
+\textbf{1. Exception Handler}
+\\
 If a process generates an illegal instruction, an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent) or if a page fault occurs, the machine will generate an exception. 
 \\
 The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes.
+\iffalse
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: None
@@ -838,13 +877,16 @@ The exception handler must terminate the process, wake up all processes waiting 
 \end{algorithmic}
 \end{algorithm}
 \vspace{45mm}
-\textbf{Disk Interrupt Handler}
-\\ \\
+\fi \\ \\
+\textbf{2. Disk Interrupt Handler}
+\\ 
 Once a disk transfer is completed, the disk controller produces an interrupt to let the processor know that the disk transfer is done. Disk Interrupt Handler wakes up all processes that went to sleep waiting for the disk while the transfer was going on. 
+\iffalse
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: None
 \end{description} 
+
 \begin{algorithm}
 \caption{Disk Interrupt Handler}
 \begin{algorithmic}
@@ -864,9 +906,10 @@ Once a disk transfer is completed, the disk controller produces an interrupt to 
 \RETURN
 \end{algorithmic}
 \end{algorithm}
-\textbf{Timer Interrupt Handler}
-\\ \\
- The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts. The OS scheduler is invoked by the hardware timer interrupt handler. This scheduler uses Round Robin scheduling to schedule the next process for execution. 
+\fi \\ \\
+\textbf{3. Timer Interrupt Handler}
+\\ The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts. The OS scheduler is invoked by the hardware timer interrupt handler. This scheduler uses Round Robin scheduling to schedule the next process for execution. 
+ \iffalse
 \begin{description}
 \item[Arguments]: None
 \item[Return Value]: None
@@ -910,6 +953,7 @@ Once a disk transfer is completed, the disk controller produces an interrupt to 
 \end{algorithmic}
 \end{algorithm}
 \vspace{30mm}
+\fi
 \section{Work Done}
 \begin {itemize}
 \item The existing OS data structures were redesigned to incorporate the changes done. 
@@ -922,7 +966,8 @@ Once a disk transfer is completed, the disk controller produces an interrupt to 
 \end{itemize}
  
 \section{Future Work}
-Future work includes implementation of all the features mentioned above, testing of the system and building a roadmap for anyone wishing to build eXpOS.
+Future work includes implementation of all the features mentioned above, testing of the system and building a webpage which will act as a reference manual for anyone wishing to build eXpOS.
+
 \section{Conclusion}
 This project aims to create a simpler version of an operating system which allows students to acquire insight into the working of a real operating system. 
 
