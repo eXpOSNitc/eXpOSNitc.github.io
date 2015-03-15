@@ -106,7 +106,7 @@
               <h2 class="wow fadeInLeftBig">Process Table</h2>
                <br>
                             <br>
-              <p>The Process Table(PT) contains an entry for each process.  Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT i.e., maximum number of processes allowed to exist at a single point of time in eXpOS, is MAX_PROC_NUM. </p>
+              <p>The Process Table (PT) contains an entry for each process present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT i.e., maximum number of processes allowed to exist at a single point of time in eXpOS, is MAX_PROC_NUM. </p>
               <p>Each entry in the Process Table has a constant size, defined by the constant PT_ENTRY_SIZE.  Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -123,18 +123,19 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>TICK </b>- keeps track of how long the process was in memory. </li>
-                   <li><b>PID</b> - process descriptor, a number that is unique to each process. </li>
-                  <li><b>PPID </b>- process descriptor of the parent process. </li>
-                  <li><a href="#state"><b>STATE</b></a> - a two tuple that describes the current state of the process. </li>
+                   <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory. </li>
+                   <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. </li>
+                  <li><b>PPID </b>(1 word) - process descriptor of the parent process. </li>
+                  <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. </li>
                   <li><a href="#machine_state"><b>MACHINE STATE</b></a> - pointer to a structure that gives the machine state when the process was last executed.</li>
-                  <li><b>PTBR </b>- Page Table Base RegisteR stores the starting address of the page table of a process. </li>
-                  <li><b>PTLR</b> - Page Table Length Register stores the number of entries in the page table of a process and determines the size of the virtual address space of the process. (size of the virtual address space is page table length register entry times page size).</li>
+                  <li><b>PTBR </b>(1 word)- Page Table Base Register stores the starting address of the page table of a process. </li>
+                  <li><b>PTLR</b> (1 word)- Page Table Length Register stores the number of entries in the page table of a process and determines the size of the virtual address space of the process. (size of the virtual address space is page table length register entry times page size).</li>
                   <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> - pointer to the Per-Process Resource Table that contains information about the files opened by the process as well as semaphores used by the process. </li>
-                  <li><b>INODE INDEX </b>- a reference to the Inode entry of the executable file </li>
-                  <li><b>KERNEL STACK POINTER</b> - pointer to the process's kernel stack. A process uses its kernel stack to save the return address when it decides to voluntarily schedule out itself inside a blocking system call. </li>
+                  <li><b>INODE INDEX </b>(1 word)- a reference to the Inode entry of the executable file </li>
+                  <li><b>KERNEL STACK POINTER</b> (1 word) - pointer to the process's kernel stack. A process uses its kernel stack to save the return address when it decides to voluntarily schedule out itself inside a blocking system call. </li>
               </ul>
-       
+              <p>Invalid entries are represented by -1.</p>
+                  
               
               
               <!-- START ITEM #1 -->
@@ -178,6 +179,13 @@
                       <td style="border: 1px solid black">REGISTERS</td>
                   </tr>
               </table>
+                              <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>SP </b>(1 word)- Stack pointer pointing to top of the stack. </li>
+                   <li><b>BP </b>(1 word) - Base pointer pointing to the base of the stack. </li>
+                  <li><b>IP </b>(1 word) - Instruction pointer pointing to the next instruction to be executed. </li>
+                  <li><b>REGISTERS</b>  - Machine registers. </li>
+                  
+                  </ul>
                               <p>USER CONTEXT is updated when a process is preempted when it is in user mode. SYSTEM CONTEXT is updated when a there is a context switch from kernel mode to kernel mode.</p>
 
                           </div>
@@ -193,12 +201,13 @@
                               <p>For every file opened by the process, it stores the index of the File Table entry for the file, and the LSEEK position of the open instance of a file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. </p>
 <p>Similarly, for every semaphore used by the process, the per-process resource table stores the index of Semaphore Table entry.
  </p>
- <p>Thus the per-process resource table looks like </p>
+ <p>Each entry is of size 2 words. In this versions of eXpOS, number of entries in the Per-Process Resource Table is 8. Thus per-process resource table has a size of 16 words.</p>
+ <p>The per-process resource table entry has the following format. </p>
                               
                <table class="table table-bordered" >
                   <tr>
-                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry</td>
-                      <td style="border: 1px solid black">LSEEK</td>
+                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>
+                      <td style="border: 1px solid black">LSEEK (1 word)</td>
                       
                   </tr>
               </table>

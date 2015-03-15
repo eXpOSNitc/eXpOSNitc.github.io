@@ -149,7 +149,7 @@
                <br>
                <br>
               <p>The Semaphore Table contains details about all the semaphores used by the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time.For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
-              <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore in the semaphore table. Semget increments the Process count everytime it is invoked. The semaphore is initially not set that is Locking PID is -1. It locks it using SemLock system call. SemLock changes the Locking PID to the PID of the process invoking it. SemUnLock will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore. Finally when a process is done with the using of Semaphore, it releases it using Semrelease. Semrelease decrements the Process Count. A process may open several files and semaphores and execute the Fork system call multiple times to create an several process that shares all the semaphores acquired by the parent before the Fork system call.</p>        
+              <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore in the semaphore table. Semget increments the Process count everytime it is invoked. The semaphore is initially not set, that is, Locking PID is -1. It locks it using SemLock system call. SemLock changes the Locking PID to the PID of the process invoking it. SemUnLock will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore. Finally when a process is done with the using of Semaphore, it releases it using Semrelease. Semrelease decrements the Process Count. A process may open several files and semaphores and execute the Fork system call multiple times to create an several process that shares all the semaphores acquired by the parent before the Fork system call.</p>        
 
               <p>Each entry is of size 4 words of which the last two are left unused. It follows the following format: </p>
               <table class="table table-bordered" >
@@ -183,7 +183,7 @@
               <h2 class="wow fadeInLeftBig">Disk Status Table</h2>
                <br>
                <br>
-              <p> Disk Status Table keeps track of the load and store operations. Every time a disk operation is invokr </p>
+              <p> Disk Status Table keeps track of the load and store operations. Every time a disk operation is invoked, the information regarding the disk transfer like the disk block and the memory page involved in the disk transfer, the process that invoked the transfer and type of disk operation are stored in Disk Status Table. The size of the table is 4 words.</p>
               <p> Every entry of the Disk Status Table has the following format:</p>
               <table class="table table-bordered table-responsive" >
                   <tr >
@@ -194,10 +194,10 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>LOAD/STORE BIT </b>- specifies whether the operation being done on the device is a load or store.</li>
-                   <li><b>PAGE NUMBER</b> - specifies the page number of the page, which is being stored onto the disk or, to which a block from disk is being loaded. </li>
-                   <li><b>BLOCK NUMBER</b> - specifies the block number of the disk block being loaded into memory or to which a page is being stored.</li>
-                  <li><b>PID</b> - specifies the PID of the process who invoked the device.</li>
+                   <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load or store.</li>
+                   <li><b>PAGE NUMBER</b> (1 word) - specifies the page number of the page, which is being stored onto the disk or, to which a block from disk is being loaded. </li>
+                   <li><b>BLOCK NUMBER</b> (1 word) - specifies the block number of the disk block being loaded into memory or to which a page is being stored.</li>
+                  <li><b>PID</b> (1 word) - specifies the PID of the process who invoked the device. It has a value -1 if the disk transfer was initiated by the scheduler.</li>
                                      
               </ul>    
 </div>
@@ -217,21 +217,23 @@
                <br>
                <br>
                <p>To minimize the number of load and store operations, eXpOS provides a buffer cache in memory which would temporarily store disk blocks. Each disk block is mapped to a unique buffer. The disk blocks will be stored back to the disk when some other blocks replace it. Only modified blocks are written back to disk.</p>
-              <p> It keeps the information about disk blocks present in the buffer. There are MAX_BUFFER number of buffers available so the BUFFER TABLE will have that many entries. </p>
+              <p> Buffer Table keeps the information about disk blocks present in the buffer. The table is updated whenever a block is loaded into buffer cache or when a buffer page is stored back into disk. There are MAX_BUFFER number of buffers available so the BUFFER TABLE will have that many entries. In this version of eXpOS, MAX_BUFFER = 10. Every entry is of 4 words of which 1 word is unused.</p>
               <p> Every entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">BLOCK NUMBER</td>
                       <td style="border: 1px solid black">DIRTY BIT</td>
                       <td style="border: 1px solid black">LOCKING PID</td>
-                                           
+                      <td style="border: 1px solid black">Unused</td>
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>BLOCK NUMBER</b>- specifies block number of the disk block stored in the buffer.</li>
-                   <li><b>DIRTY BIT</b> - specifies whether the block stored in the buffer has been modified. </li>
-                   <li><b>LOCKING PID</b> - specifies the PID of the process which has currently locked the buffer.</li>
+                   <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block stored in the buffer.</li>
+                   <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. </li>
+                   <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer.</li>
+                   <li><b>Unused</b> (1 word)</li>
                </ul>
+              <p>Free entries are represented by -1 in all the fields.</p>
 </div>
                   
         </div>
@@ -248,21 +250,24 @@
               <h2 class="wow fadeInLeftBig">System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about no: of free pages in memory, no: of processes waiting for memory pages and also no: of processes in swapped state. </p>
+              <p> It keeps the information about no: of free pages in memory, no: of processes waiting for memory pages and also no: of processes in swapped state. The size of the table is 4 words of which 1 word is unused.</p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">MEM_FREE_COUNT</td>
                       <td style="border: 1px solid black">WAIT_MEM_COUNT</td>
                       <td style="border: 1px solid black">SWAPPED_COUNT</td>
+                      <td style="border: 1px solid black">Unused</td>
                                            
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>MEM_FREE_COUNT</b>- specifies the number of free pages available in memory.</li>
-                   <li><b>WAIT_MEM_COUNT</b> - specifies the number of processes waiting for memory. </li>
-                   <li><b>SWAPPED_COUNT</b> - specifies the number of processes in SWAPPED state.</li>
+                   <li><b>MEM_FREE_COUNT</b> (1 word) - specifies the number of free pages available in memory.</li>
+                   <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting for memory. </li>
+                   <li><b>SWAPPED_COUNT</b> (1 word)- specifies the number of processes in SWAPPED state.</li>
+                   <li><b>Unused</b> (1 word)</li>
                </ul>
+              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to **128, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
 </div>
                   
         </div>
