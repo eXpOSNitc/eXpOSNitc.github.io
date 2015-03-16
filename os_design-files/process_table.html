@@ -118,7 +118,7 @@
                       <td style="border: 1px solid black">PTLR</td>
                       <td style="border: 1px solid black">PER-PROCESS RESOURCE TABLE</td>
                       <td style="border: 1px solid black">INODE INDEX</td>
-                      <td style="border: 1px solid black">iSTREAM</td>
+                      <td style="border: 1px solid black">INPUT BUFFER</td>
                       <td style="border: 1px solid black">MACHINE STATE</td>
                       <td style="border: 1px solid black">KERNEL STACK POINTER</td>
                       <td style="border: 1px solid black">Unused</td>
@@ -135,6 +135,8 @@
                   <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> - pointer to the Per-Process Resource Table that contains information about the files opened by the process as well as semaphores used by the process. </li>
                   <li><b>INODE INDEX </b>(1 word)- a reference to the Inode entry of the executable file </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - pointer to the process's kernel stack. A process uses its kernel stack to save the return address when it decides to voluntarily schedule out itself inside a blocking system call. </li>
+				  <li><b>INPUT BUFFER</b> (1 word) - pointer to the process's kernel stack. A process uses its kernel stack to save the return address when it decides to voluntarily schedule out itself inside a blocking system call. </li>
+				  <li><b>Unused</b> (1 word)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
@@ -152,12 +154,13 @@
                           <li>(RUNNING,___) – The process is in execution. </li>
                           <li>(READY,___) – The process is ready to be scheduled.</li>
                           <li>(WAIT_PROCESS,WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID.  </li>
-                          <li>(WAIT_FILE, FTENTRY) - The process is waiting for accessing a file whose file table entry index is FTENTRY. </li>
+                          <li>(WAIT_FILE, FTENTRY) - The process is blocked for a file whose file table entry index is FTENTRY. </li>
                           <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process.  </li>
                           <li>(WAIT_SEMAPHORE,SEMID) - The process is waiting for a semaphore (whose descriptor is SEMID) that was locked by some other process.   </li>
                           <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>
                           <li>(SWAPPED,___) – The stack page of the process has been swapped out to disk</li>
                           <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for disk buffer of index BUFFERID to be unlocked. </li>
+                          <li>(WAIT_TERMINAL, _) – The process is waiting for process for Read from Terminal to be completed.  </li>
                       </ul>
 
                           </div>
@@ -171,14 +174,15 @@
                             <h4 class="panel-title" style="padding-top: 20px">MACHINE STATE</h4>
                           
                           <div class="panel-body">
-                              <p>This part is machine dependent.  The OS scheduler can schedule out a process in execution and save its machine state here.  Later, the scheduler can restore the machine state to start execution from where it was stopped.   The initial values of this structure are fixed by the OS loader (exec system call) and the values get updated whenever the process is preempted. </p>
-                              <p>The MACHINE STATE consists of USER CONTEXT and SYSTEM CONTEXT. Each would contain the following information.</p>
+                              <p>This part is machine dependent.  The OS scheduler can schedule out a process in execution and save its machine state here.  Later, the scheduler can restore the machine state to start execution from where it was stopped. The initial values of this structure are fixed by the OS loader (exec system call) and the values get updated whenever the process is preempted. </p>
+                              <p>The MACHINE STATE consists of USER CONTEXT and SYSTEM CONTEXT. It would contain the following information.</p>
                               <table class="table table-bordered" >
                   <tr>
                       <td style="border: 1px solid black">SP</td>
                       <td style="border: 1px solid black">BP</td>
                       <td style="border: 1px solid black">IP</td>
-                      <td style="border: 1px solid black">REGISTERS</td>
+                      <td style="border: 1px solid black">REGISTERS in USER CONTEXT</td>
+                      <td style="border: 1px solid black">REGISTERS in SYSTEM CONTEXT</td>
                   </tr>
               </table>
                               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
@@ -186,26 +190,24 @@
                    <li><b>BP </b>(1 word) - Base pointer pointing to the base of the stack. </li>
                   <li><b>IP </b>(1 word) - Instruction pointer pointing to the next instruction to be executed. </li>
                   <li><b>REGISTERS</b>  - Machine registers. </li>
-                  
+                  b
                   </ul>
                               <p>USER CONTEXT is updated when a process is preempted when it is in user mode. SYSTEM CONTEXT is updated when a there is a context switch from kernel mode to kernel mode.</p>
 
                           </div>
                         </div>
-              
+                        
               <!-- START ITEM #3 -->
                         <div class="panel panel-default wow fadeInLeft" id="per_process_table">
                             <br>
                             <br>
-                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>
-                          
+                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
                               <p>For every file opened by the process, it stores the index of the File Table entry for the file, and the LSEEK position of the open instance of a file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. </p>
 <p>Similarly, for every semaphore used by the process, the per-process resource table stores the index of Semaphore Table entry.
  </p>
  <p>Each entry is of size 2 words. In this versions of eXpOS, number of entries in the Per-Process Resource Table is 8. Thus per-process resource table has a size of 16 words.</p>
  <p>The per-process resource table entry has the following format. </p>
-                              
                <table class="table table-bordered" >
                   <tr>
                       <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>
@@ -223,9 +225,7 @@
         </div>
         
       </div>
-    </section>
- 
-   
+    </section>   
     <!--=========== END SECTION ================-->
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
