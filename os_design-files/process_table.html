@@ -133,18 +133,18 @@
                   
                   <li><b>PTBR </b>(1 word)- Page Table Base Register stores the starting address of the page table of a process. </li>
                   <li><b>PTLR</b> (1 word)- Page Table Length Register stores the number of entries in the page table of a process and determines the size of the virtual address space of the process. (Size of the virtual address space is page table length register entry times page size).</li>
-                  <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> (16 words) - pointer to the Per-Process Resource Table that contains information about the files opened by the process as well as semaphores used by the process. </li>
-                  <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. It is modified during an Exec system call. </li>
+                  <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> (16 words) - Per-Process Resource Table that contains information about the files opened by the process as well as semaphores used by the process. </li>
+                  <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
                   <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal.</li>
-                  <li><b>MODE FLAG</b> (1 word) - Used to indicate the mode (kernel or user) in which the process is currently in.</li>
-                  <li><a href="#machine_state"><b>MACHINE STATE</b></a> (32 words) - pointer to a structure that gives the machine state when the process was last executed. This part is machine dependent. </li>
+                  <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode.</li>
+                  <li><a href="#machine_state"><b>MACHINE STATE</b></a> (32 words) - a structure that gives the machine state when the process was last executed. This part is machine dependent. </li>
                   <li><b>KERNEL RE-ENTRY POINT</b> (1 word) - Contains the return address when a process voluntarily schedules out itself inside a blocking system call. </li>
                   
 				  <li><b>Unused</b> (4 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
-              
+              <p>Note: In this version of eXpOS, </p>
               
               <!-- START ITEM #1 -->
                         <div class="panel panel-default wow fadeInLeft" id="state">
@@ -162,9 +162,9 @@
                           <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process.  </li>
                           <li>(WAIT_SEMAPHORE,SEMID) - The process is waiting for a semaphore (whose descriptor is SEMID) that was locked by some other process.   </li>
                           <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>
-                          <li>(SWAPPED,___) – The stack page of the process has been swapped out to disk</li>
+                          <li>(SWAPPED,___) – The stack page of the process has been swapped out into disk.</li>
                           <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for disk buffer of index BUFFERID to be unlocked. </li>
-                          <li>(WAIT_TERMINAL, _) – The process is waiting for Read from Terminal to be completed.  </li>
+                          <li>(WAIT_TERMINAL,___) – The process is waiting for Read from Terminal to be completed.  </li>
                       </ul>
 
                           </div>
@@ -206,10 +206,9 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>For every file opened by the process, it stores the index of the File Table entry for the file, and the LSEEK position of the open instance of a file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. </p>
-<p>Similarly, for every semaphore used by the process, the per-process resource table stores the index of Semaphore Table entry.
- </p>
- <p>Each entry is of size 2 words. In this versions of eXpOS, number of entries in the Per-Process Resource Table is 8. Thus per-process resource table has a size of 16 words.</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every open instance of file/semaphore opened by the process, it stores the index of the File Table/Semaphore Table entry for the file/semaphore. In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
+ 
+ 
  <p>The per-process resource table entry has the following format. </p>
                <table class="table table-bordered" >
                   <tr>
@@ -218,7 +217,7 @@
                       
                   </tr>
               </table>
- <p>The index of the per-process resource table entry for each file is known as the file descriptor.</p>
+ <p>File descriptor, returned by Open system call, is the index of the per-process resource table entry for that open instance of the file.</p>
                              </div>
                         </div>
               
