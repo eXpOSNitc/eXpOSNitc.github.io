@@ -97,7 +97,7 @@
     <!--=========== End HEADER SECTION ================--> 
  
  <!--=========== BEGIN file Table SECTION ================-->
-    <section id="gf_table">
+    <section id="file_table">
 		   <br><br><br>
 
       <div class="container">
@@ -112,13 +112,14 @@
               </p><p>
               If the file open count reaches zero (that is if the last open instance has been closed) then, all fields of 
               the corresponding file table entry is invalidated by setting to -1.   </p>
-              <p>Each entry is of size 4 words of which the last one is left unused.</p>
+              <p>Each entry is of size 8 words of which the last 4 are left unused.</p>
               <p>Every entry of the File Table has the following format :</p>
               <table class="table table-bordered  table-responsive" >
                   <tr >
                       <td style="border: 1px solid black">INODE INDEX</td>
                       <td style="border: 1px solid black">FILE OPEN COUNT</td>
-                      <td style="border: 1px solid black">LOCKING PID</td>
+                      <td style="border: 1px solid black">ULOCK</td>
+                      <td style="border: 1px solid black">KLOCK</td>
                       <td style="border: 1px solid black">Unused</td>
                                             
                   </tr>
@@ -126,8 +127,10 @@
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>INODE INDEX </b> (1 word) - specifies the index of the entry for the file in the Inode table.</li>
                    <li><b>FILE OPEN COUNT</b> (1 word) - specifies the number of open instances of the file  </li>
-                   <li><b>LOCKING PID</b> (1 word)- specifies the PID of the process which has curently locked the file. </li>
-                  <li><b>Unused</b> (1 word)</li>
+                   <li><b>ULOCK</b> (1 word)- specifies the PID of the process which has locked the file in user mode. </li>
+                   <li><b>KLOCK</b> (1 word)- specifies the PID of the process which has locked the file in kernel mode. </li>
+                   
+                  <li><b>Unused</b> (4 words)</li>
                                      
               </ul>  
               
@@ -139,7 +142,7 @@
       </div>
     </section>
 
- <section id="gs_table">
+ <section id="sem_table">
 	    <br><br><br>
 
       <div class="container">
@@ -163,7 +166,7 @@
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>LOCKING PID </b> (1 word)- specifies the PID of the process which has locked the semaphore </li>
                    <li><b>PROCESS COUNT</b> (1 word) - specifies the number of processes waiting for semaphore   </li>
-                   <li><b>Unused</b> (2 word)</li>                                     
+                   <li><b>Unused</b> (2 words)</li>                                     
               </ul> 
               
               <p>All invalid entries are set to -1</p>     
@@ -183,17 +186,20 @@
               <h2 class="wow fadeInLeftBig">Disk Status Table</h2>
                <br>
                <br>
-              <p> Disk Status Table keeps track of the load and store operations. Every time a disk operation is invoked, the information regarding the disk transfer like the disk block and the memory page involved in the disk transfer, the process that invoked the transfer and type of disk operation are stored in Disk Status Table. The size of the table is 4 words.</p>
+              <p> Disk Status Table keeps track of the load and store operations. Every time a disk operation is invoked, the information regarding the disk transfer like the disk block and the memory page involved in the disk transfer, the process that invoked the transfer and type of disk operation are stored in Disk Status Table. The size of the table is 8 words of which the last 3 are unused.</p>
               <p> Every entry of the Disk Status Table has the following format:</p>
               <table class="table table-bordered table-responsive" >
                   <tr >
+                       <td style="border: 1px solid black">STATUS</td>  
                       <td style="border: 1px solid black">LOAD/STORE BIT</td>
                       <td style="border: 1px solid black">PAGE NUMBER</td>
                       <td style="border: 1px solid black">BLOCK NUMBER</td>
-                       <td style="border: 1px solid black">PID</td>                     
+                       <td style="border: 1px solid black">PID</td>   
+                       
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>STATUS </b>(1 word) - specifies whether the disk is free or busy handling a memory-disk transfer.</li>
                    <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load or store.</li>
                    <li><b>PAGE NUMBER</b> (1 word) - specifies the page number of the page, which is being stored onto the disk or, to which a block from disk is being loaded. </li>
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies the block number of the disk block being loaded into memory or to which a page is being stored.</li>
@@ -250,7 +256,7 @@
               <h2 class="wow fadeInLeftBig">System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about no: of free pages in memory, no: of processes waiting for memory pages and also no: of processes in swapped state. The size of the table is 4 words of which 1 word is unused.</p>
+              <p> It keeps the information about number of free pages in memory, number of processes waiting for memory pages and number of processes in swapped state. The size of the table is 4 words of which 1 word is unused.</p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -274,8 +280,39 @@
         
       </div>
     </section>
+ 
+<section id="ts_table">
+	    <br><br><br>
 
- <!--=========== BEGIN mem free liat SECTION ================-->
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 class="wow fadeInLeftBig">Terminal Status Table</h2>
+               <br>
+               <br>
+              <p> Terminal Status Table keeps track of the Read operations done on the terminal. Every time a Read system call is invoked on the terminal, the information like the process that invoked the system call and status of the terminal (whether any process is reading from terminal or not) are stored in Terminal Status Table. The size of the table is 4 words of which the last 2 are unused.</p>
+              <p> Every entry of the Terminal Status Table has the following format:</p>
+              <table class="table table-bordered table-responsive" >
+                  <tr >
+                       <td style="border: 1px solid black">STATUS</td>  
+                       <td style="border: 1px solid black">PID</td>  
+                       <td style="border: 1px solid black">Unused</td>
+                       
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input.</li>
+                    <li><b>PID</b> (1 word) - specifies the PID of the process who is currently reading input from the terminal.</li>
+                   <li><b>Unused</b> (2 words)</li>                       
+              </ul>    
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+
+ <!--=========== BEGIN mem free list SECTION ================-->
     <section id="mem_free_list">
 		   <br><br><br>
 
@@ -287,7 +324,7 @@
                 <h2 class="wow fadeInLeftBig">Memory Free List</h2>
                <br>
               <br>
-              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words.</p><p>Each entry of the free list contains a value of either 0 indicating whether the corresponding page in the memory is free or number indicating the number of processes that share the page.</p>
+              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. In this version of eXpOS, MAX_MEM_PAGES = 128</p><p>Each entry of the free list contains a value of either 0 indicating whether the corresponding page in the memory is free or number indicating the number of processes that share the page.</p>
               
                         
 </div>
