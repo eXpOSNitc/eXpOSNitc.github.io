@@ -118,15 +118,16 @@
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Saving the context of current process</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
-                    Find the PID or Process Identifier of the currently running process. In eXpOS, PID is calculated from the value of the PTBR using the formula</p>
+                    1. Find the PID or Process Identifier of the currently running process. In eXpOS, PID is calculated from the value of the PTBR using the formula</p>
                     <p> (PTBR - 1024) / 8</p>
-                   <p>Find the location of the PCB of the current process using the formula 1536 + 32 * currentPID</p>
-                    <p>Set the STATE field of the current PCB to 1 (Ready). Execute the Backup instruction.</p>
+                   <p>2. Find the location of the PCB of the current process using the formula 1536 + 32 * currentPID</p>
+                    <p>3. Set the STATE field of the current PCB to 1 (Ready). Execute the Backup instruction.</p>
             </div>
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Find the next process to be scheduled and the senior most swapped process</a></p>
              <div id="collapse2" class="panel-collapse collapse">
                 
-                    <p>Scan the Process Table from next PCB to find the next Ready Process and the senior most swapped process.</p>                                             
+                    <p>Scan the Process Table from next PCB to find the process with state as (READY, _) and also the process with highest value for TICK.</p>
+                    <p>While scanning increment the TICK of all the process.</p>                                          
                
             </div>
 			<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">If free memory pages present</a></p>
@@ -152,7 +153,10 @@
               <div id="collapse6" class="panel-collapse collapse">             
                     <p style=" text-indent: 5em;">Check the SWAPPED_COUNT in <a href="os_design-files/mem_ds.html">System Status Table</a>.</p>              
             </div>
-            <p style="text-indent: 10em;">For the senior most swapped process, find the block which has to be swapped in.</p>
+            <p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">For the senior most swapped process, find the block which has to be swapped in.</a></p>
+           <div id="collapse6" class="panel-collapse collapse">             
+                    <p style=" text-indent: 10em;">Using the SP value in the <a href="process_table.html">Process Table</a>, find the stack page using the formula [</p>              
+            </div>
             <p style="text-indent: 10em;">Find a free page in memory.</p>
             <p style="text-indent: 10em;">Load the block from disk to free page in memory.</p>
             <p style="text-indent: 10em;">Set the state of the process to ready.</p>
