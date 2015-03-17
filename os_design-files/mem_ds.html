@@ -189,8 +189,8 @@
               <h2 class="wow fadeInLeftBig">Disk Status Table</h2>
                <br>
                <br>
-              <p> Disk Status Table keeps track of the load and store operations. Every time a disk operation is invoked, the information regarding the disk transfer like the disk block and the memory page involved in the disk transfer, the process that invoked the transfer and type of disk operation are stored in Disk Status Table. The size of the table is 8 words of which the last 3 are unused.</p>
-              <p> Every entry of the Disk Status Table has the following format:</p>
+              <p> It is assumed that the machine provides a load instruction to transfer a disk block to a memory page and a store instruction to transfer a memory page to a disk block. Disk Status Table keeps track of these disk-memory transfers. Every time a disk operation is invoked, the information regarding the operation like the disk block and the memory page involved, the process that invoked the operation and type of disk operation are stored in Disk Status Table. The disk does not support multiple disk-memory transfers at the same time and is considered busy while a transfer is going on. The state of the disk (busy or free) is also stored in the Disk Status Table. </p>
+              <p> The size of the table is 8 words of which the last 3 are unused.</p>
               <table class="table table-bordered table-responsive" >
                   <tr >
                        <td style="border: 1px solid black">STATUS</td>  
@@ -202,8 +202,8 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>STATUS </b>(1 word) - specifies whether the disk is free or busy handling a memory-disk transfer.</li>
-                   <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load or store.</li>
+                   <li><b>STATUS </b>(1 word) - specifies whether the disk is free (indicated by 0) or busy (indicated by 1) handling a memory-disk transfer.</li>
+                   <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load (indicated by 0) or store (indicated by 1).</li>
                    <li><b>PAGE NUMBER</b> (1 word) - specifies the page number of the page, which is being stored onto the disk or, to which a block from disk is being loaded. </li>
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies the block number of the disk block being loaded into memory or to which a page is being stored.</li>
                   <li><b>PID</b> (1 word) - specifies the PID of the process who invoked the device. It has a value -1 if the disk transfer was initiated by the scheduler.</li>
