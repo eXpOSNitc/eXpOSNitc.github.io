@@ -152,6 +152,7 @@
                <br>
                <br>
               <p>The Semaphore Table contains details about all the semaphores used by the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
+              
               <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore in the semaphore table. Semget increments the Process count everytime it is invoked. The semaphore is initially not set, that is, Locking PID is -1. It locks it using SemLock system call. SemLock changes the Locking PID to the PID of the process invoking it. SemUnLock will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore. Finally when a process is done with the using of Semaphore, it releases it using Semrelease. Semrelease decrements the Process Count. A process may open several files and semaphores and execute the Fork system call multiple times to create an several process that shares all the semaphores acquired by the parent before the Fork system call.</p>        
 
               <p>Each entry is of size 4 words of which the last two are left unused. It follows the following format: </p>
