@@ -137,7 +137,7 @@
                   <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode.</li>
                   
                   <li><b>KERNEL RE-ENTRY POINT</b> (1 word) - Contains the return address when a process voluntarily schedules out itself inside a blocking system call. </li>
-                  <li><a href="#machine_state"><b>MACHINE STATE POINTER</b></a> (1 word) - pointer to a structure that gives the machine state when the process was last executed. This scheduler uses this structure to store the context of the process while scheduling. </li>
+                  <li><a href="#machine_state"><b>MACHINE STATE</b></a> <b>POINTER</b>(1 word) - pointer to a structure that gives the machine state when the process was last executed. This scheduler uses this structure to store the context of the process while scheduling. </li>
 				  <li><b>Unused</b> (6 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
@@ -208,7 +208,7 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every open instance of file/semaphore opened by the process, it stores the index of the File Table/Semaphore Table entry for the file/semaphore. In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore). In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
  
  
  <p>The per-process resource table entry has the following format. </p>
@@ -229,7 +229,7 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS PAGE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Page Table contains information regarding the physical location of the pages of a process. Each valid entry of a page table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table. In this version of eXpOS, MAX_NUM_PAGES is set to 8. The address of Page Table of the currently executing process is stored in PTBR and length of the page table is stored in PTLR. </p>
+                              <p>The Per-Process Page Table contains information regarding the physical location of the pages of a process. Each valid entry of a page table stores the physical page number corresponding to each logical (virtual) page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.  The address of Page Table of the currently executing process is stored in PTBR and length of the page table is stored in PTLR. In this version of eXpOS, MAX_NUM_PAGES is set to 8, hence PTLR is always set to 8</p>
 
  <p>Each entry of the page table is of 2 words and has the following format. </p>
                <table class="table table-bordered" >
