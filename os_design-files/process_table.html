@@ -107,7 +107,7 @@
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 32.</p>
-              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 32 words, of which last 6 words are unused. Any entry of PT has the following fields:</p>
+              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 32 words, of which last 5 words are unused. Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">TICK</td>
@@ -120,7 +120,7 @@
                       <td style="border: 1px solid black">INPUT BUFFER</td>
                       <td style="border: 1px solid black">MODE FLAG</td>
                       <td style="border: 1px solid black">KERNEL RE-ENTRY POINT</td>
-                                            <td style="border: 1px solid black">PTBR</td>
+                       <td style="border: 1px solid black">PTBR</td>
                       <td style="border: 1px solid black">MACHINE STATE POINTER</td>
                       <td style="border: 1px solid black">Unused</td>
                   </tr>
@@ -134,13 +134,13 @@
                   
                   <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> (16 words) - Per-Process Resource Table  contains information about the files opened by the process as well as semaphores used by the process. </li>
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
-                  <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal. Whenever a word is read from the terminal </li>
+                  <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal. Whenever a word is read from the terminal, Terminal Interrupt Handler will store the word into this buffer. </li>
                   <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode. It is set to 1 when it enters a kernel mode (upon entering the system call) and resets to 0 when it returns from system call, back to the user mode.</li>
                   
                   <li><b>KERNEL RE-ENTRY POINT</b> (1 word) - Contains the return address when a process voluntarily schedules out itself inside a blocking system call. </li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">Per Process Page Table</a>.</li>
                   <li><a href="#machine_state"><b>MACHINE STATE</b></a> <b>POINTER</b>(1 word) - pointer to a structure that gives the machine state when the process was last executed. The scheduler uses this structure to store the context of the process while scheduling. This part is architecture-dependent.</li>
-				  <li><b>Unused</b> (6 words)</li>
+				  <li><b>Unused</b> (5 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
@@ -179,7 +179,7 @@
                           
                           <div class="panel-body">
                               <p> The OS scheduler can schedule out a process in execution and save its machine state here.  Later, the scheduler can restore the machine state to start execution from where it had stopped. The initial values of this structure are fixed by the OS loader (or exec system call) and the values get updated whenever the process is preempted. </p>
-                              <p>The contents of this structure are architecture dependent. For the  XSM architecture discussed <a href="../archi.html">here</a>, each entry is of size 32 words of which last 3 are unused. It would contain the following information.</p>
+                              <p>The contents of this structure are architecture dependent. For the  XSM architecture discussed <a href="../arch_spec.html">here</a>, each entry is of size 32 words of which last 3 are unused. It would contain the following information.</p>
                               <table class="table table-bordered" >
                   <tr>
                       <td style="border: 1px solid black">SP</td>
