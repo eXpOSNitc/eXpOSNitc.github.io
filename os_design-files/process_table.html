@@ -246,11 +246,12 @@
  
  <p><b>Auxiliary information </b>- Associated with each page table entry, typically auxiliary information is also stored.  This is to store information like whether the page is dirty, referenced, valid etc.   The exact details are architecture dependent.  The eXpOS specification expects that the hardware provides support for reference and valid bits.   (See LINK for discussion on reference and valid bits). </p>
         <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>Reference bit </b>- Initially, all reference bits are set to 0 (unreferenced) by the machine. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine. This bit is used for page replacement by the OS.  </li>
-                   <li><b>Valid bit </b> - This bit indicates whether the entry of the page table is valid or invalid. The Valid bit of an entry has value 1 if the first word of the physical page number entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The physical page number entry of an invalid page is either -1 (indicates that there is no physical page corresponding to the logical address) or a disk block number (the physical page corresponding to the logical page resides in this disk block). The Valid bit is set by the OS. If memory access is made to a page whose page table entry is invalid, a page fault occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page. </li>
+                   <li><b>Reference bit </b>- The reference bit for a page table entry is set to 0 when the page is loaded to memory and the page table initialized. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine. This bit is used for page replacement by the OS.  </li>
+                   <li><b>Valid bit </b> - This bit is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. </li>
                  
                   
                   </ul>
+                  <p>Note: In the eXpOS implementation on the XSM architecture, if a page is not loaded to the memory, but is stored in a disk block, The physical page number entry is set to the disk block number by the OS. Otherwise, the physical page number entry is set to -1.  If memory access is made to a page whose page table entry is invalid, a <i>page fault</i> occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
                              </div>
                         </div>
                             
