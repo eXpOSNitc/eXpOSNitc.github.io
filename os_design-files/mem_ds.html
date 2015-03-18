@@ -225,11 +225,11 @@
               <h2 class="wow fadeInLeftBig">Buffer Table</h2>
                <br>
                <br>
-               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer.    The OS reserves MAX_BUFFER number of memory pages for use as buffer.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER=4.    Each buffer is idenfied by its index in the buffer table. </p> 
+               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER=4. Each buffer is idenfied by its index in the buffer table. </p> 
 
-<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified.</p> 
+			<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified.</p> 
 
-<p>When a disk block required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula disk_block_number % MAX_BUFFER.    </p>
+			<p>When a disk block required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula disk_block_number % MAX_BUFFER.    </p>
               <p> Each entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
