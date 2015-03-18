@@ -225,9 +225,12 @@
               <h2 class="wow fadeInLeftBig">Buffer Table</h2>
                <br>
                <br>
-               <p>To minimize the number of load and store operations, eXpOS provides a <i>buffer cache</i> in memory which would temporarily store disk blocks. Each disk block is mapped to a unique buffer. When a disk block stored in the buffer is replaced by another disk block, write back(link) is performed only if the disk block had been modified after it was brought into the buffer. </p>
-              <p> Buffer Table keeps the information about disk blocks present in the buffer. The table is updated whenever a block is loaded into buffer cache or when a buffer page is stored back into disk. There are MAX_BUFFER number of buffers available so the BUFFER TABLE will have that many entries. In this version of eXpOS, MAX_BUFFER = 4. Every entry is of 4 words of which 1 word is unused.</p>
-              <p> Every entry of the Buffer Table has the following format:</p>
+               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer.    The OS reserves MAX_BUFFER number of memory pages for use as buffer.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER=4.    Each buffer is idenfied by its index in the buffer table. </p> 
+
+<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified.</p> 
+
+<p>When a disk block required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula disk_block_number % MAX_BUFFER.    </p>
+              <p> Each entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">BLOCK NUMBER</td>
@@ -243,7 +246,7 @@
                    <li><b>Unused</b> (1 word)</li>
                </ul>
               <p>Free entries are represented by -1 in all the fields.</p>
-              <p>Buffe</p>
+              <p>Buffer mapping formula: DISK BLOCK number % MAX_BUFFER </p>
 </div>
                   
         </div>
