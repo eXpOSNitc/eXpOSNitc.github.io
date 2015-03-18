@@ -235,7 +235,7 @@
                               <p>Associated with each page table entry, typically <b>auxiliary information </b>is also stored.  This is to store information like whether the page is dirty, referenced, valid etc.   The exact details are architecture dependent.  The eXpOS specification expects that the hardware provides support for reference and valid bits.   (See LINK for discussion on reference and valid bits). </p>
                              
 
- <p>The size of the page table is architecture dependent. In this version of eXpOS implemented on XSM, each entry of the page table is of 2 words. </p>
+ 
                <table class="table table-bordered" >
                   <tr>
                       <td style="border: 1px solid black">PHYSICAL PAGE NUMBER</td>
@@ -253,8 +253,8 @@
                   
                   </ul>
                   <br>
-                  <p><i>Note1:</i> The first two bits of the second word stores the reference bit and valid bit. For more information, see ()link to xsm arch spec</p>
-                  <p><i>Note:</i> In the eXpOS implementation on the XSM architecture, if a page is not loaded to the memory, but is stored in a disk block, the physical page number entry is set to the disk block number by the OS. Otherwise, the physical page number entry is set to -1.  If memory access is made to a page whose page table entry is invalid, a <i>page fault</i> occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
+                  <p><b>Note1:</b> The first two bits of the second word stores the reference bit and valid bit. For more information, see ()link to xsm arch spec</p>
+                  <p><b>Note2:</b> In the eXpOS implementation on the XSM architecture, if a page is not loaded to the memory, but is stored in a disk block, the physical page number entry is set to the disk block number by the OS. Otherwise, the physical page number entry is set to -1.  If memory access is made to a page whose page table entry is invalid, a <i>page fault</i> occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
                              </div>
                         </div>
                             
