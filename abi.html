@@ -94,7 +94,136 @@
 
       
     </header>
-		<!--=========== End HEADER SECTION ================--> 
+		
+    <!--=========== End HEADER SECTION ================--> 
+    
+    <!--begin section-->
+    <section id="abi">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">Application Binary Interface (ABI)</h2>
+                <br/>
+                <br/>
+                <p> Introduction to abi</p>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                 <span class="fa fa-check-square-o"></span>XSM Instruction Set
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p>
+XSM Instruction set describes the target language in which a compiler must generate an executable file. Instructions are classified into privileged and unprivileged instructions. Programs run in user mode can make use of only unprivileged instructions while programs run in kernel mode makes use of both privileged and unprivileged instructions.
+
+The unprivileged instructions are
+  
+</p>
+
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                 <span class="fa fa-check-square-o"></span>Virtual Memory Process Model 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>
+                               Any process in eXpOS is logically divided into four parts namely Shared Library, Heap, Code and Stack.
+</p>
+<img src="img/process_model.png">
+<p><b>Shared library</b> can be shared by more than one executable files.It contains the library functions for dynamic memory allocation and can take maximum size of X_LSIZE.</p>
+<p><b>Code</b> contains the executable file. The first eight words are reserved for the header which describes the features of file. The rest contains the actual code written in XSM machine language.The total size of code section cannot exceed X_CSIZE.</p>
+<p>Heap is the portion of memory where dynamically allocated memory resides (for example, memory allocated via malloc in C). Library functions access this portion of memory for dynamic memory allocation and deallocation. Memory allocated from the heap will remain allocated until one of the following occurs:</p>
+<ul style="text-indent: 5em;">
+    <li>1. The memory is deallocated.</li>
+    <li>2. The program terminates. </li>
+</ul>
+<p><b>Stack</b> is the space allocated to hold all of the parameters and local variables associated with any function used by currently running program.It grows upwards and maximum size of the stack is X_SSIZE. Global variables must be allocated in the stack as the E\executable format does not support Data area.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                                <span class="fa fa-check-square-o"></span>XEXE Executable File Format
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <br>
+                                <br>
+                                <p>Any executable file in eXpOS must be in XEXE format as eXpOS executes only those files of such format.  
+ 
+The name of any executable file must end with .xsm.  Example: program.xsm
+   </p>    
+   <p>The typical executable file in eXpOS consist of  2 parts:</p>
+   <ul style="text-indent: 5em;">
+       <li>1. Header</li>
+       <li>2. Code</li>
+   </ul>
+   <img src="img/exe_file.jpeg">
+   <p>The total size of the file is defined by the constant XFS_EXESIZE.</p>
+   <p>The first eight words of the executable file are reserved for the header which describes the features of file. Structure of the header is :</p>
+   <img src="img/header.png">
+   <p><b>XMAGIC</b> is a number indicating the type of executable file. All XEXE files will have magic number.</p>
+ 
+   <p><b>Entry point</b> contains the virtual address in memory of the first instruction to be executed (entry point) of the program after the kernel has loaded it.  During loading, the program counter must be initialized to this address. </p>
+ 
+   <p><b>Text Size, Data Size, Heap Size</b> and <b>Stack size</b> stores the size of Text, Data, Heap and Stack segments respectively, in words.</p>
+
+   <p>Note that Data and stack has to be in the same area and must be managed by the compiler / application program.</p>
+   <p>If the <b>Heap Library</b> must included when the file is loaded, the Library Flag is set to 1. Generally, memory is not allocated for the heap if this flag is not set.</p>
+
+ 
+                               </div>
+                          </div>
+                        </div>
+                        
+                        
+                        
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       	
+		 
+    </section>
+    
+    <!--end section-->
                 
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
