@@ -227,9 +227,10 @@
                <br>
                <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER=4. Each buffer is idenfied by its index in the buffer table. </p> 
 
-			<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified.</p> 
+			<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified. The dirty bit indicates whether the page has been modified.</p> 
 
-			<p>When a disk block required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula disk_block_number % MAX_BUFFER.    </p>
+			<p>When a disk block is required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula :
+			</p><p> Buffer_number = disk_block_number % MAX_BUFFER   </p>
               <p> Each entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -241,12 +242,12 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block which is currently stored in the buffer.</li>
-                   <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. This bit is set by the Write System Call </li>
+                   <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. It is set to 0 when a disk block is loaded into the buffer and is set to 1 when modified by the Write System Call</li>
                    <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer while executing a file system call.</li>
                    <li><b>Unused</b> (1 word)</li>
                </ul>
               <p>Free entries are represented by -1 in all the fields.</p>
-              <p>Buffer mapping formula: DISK BLOCK number % MAX_BUFFER </p>
+              
 </div>
                   
         </div>
