@@ -155,7 +155,7 @@ The unprivileged instructions are
                            <p>
                                The (virtual) address space of any eXpOS process is logically divided into four parts namely <i>Shared Library, Heap, Code and Stack</i>.
 </p>
-<img src="img/process_model.png">
+<center><img src="img/process_model.png"></center>
 <p><b>Shared library</b> can be shared by more than one executable files.The maximum size of this memory region is X_LSIZE.</p>
 <p>
 NOTE : The present version of eXpOS assumes that routines for dynamic memory allocation are loaded into the shared library region. The present eXpOS implementation of XSM architecture sets X_LSIZE to 1024 words.</p>
@@ -191,10 +191,10 @@ The name of any executable file must end with .xsm.  Example: program.xsm
        <li>1. Header</li>
        <li>2. Code</li>
    </ul>
-   <img src="img/exe_file.jpeg">
+<center><img src="img/exe_file.jpeg"></center>
    <p>The total size of the file is defined by the constant XFS_EXESIZE.</p>
    <p>The first eight words of the executable file are reserved for the header which describes the features of file. Structure of the header is :</p>
-   <img src="img/header.png">
+<center>   <img src="img/header.png"></center>
    <p><b>XMAGIC</b> is a number indicating the type of executable file. All XEXE files will have magic number.</p>
  
    <p><b>Entry point</b> contains the virtual address in memory of the first instruction to be executed (entry point) of the program after the kernel has loaded it.  During loading, the program counter must be initialized to this address. </p>
@@ -244,11 +244,11 @@ The name of any executable file must end with .xsm.  Example: program.xsm
                                 <p style="text-indent: 5em;">INT number    	&nbsp;&nbsp;&nbsp;&nbsp;// Invoke the corresponding INT instruction. The number can be any number between 0 and 18</p> 
                                 
                                 <p>The following figure shows the data stored in process stack before an INT instruction. </p>
-                                <img src="img/system_call_stack1.png" style="margin-left: 200px;">
+<center>                        <img src="img/system_call_stack1.png"></center>
                                 
                                 <p>The INT instruction will push the value of IP + 2 on to the stack. This value is the address of the instruction after the INT instruction in the user program. Each instruction is 2 words, hence IP is incremented by 2. This IP value will be used by interrupt routine to return back from the system call to the next instruction in the calling program. The INT instruction changes mode from <b>User</b> mode to <b>kernel</b> mode and passes control to the Interrupt Routine corresponding to the system call. </p>
                                 <p>The following figure shows the data stored in process stack after an INT instruction. </p>
-                                <img src="img/system_call_stack2.png" style="margin-left: 200px;">
+<center>                        <img src="img/system_call_stack2.png"></center>
                                 <h3>After return from the system call</h3>
                                 <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the eXpL compiled machine code given in the previous step. </p>
                                 <p>POP System Call Number&nbsp;&nbsp;&nbsp;&nbsp;  	// Pop and discard the system call number</p>
