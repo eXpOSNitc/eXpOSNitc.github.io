@@ -281,7 +281,7 @@
                    <li><b>SWAPPED_COUNT</b> (1 word)- specifies the number of processes in SWAPPED state.</li>
                    <li><b>Unused</b> (1 word)</li>
                </ul>
-              <p>In the eXpOS implementation for the XSM architecture discussed here, initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
+              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
 </div>
                   
         </div>
@@ -310,7 +310,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input. This field is initially set to 0. It is changed to 1 whenever terminal is busy. The Terminal Interrupt Handler sets back the status to 0 upon completion of Terminal Read.</li>
-                    <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal.</li>
+                    <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal. This field is invalid when STATUS is 0.</li>
                    <li><b>Unused</b> (2 words)</li>                       
               </ul>    
 </div>
