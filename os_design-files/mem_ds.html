@@ -309,7 +309,7 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input. This field is initially set to 0. It is changed to 1 whenever terminal is busy.  </li>
+                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input. This field is initially set to 0. It is changed to 1 whenever terminal is busy. The Terminal Interrupt Handler sets back the status to 0 upon completion of Terminal Read.</li>
                     <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal.</li>
                    <li><b>Unused</b> (2 words)</li>                       
               </ul>    
@@ -332,7 +332,7 @@
                 <h2 class="wow fadeInLeftBig">Memory Free List</h2>
                <br>
               <br>
-              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. The number of memory pages available to the OS is architecture dependent. For the version of XSM discussed here, MAX_MEM_PAGES = 128.</p><p>Each entry of the free list contains the value  0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page.</p>
+              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. The number of memory pages available to the OS is architecture dependent. For the version of XSM discussed here, MAX_MEM_PAGES = 128.</p><p>Each entry of the free list contains either the value  0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page.</p>
        
 </div>
                   
