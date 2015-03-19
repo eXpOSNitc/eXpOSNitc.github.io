@@ -225,12 +225,12 @@
               <h2 class="wow fadeInLeftBig">Buffer Table</h2>
                <br>
                <br>
-               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER=4. Each buffer is idenfied by its index in the buffer table. </p> 
+               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER = 4. Each buffer is identified by its index in the buffer table. </p> 
 
 			<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified. The dirty bit indicates whether the page has been modified.</p> 
 
 			<p>When a disk block is required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula :
-			</p><p> Buffer_number = disk_block_number % MAX_BUFFER   </p>
+			</p><p> Buffer_number = Disk_block_number % MAX_BUFFER   </p>
               <p> Each entry of the Buffer Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -241,7 +241,7 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block which is currently stored in the buffer.</li>
+                   <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block which is currently stored in the buffer. It is set to -1 if the buffer does not contain any valid disk block.</li>
                    <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. It is set to 0 when a disk block is loaded into the buffer and is set to 1 when modified by the Write System Call.</li>
                    <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer while executing a file system call.</li>
                    <li><b>Unused</b> (1 word)</li>
@@ -264,7 +264,7 @@
               <h2 class="wow fadeInLeftBig">System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about number of free pages in memory, number of processes waiting for memory pages and number of processes in swapped state. The size of the table is 4 words of which 1 word is unused.</p>
+              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable and, the number of processes in swapped state. The size of the table is 4 words out of which 1 word is unused.</p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -281,7 +281,7 @@
                    <li><b>SWAPPED_COUNT</b> (1 word)- specifies the number of processes in SWAPPED state.</li>
                    <li><b>Unused</b> (1 word)</li>
                </ul>
-              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to **128, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
+              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
 </div>
                   
         </div>
@@ -298,7 +298,7 @@
               <h2 class="wow fadeInLeftBig">Terminal Status Table</h2>
                <br>
                <br>
-              <p> Terminal Status Table keeps track of the Read operations done on the terminal. Every time a Read system call is invoked on the terminal, the information like the process that invoked the system call and status of the terminal (whether any process is reading from terminal or not) are stored in Terminal Status Table. The size of the table is 4 words of which the last 2 are unused.</p>
+              <p>The Terminal Status Table keeps track of the Read operations done on the terminal. Every time a Read system call is invoked on the terminal, the PID of the process that invoked the system call is stored in Terminal Status Table. The table also contains information on the status of the terminal (whether free or busy). The size of the table is 4 words of which the last 2 are unused.</p>
               <p> Every entry of the Terminal Status Table has the following format:</p>
               <table class="table table-bordered table-responsive" >
                   <tr >
@@ -309,8 +309,8 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input.</li>
-                    <li><b>PID</b> (1 word) - specifies the PID of the process who is currently reading input from the terminal.</li>
+                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input. This field is initially set to 0. It is changed to 1 whenever terminal is busy. The Terminal Interrupt Handler sets back the status to 0 upon completion of Terminal Read.</li>
+                    <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal. This field is invalid when STATUS is 0.</li>
                    <li><b>Unused</b> (2 words)</li>                       
               </ul>    
 </div>
@@ -332,9 +332,8 @@
                 <h2 class="wow fadeInLeftBig">Memory Free List</h2>
                <br>
               <br>
-              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. In this version of eXpOS, MAX_MEM_PAGES = 128</p><p>Each entry of the free list contains a value of either 0 indicating whether the corresponding page in the memory is free or number indicating the number of processes that share the page.</p>
-              
-                        
+              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. The number of memory pages available to the OS is architecture dependent. For the version of XSM discussed here, MAX_MEM_PAGES = 128.</p><p>Each entry of the free list contains either the value  0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page.</p>
+       
 </div>
                   
         </div>
