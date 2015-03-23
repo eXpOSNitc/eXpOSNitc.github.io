@@ -123,11 +123,10 @@
                     <p>3. Change the state of the current process from RUNNING to READY by setting the STATE field of the Process Table entry to (READY, _). </p>
                        
             </div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Find the next process to be scheduled and the senior most swapped process</a></p>
+
+             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Incrementing TICK</a></p>
              <div id="collapse2" class="panel-collapse collapse">
-                
-                    <p>Scan the Process Table in Round Robin fashion to find the next proceess in ready state (that is, state field has value (READY, _)) and also the process with highest value for TICK.</p>
-                    <p>While scanning increment the TICK of all the process.</p>                                          
+                    <p>Increment the TICK of all the process. TICK is given <a href="process_table.html">Process Table</a>.</p>                                          
                
             </div>
 			<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">If free memory pages present</a></p>
@@ -154,12 +153,13 @@
                     <p style=" text-indent: 5em;">Check the SWAPPED_COUNT in <a href="os_design-files/mem_ds.html">System Status Table</a>.</p>              
             </div>
             <p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">For the senior most swapped process, find the block which has to be swapped in.</a></p>
-           <div id="collapse6" class="panel-collapse collapse">             
-                    <p style=" text-indent: 10em;">Using the SP value in the <a href="process_table.html">Process Table</a>, find the stack page using the formula [</p>              
+           <div id="collapse8" class="panel-collapse collapse">  
+			             <p>Process with highest value for TICK is the seniormost process.</p> 
+                    <p style=" text-indent: 10em;">Using the SP value in the <a href="process_table.html#Machine_state">Machine State</a>, find the stack page using the formula SP/512</p>              
             </div>
             <p style="text-indent: 10em;">Find a free page in memory.</p>
             <p style="text-indent: 10em;">Load the block from disk to free page in memory.</p>
-            <p style="text-indent: 10em;">Set the state of the process to ready.</p>
+            <p style="text-indent: 10em;">Set the state of the process to (READY, _).</p>
             <p style="text-indent: 10em;">Decrement the SWAPPED_COUNT and MEM_FREE_COUNT.</p>
             <p>else</p>
             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">If there are sleeping processes that requires memory pages</a></p>
@@ -180,7 +180,11 @@ and invalid.</p>
 			<p style="text-indent: 10em;">if selected page is the stack page where process stopped execution</p>
 			<p style="text-indent: 15em;">Set the state of the process to swapped</p>
 			<p style="text-indent: 15em;">Increment the SWAPPED_COUNT.</p>
-			
+			    <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Find the next process to be scheduled </a></p>
+			    <div id="collapse7" class="panel-collapse collapse">
+                                <p>Scan the Process Table in Round Robin fashion to find the next proceess in ready state (that is, state field has value (READY, _))</p>
+                                </div>
+                                
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Schedule the next ready process.</a></p>
              <div id="collapse7" class="panel-collapse collapse">
                     <p>Change the state of that process to (RUNNING,_) and use Restore instruction to restore all machine registers except for IP</p>   
