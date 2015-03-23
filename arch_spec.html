@@ -136,12 +136,204 @@
 		<div class="section_area">
     <ul class="list-group">
    <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/components.html">Components of the Machine</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/expos_abstractions.html">eXpOS Abstractions</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/eXpFS.html">The Logical File System : eXpFS</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/processmodel.html">Process Model</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/synchronization.html">Synchronization and Access Control</a></h3></li>
-   <li class="list-group-item"> <h3 class="section_title"><a href="arch_spec-files/misc.html">Miscellaneous</a></h3></li>
-   <li class="list-group-item"><h3 class="section_title"><a href="arch_spec-files/systemcallinterface.html">System Call Interface</a></h3></li>
+
+	<li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">XSM Disk Organization</a></h3>
+    <div id="collapse1" class="panel-collapse collapse">
+					<p>gfvueqgfd</p>
+					           
+                                                               
+    </div></li>     
+    
+    <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Interrupts and Exceptions</a></h3>
+    <div id="collapse2" class="panel-collapse collapse">
+<p>XSM supports a total of 19 interrupts.  Each interrupt is identified by its number between 0 and 18.  Among these, Interrupt 0 is the exception handler, Interrupts 1, 2 and 3 are hardware interrupts.  Interrupt 1 is the timer interrupt, Interrupt 2 is the disk controller interrupt and Interrupt 3 is the console interrupt. The remaining interrupts are software interrupts.  Software interrupts occur when they are invoked by a program in execution.  A program can invoke a software interrupt using the INT machine instruction.   However, hardware interrupts and the exception handler cannot be invoked from user mode programs.</p>  
+
+<p>The machine raises an exception when it runs in user mode and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions are associated with Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are discussed in (ADD LINK).</p>  
+
+<p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table below.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>					
+
+			
+
+		           
+    </div></li>
+      
+        
+    
+    <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Memory Organisation</a></h3>
+    <div id="collapse3" class="panel-collapse collapse">
+
+<p>The  Memory of the XSM Machine is organised as follows :</p>
+
+                                <table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Page Number</th>
+                                        <th style="text-align: center;">Contents</th>
+                                        <th style="text-align: center;">Word Address</th>
+										<th style="text-align: center;">Number of Words</th>	
+                                    </tr>
+  <tr>
+    <td>0</td>
+    <td>ROM Code</td>	
+    <td>0 - 511</td>
+    <td>512</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  
+</table>
+
+    <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">XSM Machine Registers</a></h3>
+    <div id="collapse4" class="panel-collapse collapse">
+    
+<p>The XSM architecture maintains 38 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
+
+<p>The  following table gives an overview of XSM registers according to their catagory.</p>
+
+                                <table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Page Number</th>
+                                        <th style="text-align: center;">Contents</th>
+                                        <th style="text-align: center;">Word Address</th>
+                                    </tr>
+  <tr>
+    <td>0</td>
+    <td>ROM Code</td>	
+    <td>0 - 511</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+    
+</table>
+
+
+  </div></li>     
+
+
+
+   
+    
+	<li class="list-group-item"> <h3 class="section_title"><a href="arch_spec-files/instruction_set.html">Instruction Set</a></h3></li>
+
+	<li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Device Interrupts and Exception handling</a></h3>
+    <div id="collapse5" class="panel-collapse collapse">
+	
+	<p>Exceptions are anomalous situations which changes the normal flow of execution.  When an exception occurs when the machine is executing in User mode, the machine transfers control of execution – pushes instruction pointer to user stack and sets the  i.e. changes the value of IP to page number 2 (address = 1024) where the Exception Handler Routine resides. However in Kernel Mode, the machine halts when it encounters an exception.</p>
+
+	<p>The XSM Register set consists of five special registers for storing the details regarding exceptions.</p>
+
+	<p>Exception encountered in the privileged mode include :</p>  
+
+<ul style="text-indent:5em">
+<li>1. Illegal Memory Access
+
+occurs when any address generated by the process lies outside its logical address space values. The logical page number generated should be between 0 and the value of (512 * PTLR) - 1.
+</li>
+<br>
+<li>2. Illegal instructions
+
+occurs when an attempt is made to execute an instruction not belonging to the instruction set and also when the operands to the instruction is not legal.
+
+E.g. 	MOV 4  R0,
+
+MOV IP  4  , when executed in user mode. 
+
+ 	These instructions are considered illegal.
+
+</li>
+<br>
+<li>3. Illegal operands
+
+occurs when operands contain invalid data corresponding to the instruction. 
+
+Ex:  
+</li>
+<br>
+<li>4. Page Fault
+Occurs when the page accessed by the process is not available in the memory.
+// Write regarding Page Table
+</li>
+<br>
+<li>5. Arithmetic exception:
+Occurs when the divisor is 0.
+</li>
+</ul>				
+					           
+                                                               
+    </div></li>     
+
 </ul>
 </div>
  
