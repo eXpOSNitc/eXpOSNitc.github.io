@@ -152,41 +152,44 @@
               <div id="collapse6" class="panel-collapse collapse">             
                     <p style=" text-indent: 5em;">Check the SWAPPED_COUNT in <a href="os_design-files/mem_ds.html">System Status Table</a>.</p>              
             </div>
-            <p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">For the senior most swapped process, find the block which has to be swapped in.</a></p>
-           <div id="collapse8" class="panel-collapse collapse">  
-			             <p>Process with highest value for TICK is the seniormost process.</p> 
-                    <p style=" text-indent: 10em;">Using the SP value in the <a href="process_table.html#Machine_state">Machine State</a>, find the stack page using the formula SP/512</p>              
+            <p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">For the senior most swapped process, find the block which has to be swapped in.</a></p>
+           <div id="collapse7" class="panel-collapse collapse">  
+			             <p style=" text-indent: 10em;">Process with highest value for TICK is the senior most process.</p> 
+                    <p style=" text-indent: 10em;">Using the SP value in the <a href="process_table.html#Machine_state">Machine State</a>, find the stack page to be swapped in.</p>              
             </div>
-            <p style="text-indent: 10em;">Find a free page in memory.</p>
-            <p style="text-indent: 10em;">Load the block from disk to free page in memory.</p>
+            <p style="text-indent: 10em;">Find a free page in memory by checking the Memory Free List.</p>
+            <p style="text-indent: 10em;">Load the block (in which the stack page is stored) from disk to the free page in memory.</p>
             <p style="text-indent: 10em;">Set the state of the process to (READY, _).</p>
             <p style="text-indent: 10em;">Decrement the SWAPPED_COUNT and MEM_FREE_COUNT.</p>
             <p>else</p>
-            <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">If there are sleeping processes that requires memory pages</a></p>
-              <div id="collapse7" class="panel-collapse collapse">             
-                    <p>Check the WAIT_MEM_COUNT in <a href="os_design-files/mem_ds.html">System Status Table</a>.</p>             
+            <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">If there are sleeping processes that requires memory pages</a></p>
+              <div id="collapse8" class="panel-collapse collapse">             
+                    <p>Check the WAIT_MEM_COUNT in <a href="os_design-files/mem_ds.html">System Status Table</a></p>             
             </div>
-            <p style="text-indent: 5em;">Use second chance algorithm to find an unreferenced page.</p>
+            <p style="text-indent: 5em;">Use second chance algorithm to find an unreferenced page</p>
             <p style="text-indent: 5em;">If the unreferenced page is a code page</p>
-            <p style="text-indent: 10em;">Using pointer to Inode Table, find the corresponding code block.</p>
-			<p style="text-indent: 10em;">Set the page table entry of the selected page to the code block number.</p>
-			<p style="text-indent: 10em;">Set auxiliary information to unreferenced and invalid.</p>
+            <p style="text-indent: 10em;">Using pointer to Inode Table, find the corresponding code block number</p>
+			<p style="text-indent: 10em;">In the page table entry of the unreferenced page,set Physical Page Number field to the code block number</p>
+			<p style="text-indent: 10em;">Set auxiliary information to invalid</p>
 			
-			<p style="text-indent: 5em;">If the unreferenced page is a stack or heap page.</p>
-			<p style="text-indent: 10em;">Find a free block in swap area.</p>
-			<p style="text-indent: 10em;">Store the selected page in the swap block.</p>
+			<p style="text-indent: 5em;">If the unreferenced page is a stack or heap page</p>
+			<p style="text-indent: 10em;">Find a free block in swap area</p>
+			<p style="text-indent: 10em;">Store the selected page in the swap block</p>
 			<p style="text-indent: 10em;">Set the page table entry to the swap block number and auxiliary information to unreferenced
-and invalid.</p>
-			<p style="text-indent: 10em;">if selected page is the stack page where process stopped execution</p>
+and invalid</p>
+			<p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">if unreferenced page is the stack page where process stopped execution</a></p>
+                        <div id="collapse9" class="panel-collapse collapse">
+                                <p>Check if the SP lies in the page</p>
+                                </div>
 			<p style="text-indent: 15em;">Set the state of the process to swapped</p>
 			<p style="text-indent: 15em;">Increment the SWAPPED_COUNT.</p>
-			    <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Find the next process to be scheduled </a></p>
-			    <div id="collapse7" class="panel-collapse collapse">
+			    <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse10">Find the next process to be scheduled </a></p>
+			    <div id="collapse10" class="panel-collapse collapse">
                                 <p>Scan the Process Table in Round Robin fashion to find the next proceess in ready state (that is, state field has value (READY, _))</p>
                                 </div>
                                 
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Schedule the next ready process.</a></p>
-             <div id="collapse7" class="panel-collapse collapse">
+             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Schedule the next ready process.</a></p>
+             <div id="collapse11" class="panel-collapse collapse">
                     <p>Change the state of that process to (RUNNING,_) and use Restore instruction to restore all machine registers except for IP</p>   
                     <p> Fetch the value from the IP field in the PCB and store it in the top of the stack of the new process. </p>                                                   
             </div>
