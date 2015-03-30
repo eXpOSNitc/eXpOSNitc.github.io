@@ -174,13 +174,11 @@
 			<p style="text-indent: 10em;">Find a free block in swap area</p>
 			<p style="text-indent: 10em;">Store the selected page in the swap block</p>
 			<p style="text-indent: 10em;">Set the page table entry to the swap block number and mark the page as invalid in the Page Table entry</p>
-			<p style="text-indent: 10em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">if unreferenced page is the stack page where process stopped execution</a></p>
-                        <div id="collapse9" class="panel-collapse collapse">
-                                <p style="text-indent: 10em;">1. Check if the SP lies in the page</p>
-                                </div>
-			<p style="text-indent: 15em;">Set the state of the process to swapped</p>
+			<p style="text-indent: 10em;">if unreferenced page is the stack page where process stopped execution &nbsp;			&nbsp; /* Check if the SP points to the unreferenced page */</p>
+                        
+			<p style="text-indent: 15em;">Set the state of the process to (SWAPPED , _) </p>
 			<p style="text-indent: 15em;">Increment the SWAPPED_COUNT.</p>
-		 <p style="color: darkgreen;">//This code ends here.</p>
+		 <p style="color: darkgreen;">//The code for swapper module and demand paging ends here.</p>
             </div> 
             
 
@@ -192,8 +190,8 @@
                                 
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Schedule the next ready process</a></p>
              <div id="collapse11" class="panel-collapse collapse">
-                    <p>1. Change the state of that process to (RUNNING,_) and use Restore instruction to restore all machine registers except for IP. </p>   
-                    <p>2. Fetch the value from the IP field in the PCB and store it in the top of the stack of the new process. </p>                                                   
+                    <p>Change the state of that process to (RUNNING,_) and restore the execution context of the process. </p>   
+                                                                      
             </div>
              
              <p>Return</p>
