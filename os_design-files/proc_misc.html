@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>File System Algorithms</title>
+     <title>Process System calls</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -99,109 +99,83 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
 
-	 <!--=========== BEGIN Create ================-->
-	<section id="create">
+	 <!--=========== BEGIN  ================-->
+	<section>
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Timer Interrupt</h2>
+              <h2 class="wow fadeInLeftBig">Getpid system call</h2>
                <br>
                <br>                                      
              
-              <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling">round robin scheduling</a> is employed. The timer interrupt routine in eXpOS does the following tasks: 
-              <ol style="margin-left: 60px; font-size: 16px"><li>Schedules the next ready process for execution.</li>
-              <li>Swaps in (or out) processes from (or to) the disk.</li>
-              <li>If unused memory pages are present in the system, timer interrupt routine wakes up those processes which were blocked due to lack of memory.</li></ol>
-              
+              <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Process Identifier (Integer) </td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                      
+                                                </table>
+                                                <p>Description:  Returns the process identifier of the invoking process. The system call does not fail.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Save the context of current process</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
-                <p>
-                    1. Find the PID  of the currently running process from the <a href="process_table.html">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
-                          <p>  2.  Save the machine state to the location pointed to by Machine State Pointer. </p>        
-                    <p>3. Change the state of the current process from RUNNING to READY by setting the STATE field of the Process Table entry to (READY, _). </p>
-                       
-            </div>
-
-             <p>Increment TICK &nbsp;&nbsp;/* Increment the TICK of all the process. TICK is given in <a href="process_table.html">Process Table</a>. */ </p>
             
-             <p><b>If</b> free memory pages present &nbsp; &nbsp; /* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
-                                                          
-                
-             <p style=" text-indent: 4em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp; &nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
-            
-             <p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Wake up all processes that requires memory pages.</a></p>
-              <div id="collapse5" class="panel-collapse collapse">        
-                    <p style=" text-indent: 8em;">1. Change the state from (WAIT_MEM,_) to (READY,_).</p>
-                    <p style=" text-indent: 8em;">2. Reset the WAIT_MEM_COUNT to 0.</p>
-            </div>
-                 <div class="boxed" style="border:1px solid green">
-                     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
-       
-             <div id="collapse14" class="panel-collapse collapse">
-                 <p style=" text-indent: 4em;"><b>else</b> &nbsp;&nbsp;&nbsp;/* Since there are no sleeping processes in the memory, bring back the seniormost swapped process. */</p>
-                 <p style="text-indent: 8em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
-                 
-                 <p style="text-indent: 12em;"><b>If</b> there are swapped processes &nbsp; &nbsp; /* Check the SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
-              
-            <p style="text-indent: 16em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">For the senior most swapped process, find the block which has to be swapped in.</a></p>
-           <div id="collapse7" class="panel-collapse collapse">  
-			             <p style=" text-indent: 16em;">1. Process with highest value for TICK among the swapped process is the seniormost process.</p> 
-                    <p style=" text-indent: 16em;">2. Using the SP value in the <a href="process_table.html#Machine_state" target="_blank">Machine State</a>, find the stack page to be swapped in.</p>              
-            </div>
-            <p style="text-indent: 16em;">Find a free page in memory by checking the Memory Free List.</p>
-            <p style="text-indent: 16em;">Load the block (in which the stack page is stored) from disk to the free page in memory.</p>
-            <p style="text-indent: 16em;">In the page table entry corresponding to the stack page, set the page number to the number of the free page.</p>
-            <p style="text-indent: 16em;">Set the auxiliary information of the page table entry to referenced and valid.</p>
-            <p style="text-indent: 16em;">Set the state of the process to (READY, _).</p>
-             <p style="text-indent: 16em;">Reset the TICK count of the process to 0.</p>
-            <p style="text-indent: 16em;">Decrement the SWAPPED_COUNT and MEM_FREE_COUNT.</p>
-            
-         
-             
-            <p><b>else</b> &nbsp;&nbsp;&nbsp; /* When there is no free memory, swap process out, if necessary. */</p>
-            <p style="text-indent: 4em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
-            <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp;&nbsp; /* <i>Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></i>*/</p>
-             
-            <p style="text-indent: 12em;">Use the modified second chance algorithm to find an unreferenced page</p>
-            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a code page</p>
-            <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
-			<p style="text-indent: 16em;">In the page table entry of the unreferenced page, set Physical Page Number field to the code block number</p>
-			<p style="text-indent: 16em;">Set auxiliary information to invalid</p>
-			
-                        <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a stack or heap page</p>
-			<p style="text-indent: 16em;">Find a free block in swap area</p>
-			<p style="text-indent: 16em;">Store the selected page in the swap block</p>
-			<p style="text-indent: 16em;">Set the page table entry to the swap block number and mark the page as invalid in the Page Table entry</p>
-                        <p style="text-indent: 12em;"><b>if</b> unreferenced page is the stack page where process stopped execution &nbsp;			&nbsp; /* Check if the SP points to the unreferenced page */</p>
-                        
-			<p style="text-indent: 16em;">Set the state of the process to (SWAPPED , _) </p>
-			<p style="text-indent: 16em;">Increment the SWAPPED_COUNT.</p>
-                        <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
-            </div> 
-            
-
-                </div> 
-             	    <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse10">Find the next process to be scheduled </a></p>
-			    <div id="collapse10" class="panel-collapse collapse">
-                                <p>1. Scan the Process Table in Round Robin fashion to find the next process in ready state (that is, state field has value (READY, _)).</p>
-                                </div>
-                                
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Schedule the next ready process</a></p>
-             <div id="collapse11" class="panel-collapse collapse">
-                    <p>Change the state of that process to (RUNNING,_) and restore the execution context of the process . </p>   
-                              <p>Return to the new process.</p>                                         
-            </div>
-             
-            
-                              
-                      
          </div>
 		</div>
 		</div>
+                   
+
+        <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 class="wow fadeInLeftBig">Getppid system call</h2>
+               <br>
+               <br>                                      
+             
+              <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Parent Process Identifier (Integer)</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     
+                                                </table>
+                                                <p>Description:  Returns to the calling process the value of the process identifier of its parent. The system call does not fail.</p>
+              
+              <br>
+             <div><h4>Algorithm:</h4></div>
+            
+         </div>
+		</div>
+		</div>
+                   
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 class="wow fadeInLeftBig">Shutdown system call</h2>
+               <br>
+               <br>                                      
+             
+             <p>Arguments: None</p>
+            <p>Return Value:None</p>
+                                                
+             <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
+              <br>
+             <div><h4>Algorithm:</h4></div>
+            
+         </div>
+		</div>
+		</div>
+                   
+
 	</section>
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
