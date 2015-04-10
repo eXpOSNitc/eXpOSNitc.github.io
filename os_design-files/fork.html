@@ -1,0 +1,209 @@
+<!--This document consists of header and footer only -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Fork</title>
+
+ <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li class="../index.html"><a href="#">Home</a></li>
+              <li><a href="../Roadmap.html">Roadmap</a></li>
+              <li><a href="../Documentation.html">Documentation</a></li> 
+               <li><a href="#pricing">Downloads</a></li> <!--Change here--> 
+               <li><a href="../FAQ.html">FAQ</a></li>
+              <li><a href="#team">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+
+	 <!--=========== BEGIN  ================-->
+	<section>
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 class="wow fadeInLeftBig">Fork System Call</h2>
+               <br>
+               <br>                                      
+             
+              <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>PID (Integer) </td>
+                                                        <td>Success, the return value to the parent is the process descriptor(PID) of the child process.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success, the return value to the child.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure, Number of processes has reached the maximum limit. Returns to the parent</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
+                                                 <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
+              
+              <br>
+             <div><h4>Algorithm:</h4></div>
+           <p><b>If</b> no free entry in <a href="process_table.html" target="_blank">Process Table</a> </p>
+             <p style="text-indent: 4em;">return -1</p>
+             <p><b>else</b></p>
+             <p style="text-indent: 4em;">Find the index of free entry in Process Table. &nbsp; &nbsp;/* This entry is assigned to the child process */</p>
+             <p>Set the PID field of the free Process Table entry to the child's PID.</p>
+        <p>Set the PPID field of child process to the current PID.</p>
+        <p>Count the number of stack pages of parent</p> 
+        <p><b>while</b> equal number of free pages are not present in memory <b>do</b> &nbsp; &nbsp;/* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
+   <p style="text-indent: 4em;">Change the state of the current process to WAIT_MEM.</p>
+        <p style="text-indent: 4em;">Call scheduler.</p> 
+        <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Allocate stack pages for child process.</a></p>
+        <div id="collapse1" class="panel-collapse collapse">
+                <p style="text-indent: 4em;">1. Find a free memory page for each stack page of the parent.</p>
+                 <p style="text-indent: 4em;">2. Update the Memory Free List by incrementing the entry for the selected page. </p>
+                  <p style="text-indent: 4em;">3. Decrement MEM_FREE_COUNT. </p>
+                <p style="text-indent: 4em;"> 4. In the page table entry of the child's stack, set the page number to the number of the selected page.</p>    
+                <p style="text-indent: 4em;"> 5. Auxiliary information is copied from the page table of the parent process. </p> 
+            </div>
+        <p></p>
+        <p> Copy the parent's stack pages to the child's stack pages.</p>
+        <p> Copy the page table entries, except stack entries, of parent to the page table of child.</p>
+        <p> Copy the parent's Machine State and Per-Process Resource Table to that of the child. </p>
+        <p>Copy the Inode Index in Process Table entry of the parent to child's Inode Index field. </p>
+        <p> For every open file of the parent, increment the File Open Count in the File Table.</p>
+        <p> For every semaphore acquired by the parent, increment Process Count in the Semaphore Table.</p>
+        <p> Set state of child process to READY.</p>
+        <p>Return 0 to the child process and PID of the child process to the parent process.</p> 
+                     
+         </div>
+		</div>
+		</div>
+	</section>
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
+
