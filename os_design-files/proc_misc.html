@@ -122,7 +122,8 @@
                                                 <p>Description:  Returns the process identifier of the invoking process. The system call does not fail.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-            
+             <p> Find the PID of the current process from the Process Table. </p>
+             <p>Return the PID of current process. </p>
          </div>
 		</div>
 		</div>
@@ -150,7 +151,9 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-            
+             <p> Find the PID of the current process from the Process Table.</p>
+             <p> From the Process Table entry of the current process, find the PPID. </p>
+             <p>Return the PPID of current process.</p>
          </div>
 		</div>
 		</div>
@@ -170,7 +173,15 @@
              <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-            
+             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in Disk Status Table */</p>
+             <p> Change the state of the process to WAIT_DISK.</p>
+             <p> Call scheduler</p>
+
+             <p> Store Inode Table to the disk.</p>
+             <p> Store dirty pages contained in buffer to the disk.   &nbsp; &nbsp; /* Check dirty bit in Buffer Table */</p>
+             <p>Store Disk Free List to the disk.</p>
+             <p>Halt the machine.</p>
+
          </div>
 		</div>
 		</div>
