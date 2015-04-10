@@ -116,30 +116,26 @@
             <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        
-                                                    </tr> 
+                                                   
                                                 </table>
-                                                <p>Description: The Close operation takes as input the fileDescriptor of the file to be closed. It returns with an error code if any instance of the file is open in the system.  Otherwise, it deletes the root entry for the file name, invalidates the inode table entries for the file and returns 0. Note that the file name must be a character string and must not be “root”. </p>   
+                                                <p>Description: The Close operation takes as input the fileDescriptor of the file to be closed. It closes one open instance of the file by making corres.  Otherwise, it deleteponding updations in File Table and Per Process Resource Table.</p>   
              <div><h4>Algorithm:</h4></div>
-             <p>If file is present in Inode Table</p>
-             <p style=" text-indent: 5em;">then Store index of free entry in <i>InodeIndex</i></p>
-             <p>else</p>
-             <p style=" text-indent: 5em;">Return -1</p>
-			<p>If File Table entry exists with the same index as <i>InodeIndex</i></p>
+             <p>If fileDescriptor is invalid</p>
              <p style=" text-indent: 5em;">then Return -1</p>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
+             
+			<p>If Per Process Resource Table entry corresponding to fileDescriptor is invalid </p>
+<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i></p>
+
+             <p style=" text-indent: 5em;">then Return -1</p>
+             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update File Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
-                    1. Find the Inode Table Entry corresponding to <i>InodeIndex</i></p>
-                          <p>  2. For each DATABLOCK of the file invalidate its corresponding entry (store -1) in the Memory copy of Disk Free List. </p>        
-                    <p>3. Invalidate (store -1) the Inode Table entry.</p>
-                       
+                    1. Find the File Table Entry corresponding to <i>FTIndex</i></p>
+                          <p>  2. Decrement the File Open Count. If the File Open Count becomes 0, invalidate the File Table entry.</p>        
+                                           
             </div>
              
-             <p> Update the root file by removing the root entry for the file. Decrement the file size of root file.</p>
-             
+             <p> Invalidate the Per Process Resource Table entry corresponding to <i>fileDescriptor</i></p>
              <p>Return from System Call with 0, indicating success</p>
         
                       
