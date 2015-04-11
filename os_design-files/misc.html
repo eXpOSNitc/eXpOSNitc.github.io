@@ -110,7 +110,7 @@
                <br>
                <br>                                      
              
-              <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling">round robin scheduling</a> is employed. The timer interrupt routine in eXpOS does the following tasks: 
+              <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The OS <b>scheduler </b>is invoked by the timer interrupt handler.     eXpOS specification suggest that a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">round robin scheduling</a> is employed. The timer interrupt routine in eXpOS does the following tasks: 
               <ol style="margin-left: 60px; font-size: 16px"><li>Schedules the next ready process for execution.</li>
               <li>Swaps in (or out) processes from (or to) the disk.</li>
               <li>If unused memory pages are present in the system, timer interrupt routine wakes up those processes which were blocked due to lack of memory.</li></ol>
@@ -120,13 +120,13 @@
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Save the context of current process</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
-                    1. Find the PID  of the currently running process from the <a href="process_table.html">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
+                    1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
                           <p>  2.  Save the machine state to the location pointed to by Machine State Pointer. </p>        
                     <p>3. Change the state of the current process from RUNNING to READY by setting the STATE field of the Process Table entry to (READY, _). </p>
                        
             </div>
 
-             <p>Increment TICK &nbsp;&nbsp;/* Increment the TICK of all the process. TICK is given in <a href="process_table.html">Process Table</a>. */ </p>
+             <p>Increment TICK &nbsp;&nbsp;/* Increment the TICK of all the process. TICK is given in <a href="process_table.html" target="_blank">Process Table</a>. */ </p>
             
              <p><b>If</b> free memory pages present &nbsp; &nbsp; /* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
                                                           

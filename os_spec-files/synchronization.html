@@ -106,7 +106,7 @@
                 <h2 class="wow fadeInLeftBig">Synchronization and Access control</h2>
                 <br/>
                 <br/>
-                <p>eXpOS assumes a single processor multi programming environment.  This means that all processes exist concurrently in the machine and the OS time shares the machine between various processes.  The OS specification requires that <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling">Round Robin scheduling</a> is used with co-operative time-sharing.    This is discussed in <a href="misc.html"> Section 6 </a>. The OS does not provide any promise to the application program about the order in which processes will be executed.  </p>
+                <p>eXpOS assumes a single processor multi programming environment.  This means that all processes exist concurrently in the machine and the OS time shares the machine between various processes.  The OS specification requires that <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">Round Robin scheduling</a> is used with co-operative time-sharing.    This is discussed in <a href="misc.html" target="_blank"> Section 6 </a>. The OS does not provide any promise to the application program about the order in which processes will be executed.  </p>
 	<p>However, application programs often need to stop and wait for another process to execute certain operations before proceeding.  The OS provides system calls that allow user processes to <b>synchronize execution. </b>   </p>
               </div>
 
@@ -129,7 +129,7 @@
                              <p>eXpOS provides the <b>Wait</b> and <b>Signal</b> system calls for process synchronization.  When a process executes the wait system call specifying the process id of another process as argument, the OS puts the calling process to <b>sleep.</b>   This means, the OS will schedule the process out and won't execute it until one of the following events occur:</p>
                              <ol style="margin-left: 60px;">
 		<li>The process specified as argument terminates by the <b>exit </b>system call.</li>
-		<li>The process specified as argument executes a <b>Signal </b>system call. The specification of Signal and Wait system calls are given <a href="systemcallinterface.html#synsystemcalls">here</a>.   </li>
+		<li>The process specified as argument executes a <b>Signal </b>system call. The specification of Signal and Wait system calls are given <a href="systemcallinterface.html#synsystemcalls" target="_blank">here</a>.   </li>
 	</ol>
                             </div>
                           </div>
@@ -145,11 +145,11 @@
                           </div>
                           <div id="FivecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p> A second major concurrency related requirement is that when multiple processes access the same data (in memory or files), it is often required to have some kind of locking mechanism to ensure that when one process is accessing the shared data, no other process is allowed to modify the same.  This is to ensure data integrity and this issue is called the <a href="http://en.wikipedia.org/wiki/Critical_section">critical section problem</a>.    </p>
+                                <p> A second major concurrency related requirement is that when multiple processes access the same data (in memory or files), it is often required to have some kind of locking mechanism to ensure that when one process is accessing the shared data, no other process is allowed to modify the same.  This is to ensure data integrity and this issue is called the <a href="http://en.wikipedia.org/wiki/Critical_section" target="_blank">critical section problem</a>.    </p>
     <p>eXpOS provides (binary) <b>semaphores </b>to allow application programs to handle the critical section problem.  A (binary) semaphore is conceptually a binary-valued variable whose value can be set or reset only by the OS through designated system call.   (Internally how it is implemented is an OS concern and is oblivious to the application programmer). </p>
     <p>A process can acquire a semaphore using the <b>Semget </b>system call, which returns a unique <b>semid </b>for the semaphore.  The semaphore is initially not set.   A process may open several files and semaphores and execute the Fork system call multiple times to create an several process that shares all the opened file handles, the heap memory region and all the semaphores acquired by the parent.  </p>
     <p>Any of these processes sharing a semaphore identifier can set the semaphore (called locking) using the <b>SemLock </b>system call giving the semid as an argument. <b>SemUnLock </b>will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore. </p> 
-          <p>Just like semaphores, files can also be locked using the <b>FLock </B>and <b>FUnLock </b>system calls.  They are discussed <a href="systemcallinterface.html#synsystemcalls">here</a>. </p>
+          <p>Just like semaphores, files can also be locked using the <b>FLock </B>and <b>FUnLock </b>system calls.  They are discussed <a href="systemcallinterface.html#synsystemcalls" target="_blank">here</a>. </p>
           <h3>Semantics of Locking operation for files and semaphores</h3>
         <ol style="margin-left:80px">
 		<li>If the semaphore/file is already locked, the process goes to sleep and wakes up only when the semaphore/file is free.</li>
