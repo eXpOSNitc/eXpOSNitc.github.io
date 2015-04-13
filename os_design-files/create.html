@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>File System Algorithms</title>
+     <title>Create</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -123,35 +123,31 @@
                                                 </table>
                                                 <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>   
              <div><h4>Algorithm:</h4></div>
-             <p>If file is present in Inode Table</p>
-             <p style=" text-indent: 5em;">then Return 0</p>
+             <p>If file is present in system &nbsp;&nbsp;/* Check for an Inode Table entry corresponding to the given file name */ </p>
+             <p style=" text-indent: 5em;">return 0</p>
              <p>If no free entry in Inode Table</p>
-             <p style=" text-indent: 5em;">then Return -1</p>
+             <p style=" text-indent: 5em;">return -1</p>
              <p>Store index of free entry in <i>InodeIndex</i></p>
              <p><font size="3"><i>Note: You can optimize the above two searches by storing the first free entry in InodeIndex while searching for file with the given filename. </i></font></p>
              <p>In the Inode Table entry corresponding to <i>InodeIndex</i> , set file name to Filename, file size to 0 and file type to “DATA ”.</p>
              <p>The entry for the file in the root is at <i>InodeIndex</i>. Set the filename field with <i>Filename</i>, file size to 0 and file type as “DATA”. Increment the file size of root.</p>
              <p><font size="3"><i>Note: Should we elaborate such as how to get memory copy of Inode Tabe, Root file , where to increment the size of root file etc? </i></font></p>
-             <div class="panel-group" id="accordion">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <p class="panel-title">
-                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">If file is present in Inode Table</a>
+             
+             <p>        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">If file is present in Inode Table</a>
                                             </p>
-                                        </div>
+                                        
                                         <div id="collapse1" class="panel-collapse collapse">
-                                            <div class="panel-body">
+                                            
                                                 <ol>
 													<li>This is for the steps which elaboration such as finding SP, PTBR, File pointer etc... </li>
                                                 </ol>                                              
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
                       
          </div>
-		</div>
-		</div>
+		
 	</section>
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
