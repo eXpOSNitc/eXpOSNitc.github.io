@@ -164,23 +164,24 @@
              
             <p><b>else</b> &nbsp;&nbsp;&nbsp; /* When there is no free memory, swap process out, if necessary. */</p>
             <p style="text-indent: 4em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
-            <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp;&nbsp; /* <i>Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></i>*/</p>
+            <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp;&nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>*/</p>
              
             <p style="text-indent: 12em;">Use the modified second chance algorithm to find an unreferenced page</p>
              <p style="text-indent: 12em;">Find the PID of the process that owns the page and locate its page table.&nbsp;&nbsp;/*Check the Process Table*/</p>
-            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a code page &nbsp;&nbsp;/* since code pages are not modified, they need not be stored back to the disk */&</p>
+            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a code page(See <a href="../os_spec-files/processmodel.html">Memory layout</a>) &nbsp;&nbsp;/* since code pages are not modified, they need not be stored back to the disk */</p>
             <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
 			<p style="text-indent: 16em;">In the page table entry of the unreferenced page, set Physical Page Number field to the code block number</p>
 			<p style="text-indent: 16em;">Set auxiliary information to invalid</p>
 			
                         <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a stack or heap page</p>
 			<p style="text-indent: 16em;">Find a free block in swap area</p>
-			<p style="text-indent: 16em;">Store the selected page in the swap block</p>
+			<p style="text-indent: 16em;"><a>Store the selected page in the swap block</a></p>
 			<p style="text-indent: 16em;">Set the page table entry to the swap block number and mark the page as invalid in the Page Table entry</p>
-                        <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer &nbsp;	&nbsp; /* Check if the SP points to the unreferenced page */</p>
+                        <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer &nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
                         
 			<p style="text-indent: 16em;">Set the state of the process to (SWAPPED , _) </p>
 			<p style="text-indent: 16em;">Increment the SWAPPED_COUNT.</p>
+			<p style="text-indent: 16em;">Reset the TICK to 0.</p>
                         <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
             </div> 
             
