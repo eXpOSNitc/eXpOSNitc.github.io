@@ -146,15 +146,7 @@
 <p>The machine raises an exception when it runs in user mode and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions are associated with Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are discussed in (ADD LINK).</p>  
 
 <p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table below.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>					
-		           
-    </div></li>
-     
-    
-	<li class="list-group-item"> <h3 class="section_title"><a href="arch_spec-files/instruction_set.html" target="_blank">Instruction Set</a></h3></li>
 
-	<li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Device Interrupts and Exception handling</a></h3>
-    <div id="collapse5" class="panel-collapse collapse">
-	
 	<p>Exceptions are anomalous situations which changes the normal flow of execution.  When an exception occurs when the machine is executing in User mode, the machine transfers control of execution – pushes instruction pointer to user stack and sets the  i.e. changes the value of IP to page number 2 (address = 1024) where the Exception Handler Routine resides. However in Kernel Mode, the machine halts when it encounters an exception.</p>
 
 	<p>The XSM Register set consists of five special registers for storing the details regarding exceptions.</p>
@@ -196,6 +188,15 @@ Occurs when the divisor is 0.
 </li>
 </ul>				
 					           
+		           
+    </div></li>
+     
+    
+	<li class="list-group-item"> <h3 class="section_title"><a href="arch_spec-files/instruction_set.html" target="_blank">INSTRUCTION SET</a></h3></li>
+
+	<li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">PAGING HARDWARE</a></h3>
+    <div id="collapse5" class="panel-collapse collapse">
+	
                                                                
     </div></li>     
 
