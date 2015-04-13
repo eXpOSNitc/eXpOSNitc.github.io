@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>File System Algorithms</title>
+     <title>Load/Store</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -106,61 +106,15 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Create System Call</h2>
+              <h2 class="wow fadeInLeftBig">Steps to Load/Store</h2>
                <br>
                <br>                                      
-            <p>Arguments: Filename (String) </p>
-            <p>Return Value:</p>
-            <table class="table table-bordered">
-            <tr>
-            <td>0</td>
-                                                        <td>Success</td>
-                                                    </tr> 
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        <td>No space for file</td>
-                                                    </tr> 
-                                                </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>   
-             <div><h4>Algorithm:</h4></div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Initial Procedures</a></p>
-             <div id="collapse3" class="panel-collapse collapse">
-                
-                    <p>Getting the arguments, finding the physicalSP and other stuff</p>                                             
-               
-            </div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">If file is present in the system</a></p>
-             <div id="collapse4" class="panel-collapse collapse">
-                
-                    <p>Scan the Inode Table for an entry with Filename field same as the file name specified.</p>                                             
-               
-            </div>
-             <p style=" text-indent: 5em;">return 0</p>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">If no free entry in Inode Table</a></p>
-             <div id="collapse5" class="panel-collapse collapse">
-                
-                    <p>Scan the Inode Table for free entry i.e. an entry with Filename field as -1.</p>                                             
-               
-            </div>
-             <p style=" text-indent: 5em;">return -1</p>
-             <p>else</p>
-             <p style="text-indent: 5em;">Store index of free entry in <i>InodeIndex</i></p>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
-                
-                    <p>In the Inode Table entry corresponding to <i>InodeIndex</i> , set file name to Filename, file size to 0 and file type to "DATA".</p>                                             
-               
-            </div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Update Root File</a></p>
-             <div id="collapse2" class="panel-collapse collapse">
-                
-                    <p>The entry for the file in the root is at <i>InodeIndex</i>. Set the filename field with <i>Filename</i>, file size to 0 and file type as “DATA”. Increment the file size of root.
-                    </p>                                             
-                
-            </div>
-             <p>return 0</p>
-                              
-                      
+            
+            <p>1. Set the Load/Store bit to 0 (load) or 1 (store).</p>
+<p>2. Set the Page Number field to the number of the page being stored or to the number of the page to which the disk block is loaded.</p>                              
+                      <p>3. Set the Block Number field to the number of the block to which the page is stored or to the number of the block which is being loaded.</p>
+                      <p>4. Set the PID to the PID of the process invoking the disk-memory transfer. If the load/store instruction was invoked by scheduler, set the PID to -1.</p>
+                      <p>5. Issue the load/store machine instruction.</p>
          </div>
 		</div>
 		</div>
