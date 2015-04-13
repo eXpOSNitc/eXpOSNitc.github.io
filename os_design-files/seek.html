@@ -32,16 +32,16 @@
     <!-- Elastic grid css file -->
     <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
     <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
-    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
-    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
-    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -99,17 +99,17 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
 
-	 <!--=========== BEGIN Close ================-->
-	<section id="create">
+	 <!--=========== BEGIN Seek================-->
+	<section id="seek">
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Close System Call</h2>
+              <h2 class="wow fadeInLeftBig">Seek System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: fileDescriptor (Integer) </p>
+            <p>Arguments: fileDescriptor(Integer) , Offset (Integer)</p>
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
@@ -118,26 +118,50 @@
                                                     </tr> 
                                                    
                                                 </table>
-                                                <p>Description: The Close operation takes as input the fileDescriptor of the file to be closed. It closes one open instance of the file by making corres.  Otherwise, it deleteponding updations in File Table and Per Process Resource Table.</p>   
+                                                <p>Description: The Seek operation takes as input the Filename of the file to be opened. It checks for the validity of the file type, creates an entry for the file in the Per Process Resource Table of the process and also in the File Table.It returns from the system call with the perprocessindex of the file.</p>   
              <div><h4>Algorithm:</h4></div>
-             <p>If fileDescriptor is invalid</p>
+             <p>If fileDescriptor is not valid</p>
              <p style=" text-indent: 5em;">then Return -1</p>
              
-			<p>If Per Process Resource Table entry corresponding to fileDescriptor is invalid </p>
+			<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Find the Process Table of the current process</p>
+<div id="collapse1" class="panel-collapse collapse">
+<p>1.Find the PID of current process and store it in <i>CurrentPID</i></p>
+<p>2.Using <i>CurrentPID</i> find the location of its Per-Process Resource Table</p>
+</div>
+<p>if entry in Per Process Resource Table corresponding to fileDescriptor is invalid(indicated by -1)</p>
+<p style=" text-indent: 5em;">then Return -1</p>
+<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i> and lseek position in <i>lseekpos</i></p>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Lock the file in the File Table</p>
+<div id="collapse1" class="panel-collapse collapse">
+<p>In the entry corresponding to <i>FTIndex</i></p>
+<p>if the Locking PID -1 </p>
+<p style=" text-indent: 5em;">Set Locking PID to <i>CurrentPID</i> and store the Inode Index of the entry in <i>InodeIndex</i></p>
+<p>else</p>
+<p style=" text-indent: 5em;">if locking PID is <i>CurrentPID</i> </p>
+<p style=" text-indent: 8em;">Go to next Step</p>
+<p style=" text-indent: 5em;">else</p>
+<p style=" text-indent: 8em;">1.Change the state of the process to (WAIT_FILE, FTIndex)</p>
+<p style=" text-indent: 8em;">2.Call the scheduler</p>
+<p style=" text-indent: 5em;">//Repeat this step until file is unlocked</p>
 
-             <p style=" text-indent: 5em;">then Return -1</p>
-<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i></p>
+</div>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Check for validity of <i>lseekpos</i></a></p>
+<div id="collapse1" class="panel-collapse collapse">
+<p>1.Using <i>FTIndex</i> index into File Table entry</p>
+<p>2.Store the Index of Inode in <i>InodeIndex</i>.</p>
+<p>3. Fetch the file size of the file from the Inode Table and store it in <i>FileSize</i></p>
+<p>//LSEEK position is valid only if (current LSEEK + Offset) takes a value from 0 to <i>FileSize</i>-1</p>
+</div>
+<p>if offset is 0</p>
+<p style=" text-indent: 5em;">Set LSEEK value in Per-Process Resource Table to 0</p>
+<p>else</p>
+<p style=" text-indent: 5em;">change the LSEEK to LSEEK+Offset</p>
+ <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Returning back</a></p>
+<div id="collapse1" class="panel-collapse collapse">
+<p>1.Unlock the file and wake up all processes waiting for the file. </p>
+<p>2.Return with 0 (indicating success). </p>
+</div>
 
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update File Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
-                <p>
-                    1. Find the File Table Entry corresponding to <i>FTIndex</i></p>
-                          <p>  2. Decrement the File Open Count. If the File Open Count becomes 0, invalidate the File Table entry.</p>        
-                                           
-            </div>
-             
-             <p> Invalidate the Per Process Resource Table entry corresponding to <i>fileDescriptor</i></p>
-             <p>Return from System Call with 0, indicating success</p>
         
                       
          </div>
@@ -162,9 +186,9 @@
      ================================================== -->
   
      <!-- initialize jQuery Library -->
-    <script src="../js/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Google map -->
-    <script src="../js/map_js.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script src="../js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
     <script src="../js/wow.min.js"></script> 
@@ -175,7 +199,7 @@
     <!-- slick slider -->
     <script src="../js/slick.min.js"></script>    
     <!-- for circle counter -->
-    <script src='../js/jquery.circliful.min.js'></script>
+    <script src='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->
     <script src="../js/modernizr.custom.js"></script>
     <script src="../js/classie.js"></script>
@@ -186,6 +210,8 @@
     <script src="../js/custom.js"></script>
   </body>
 </html>
+
+
 
 
 
