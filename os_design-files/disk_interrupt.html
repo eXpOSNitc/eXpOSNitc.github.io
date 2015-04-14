@@ -133,7 +133,7 @@
              <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
              <p style="text-indent: 8em;">Change the state of the process to READY.</p>
              <p style="text-indent: 8em;">Reset the TICK of the process to 0.</p>
-             <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in System Status Table.</p>
+             <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></p>
              
              <p style="text-indent: 4em;"><b>else</b> &nbsp;&nbsp; /* disk operation was a store operation */</p>
              <p style="text-indent: 8em;">Get the page number stored in the Page Number field of the Disk Status Table. &nbsp;&nbsp; /* This is the page number of the stored page */</p>
@@ -141,10 +141,9 @@
              <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above page number.</p>
              
              <p style="text-indent: 8em;">Get the block number stored in the Block Number field of the Disk Status Table. &nbsp;&nbsp;/* This is the block to which the page was stored */</p>
-               <p style="text-indent: 8em;">In the page table entry, set the Page Number field to the above block number.</p>
-               <p style="text-indent: 8em;">Set the auxiliary information to invalid.</p>
-               <p style="text-indent: 8em;">Mark the page stored as free by decrementing its Memory Free List entry.</p>
-               <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT.</p>
+             <p style="text-indent: 8em;">In the page table entry, set the Page Number field to the above block number.</p>
+             <p style="text-indent: 8em;">Mark the page stored as free by decrementing its Memory Free List entry.</p>
+             <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
          </div>
 		</div>
 		</div>

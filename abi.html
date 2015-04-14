@@ -229,7 +229,7 @@ Example: program.xsm</p>
                             <div class="panel-body">
                                 <p>The <b>Low level system call interface</b> describes the conventions to be followed by application programs that invoke eXpOS system calls on the XSM architecture.  The interface describes the software interrupt instruction (trap) corresponding to each system call  and the calling conventions for passing arguments and extracting return values of the system call through the application program's stack. This part is architecture dependent.</p>
                                 <h3>System Calls</h3>
-                                <p>System calls are like built in functions in eXpL. When eXpL translates a system call, it generates an INT instruction, which transfers control to an interrupt service routine that contains the system call implementation. The interrupt routine runs in kernel mode. Read about various interrupts [@@##@LINK] available in eXPL. The eXPL compiler follows the following convention for system call invocation.</p> 
+                                <p>System calls are like built in functions in ExpL. When ExpL translates a system call, it generates an INT instruction, which transfers control to an interrupt service routine that contains the system call implementation. The interrupt routine runs in kernel mode. Read about various interrupts [@@##@LINK] available in ExpL. The ExpL compiler follows the following convention for system call invocation.</p> 
                                 <p>For an application program, there are two stages in executing a system call:</p>
                                 <ul style="text-indent: 5em;">
                                     <li>1. <i>Before the system call</i>:   The calling application must set up the arguments in the (user) stack before executing the trap instruction.  </li>
@@ -259,7 +259,7 @@ Example: program.xsm</p>
                                 <p>The following figure shows the contents of the stack after the execution of the INT instruction. </p>
 <center>                        <img src="img/system_call_stack2.png"></center>
                                 <h3>After return from the system call</h3>
-                                <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the eXpL compiled machine code given in the previous step. </p>
+                                <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the ExpL compiled machine code given in the previous step. </p>
 <br>
 <pre style = "font-size:20px">
         POP System Call Number    // Pop and discard the system call number
