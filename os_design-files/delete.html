@@ -125,17 +125,18 @@
                                                         <td>File is open</td>
                                                     </tr> 
                                              </table>
-                                                <p><i>Description</i>: The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file and returns 0. Note that the file name must be a character string and must not be “root”. </p>   
+                                                <p><i>Description</i>: The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file and returns 0.  </p>   
+                                                <p>The data structures modified are Inode Table and Disk Free List</p>
              <div><h4>Algorithm:</h4></div>
              <p>If file is not present in Inode Table or if it is not a DATA file, return -1</p>
 
              
              <p>Find the index of the file in the Inode Table</p>
-			<p>If File Table entry exists with the same index as found above, return -1</p>
+			<p>If File Table entry exists with the same index as found above, return -2  &nbsp;&nbsp;/* File is open */</p>
                 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
-                    1. Find the Inode Table Entry corresponding to <i>InodeIndex</i></p>
+                    1. Find the Inode Table Entry of the file</p>
                           <p>  2. For each DATABLOCK of the file invalidate its corresponding entry (set to -1) in the Memory copy of Disk Free List. </p>        
                     <p>3. Invalidate (set to -1) the Inode Table entry.</p>
                        
@@ -143,7 +144,7 @@
              
              <p> Update the root file by removing the root entry for the file.</p>
              
-             <p>Return from System Call with 0, indicating success</p>
+             <p>Return from system call with 0 &nbsp;&nbsp; /* indicating success */</p>
         
                       
          </div>
