@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Second Chance Algorithm</title>
+    <title>Disk Interrupt Handler</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -99,31 +99,50 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
 
-	 <!--=========== BEGIN ================-->
+	 <!--=========== BEGIN  ================-->
 	<section>
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
-             <div class="col-lg-12 col-md-12">
-                    <div class="about_area">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Second Chance Algorithm</h2>
+              <h2 class="wow fadeInLeftBig">Disk Interrupt Handler</h2>
                <br>
                <br>                                      
-               <p>The page replacement technique used in eXpOS is a modified version of the <a href="http://en.wikipedia.org/wiki/Page_replacement_algorithm#Second-chance" target="_blank">Second Chance Algorithm</a>. This algorithm uses the reference bits in the auxiliary information. The page to be replaced is selected by first searching the per-process page tables of all processes. <b>Only <a href="process_table.html#per_page_table" target="_blank">valid</a> pages are searched. The pages which are shared between multiple processes are also skipped in the search.</b> The first valid unshared page with Reference bit as 0 is selected. While searching for the page with reference bit 0, the reference bit of every page table entry that is traversed during the search, is set to 0. This gives the page which is accessed recently a second chance before getting replaced. </p>
-               <br>
+               <p>Desc</p>
+                           
              <div><h4>Algorithm:</h4></div>
-             <p>Scan the Page Tables of all processes (except the idle process) for a page with Valid bit 1 and Reference bit 0.</p>
-             <p>Pages shared among multiple processes are skipped in the scan &nbsp;&nbsp;/* shared pages have a number greater than 1 in its <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> entry */</p>
-             <p>While scanning, the reference bit of any page, with valid bit 1 and reference bit 1,  is set to 0. </p>
-             <p>If an unshared page with reference bit 0 and valid bit 1 is found, it is selected as page to be replaced.</p>
-                      
+             <p>In the Disk Status Table, set the STATUS field to 0.</p>
+             <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* Check the PID field of the Disk Status Table. A process had issued the load/store if the PID is greater than 0 */</p>
+             <p style="text-indent: 4em;">Get the PID of the process from the PID field of the Disk Status Table.</p>
+             <p>TO BE COMPLETED</p>
+             <p><b>else</b> &nbsp;&nbsp;/* PID is less than 0, which means that the scheduler had issued the load/store instruction */</p> 
+             <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
+             <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process would be the absolute value of the number stored in the PID field of the Disk Status Table.</p></div>
+             
+             <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
+             <p style="text-indent: 8em;">Get the block number stored in the Block Number field of the Disk Status Table. &nbsp;&nbsp;/* This the block number of the loaded block */</p>
+             <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above block number.</p>
+             <p style="text-indent: 8em;">Get the page number of the page to which the block was loaded from the Page Number field of the Disk Status Table.</p>
+             <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the above page number. </p>
+             <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
+             <p style="text-indent: 8em;">Change the state of the process to READY.</p>
+             <p style="text-indent: 8em;">Reset the TICK of the process to 0.</p>
+             <p style="text-indent: 8em;">Decrement SWAPPED count.</p>
+             
+             <p style="text-indent: 4em;"><b>else</b> &nbsp;&nbsp; /* disk operation was a store operation */</p>
+             <p style="text-indent: 8em;">Get the page number stored in the Page Number field of the Disk Status Table. &nbsp;&nbsp; /* This is the page number of the stored page */</p>
+             
+             <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above page number.</p>
+             
+             <p style="text-indent: 8em;">Get the block number stored in the Block Number field of the Disk Status Table. &nbsp;&nbsp;/* This is the block to which the page was stored */</p>
+               <p style="text-indent: 8em;">In the page table entry, set the Page Number field to the above block number.</p>
+               <p style="text-indent: 8em;">Set the auxiliary information to invalid.</p>
+               <p style="text-indent: 8em;">Mark the page stored as free by decrementing its Memory Free List entry.</p>
+               <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT.</p>
          </div>
 		</div>
 		</div>
-          </div>
-            </div>
 	</section>
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
@@ -167,7 +186,4 @@
     <script src="../js/custom.js"></script>
   </body>
 </html>
-
-
-
 

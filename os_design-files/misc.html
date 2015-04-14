@@ -154,7 +154,8 @@
                      <p style=" text-indent: 20em;">3. The page table entry for this page stores the block number of the disk block containing the page.</p>                   
             </div>
             <p style="text-indent: 16em;">Find a free page in memory by checking the Memory Free List.</p>
-            <p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Load</a> the block (in which the stack page is stored) from disk to the free page in memory.</p>
+            <p style="text-indent: 16em;">Mark the free page as used by incrementing its Memory Free List entry and decrement MEM_FREE_COUNT.</p>
+            <p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Load</a> the block (in which the stack page is stored) from disk to the selected page in memory.</p>
            
             
          
@@ -171,10 +172,11 @@
 			<p style="text-indent: 16em;">Set auxiliary information to invalid</p>
 			
                         <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a stack or heap page</p>
-			<p style="text-indent: 16em;">Find a free block in swap area and mark the block as used in Disk Free List. &nbsp;&nbsp;/* If no swap block is free, abort the swap out and schedule next ready process */</p>
+			<p style="text-indent: 16em;">Find a free block in swap area. &nbsp;&nbsp;/* If no swap block is free, abort the swap out and schedule next ready process */</p>
+                        <p style="text-indent: 16em;"> Mark the block as used by incrementing its Disk Free List entry</p>
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
-			<p style="text-indent: 16em;">Set the page table entry to the swap block number and mark the page as invalid in the Page Table entry</p>
-                        <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer &nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
+			
+                        <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer of the process&nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
                         
 			<p style="text-indent: 16em;">Set the state of the process to (SWAPPED , _) </p>
 			<p style="text-indent: 16em;">Increment the SWAPPED_COUNT.</p>
