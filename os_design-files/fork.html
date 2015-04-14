@@ -152,14 +152,18 @@
                 <p style="text-indent: 8em;"> 4. In the page table entry of the child's stack, set the page number field to the number of the selected page.</p>    
                 <p style="text-indent: 8em;"> 5. Auxiliary information for that entry is copied from the page table of the parent process. </p> 
                 <p style="text-indent: 8em;">6. Copy the stack page of the parent into the child stack page.</p>
+      <div class="boxed" style="border:1px solid green">
     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
                      <div id="collapse14" class="panel-collapse collapse">
     <p style="text-indent: 4em;"><b>else</b></p>
      
      <p style="text-indent: 8em;">Copy the page table entry of that page into the page table of the child</p>
      <p style="text-indent: 8em;">Increment the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry of the corresponding block</p>
+    
      <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
+      </div>
              </div>
+             
             <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</p>
             <div id="collapse1" class="panel-collapse collapse">
         <p style="text-indent: 4em;">Copy the other page table entries from the parent's page table to that of the child</p>
