@@ -116,17 +116,20 @@
             <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
+                                                    <tr>
+            <td>-1</td>
+                                                        <td>File not found or File is not a DATA file</td>
+                                                    </tr> 
+                                                    
                                                     
                                                 </table>
                                                 <p>Description: The Delete operation takes as input a filename and deletes it. It returns with an error code if any instance of the file is open in the system.  Otherwise, it deletes the root entry for the file name, invalidates the inode table entry for the file and returns 0. Note that the file name must be a character string and must not be “root”. </p>   
              <div><h4>Algorithm:</h4></div>
-             <p>If file is present in Inode Table</p>
-             <p style=" text-indent: 5em;">Store index of free entry in <i>InodeIndex</i></p>
-             <p>else</p>
-             <p style=" text-indent: 5em;">Return -1</p>
-			<p>If File Table entry exists with the same index as <i>InodeIndex</i></p>
-             <p style=" text-indent: 5em;">Return -1</p>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
+             <p>If file is not present in Inode Table, return -1p>
+             
+             <p>Find the index of the file in the Inode Table</p>
+			<p>If File Table entry exists with the same index as found above, return -1</p>
+                <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
                     1. Find the Inode Table Entry corresponding to <i>InodeIndex</i></p>
