@@ -132,16 +132,17 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-           <p><b>If</b> no free entry in the<a href="process_table.html" target="_blank">Process Table</a>, return -1. </p>
+           <p><b>If</b> no free entry in the <a href="process_table.html" target="_blank">Process Table</a>, return -1. </p>
             
              
              <p>Find the index of a free entry in the Process Table and set the PID field. &nbsp; &nbsp;/* This entry is assigned to the child process */</p>
             
         <p>Set the PPID field of child process to the current PID.</p>
-        <p>Count the number of stack pages of parent.</p> 
-        <p><b>while</b> equal number of free pages are not present in memory <b>do</b> &nbsp; &nbsp;/* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
-   <p style="text-indent: 4em;">Change the state of the current process to WAIT_MEM.</p>
-        <p style="text-indent: 4em;">Call scheduler.</p> 
+        <p>Count the number of valid <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> pages from the Page Table of the parent process.</p> 
+        <p><b>while</b> sufficient number of free pages are not present in memory <b>do</b> &nbsp; &nbsp;/* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
+   <p style="text-indent: 4em;">Change the state of the current process to (WAIT_MEM, _ ).</p>
+        <p style="text-indent: 4em;">Call scheduler. &nbsp; &nbsp;/* Scheduler will wake up the process when memory pages are available */</p> 
+        <p><b>endwhile</b></p>
         <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Allocate stack pages for child process.</a></p>
         <div id="collapse1" class="panel-collapse collapse">
                 <p style="text-indent: 4em;">1. Find a free memory page for each stack page of the parent.</p>
