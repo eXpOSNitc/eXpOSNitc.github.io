@@ -146,10 +146,10 @@
         <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Allocate stack pages for child process.</a></p>
         <div id="collapse1" class="panel-collapse collapse">
                 <p style="text-indent: 4em;">1. Find a free memory page for each stack page of the parent.</p>
-                 <p style="text-indent: 4em;">2. Update the Memory Free List by incrementing the entry for the selected page. </p>
-                  <p style="text-indent: 4em;">3. Decrement MEM_FREE_COUNT. </p>
-                <p style="text-indent: 4em;"> 4. In the page table entry of the child's stack, set the page number to the number of the selected page.</p>    
-                <p style="text-indent: 4em;"> 5. Auxiliary information is copied from the page table of the parent process. </p> 
+                 <p style="text-indent: 4em;">2. Update the <a href="mem_ds.html#mem_free_list">Memory Free List</a> by incrementing the entry for the selected page. </p>
+                  <p style="text-indent: 4em;">3. Decrement MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
+                <p style="text-indent: 4em;"> 4. In the page table entry of the child's stack, set the page number field to the number of the selected page.</p>    
+                <p style="text-indent: 4em;"> 5. Auxiliary information for that entry is copied from the page table of the parent process. </p> 
             </div>
         <p></p>
         <p> Copy the parent's stack pages to the child's stack pages.</p>
