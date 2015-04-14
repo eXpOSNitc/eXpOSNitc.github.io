@@ -142,7 +142,7 @@
                      <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
        
              <div id="collapse14" class="panel-collapse collapse">
-                 <p style=" text-indent: 4em;"><b>else</b> &nbsp;&nbsp;&nbsp;/* Since there are no sleeping processes in the memory, <b>swap in</b> the seniormost swapped process. */</p>
+                 <p style=" text-indent: 4em;"><b>else</b> &nbsp;&nbsp;&nbsp;/* Since there are no processes waiting for memory, <b>swap in</b> the seniormost swapped process. */</p>
                  <p style="text-indent: 8em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
                  
                  <p style="text-indent: 12em;"><b>If</b> there are swapped processes &nbsp; &nbsp; /* Check the SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
@@ -153,9 +153,11 @@
                     <p style=" text-indent: 20em;">2. Using the SP value in the <a href="process_table.html#Machine_state" target="_blank">Machine State</a>, find the stack page to be swapped in.</p>   
                      <p style=" text-indent: 20em;">3. The page table entry for this page stores the block number of the disk block containing the page.</p>                   
             </div>
-            <p style="text-indent: 16em;">Find a free page in memory by checking the Memory Free List.</p>
-            <p style="text-indent: 16em;">Mark the free page as used by incrementing its Memory Free List entry and decrement MEM_FREE_COUNT.</p>
+            <p style="text-indent: 16em;">Find a free page in memory by checking the <a href="mem_ds.html" target="_blank">Memory Free List</a>.</p>
+            <p style="text-indent: 16em;">Mark the free page as used by incrementing its Memory Free List entry </p>
+            <p style="text-indent: 16em;">Decrement MEM_FREE_COUNT in System Status Table.</p>
             <p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Load</a> the block (in which the stack page is stored) from disk to the selected page in memory.</p>
+            <p style="text-indent: 16em;">/* Subsequent updates in the Page Table will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a></p>
            
             
          
@@ -164,7 +166,7 @@
             <p style="text-indent: 4em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
             <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp;&nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>*/</p>
              
-            <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html">modified second chance algorithm</a> to find an unreferenced page</p>
+            <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html" target="_blank">modified second chance algorithm</a> to find an unreferenced page</p>
              <p style="text-indent: 12em;">Find the PID of the process that owns the page and locate its page table.&nbsp;&nbsp;/*Check the Process Table*/</p>
             <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html">code page</a> &nbsp;&nbsp;/* since code pages are unmodified, they need not be stored back */</p>
             <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
@@ -193,7 +195,7 @@
                                 
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Schedule the next ready process</a></p>
              <div id="collapse11" class="panel-collapse collapse">
-                    <p>Change the state of that process to (RUNNING,_) and restore the execution context of the process . </p>   
+                    <p>Change the state of that process to (RUNNING,_) and restore the execution context of the process using <a href="process_table.html#Machine_state" target="_blank">Machine State Pointer</a>. </p>   
                               <p>Return to the new process.</p>                                         
             </div>
              
