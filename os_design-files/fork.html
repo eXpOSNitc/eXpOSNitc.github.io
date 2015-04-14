@@ -138,7 +138,7 @@
              <p>Find the index of a free entry in the Process Table and set the PID field. &nbsp; &nbsp;/* This entry is assigned to the child process */</p>
             
         <p>Set the PPID field of child process to the current PID.</p>
-        <p>Count the number of valid <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> pages from the Page Table of the parent process.</p> 
+        <p>Count the number of <b>valid</b> <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> pages from the Page Table of the parent process.&nbsp; &nbsp;/* Count stack pages which are not swapped out */</p> 
         <p><b>while</b> sufficient number of free pages are not present in memory <b>do</b> &nbsp; &nbsp;/* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
    <p style="text-indent: 4em;">Change the state of the current process to (WAIT_MEM, _ ).</p>
         <p style="text-indent: 4em;">Call scheduler. &nbsp; &nbsp;/* Scheduler will wake up the process when memory pages are available */</p> 
@@ -152,7 +152,7 @@
                 <p style="text-indent: 4em;"> 5. Auxiliary information for that entry is copied from the page table of the parent process. </p> 
             </div>
      <p>Each valid stack page of the parent is copied into the child stack page.</p>
-     <p>For any stack page that is invalid, copy the page table entry of that page into the page table of the child</p>
+     <p>For any stack page that is invalid, copy the page table entry of that page into the page table of the child and increment the Disk Free List entry of the corresponding block</p>
         <p>Copy the other page table entries from the parent's page table to that of the child</p>
               <p> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
         <p> Set the PTBR field of the Machine State to the address of the page table of the child process. </p>

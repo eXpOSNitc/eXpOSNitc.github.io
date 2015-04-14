@@ -120,18 +120,16 @@
                                                                                                         
                     </table>
             <p>Description: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
+            <p> The data structures that are modified in this system call are Process Table, Memory Free List</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
                   
-             <p><b>If</b> file not found in system &nbsp; &nbsp; /* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. */</p>
-             <p style="text-indent: 4em;">return -1</p>
-             <p><b>else</b></p>
-             <p style="text-indent: 4em;"><b>If</b> file type is not EXEC &nbsp; &nbsp; /* Check file type in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. */</p>
-        <p style="text-indent: 8em;">return -1</p>
-    <p style="text-indent: 4em;"><b>else</b></p>
+             <p><b>If</b> file not found in system or file type is not EXEC, return -1 &nbsp; &nbsp; /* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. */</p>
+             
     <p style="text-indent: 8em;">Find the index of Inode Table entry for the file.</p> 
     <p style="text-indent: 8em;">Fetch the code block numbers of the file from the Inode Table.</p> 
+    <p>For each page that is swapped out (invalid page), decrement the corresponding entry in the Disk Free List </p>
     <p>In the page table of the current process, set the code page entries to the code blocks of the file.</p>
     <p> Set the auxiliary information of code pages to invalid and unreferenced.</p>
 <p>Include the page numbers of shared library in the page table.</p> 
@@ -144,7 +142,7 @@
             </div>
 <p>In the process table entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.</p>  
 <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p>  
-<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="" target="_blank">Semrelease system call</a> */</p> 
+<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html" target="_blank">Semrelease system call</a> */</p> 
 <p>Set SP and IP values to valid locations.</p> 
 <p>Return to user mode.</p>       
          </div>
