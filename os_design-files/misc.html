@@ -157,7 +157,7 @@
             <p style="text-indent: 16em;">Mark the free page as used by incrementing its Memory Free List entry </p>
             <p style="text-indent: 16em;">Decrement MEM_FREE_COUNT in System Status Table.</p>
             <p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Load</a> the block (in which the stack page is stored) from disk to the selected page in memory.</p>
-            <p style="text-indent: 16em;">/* Subsequent updates in the Page Table will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a></p>
+            <p style="text-indent: 16em;">/* Subsequent updates in the Page Table will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a>*/</p>
            
             
          
@@ -168,12 +168,12 @@
              
             <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html" target="_blank">modified second chance algorithm</a> to find an unreferenced page</p>
              <p style="text-indent: 12em;">Find the PID of the process that owns the page and locate its page table.&nbsp;&nbsp;/*Check the Process Table*/</p>
-            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html">code page</a> &nbsp;&nbsp;/* since code pages are unmodified, they need not be stored back */</p>
+            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">code page</a> &nbsp;&nbsp;/* since code pages are unmodified, they need not be stored back */</p>
             <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
 			<p style="text-indent: 16em;">In the page table entry of the unreferenced page, set Physical Page Number field to the code block number</p>
-			<p style="text-indent: 16em;">Set auxiliary information to invalid</p>
+			<p style="text-indent: 16em;">Mark the page as invalid in the <a href="process_table.html#per_page_table" target="_blank">Page Table</a> by updating the auxiliary information</p>
 			
-                        <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a stack or heap page</p>
+                        <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> or <a href="../os_spec-files/processmodel.html" target="_blank">heap</a> page</p>
 			<p style="text-indent: 16em;">Find a free block in swap area. &nbsp;&nbsp;/* If no swap block is free, abort the swap out and schedule next ready process */</p>
                         <p style="text-indent: 16em;"> Mark the block as used by incrementing its Disk Free List entry</p>
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
