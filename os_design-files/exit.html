@@ -117,10 +117,9 @@
               <br>
               
              <div><h4>Algorithm:</h4></div>
-            <p><b>If</b> no more processes to schedule, shutdown the machine &nbsp; &nbsp; /* Check the <a href="process_table.html" target="_blank">Process Table</a> for any process in READY state. Use <a href="proc_misc.html" target="_blank">Shutdown system call</a> to shutdown the machine if necessary*/</p>
+            <p><b>If</b> no more processes to schedule, shutdown the machine &nbsp; &nbsp; /* If no process in <a href="process_table.html" target="_blank">(READY, _ )</a> state, invoke  <a href="proc_misc.html" target="_blank">Shutdown system call</a> */</p>
              
-                <p>Find the PID of the next ready process from the Process Table.</p> 
-    
+                
                 <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p> 
                 <p>Release all the semaphores used by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="" target="_blank">Semrelease system call</a> */</p>
                 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Memory pages of the current process are freed.</a></p>
@@ -129,6 +128,7 @@
                     1. In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the pages.</p>
                 <p style="text-indent: 4em;"> 2. If the value becomes 0, then increment MEM_FREE_COUNT. </p>    
                 </div>
+                <
 <p>Invalidate the page table entries of the current process</p>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the current process.</a></p>
 <div id="collapse2" class="panel-collapse collapse">
@@ -137,10 +137,8 @@
                 <p style="text-indent: 4em;"> 2. Change the state of the processes to READY. </p>    
                 </div>
 
-<p>Schedule the next ready process. </p> 
-<p>Return to user mode. </p>
-             
-            
+<p>Invoke the scheduler to schedule the next process</p> 
+    
                               
                       
          </div>
