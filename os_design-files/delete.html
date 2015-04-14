@@ -118,20 +118,20 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: The Delete operation takes as input a filename and deletes it. It returns with an error code if any instance of the file is open in the system.  Otherwise, it deletes the root entry for the file name, invalidates the inode table entries for the file and returns 0. Note that the file name must be a character string and must not be “root”. </p>   
+                                                <p>Description: The Delete operation takes as input a filename and deletes it. It returns with an error code if any instance of the file is open in the system.  Otherwise, it deletes the root entry for the file name, invalidates the inode table entry for the file and returns 0. Note that the file name must be a character string and must not be “root”. </p>   
              <div><h4>Algorithm:</h4></div>
              <p>If file is present in Inode Table</p>
-             <p style=" text-indent: 5em;">then Store index of free entry in <i>InodeIndex</i></p>
+             <p style=" text-indent: 5em;">Store index of free entry in <i>InodeIndex</i></p>
              <p>else</p>
              <p style=" text-indent: 5em;">Return -1</p>
 			<p>If File Table entry exists with the same index as <i>InodeIndex</i></p>
-             <p style=" text-indent: 5em;">then Return -1</p>
+             <p style=" text-indent: 5em;">Return -1</p>
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
                     1. Find the Inode Table Entry corresponding to <i>InodeIndex</i></p>
-                          <p>  2. For each DATABLOCK of the file invalidate its corresponding entry (store -1) in the Memory copy of Disk Free List. </p>        
-                    <p>3. Invalidate (store -1) the Inode Table entry.</p>
+                          <p>  2. For each DATABLOCK of the file invalidate its corresponding entry (set to -1) in the Memory copy of Disk Free List. </p>        
+                    <p>3. Invalidate (set to -1) the Inode Table entry.</p>
                        
             </div>
              
