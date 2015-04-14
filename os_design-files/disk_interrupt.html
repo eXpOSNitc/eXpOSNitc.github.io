@@ -114,16 +114,21 @@
              <div><h4>Algorithm:</h4></div>
              <p>In the Disk Status Table, set the STATUS field to 0.</p>
              <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* Check the PID field of the Disk Status Table. A process had issued the load/store if the PID is greater than 0 */</p>
-             <p style="text-indent: 4em;">Get the PID of the process from the PID field of the Disk Status Table.</p>
+             <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the disk.</a></p>
+             <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search he Process table for processes in WAIT_DISK state.</p>
+                 <p>2. Change the state of the processes to READY.</p></div>
+            
+             
              <p>TO BE COMPLETED</p>
              <p><b>else</b> &nbsp;&nbsp;/* PID is less than 0, which means that the scheduler had issued the load/store instruction */</p> 
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
              <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process would be the absolute value of the number stored in the PID field of the Disk Status Table.</p></div>
              
+             
              <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
              <p style="text-indent: 8em;">Get the block number stored in the Block Number field of the Disk Status Table. &nbsp;&nbsp;/* This the block number of the loaded block */</p>
              <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above block number.</p>
-             <p style="text-indent: 8em;">Get the page number of the page to which the block was loaded from the Page Number field of the Disk Status Table.</p>
+             <p style="text-indent: 8em;">Get the page number stored in the Page Number field of the Disk Status Table.&nbsp;&nbsp; /* This is the page to which the block was loaded */</p>
              <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the above page number. </p>
              <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
              <p style="text-indent: 8em;">Change the state of the process to READY.</p>
