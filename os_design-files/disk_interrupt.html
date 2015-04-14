@@ -112,7 +112,7 @@
                <p>Description: Hardware sends an interrupt on completion of a load/store operation. This interrupt is handled by the Disk Interrupt Handler. The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> and the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a></p>
                            
              <div><h4>Algorithm:</h4></div>
-             <p>In the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
+             <p>In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
              <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* PID field of the Disk Status Table will have a positive value */</p>
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the disk.</a></p>
              <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (WAIT_DISK, _ ) state.</p>
@@ -127,8 +127,8 @@
              
              <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
              <p style="text-indent: 8em;">Get the block number from the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. &nbsp;&nbsp;/* This is the block number of the loaded block */</p>
-             <p style="text-indent: 8em;">Mark the block as free by decrementing its <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>value</p>
-             <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above block number.</p>
+             <p style="text-indent: 8em;">Mark the block as free by decrementing its <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>entry</p>
+             <p style="text-indent: 8em;">Find the Page Table entry corresponding to the loaded block &nbsp;&nbsp; /* Page Number field will be the block number of the loaded block */</p>
              <p style="text-indent: 8em;">Get the page number from the Disk Status Table.&nbsp;&nbsp; /* This is the page to which the block was loaded */</p>
              <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the above page number. </p>
              <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
