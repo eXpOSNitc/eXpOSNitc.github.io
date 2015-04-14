@@ -105,6 +105,8 @@
 
       <div class="container">
         <div class="row">
+			<div class="col-lg-12 col-md-12">
+                    <div class="about_area">
          <div class="heading">
               <h2 class="wow fadeInLeftBig">Disk Interrupt Handler</h2>
                <br>
@@ -119,7 +121,9 @@
                  <p style="text-indent: 8em;">2. Change the state of the processes to (READY, _ ).</p></div>
             
              
-            
+                             <div class="boxed" style="border:1px solid green">
+                     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
+                     <div id="collapse14" class="panel-collapse collapse">
              <p><b>else</b> &nbsp;&nbsp;/* The scheduler had initiated the disk load/store */</p> 
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
              <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process will be the absolute value of the PID field of the Disk Status Table.</p></div>
@@ -127,24 +131,26 @@
              
              <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
              <p style="text-indent: 8em;">Get the block number from the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. &nbsp;&nbsp;/* This is the block number of the loaded block */</p>
-             <p style="text-indent: 8em;">Mark the block as free by decrementing its <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>entry</p>
+             <p style="text-indent: 8em;">Mark the block as free by decrementing its <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>entry. &nbsp;&nbsp; /* The block is swapped in */</p>
              <p style="text-indent: 8em;">Find the Page Table entry corresponding to the loaded block &nbsp;&nbsp; /* Page Number field will be the block number of the loaded block */</p>
-             <p style="text-indent: 8em;">Get the page number from the Disk Status Table.&nbsp;&nbsp; /* This is the page to which the block was loaded */</p>
+             <p style="text-indent: 8em;">Get the page number from the Disk Status Table.&nbsp;&nbsp; /* This is the page to which the block was swapped in */</p>
              <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the above page number. </p>
              <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
              <p style="text-indent: 8em;">Change the state of the process to (READY, _ ).</p>
              <p style="text-indent: 8em;">Reset the TICK of the process to 0.</p>
-             <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></p>
+             <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
              
              <p style="text-indent: 4em;"><b>else</b> &nbsp;&nbsp; /* disk operation was a store operation */</p>
-             <p style="text-indent: 8em;">Get the page number from <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. &nbsp;&nbsp; /* This is the page number of the stored page */</p>
-             
-             <p style="text-indent: 8em;">In the page table of the process, find the entry which has Page Number field set to the above page number.</p>
-             
-             <p style="text-indent: 8em;">Get the block number from <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. &nbsp;&nbsp;/* This is the block to which the page was stored */</p>
-             <p style="text-indent: 8em;">In the page table entry, set the Page Number field to the above block number.</p>
+             <p style="text-indent: 8em;">Get the page number and the block number from <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. </p>
+         
+             <p style="text-indent: 8em;">Replace the Page Number field in the page table entry with the disk block number.</p>
              <p style="text-indent: 8em;">Mark the page stored as free by decrementing its Memory Free List entry.</p>
              <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+             <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
+             </div>
+             </div>
+             </div>
+             </div>
          </div>
 		</div>
 		</div>
