@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>System calls for Synchronization</title>
+     <title>Semaphore System Calls</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -100,33 +100,35 @@
     <!--=========== End HEADER SECTION ================--> 
 
    <!--=========== BEGIN  ================-->
-  <section id="wait">
+  <section id="semget">
        <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Wait system call</h2>
+              <h2 class="wow fadeInLeftBig">Semget system call</h2>
                <br>
                <br>                                      
              
-              <p>Arguments: Process Identifier of the process for which the current
-process has to wait.
-</p>
-                                                <p>Return Value: </p>
+              <p>Argument: None</p>
+                                                <p>Return Value : </p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>0</td>
-                                                        <td>Success</td>
+                                                        <td>SEMID (Integer) </td>
+                                                        <td>Success, returns a semaphore descriptor(SEMID)</td>
                                                     </tr> 
                                                     <tr>
-                                                      <td>-1</td>
-                                                      <td>Given process identifier is invalid or it is the pid of the invoking process</td>
-                                                                                                      
+                                                        <td>-1</td>
+                                                        <td>Process has reached its limit of resources </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Number of semaphores has reached its maximum</td>
+                                                    </tr> 
+                                                    
                                                 </table>
-                                                <p><i>Description</i>:  The current process is blocked till the process with PID given as argument
-executes a Signal system call or exits. Note that the system call will fail
-if a process attempts to wait for itself.</p>
+                                                <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
+                                           The calling process can share the semaphore with its child processes using the fork system call</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> process is intending to wait for itself or for a terminated process, return -1. &nbsp;&nbsp; /*Check the status of the argument process from Process table.  */ </p>
