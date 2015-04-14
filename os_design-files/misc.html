@@ -168,7 +168,7 @@
              
             <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html" target="_blank">modified second chance algorithm</a> to find an unreferenced page and the PID of the process that owns the page</p>
              <p style="text-indent: 12em;">Locate the page table of the process.&nbsp;&nbsp;/* Check the Process Table */</p>
-            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">code page</a> &nbsp;&nbsp;/* since code pages are unmodified, they need not be stored back */</p>
+            <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">code page</a> &nbsp;&nbsp;/* since code pages are not modified, they need not be stored back */</p>
             <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
 			<p style="text-indent: 16em;">In the page table entry of the unreferenced page, set Physical Page Number field to the code block number</p>
 			<p style="text-indent: 16em;">Mark the page as invalid in the <a href="process_table.html#per_page_table" target="_blank">Page Table</a> by updating the auxiliary information</p>
