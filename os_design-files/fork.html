@@ -154,7 +154,9 @@
         <p></p>
         <p> Copy the parent's stack pages to the child's stack pages.</p>
         <p> Copy the page table entries, except stack entries, of parent to the page table of child.</p>
-        <p> Copy the parent's Machine State and Per-Process Resource Table to that of the child. </p>
+        <p> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
+        <p> Set the PTBR field of the Machine State to the address of the page table of the child process. </p>
+        <p>/* The parent and child are identical except for PID, PPID and PTBR */   </p>
         <p>Copy the Inode Index in Process Table entry of the parent to child's Inode Index field. </p>
         <p> For every open file of the parent, increment the File Open Count in the File Table.</p>
         <p> For every semaphore acquired by the parent, increment Process Count in the Semaphore Table.</p>
