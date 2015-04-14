@@ -146,15 +146,15 @@
         <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Allocate stack pages for child process.</a></p>
         <div id="collapse1" class="panel-collapse collapse">
                 <p style="text-indent: 4em;">1. Find a free memory page for each stack page of the parent.</p>
-                 <p style="text-indent: 4em;">2. Update the <a href="mem_ds.html#mem_free_list">Memory Free List</a> by incrementing the entry for the selected page. </p>
-                  <p style="text-indent: 4em;">3. Decrement MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
-                <p style="text-indent: 4em;"> 4. In the page table entry of the child's stack, set the page number field to the number of the selected page.</p>    
+                 <p style="text-indent: 4em;">2. Update the <a href="mem_ds.html#mem_free_list">Memory Free List</a> by incrementing the entry for each selected page(s). </p>
+                  <p style="text-indent: 4em;">3. Decrement MEM_FREE_COUNT, by the number of stack pages allocated, in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
+                <p style="text-indent: 4em;"> 4. In the page table entry of the child's stack, set the page number field(s) to the number of the selected page(s).</p>    
                 <p style="text-indent: 4em;"> 5. Auxiliary information for that entry is copied from the page table of the parent process. </p> 
             </div>
-     
-        <p> Copy the parent's stack pages to the child's stack pages.</p>
-        <p> Copy the page table entries, except stack entries, of parent to the page table of child.</p>
-        <p> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
+     <p>Each valid stack page of the parent is copied into the child stack page.</p>
+     <p>For any stack page that is invalid, copy the page table entry of that page into the page table of the child</p>
+        <p>Copy the other page table entries from the parent's page table to that of the child</p>
+              <p> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
         <p> Set the PTBR field of the Machine State to the address of the page table of the child process. </p>
         <p>/* The parent and child are identical except for PID, PPID and PTBR */   </p>
         <p>Copy the Inode Index in Process Table entry of the parent to child's Inode Index field. </p>
