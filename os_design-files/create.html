@@ -121,17 +121,15 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p><i>Description</i>: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to DATA and file size to 0. It also creates a root entry for that file. Note that the file name must be a character string and must not be “root”. </p>   
+                                                <p><i>Description</i>: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to DATA and file size to 0. It also creates a root entry for that file. </p>   
              <div><h4>Algorithm:</h4></div>
              <p>If file is present in system, return 0 &nbsp;&nbsp;/* Check the Inode Table  */ </p>
               <p>If no free entry in Inode Table, return -1</p>
              <p>Find index of a free entry in Inode Table</p>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
+             
+             <p>In the Inode Table entry found above, set file name to the file name given as argument, file size to 0 and file type to DATA</p>
 
-             <p style="text-indent:4em;">1. In the Inode Table entry found above, set file name to the file name given as argument, file size to 0 and file type to DATA</p>
 
-</div>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Update Root File</a></p>
              <div id="collapse2" class="panel-collapse collapse">
 
