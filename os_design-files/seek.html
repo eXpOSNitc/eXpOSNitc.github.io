@@ -131,8 +131,8 @@
 <p>if entry in Per Process Resource Table corresponding to fileDescriptor is invalid(indicated by -1)</p>
 <p style=" text-indent: 5em;">then Return -1</p>
 <p>Store the File Table Index corresponding to that entry in <i>FTIndex</i> and lseek position in <i>lseekpos</i></p>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Lock the file in the File Table</p>
-<div id="collapse1" class="panel-collapse collapse">
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse0">Lock the file in the File Table</p>
+<div id="collapse0" class="panel-collapse collapse">
 <p>In the entry corresponding to <i>FTIndex</i></p>
 <p>if the Locking PID -1 </p>
 <p style=" text-indent: 5em;">Set Locking PID to <i>CurrentPID</i> and store the Inode Index of the entry in <i>InodeIndex</i></p>
@@ -145,8 +145,8 @@
 <p style=" text-indent: 5em;">//Repeat this step until file is unlocked</p>
 
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Check for validity of <i>lseekpos</i></a></p>
-<div id="collapse1" class="panel-collapse collapse">
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Check for validity of <i>lseekpos</i></a></p>
+<div id="collapse2" class="panel-collapse collapse">
 <p>1.Using <i>FTIndex</i> index into File Table entry</p>
 <p>2.Store the Index of Inode in <i>InodeIndex</i>.</p>
 <p>3. Fetch the file size of the file from the Inode Table and store it in <i>FileSize</i></p>
@@ -156,8 +156,8 @@
 <p style=" text-indent: 5em;">Set LSEEK value in Per-Process Resource Table to 0</p>
 <p>else</p>
 <p style=" text-indent: 5em;">change the LSEEK to LSEEK+Offset</p>
- <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Returning back</a></p>
-<div id="collapse1" class="panel-collapse collapse">
+ <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Returning back</a></p>
+<div id="collapse3" class="panel-collapse collapse">
 <p>1. Unlock the file and wake up all processes waiting for the file. </p>
 <p>2.Return with 0 (indicating success). </p>
 </div>
