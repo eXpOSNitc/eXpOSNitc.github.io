@@ -113,11 +113,11 @@
               <p>The hardware requirement specification for eXpOS assumes that the machine is equipped with a timer device that sends periodic hardware interrupts.  The Timer Interrupt routine handler implements a co-operative multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">round robin scheduler</a> for eXpOS. The timer interrupt routine in eXpOS does the following tasks: 
               <ol style="margin-left: 60px; font-size: 16px"><li>Schedules the next ready process for execution.</li>
               <li>Swaps in (or out) processes from (or to) the disk.</li>
-              <li>If unused memory pages are present in the system, timer interrupt routine wakes up those processes which were blocked due to lack of memory.</li></ol>
+              <li>If unused memory pages are present in the system, wake up those processes which were blocked due to lack of memory.</li></ol>
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Save the context of current process</a></p>
+             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Save the context of current process and change its state from (RUNNING,_) to (READY,_)</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
                     1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
@@ -136,7 +136,7 @@
              <p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Wake up all processes that requires memory pages.</a></p>
               <div id="collapse5" class="panel-collapse collapse">        
                     <p style=" text-indent: 8em;">1. Change the state from (WAIT_MEM,_) to (READY,_).</p>
-                    <p style=" text-indent: 8em;">2. Reset the WAIT_MEM_COUNT to 0.</p>
+                    <p style=" text-indent: 8em;">2. Reset the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a> to 0.</p>
             </div>
                  <div class="boxed" style="border:1px solid green">
                      <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
@@ -157,7 +157,7 @@
             <p style="text-indent: 16em;">Mark the free page as used by incrementing its Memory Free List entry </p>
             <p style="text-indent: 16em;">Decrement MEM_FREE_COUNT in System Status Table.</p>
             <p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Load</a> the block (in which the stack page is stored) from disk to the selected page in memory.</p>
-            <p style="text-indent: 16em;">/* Subsequent updates in the Page Table will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a>*/</p>
+            <p style="text-indent: 16em;">/* Page Table updates will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> on completion of Load */</p>
            
             
          
@@ -178,7 +178,7 @@
                         <p style="text-indent: 16em;"> Mark the block as used by incrementing its <a href="disk_ds.html" target="_blank">Disk Free List</a> entry</p>
                         <p style="text-indent: 16em;">Mark the page as invalid in the <a href="process_table.html#per_page_table" target="_blank">Page Table</a> by updating the auxiliary information</p>
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
-			<p style="text-indent: 16em;">/* Subsequent updates in the Page Table will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a>*/ </p
+			<p style="text-indent: 16em;">/* Page Table updates will be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> on completion of Store*/ </p>
                         <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer of the process&nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
                         
 			<p style="text-indent: 16em;">Set the state of the process to (SWAPPED , _) </p>
