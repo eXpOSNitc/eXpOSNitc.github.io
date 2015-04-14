@@ -109,18 +109,18 @@
               <h2 class="wow fadeInLeftBig">Disk Interrupt Handler</h2>
                <br>
                <br>                                      
-               <p>Description: Hardware sends an interrupt on completion of load/store operation. This interrupt is handled by the Disk Interrupt Handler. The data structures updated are Disk Status Table, System Status Table and the Memory Free List</p>
+               <p>Description: Hardware sends an interrupt on completion of a load/store operation. This interrupt is handled by the Disk Interrupt Handler. The data structures updated are Disk Status Table, System Status Table and the Memory Free List</p>
                            
              <div><h4>Algorithm:</h4></div>
              <p>In the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
-             <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* Check the PID field of the Disk Status Table. A process had issued the load/store if the PID is greater than 0 */</p>
+             <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* PID field of the Disk Status Table will have a positive value */</p>
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the disk.</a></p>
-             <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in WAIT_DISK state.</p>
-                 <p style="text-indent: 8em;">2. Change the state of the processes to READY.</p></div>
+             <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (WAIT_DISK, _ ) state.</p>
+                 <p style="text-indent: 8em;">2. Change the state of the processes to (READY, _ ).</p></div>
             
              
             
-             <p><b>else</b> &nbsp;&nbsp;/* PID is less than 0, which means that the scheduler had issued the load/store instruction */</p> 
+             <p><b>else</b> &nbsp;&nbsp;/* The scheduler had issued the load/store instruction */</p> 
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
              <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process would be the absolute value of the number stored in the PID field of the Disk Status Table.</p></div>
              
