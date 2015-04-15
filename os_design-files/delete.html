@@ -128,11 +128,11 @@
                                                 <p><i>Description</i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   
                                                 <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
              <div><h4>Algorithm:</h4></div>
-             <p>If file is not present in Inode Table or if it is not a DATA file, return -1.</p>
+             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is not a DATA file, return -1.</p>
 
              
              <p>Find the index of the file in the Inode Table.</p>
-             <p>If <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry exists with the same index as found above, return -2.  &nbsp;&nbsp;/* File is open */</p>
+             <p>If <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry exists with the same index as found above, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */</p>
                 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p style="text-indent: 4em;">
