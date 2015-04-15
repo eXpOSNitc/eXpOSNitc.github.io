@@ -168,8 +168,8 @@
             <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</a></p>
             <div id="collapse1" class="panel-collapse collapse">
         <p style="text-indent: 4em;">Copy the other page table entries (code, heap and library) from the parent's page table to the child &nbsp; &nbsp;/* Shared between parent and child */</p>
-        <p style="text-indent: 4em;">For each page shared, increment its value in the Memory Free List</p>
-              <p style="text-indent: 4em;"> Copy the parent's Machine State (except PTBR) and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the child  </p> <p style="text-indent: 4em;"> Set the PTBR field of the <a href="process_table.html#machine_state" target="_blank">Machine State</a> to the address of the page table of the child. </p>
+        <p style="text-indent: 4em;">For each page shared, increment its value in the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a></p>
+              <p style="text-indent: 4em;"> Copy the parent's <a href="process_table.html#machine_state" target="_blank">Machine State</a> (except PTBR) and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the child  </p> <p style="text-indent: 4em;"> Set the PTBR field of the Machine State to the address of the page table of the child. </p>
         <p style="text-indent: 4em;">/* The parent and child are identical except for PID, PPID and PTBR */   </p>
         <p style="text-indent: 4em;">Copy the Inode Index in <a href="process_table.html" target="_blank">Process Table</a> entry of the parent to child's Inode Index field. </p>
         <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.</p>
