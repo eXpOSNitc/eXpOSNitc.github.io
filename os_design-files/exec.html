@@ -146,15 +146,15 @@
 				<p style="text-indent: 8em;">If the value becomes 0, then increment MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></p> 
     </div>
     <p style="text-indent: 4em;">In the <a href="process_table.html#per_page_table" target="_blank">page table</a> of the current process, set the code page entries to the code block numbers obtained from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.</p>
-    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to <a href="process_table.html#per_page_table" target="_blank">invalid and unreferenced</a>.</p>
-<p style="text-indent: 4em;">Include the page numbers of shared library in the page table and the set the auxillary information to valid and referenced.</p> 
+    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to <a href="process_table.html#per_page_table" target="_blank">invalid and unreferenced</a>. &nbsp; &nbsp; /* Executable file is not loaded in memory */</p>
+<p style="text-indent: 4em;">Include the page numbers of <a href="../os_spec-files/processmodel.html" target="_blank">shared library in the page table and the set the auxillary information to valid and referenced.</p> 
 </div>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Free the heap pages</a></p>
 <div id="collapse1" class="panel-collapse collapse">
                 <p style="text-indent: 4em;">
                      In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the heap pages.</p>
                 <p style="text-indent: 4em;">  If the value becomes 0, then increment MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>    
-                <p style="text-indent: 4em;"> 3. The page table entries for the heap pages are invalidated. </p> 
+                <p style="text-indent: 4em;"> The page table entries for the heap pages are invalidated. /* Memory will be allocated by <a href="exe_handler.html" target="_blank">exception handler</a> when a page fault occurs</p> 
             </div>
    
 <p>In the process table entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.</p>  
