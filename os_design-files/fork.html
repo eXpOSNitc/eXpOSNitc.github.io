@@ -111,15 +111,15 @@
                <br>                                      
              
               <p>Arguments: None</p>
-                                                <p>Return Value:</p>
+                                                <p>Return Values:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>PID (Integer) </td>
-                                                        <td>Success, the return value to the parent is the process descriptor(PID) of the child process.</td>
+                                                        <td>Success, the return value to the <b>parent</b> is the process descriptor(PID) of the child process.</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>0</td>
-                                                        <td>Success, the return value to the child.</td>
+                                                        <td>Success, the return value to the <b>child</b>.</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
@@ -127,9 +127,9 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                 <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
+                                                 <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library <a href="../os_spec-files/processmodel.html" target="_blank">regions</a> of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
                                                  <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
-                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>(in case of swap pages) and <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>.</p>
+                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages) .</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -165,7 +165,7 @@
       </div>
              </div>
              
-            <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</p>
+            <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</a></p>
             <div id="collapse1" class="panel-collapse collapse">
         <p style="text-indent: 4em;">Copy the other page table entries from the parent's page table to that of the child</p>
               <p style="text-indent: 4em;"> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
