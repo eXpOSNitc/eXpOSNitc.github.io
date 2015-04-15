@@ -139,9 +139,10 @@
              </div>
 	<p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse11" >Update the Page Table</a></p>
             <div id="collapse11" class="panel-collapse collapse">
-    <p style="text-indent: 4em;">Fetch the code block numbers of the file from the Inode Table entry of the file.</p> 
+				<p style="text-indent: 4em;">For each code page of the current process, decrement the corresponding <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> entry</p> 
+    <p style="text-indent: 4em;">Fetch the code block numbers from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.</p> 
     <p style="text-indent: 4em;">In the page table of the current process, set the code page entries to the code blocks of the file.</p>
-    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to invalid and unreferenced.</p>
+    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to <a href="process_table.html#per_page_table" target="_blank">invalid and unreferenced.</p>
 <p style="text-indent: 4em;">Include the page numbers of shared library in the page table.</p> 
 <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Free the heap pages</a></p>
 <div id="collapse1" class="panel-collapse collapse">
@@ -153,7 +154,7 @@
             </div>
 <p>In the process table entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.</p>  
 <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p>  
-<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html" target="_blank">Semrelease system call</a> */</p> 
+<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="semaphore_algos.html#semrelease" target="_blank">Semrelease system call</a> */</p> 
 <p>Set SP and IP values to valid locations.</p> 
 <p>Return from system call.</p>       
          </div>
