@@ -129,7 +129,7 @@
                                                 </table>
                                                  <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library <a href="../os_spec-files/processmodel.html" target="_blank">regions</a> of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
                                                  <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
-                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages) .</p>
+                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages) .</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -167,17 +167,16 @@
              
             <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</a></p>
             <div id="collapse1" class="panel-collapse collapse">
-        <p style="text-indent: 4em;">Copy the other page table entries (code, heap and library) from the parent's page table to that of the child</p>
-              <p style="text-indent: 4em;"> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
-        <p style="text-indent: 4em;"> Set the PTBR field of the Machine State to the address of the page table of the child process. </p>
+        <p style="text-indent: 4em;">Copy the other page table entries (code, heap and library) from the parent's page table to the child</p>
+              <p style="text-indent: 4em;"> Copy the parent's Machine State (except PTBR) and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the child  </p> <p style="text-indent: 4em;"> Set the PTBR field of the <a href="process_table.html#machine_state" target="_blank">Machine State</a> to the address of the page table of the child. </p>
         <p style="text-indent: 4em;">/* The parent and child are identical except for PID, PPID and PTBR */   </p>
-        <p style="text-indent: 4em;">Copy the Inode Index in Process Table entry of the parent to child's Inode Index field. </p>
-        <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in the File Table.</p>
-        <p style="text-indent: 4em;"> For every semaphore acquired by the parent, increment Process Count in the Semaphore Table.</p>
+        <p style="text-indent: 4em;">Copy the Inode Index in <a href="process_table.html" target="_blank">Process Table</a> entry of the parent to child's Inode Index field. </p>
+        <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.</p>
+        <p style="text-indent: 4em;"> For every semaphore acquired by the parent, increment Process Count in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>.</p>
        
         <p style="text-indent: 4em;"> Set state of child process to (READY, _ ).</p>
         </div>
-        <p>Return 0 to the child process and PID of the child process to the parent process.</p> 
+        <p>Set the return  value to 0 for the child process, PID of the child process for the parent process and return back to the parent process.</p> 
                      
          </div>
 		</div>
