@@ -135,10 +135,8 @@
              <p>If <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry exists with the same index as found above, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */</p>
                 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update Inode Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
-                <p style="text-indent: 4em;">
-                    1. Find the Inode Table entry of the file.</p>
-                          <p style="text-indent: 4em;">  2. For each disk block of the file, decrement its entry in the memory copy of <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. </p>        
-                    <p style="text-indent: 4em;">3. Invalidate (set to -1) the Inode Table entry.</p>
+                                          <p style="text-indent: 4em;"> For each disk block of the file, decrement its entry in the memory copy of <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. &nbsp;&nbsp; /* release the disk blocks */</p>        
+                    <p style="text-indent: 4em;">Invalidate (set to -1) the Inode Table entry.</p>
                        
             </div>
              
