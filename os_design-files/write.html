@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>File System Algorithms</title>
+     <title>Write</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -109,99 +109,96 @@
               <h2 class="wow fadeInLeftBig">Write System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: fileDescriptor(Integer) , wordtoWrite (Integer)</p>
-            <p>Return Value:</p>
+             <p>Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written</p>
+                                                <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
-            <td>0</td>
+                                                        <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                   
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>No disk space</td>
+                                                    </tr> 
+                                                    
                                                 </table>
-                                                <p><i>Description</i>:  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file.</p>   
+                                                <p><i>Description</i> :  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file.</p>  
+                                                <p>The data structures modified are Inode Table, Root file, Buffer Table and Disk Free List.</p>
+                                                <br>
              <div><h4>Algorithm:</h4></div>
-             <p>If fileDescriptor is not valid</p>
-             <p style=" text-indent: 5em;">then Return -1</p>
+             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
              
-			<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Find the Process Table of the current process</a></p>
-<div id="collapse1" class="panel-collapse collapse">
-<p>1.Find the PID of current process and store it in <i>CurrentPID</i></p>
-<p>2.Using <i>CurrentPID</i> find the location of its Per-Process Resource Table</p>
-</div>
-<p>if entry in Per Process Resource Table corresponding to fileDescriptor is invalid(indicated by -1)</p>
-<p style=" text-indent: 5em;">then Return -1</p>
-<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i> and lseek position in <i>lseekpos</i></p>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse0">Lock the file in the File Table</a></p>
-<div id="collapse0" class="panel-collapse collapse">
-<p>In the entry corresponding to <i>FTIndex</i></p>
-<p>if the Locking PID -1 </p>
-<p style=" text-indent: 5em;">Set Locking PID to <i>CurrentPID</i> and store the Inode Index of the entry in <i>InodeIndex</i></p>
-<p>else</p>
-<p style=" text-indent: 5em;">if locking PID is <i>CurrentPID</i> </p>
-<p style=" text-indent: 8em;">Go to next Step</p>
-<p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">1.Change the state of the process to (WAIT_FILE, FTIndex)</p>
-<p style=" text-indent: 8em;">2.Call the scheduler</p>
+			<p>Using the PID of the current process, locate the Per-Process Resource Table of the current process.</p>
 
+                        <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.</p>
+
+<p>Get the index of the File Table entry and lseek position from the Per Process Resource Table entry.</p>
+<p><b>If</b> file is locked &nbsp;&nbsp;/* Locking PID in File Table entry is not -1. */ </p>
+<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the file */</p>
+<p style=" text-indent: 8em;"><b>while</b> file is locked <b>do</b></p>
+<p style=" text-indent: 12em;"> Change the state of the process to (WAIT_FILE, index of File Table entry ).</p>
+<p style=" text-indent: 12em;"> Call scheduler.</p>
+           
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+<p>Set the Locking PID in the File Table entry to the PID of the current process.</p> 
+<p>Get the index of Inode Table entry from the File Table entry.</p>
+<p> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position at which the write is done.*/</p>
+<p> Get the block index from lseek position, &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be written*/</p>
+<p>Get the block number corresponding to the block index from the Inode Table .</p>
+<p><b>If</b> block number found above is -1 </p>
+<p style=" text-indent: 4em;"><b>If</b> there are no free blocks in the disk, return -2.</p>
+<p style=" text-indent: 4em;">Find a free disk block and increment its Disk Free List entry.</p>
+<p style=" text-indent: 4em;">Add the above block number to the Inode Table entry of the file and increment the file size.</p>
+<p>Get the buffer page number from block number,&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
+<p><b>If</b> the buffer page found above is locked.&nbsp;&nbsp;/* Locking PID in Buffer Table entry is not -1. */</p>  	
+<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the buffer */</p>
+<p style=" text-indent: 8em;"><b>while</b> buffer is locked <b>do</b></p>
+
+        <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ).</p>
+<p style=" text-indent: 12em;"> Call scheduler.</p>
+           
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+           
+
+<p>Set the Locking PID in the Buffer Table entry to the PID of the current process.</p>
+<p><b>If</b> the buffer does not have the required block &nbsp;&nbsp;/* Block Number field is either -1 or it is not equal to the number of the block to be read */ </p>
+<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block and the dirty bit is set</p>
+<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the Disk Status Table */</p>
+ <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ )</p>
+<p style=" text-indent: 12em;">Call the scheduler.</p>
+
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+<p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Store</a> the block in buffer to disk</p>  
+
+<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the Disk Status Table */</p>
+ <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ )</p>
+<p style=" text-indent: 12em;">Call the scheduler.</p>
+
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+   <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Load</a> the block from disk to buffer.</p>  
+   <p>Copy the word passed as argument to the offset position in the buffer. &nbsp;&nbsp;/* The buffer contains the required block */</p>
+  <p>Set dirty bit of the buffer in the Buffer Table entry.</p>
+<p>Increment LSEEK Position in the Per-Process Resource Table entry.</p>
+<p>Increment file size in the Inode Table entry and Root file entry.</p>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse16">Unlock the buffer and wake up all processes waiting for buffer</a></p>
+<div id="collapse16" class="panel-collapse collapse">
+<p style=" text-indent: 4em;">1. Set the Locking PID in the Buffer Table entry to -1.</p>
+<p style=" text-indent: 4em;">2. Check for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry).</p>
+<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">File pointer validation</a></p>
-<div id="collapse2" class="panel-collapse collapse">
-<p>1. Store the values Lseek / XFS_MAXBSIZE in BlockNum and Lseek % XFS_MAXBSIZE in Offset./* The BlockNum gives the index of the block in which word is to be written and Offset gives the position where word will be written. */</p>
-<p>In the Inode Table check the data block entry corresponding to BlockNum</p>
-<p>If it is -1</p>
-<p style=" text-indent: 5em;">Find a free block in the disk</p>
-<p style=" text-indent: 5em;"> if free block available</p>
-<p style=" text-indent: 8em;">set 1 in the entry for the free block in the Disk Free List</p>
- <p style=" text-indent: 8em;">Add this block number to the data blocks of the file</p>
-<p style=" text-indent: 8em;">Increment the file size in the Inode table entry by 1</p>
-<p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">Return -1</p> 
-	
-</div>
-<p>Store the value <i>BlockNum</i> % MAXBUFSIZE in <i>BufNum</i>./*<i>BufNum</i> gives the index of the buffer to which the block is mapped.*/</p>
-<p>if Locking PID field corresponding to <i>BufNum</i> is not -1</p>  
-<p style=" text-indent: 5em;">if Locking PID is equal to CurrentPID</p>
-<p style=" text-indent: 8em;">if Block Number field is same as <i>BlockNum.</i>
-<p style=" text-indent: 11em;">then go to step 5.</p>
-<p style=" text-indent: 8em;">else</p>
-<p style=" text-indent: 11em;">then go to Step 4.3</p>
-<p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">Change the state of the process to (WAIT_BUFFER, BufNum)</p>
-<p style=" text-indent: 8em;">Call the scheduler</p>
-<p style=" text-indent: 8em;">Repeat this step until the buffer is found to be unlocked. Once the file is found to be unlocked, go to 4.2.</p>
-<p>else</p>
-<p style=" text-indent: 5em;"> Change the field to CurrentPID</p><p style=" text-indent: 5em;"> if Block Number is equal to BlockNum</p>
-<p style=" text-indent: 8em;">then go to Step 5</p>
-<p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">If the dirty bit is set</p>
- <p style=" text-indent: 8em;">1. Store the block in the buffer to the disk</p>
-<p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">2. Load the required data block into buffer</a></p>
-<div id="collapse3" class="panel-collapse collapse">
-<p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Synchronous Load</a></p>
-  <div id="collapse4" class="panel-collapse collapse">
-<p style=" text-indent: 8em;">Use Load/Store directly</p></div>
-<p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Asynchronous Load</a></p>
-<div id="collapse5" class="panel-collapse collapse">
-<p style=" text-indent: 8em;">if the device/disk is busy</p>
- <p style=" text-indent: 11em;">then change the state of the process to (WAIT_DISK, __ )</p>
-<p style=" text-indent: 11em;">call the scheduler</p>
-<p style=" text-indent: 11em;">Repeat the above until the device is found to be not busy</p>
-<p style=" text-indent: 8em;">else</p>
-<p style=" text-indent: 11em;"><a href="load_store.html" target="_blank">Load the block</a></p>
-</div>
-</div>
-<p><i>Lseek</i> modulo XFS_MAXBSIZE will give the offset in the block, from which the word is to be written</p>
-<p>Set dirty bit of the buffer to 1.</i>
-<p>Increment LSEEK Position by 1 in the Per-Process Resource Table entry</p>
-<p>Increment file size of entry corresponding to InodeIndex.</p> <p>Increment file size of root entry corresponding to InodeIndex.</p>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for file</a></p>
 <div id="collapse6" class="panel-collapse collapse">
-<p>1. Scan through the Process Table</p>
-<p>2. Check for those processes who state is (WAIT_FILE, FTIndex)</p>
-<p>Change the state of those process to (READY, __)</p>
+<p style=" text-indent: 4em;">1. Set the Locking PID in the File Table entry to -1.</p>
+<p style=" text-indent: 4em;">2. Check for the processes in the state (WAIT_FILE, index of the File Table entry).</p>
+<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
 </div>
-<p>Return with 0, indicating success and word read from file</p>
+<p>Return with 0. &nbsp;&nbsp;/* indicating success */</p>
  
+
 
 
 
