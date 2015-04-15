@@ -114,6 +114,7 @@
                                                 <p>Return Value: None</p>
                                                 
                                                 <p><i>Description</i>: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
+                                                <p>Data structures modified are Semaphore Table, </p>
               <br>
               
              <div><h4>Algorithm:</h4></div>
@@ -127,17 +128,17 @@
             
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Invalidate the page table entries of the current process</a></p>
 <div id="collapse3" class="panel-collapse collapse">
-	<p style="text-indent: 4em;">Scan the page table. </p>
-	<p style="text-indent: 4em;"><b>If</b> the page is valid</p>
-	<p style="text-indent: 8em;">
+	<p style="text-indent: 4em;">Scan the page table. For <b>each</b> page do : </p>
+	<p style="text-indent: 8em;"><b>If</b> the page is valid</p>
+	<p style="text-indent: 12em;">
                     In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the page.</p>
-                <p style="text-indent: 8em;"> If the value becomes 0, then increment MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>  
+                <p style="text-indent: 12em;"> If the value becomes 0, then increment MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>  
 	 <div class="boxed" style="border:1px solid green">
     <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
                      <div id="collapse14" class="panel-collapse collapse">
-    <p style="text-indent: 4em;"><b>else</b>&nbsp;&nbsp;/* page is swapped out*/</p>
+    <p style="text-indent: 8em;"><b>else</b>&nbsp;&nbsp;/* page is swapped out*/</p>
      
-     <p style="text-indent: 8em;">Find the swap block and decrement its entry in the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. </p>
+     <p style="text-indent: 12em;">Find the swap block and decrement its entry in the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. </p>
    
      <p style="color: darkgreen;text-indent: 4em;">/* The code for swapper module and demand paging ends here. */</p>
       </div>
