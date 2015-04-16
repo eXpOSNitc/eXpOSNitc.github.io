@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>File System Algorithms</title>
+     <title>Seek</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -32,16 +32,16 @@
     <!-- Elastic grid css file -->
     <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
     <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -113,54 +113,56 @@
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
-            <td>0</td>
+            <tr>
+                                                        <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                   
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Offset value moves the file pointer to a position outside the file</td>
+                                                    </tr> 
                                                 </table>
-                                                <p><i>Description</i>: The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>   
+                                                <p><i>Description</i> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>   
+                                                <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
+                                                
              <div><h4>Algorithm:</h4></div>
-             <p>If fileDescriptor is not valid</p>
-             <p style=" text-indent: 5em;">then Return -1</p>
+             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
              
-			<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Find the Process Table of the current process</a></p>
-<div id="collapse1" class="panel-collapse collapse">
-<p>1.Find the PID of current process and store it in <i>CurrentPID</i></p>
-<p>2.Using <i>CurrentPID</i> find the location of its Per-Process Resource Table</p>
-</div>
-<p>if entry in Per Process Resource Table corresponding to fileDescriptor is invalid(indicated by -1)</p>
-<p style=" text-indent: 5em;">then Return -1</p>
-<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i> and lseek position in <i>lseekpos</i></p>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse0">Lock the file in the File Table</p>
-<div id="collapse0" class="panel-collapse collapse">
-<p>In the entry corresponding to <i>FTIndex</i></p>
-<p>if the Locking PID -1 </p>
-<p style=" text-indent: 5em;">Set Locking PID to <i>CurrentPID</i> and store the Inode Index of the entry in <i>InodeIndex</i></p>
-<p>else</p>
-<p style=" text-indent: 5em;">if locking PID is <i>CurrentPID</i> </p>
-<p style=" text-indent: 8em;">Go to next Step</p>
-<p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">1.Change the state of the process to (WAIT_FILE, FTIndex)</p>
-<p style=" text-indent: 8em;">2.Call the scheduler</p>
-<p style=" text-indent: 5em;">//Repeat this step until file is unlocked</p>
+			<p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table"target="_blank">Per-Process Resource Table</a> of the current process.</p>
+
+                        <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.</p>
+
+<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
+<p><b>If</b> file is locked &nbsp;&nbsp;/* Locking PID in File Table entry is not -1. */ </p>
+<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the file */</p>
+<p style=" text-indent: 8em;"><b>while</b> file is locked <b>do</b></p>
+<p style=" text-indent: 12em;"> Change the state of the process to (WAIT_FILE, index of File Table entry ).</p>
+<p style=" text-indent: 12em;"> Call scheduler.</p>
+           
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+<p>Set the Locking PID in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to the PID of the current process.</p>      
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Check the validity of the given offset </a></p>
+<div id="collapse2" class="panel-collapse collapse">
+<p style=" text-indent: 4em;">1. Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>.</p>
+<p style=" text-indent: 4em;">2. <b>If</b> (lseek + the given offset) does not lie in the range 0 to (file size - 1), return -1.&nbsp;&nbsp;/* the new lseek position is outside the file */</p>
 
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Check for validity of <i>lseekpos</i></a></p>
-<div id="collapse2" class="panel-collapse collapse">
-<p>1.Using <i>FTIndex</i> index into File Table entry</p>
-<p>2.Store the Index of Inode in <i>InodeIndex</i>.</p>
-<p>3. Fetch the file size of the file from the Inode Table and store it in <i>FileSize</i></p>
-<p>//LSEEK position is valid only if (current LSEEK + Offset) takes a value from 0 to <i>FileSize</i>-1</p>
-</div>
-<p>if offset is 0</p>
-<p style=" text-indent: 5em;">Set LSEEK value in Per-Process Resource Table to 0</p>
+<p><b>If</b> the given offset is 0</p>
+<p style=" text-indent: 4em;">Set lseek value in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry to 0</p>
 <p>else</p>
-<p style=" text-indent: 5em;">change the LSEEK to LSEEK+Offset</p>
- <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Returning back</a></p>
-<div id="collapse3" class="panel-collapse collapse">
-<p>1. Unlock the file and wake up all processes waiting for the file. </p>
-<p>2.Return with 0 (indicating success). </p>
+<p style=" text-indent: 4em;">Change the lseek value in the Per-Process Resource Table entry to lseek+offset</p>
+
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for file</a></p>
+<div id="collapse6" class="panel-collapse collapse">
+<p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
+<p style=" text-indent: 4em;">2. In the <a href="process_table.html" target="_blank">Process Table</a>, check for the processes in the state (WAIT_FILE, index of the File Table entry).</p>
+<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
 </div>
+<p>Return with 0. &nbsp;&nbsp;/* success */</p>
 
         
                       

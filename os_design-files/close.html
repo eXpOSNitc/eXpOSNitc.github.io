@@ -122,16 +122,16 @@
                                                     </tr> 
                                                    
                                                 </table>
-            <p><i>Description</i> : The Close operation takes as input the File Descriptor of the file to be closed. It closes one open instance of the file by making corresponding updations in <a href="mem_ds.html#file_table">File Table</a> and <a href="process_table.html#per_process_table">Per-Process Resource Table</a>.</p>   
+            <p><i>Description</i> : The Close operation takes as input the File Descriptor of the file to be closed. It closes one open instance of the file by making corresponding updations in <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>   
                                                 <br>
              <div><h4>Algorithm:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
-                      <p>Using the PID of the current process, locate the Per-Process Resource Table of the current process.</p>
+                      <p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the current process.</p>
   
 	<p>If Per Process Resource Table entry corresponding to file descriptor is invalid, return -1. </p>
 
             
-<p>Get the index of the File Table entry from Per-Process Resource Table entry.</p>
+<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry from Per-Process Resource Table entry.</p>
 
             
                 <p>
@@ -139,8 +139,8 @@
                                            
   
              
-                <p> Invalidate the Per Process Resource Table entry.</p> 
-             <p>Return from system call with 0. &nbsp;&nbsp; /* indicating success */</p>
+                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p> 
+             <p>Return from system call with 0. &nbsp;&nbsp; /* success */</p>
         
                       
          </div>
