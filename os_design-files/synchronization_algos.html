@@ -258,12 +258,11 @@ be unlocked, locks it, and returns to the calling process. The data structures u
 
             <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
               <p><b>If</b> file is locked. /* if KLock or ULock is set in <a href="mem_ds.html#file_table">File Table</a>*/</p>
+              <p style=" text-indent: 4em;"><b>If</b> current process has not  locked the file, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
+              <p style=" text-indent: 4em;">Unlock the file. &nbsp;&nbsp;/*Set the ULock to -1.*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (WAIT_FILE, file table index of the locked file). </p>
               
-              <p style=" text-indent: 8em;">Unlock the file. &nbsp;&nbsp;/*Set the ULock to -1.*/</p>
-              <p style=" text-indent: 8em;">Wake up all process who were waiting for file. &nbsp;&nbsp;/*Change the <a href="process_table.html#state">state</a> from (WAIT_FILE, file table index of the locked file) to (READY, _ ) */ </p>
-              
-			<p></p><p style=" text-indent: 4em;"><b>If</b> current process has locked the file</p>
-             <p style=" text-indent: 8em;"> Return -2. /* The file is locked by some other process.*/</p>
+			
              <p>Return 0.</p>
 
          </div>
