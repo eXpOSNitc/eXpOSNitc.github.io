@@ -211,7 +211,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
               <p><b>If</b> file is locked. /* if KLock or ULock is set in <a href="mem_ds.html#file_table">File Table</a>*/</p>
               <p style=" text-indent: 4em;"><b>If</b> current process has not locked the file</p>
               <p style=" text-indent: 8em;"><b>while</b> file is locked, <b>do</b></p>
-              <p style=" text-indent: 12em;">Put the current process to sleep. &nbsp;&nbsp;/*Change the <a href="process_table.html#state">state</a> to (WAIT_FILE, file table index of the locked file) */ </p>
+              <p style=" text-indent: 12em;">Change the <a href="process_table.html#state">state</a> to (WAIT_FILE, ftindex) where ftindex is the file table index of the locked file. </p>
               <p style=" text-indent: 12em;">Call Scheduler.</p>
 
              <p style=" text-indent: 8em;"> <b>endwhile</b></p>
