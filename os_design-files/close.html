@@ -119,10 +119,15 @@
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File is locked by the calling process.</td>
                                                     </tr> 
                                                    
                                                 </table>
-            <p><i>Description</i> : The Close operation takes as input the File Descriptor of the file to be closed. It closes one open instance of the file by making corresponding updations in <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>   
+            <p><i>Description</i> :  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if file was locked by the process which invoked the system call. </p>
+            <p>Data structures modified are <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>   
                                                 <br>
              <div><h4>Algorithm:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>
@@ -132,7 +137,7 @@
 
             
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry from Per-Process Resource Table entry.</p>
-
+<p>If file is locked by the current process, return -2. &nbsp;&nbsp;/* Ulock field will be the PID of the current process. */</p>
             
                 <p>
                     In the File Table Entry found above, decrement the File Open Count. If the count becomes 0, invalidate the entry.&nbsp;&nbsp; /* set to -1 */</p>        
