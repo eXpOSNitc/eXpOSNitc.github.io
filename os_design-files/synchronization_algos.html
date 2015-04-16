@@ -126,12 +126,12 @@ process has to wait.
                                                 </table>
                                                 <p><i>Description</i>:  The current process is blocked till the process with PID given as argument
 executes a Signal system call or exits. Note that the system call will fail
-if a process attempts to wait for itself.</p>
+if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /*Check the status of the argument process from Process table.  */ </p>
            
-             <p> Change the status from (READY,_ ) to (WAIT_PROCESS, Argument_PID ).</p>
+             <p> Change the status from (READY,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
              <p>Invoke the Scheduler to schedule the next process.</p>
 
          </div>
@@ -160,14 +160,14 @@ if a process attempts to wait for itself.</p>
                                                      
                                                 </table>
                                                 <p><i>Description</i>:  All processes waiting for the signaling process are resumed. The system
-call does not fail. 
+call does not fail. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>. 
 </p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Wake up all processes waiting for the current process.</a></p>
              <div id="collapse1" class="panel-collapse collapse">
-             <p style="text-indent: 4em;">Traverse through the <a href="process_table.html" target="_blank">Process Table</a>, change the status from (WAIT_PROCESS, Pid of the current process) to (READY, _ )
+             <p style="text-indent: 4em;">Traverse through the <a href="process_table.html" target="_blank">Process Table</a>, change the status from (WAIT_PROCESS, Pid of the current process) to (READY, _ ).
 </p>
 </div>
              <p> Return 0.</p>
