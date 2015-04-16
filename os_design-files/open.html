@@ -130,7 +130,7 @@
      </tr>
                                                    
         </table>
-                                                <p><i>Description</i>: For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
+                                                <p><i>Description</i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
                                                 <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <br>
              <div><h4>Algorithm:</h4></div>
@@ -150,18 +150,18 @@
              <p><b>else</b></p>
 
                <p style=" text-indent: 4em;">Find a free entry in the File Table. If there are no free entries, return -3.&nbsp;&nbsp;/* Reached maximum number of open files in the system. */</p>
- 
+ <p style=" text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Update the File Table entry</a></p>
+             <div id="collapse5" class="panel-collapse collapse">
 
+<p style=" text-indent: 8em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
+<p style=" text-indent: 8em;">Set the Locking PID to -1 in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.&nbsp;&nbsp;/* file is unlocked */</p>
+
+</div>
+
+<p>Increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
 <p>In the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry, set the first field (Index of File Table) to the File Table index found above and set LSEEK Position to 0.</p>
              
 
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Update the File Table entry</a></p>
-             <div id="collapse5" class="panel-collapse collapse">
-
-<p style=" text-indent: 4em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
-<p style=" text-indent: 4em;"> Increment the File Open Count and set the Locking PID to -1 in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.</p>
-
-</div>
 
      
 <p>Return from system call with the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */</p>

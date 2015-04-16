@@ -137,14 +137,7 @@
                         <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.</p>
 
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
-<p><b>If</b> file is locked &nbsp;&nbsp;/* Locking PID in File Table entry is not -1. */ </p>
-<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the file */</p>
-<p style=" text-indent: 8em;"><b>while</b> file is locked <b>do</b></p>
-<p style=" text-indent: 12em;"> Change the state of the process to (WAIT_FILE, index of File Table entry ).</p>
-<p style=" text-indent: 12em;"> Call scheduler.</p>
-           
-<p style=" text-indent: 8em;"><b>endwhile</b></p>
-<p>Set the Locking PID in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to the PID of the current process.</p>      
+    
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Check the validity of the given offset </a></p>
 <div id="collapse2" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>.</p>
