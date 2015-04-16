@@ -109,7 +109,7 @@
               <h2 class="wow fadeInLeftBig">Close System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: fileDescriptor (Integer) </p>
+            <p>Arguments: File Descriptor (Integer) </p>
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
@@ -128,7 +128,7 @@
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
                       <p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the current process.</p>
   
-	<p>If Per Process Resource Table entry corresponding to file descriptor is invalid, return -1. </p>
+	<p>If Per Process Resource Table entry corresponding to file descriptor is invalid, return -1.  &nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
 
             
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry from Per-Process Resource Table entry.</p>
@@ -139,7 +139,7 @@
                                            
   
              
-                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p> 
+                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp; /* set to -1 */</p> 
              <p>Return from system call with 0. &nbsp;&nbsp; /* success */</p>
         
                       
