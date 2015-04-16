@@ -109,7 +109,7 @@
               <h2 class="wow fadeInLeftBig">Seek System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: fileDescriptor(Integer) , Offset (Integer)</p>
+            <p>Arguments: File Descriptor(Integer) , Offset (Integer)</p>
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
@@ -130,31 +130,26 @@
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 
              <div><h4>Algorithm:</h4></div>
-             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
+             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value must lie within the range from 0 to 7 (both included). */</p>
              
 			<p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table"target="_blank">Per-Process Resource Table</a> of the current process.</p>
 
-                        <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.</p>
+                        <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.&nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
 
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
     
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Check the validity of the given offset </a></p>
 <div id="collapse2" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>.</p>
-<p style=" text-indent: 4em;">2. <b>If</b> (lseek + the given offset) does not lie in the range 0 to (file size - 1), return -1.&nbsp;&nbsp;/* the new lseek position is outside the file */</p>
+<p style=" text-indent: 4em;">2. <b>If</b> (lseek + the given offset) does not lie in the range 0 to (file size - 1), return -2.&nbsp;&nbsp;/* the new lseek position is outside the file */</p>
 
 </div>
 <p><b>If</b> the given offset is 0</p>
-<p style=" text-indent: 4em;">Set lseek value in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry to 0</p>
+<p style=" text-indent: 4em;">Set lseek value in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry to 0.</p>
 <p>else</p>
-<p style=" text-indent: 4em;">Change the lseek value in the Per-Process Resource Table entry to lseek+offset</p>
+<p style=" text-indent: 4em;">Change the lseek value in the Per-Process Resource Table entry to lseek+offset.</p>
 
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for file</a></p>
-<div id="collapse6" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. In the <a href="process_table.html" target="_blank">Process Table</a>, check for the processes in the state (WAIT_FILE, index of the File Table entry).</p>
-<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
-</div>
+
 <p>Return with 0. &nbsp;&nbsp;/* success */</p>
 
         
