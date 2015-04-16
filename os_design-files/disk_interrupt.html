@@ -116,6 +116,8 @@
              <div><h4>Algorithm:</h4></div>
              <p>In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
              <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* PID field of the Disk Status Table will have a positive value */</p>
+             <p style="text-indent: 4em;"><b>If</b> the loaded block was a swap block &nbsp;&nbsp; /* Block was loaded due to a page fault exception */</p>
+             <p style="text-indent: 8em;">Decrement the corresponding <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
              <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the disk.</a></p>
              <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (WAIT_DISK, _ ) state.</p>
                  <p style="text-indent: 8em;">2. Change the state of the processes to (READY, _ ).</p></div>

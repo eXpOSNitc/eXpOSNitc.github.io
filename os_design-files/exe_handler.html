@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Disk Interrupt Handler</title>
+    <title>Exception Handler</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -110,51 +110,37 @@
          <div class="heading">
               <h2 class="wow fadeInLeftBig">Disk Interrupt Handler</h2>
                <br>
-               <br>                                      
-               <p><i>Description</i>: Hardware sends an interrupt on completion of a load/store operation. This interrupt is handled by the Disk Interrupt Handler. The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> and the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>.</p>
-                           
+               <br>   
+               <p>Arguments : None</p>
+               <p>Return value : None</p>
+               <p><i>Description</i> : If a process generates an illegal instruction or an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
+               <p>The exception handler is also invoked when a page required by the process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
+               <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html" target="_blank">Process Table</a>.</p>
+               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
-             <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* PID field of the Disk Status Table will have a positive value */</p>
-             <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the disk.</a></p>
-             <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (WAIT_DISK, _ ) state.</p>
-                 <p style="text-indent: 8em;">2. Change the state of the processes to (READY, _ ).</p></div>
             
-             
-                             <div class="boxed" style="border:1px solid green">
-                     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
-                     <div id="collapse14" class="panel-collapse collapse">
-             <p><b>else</b> &nbsp;&nbsp;/* The scheduler had initiated the disk load/store */</p> 
-             <p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
-             <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process will be the absolute value of the PID field of the Disk Status Table.</p></div>
-             
-             
-             <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
-             <p style="text-indent: 8em;">Get the block number and the page number from the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. </p>
-             <p style="text-indent: 8em;">Decrement the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>entry. &nbsp;&nbsp; /* The block is swapped in */</p>
-             <p style="text-indent: 8em;">Find the Page Table entry corresponding to the loaded block &nbsp;&nbsp; /* Page Number field will be the block number of the loaded block */</p>
-             
-             <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the page number. </p>
-             <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p>
-             <p style="text-indent: 8em;">Change the state of the process to (READY, _ ).</p>
-             <p style="text-indent: 8em;">Reset the TICK of the process to 0.</p>
-             <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
-             
-             <p style="text-indent: 4em;"><b>else</b> &nbsp;&nbsp; /* disk operation was a store operation */</p>
-             <p style="text-indent: 8em;">Get the page number and the block number from <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. </p>
-         
-             <p style="text-indent: 8em;">Replace the Page Number field in the page table entry with the disk block number.</p>
-             <p style="text-indent: 8em;">Mark the page stored as free by decrementing its <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> entry.</p>
-             <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
-             <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
+             <p><b>If</b> the exception is not caused by a page fault or it is caused by a reference to an invalid address &nbsp;&nbsp; /* Check the Exception Cause registers */ </p>
+             <p style="text-indent: 4em;">Display the cause and exit the process &nbsp;&nbsp; /* Invoke the <a href="exit.html" target="_blank">Exit System Call</a>. */</p> 
+             <p>/* Exception is due to page fault */</p>
+             <p>Using the Exception registers, find the <a href="process_table.html#per_page_table" target="_blank">page table</a> entry of the page causing the exception.</p>
+             <p><b>while</b> there are no free pages in memory <b>do</b> &nbsp;&nbsp; /* Check the MEM_FREE_COUNT in System Status Table */</p>
+             <p style="text-indent: 4em;">Change the state of the process to (WAIT_MEM, _ ) in the <a href="process_table.html" target="_blank">Process Table</a>. </p>
+             <p style=" text-indent: 4em;">Call scheduler.</p>
+             <p><b>endwhile</b></p>
+             <p>Find a free page in memory, increment its Memory Free List entry  and decrement MEM_FREE_COUNT in System Status Table.</p>
+             <p><b>If</b> the page table entry found above contains a swap block number &nbsp;&nbsp; /* The page was swapped out */</p>
+             <p style="text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block to the memory page found above</a>.</p>
+             <p>In the page table entry, set the Page Number field to the number of the page found above and auxiliary information to referenced and valid. </p>
+  
+             <p>Return to the user process.</p>
+
              </div>
              </div>
              <br><br>
              </div>
              </div>
          </div>
-		</div>
-		</div>
+		
 	</section>
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
