@@ -129,11 +129,10 @@ executes a Signal system call or exits. Note that the system call will fail
 if a process attempts to wait for itself.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> process is intending to wait for itself or for a terminated process, return -1. &nbsp;&nbsp; /*Check the status of the argument process from Process table.  */ </p>
+             <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /*Check the status of the argument process from Process table.  */ </p>
            
-             <p>Put the current process to sleep. /* Change the status from (READY,_ ) to (WAIT_PROCESS, Argument_PID )*/</p>
-             <p>Call Scheduler.</p>
-             <p>Return 0.</p>
+             <p> Change the status from (READY,_ ) to (WAIT_PROCESS, Argument_PID ).</p>
+             <p>Invoke the Scheduler to schedule the next process.</p>
 
          </div>
     </div>
