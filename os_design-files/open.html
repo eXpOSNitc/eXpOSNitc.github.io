@@ -147,6 +147,7 @@
             </div>
              <p><b>If</b> file is already open &nbsp;&nbsp;/* Check for a <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry having the index of the Inode Table entry for the file */</p>
              <p style=" text-indent: 4em;"> Get the File Table entry of the file.</p>
+             <p style=" text-indent: 4em;">Increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
              <p><b>else</b></p>
 
                <p style=" text-indent: 4em;">Find a free entry in the File Table. If there are no free entries, return -3.&nbsp;&nbsp;/* Reached maximum number of open files in the system. */</p>
@@ -154,11 +155,11 @@
              <div id="collapse5" class="panel-collapse collapse">
 
 <p style=" text-indent: 8em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
-<p style=" text-indent: 8em;">Set the Locking PID to -1 in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.&nbsp;&nbsp;/* file is not locked */</p>
+<p style=" text-indent: 8em;">Set the Locking PID to -1 and File Open Count to 1 in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.&nbsp;&nbsp;/* file is not locked */</p>
 
 </div>
 
-<p>Increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
+
 <p>In the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry, set the first field (Index of File Table) to the File Table index found above and set LSEEK Position to 0.</p>
              
 
