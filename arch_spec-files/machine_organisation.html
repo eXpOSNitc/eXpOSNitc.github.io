@@ -411,7 +411,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unpreviliged mode</b> (If the XSM_TICKS numbered instruction changes mode from unpreviliged to previliged, then the interrupt occurs before executing the next instruction after the machine is back to unpreviliged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the previliged mode and  executes the <b>timer interrupt service routine</b>.  (LINK TO TIMER ISR)</p>
+                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="../os_design-files/misc.html"><b>timer interrupt service routine</b></a>.  </p>
                             </div>
                           </div>
                         </div>
@@ -427,7 +427,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unpreviliged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unpreviliged to previliged, then the interrupt occurs before executing the next instruction after the machine is back to unpreviliged mode).  Upon receipt of the interrupt, the machine executes <b>disk interrupt service routine</b>.  (LINK TO THE DISK ISR).  
+                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="../os_design-files/disk_interrupt.html"><b>disk interrupt service routine</b></a>.    
 </p>
                             </div>
                           </div>
@@ -444,7 +444,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or read a word from the console to a register.   There are three macro instructions associated with I/O.  These are <b>out</b>, <b>in</b> and <b>ina</b>.  The first instruction results in transfer of a word from a register to the console.  The second results in the machine to wait for an input from the console and reads the input.  The ina macro allows the machine execution to continue, and the console device will send a hardware interrupt when the user inputs a word from the console.  The console interrupt handler routine is executed when the interrupt is raised.   The data must be read from a machine register designated for this purpose.  
+                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to a register.   There are three macro instructions associated with I/O.  These are <b>out</b>, <b>in</b> and <b>ina</b>.  The first instruction results in transfer of a word from a register to the console.  The second instruction makes the machine wait for an input from the console and reads the input.  The ina macro allows the machine execution to continue without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.  The <a href="../os_design-files/term_handler.html">console interrupt handler</a> routine is executed when the interrupt is raised.   The data must be read from a machine register designated for this purpose.  
 </p>
                             </div>
                           </div>
@@ -462,7 +462,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           <div id="collapse7" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) the the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
+When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
 </p>
                             </div>
                           </div>
