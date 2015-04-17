@@ -209,21 +209,8 @@ These contain executable code for programs that can be loaded and run by the ope
 <p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the <b>executable file format</b>).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
     Typically, an application program written in a high level language (like <a href="../support_tools-files/expl.html" target="_blank">ExpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
 </p>
-<p>An OS implementation on a particular machine specifies an <b>application binary interface (ABI)</b>.  The ABI defines the following:
-<ol style="margin-left: 60px">
-<li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
-</li>
-<li>
- A logical division of the memory address space into regions - text, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
-</li>
-<li>
-The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
-</li>
-<li>A low level system call interface which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent. .</li>
-</ol>
-<p>
-    The eXpOS ABI for XSM machine is specified <a href="../abi.html" target="_blank">here</a>. 
-</p>
+<p>An OS implementation on a particular machine specifies an <b>application binary interface (ABI)</b>. The eXpOS ABI for XSM machine is specified <a href="../abi.html" target="_blank">here</a>.</p>
+
 <p>
     <b><i>Important Note:</i></b>  Application programs are typically written in a high level language like ExpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.  API describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the <a href="../support_tools-files/expl.html" target="_blank">ExpL </a> programming language and eXpOS <a href="../os_design.html" target="_blank">API</a> are  given.  The ExpL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for compiler back end design.   
 </p>
