@@ -249,7 +249,7 @@ Example: program.xsm</p>
                                     
                                 </ul>
                                 <h3>Invoking a system call</h3>
-                                <p>A user process invokes a system call by first pushing the arguments and the system call number into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. </p>
+                                <p>A user process invokes a system call by first pushing the arguments and the system call number into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. In this implementation of XSM, the arguments pushed into the stack is fixed at three.</p>
                                 <p> A system call invocation using the high level application programmer's interface of a programming language like eXPL compiles to a set of machine instructions. They are the stack operations that must be performed by the user program before the INT instruction is executed (See machine instructions below). The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0' - see sample code below) is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. <p>
 <br>
 <pre style = "font-size:20px">
