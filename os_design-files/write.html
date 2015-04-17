@@ -32,16 +32,16 @@
     <!-- Elastic grid css file -->
     <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/pguso/jquery-plugin-circliful/master/css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
     <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -130,75 +130,80 @@
                                                 <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
                                                 <br>
              <div><h4>Algorithm:</h4></div>
-             <p style=" text-indent: 4em;"><b>If</b> word is to be written to standard output &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */</p>
-             <p>Issue the machine instruction to output the given word.&nbsp;&nbsp; /* This is hardware dependent therefore left out from the description.*/</p>
-             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor is valid if its value ranges from 0 to 7. */</p>
+             <p><b>If</b> word is to be written to standard output &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */</p>
+             <p style=" text-indent: 4em;">Issue the machine instruction to output the given word.&nbsp;&nbsp; /* This is hardware dependent therefore left out from the description.*/</p>
+             <p style=" text-indent: 4em;">Return 0.&nbsp;&nbsp; /* success */</p>
+             <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
              
-			<p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the current process.</p>
-
-                        <p><b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.</p>
-
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
-<p><b>If</b> file is locked &nbsp;&nbsp;/* Locking PID in File Table entry is not -1. */ </p>
-<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the file */</p>
-<p style=" text-indent: 8em;"><b>while</b> file is locked <b>do</b></p>
-<p style=" text-indent: 12em;"> Change the state of the process to (WAIT_FILE, index of File Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 12em;"> Call scheduler.</p>
-           
-<p style=" text-indent: 8em;"><b>endwhile</b></p>
-<p>Set the Locking PID in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to the PID of the current process.</p> 
-<p>Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the File Table entry.</p>
-<p> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position at which the write is done.*/</p>
-<p> Get the block index from lseek position, &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be written*/</p>
-<p>Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>.</p>
+
+<p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
+              <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
+             <p> <b>endwhile</b></p>
+<p> Change the KLock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
+
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the position to which data has to be written.</a></p>
+<div id="collapse8" class="panel-collapse collapse">
+   
+<p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be read*/</p>
+ <p style=" text-indent: 4em;">Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the File Table entry.</p>
+<p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
+<p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position to be read from.*/</p>
+</div>
+
+
 <p><b>If</b> block number found above is -1 </p>
 <p style=" text-indent: 4em;"><b>If</b> there are no free blocks in the disk, return -2.</p>
 <p style=" text-indent: 4em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
-<p style=" text-indent: 4em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file and increment the file size.</p>
-<p>Get the buffer page number from block number,&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
-<p><b>If</b> the buffer page found above is locked.&nbsp;&nbsp;/* Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry is not -1. */</p>  	
-<p style=" text-indent: 4em;"><b>If</b> Locking PID is not equal to the PID of the current process &nbsp;&nbsp;/* Some other process has locked the buffer */</p>
-<p style=" text-indent: 8em;"><b>while</b> buffer is locked <b>do</b></p>
+<p style=" text-indent: 4em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.</p>
 
-        <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 12em;"> Call scheduler.</p>
            
-<p style=" text-indent: 8em;"><b>endwhile</b></p>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Load the block to the buffer.</a></p>
+<div id="collapse9" class="panel-collapse collapse">
+<p style=" text-indent: 4em;">Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
+<p style=" text-indent: 4em;"><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
+
+        <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+
+           
+<p style=" text-indent: 4em;"><b>endwhile</b></p>
            
 
-<p>Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.</p>
-<p><b>If</b> the buffer does not have the required block &nbsp;&nbsp;/* Block Number field is either -1 or it is not equal to the number of the block to be read */ </p>
-<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block and the dirty bit is set</p>
-<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the Disk Status Table */</p>
- <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 12em;">Call the scheduler.</p>
+<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.</p>
+<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block and the dirty bit is set.&nbsp;&nbsp;/* Check Block number and Dirty fieds of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
+<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
+ <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
 <p style=" text-indent: 8em;"><b>endwhile</b></p>
 <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Store</a> the block in buffer to disk</p>  
 
-<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the Disk Status Table */</p>
- <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 12em;">Call the scheduler.</p>
+<p style=" text-indent: 4em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
+ <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
-<p style=" text-indent: 8em;"><b>endwhile</b></p>
-   <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Load</a> the block from disk to buffer.</p>  
+
+<p style=" text-indent: 4em;"><b>endwhile</b></p>
+   <p style=" text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block from disk to buffer.</p>  
+   <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>   
+</div>
+
+
    <p>Copy the word passed as argument to the offset position in the buffer. &nbsp;&nbsp;/* The buffer contains the required block */</p>
-  <p>Set dirty bit of the buffer in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry.</p>
+  <p>Set dirty bit to 1 in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry .</p>
 <p>Increment LSEEK Position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
 <p>Increment file size in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry and <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry.</p>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse16">Unlock the buffer and wake up all processes waiting for buffer</a></p>
 <div id="collapse16" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. Check for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
+<p style=" text-indent: 4em;">2. Change the state to (READY, __ ) for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a></p>
+
 </div>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for file</a></p>
 <div id="collapse6" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the Locking PID in the File Table entry to -1.</p>
-<p style=" text-indent: 4em;">2. Check for the processes in the state (WAIT_FILE, index of the File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-<p style=" text-indent: 4em;">3. Change the state of those processes to (READY, __).</p>
+<p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
+<p style=" text-indent: 4em;">2. Change the state to (READY, __ ) for the processes in the state (WAIT_FILE, index of the File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
 </div>
-<p>Return with 0. &nbsp;&nbsp;/* success */</p>
+<p>Return 0. &nbsp;&nbsp;/* success */</p>
  
 
 
