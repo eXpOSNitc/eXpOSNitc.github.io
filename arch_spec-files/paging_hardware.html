@@ -133,7 +133,9 @@
                 <p>The Per-Process Page Table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.    </p>  
 <p>Per-Process Page Tables are stored in Page 2, words 1024 – 1279 in the memory ( 256 words = MAX_PROC_NUM processes × MAX_NUM_PAGES entries per process )
 </p>
+
 <p>When a process is loaded, the actual pages are not loaded into memory. In demand paging, the actual pages are loaded only when the pages are accessed for the first time . Once all pages are loaded, the first word of each entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
+
 <p>The second word contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are not used by eXpOS, but can be used for future enhancements. The details of bits in Auxiliary information is given below.</p>
 
 <center><img src="../img/aux_info.png"></center>
@@ -150,7 +152,7 @@
                 </p>
                 
                 <p>
-                Per-Process Page Table is used for page translation [ Link to page table] . Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiply the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address. 
+                Per-Process Page Table is used for page translation [ Link to page table] . Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiply the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
 
 <p style="text-indent:5em"><b>Location of page table entry = PTBR + 2 x (Logical Address / 512)</b></p>
 <p>The value stored in the first word in the page table entry corresponds to the physical page number.</p>
@@ -163,6 +165,8 @@
 Example:
 Assume the per-process page table is as shown below:
 
+<br>
+<br>
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
                                         <th style="text-align: center;">Logical Page Number</th>
