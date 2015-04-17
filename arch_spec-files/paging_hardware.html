@@ -151,13 +151,14 @@
                 
                 <p>
                 Per-Process Page Table is used for page translation [ Link to page table] . Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiply the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address. 
-Location of page table entry = PTBR + 2 x (Logical Address / 512) 
+
+<b>Location of page table entry = PTBR + 2 x (Logical Address / 512)</b>
 The value stored in the first word in the page table entry corresponds to the physical page number. 
-Physical Page Number = [ Location of page table entry + 0 ] 
+<b>Physical Page Number = [ Location of page table entry + 0 ]</b> 
 Offset into the page is calculated as 
-offset = Logical Address % 512
+<b>offset = Logical Address % 512</b>
 The physical address is computed by multiplying the physical page number by page size (=512) and adding the offset. 
-Physical Address = Physical Page Number x 512 + offset 
+<b>Physical Address = Physical Page Number x 512 + offset</b>
 NOTE: In user mode, logical addresses are translated to physical address by the machine using the address translation scheme. However, in kernel mode, the translation must be done manually using the procedure described above.</p>
 Example:
 Assume the per-process page table is as shown below:
