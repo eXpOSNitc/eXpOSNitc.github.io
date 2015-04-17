@@ -118,7 +118,7 @@
                 <h2 class="wow fadeInLeftBig">Scope of the Document</h2>
                 <br/>
                 <br/>
-                <p>The Virtual Machine model defines the view of the machine to application (executable) programs. Application programs are executed in the unpreviliged mode.  Consequently,  the privileged mode instructions cannot be used by them. Their memory view and registers available are also limited.  This restricted model is discussed below.</p>  
+                <p>The Virtual Machine model defines the view of the machine to application (executable) programs. Application programs are executed in the unprivileged mode.  Consequently,  the privileged mode instructions cannot be used by them. Their memory view and registers available are also limited.  This restricted model is discussed below.</p>  
 				
 				<h2 class="wow fadeInLeftBig">Virtual Machine Organisation</h2>              
 				<br/>
@@ -128,7 +128,7 @@
 				<h4 class="panel-title">Registers</h4>              
 				
                 <br/>
-                <p>The XSM architecture maintains 38 registers, each capable of storing a number/string, out of which, only 11 are accesible in unprivileged mode.  The registers available in the unprivileged mode are</p>
+                <p>The XSM architecture maintains 38 registers, each capable of storing a number/string, out of which, only 11 are accessible in unprivileged mode.  The registers available in the unprivileged mode are</p>
 				
 				<table class="table table-bordered" >
                   <tr >
@@ -153,14 +153,14 @@
                 <br/>
                 <p>The virtual (or logical) memory address space consists of  eight pages of memory.  Thus the virtual address space of a process is a contiguous address space starting from 0 to 4095.</p>  
 
-				<p>Operating systems divide this address space into regions of library, code, data, stack and heap.  The logical division of the virtual address space into various regions by eXpOS is given here.[LINK]</p>
+				<p>Operating systems divide this address space into regions of library, code, data, stack and heap.  The logical division of the virtual address space into various regions by eXpOS is given <a href="os_spec-files/processmodel.html" target="_blank">here</a>.</p>
                 
                 
                 <h2 class="wow fadeInLeftBig">Interrupts</h2>              
 				<br/>
                 <br/>
 
-				<p>Software Interrupts (traps) are a mechanisms by which an application program can transfer control the OS code that runs in the kernel mode.   Software interrupt service routines contain the OS code for various system calls.  Application programs access the system calls by invoking the corresponding software interrupt.  Upon completion of a system call, the OS returns control the the next instruction in the application program.</p>    
+				<p>Software Interrupts (traps) are a mechanisms by which an application program can transfer control the OS code that runs in the kernel mode.   Software interrupt service routines contain the OS code for various system calls.  Application programs access the system calls by invoking the corresponding software interrupt.  Upon completion of a system call, the OS returns control to the the next instruction in the application program.</p>    
 
 				<p>The following table lists out the system calls and the corresponding interrupt instructions for eXpOS operating system for XSM architecture.  Details of parameters to the system calls and how the parameters must be passed to the system calls are given in the low level system call interface documentation [LINK].</p>  
 
@@ -182,14 +182,14 @@
     <div class="container">
 		<div class="section_area">
     <ul class="list-group">
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Data Transfer Instructions</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Data Transfer Instructions</a>
     <div id="collapse1" class="panel-collapse collapse">
                 
                     <p>Family of instructions concerned with moving data between a register and a	register/memory location/ integer or string constant.</p>                                             
                
             </div></li>
    
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Arithmetic Instructions</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Arithmetic Instructions</a>
     <div id="collapse2" class="panel-collapse collapse">
                 
                     <p>Arithmetic Instructions perform arithmetic operations on registers containing 	integers. If the register contains a non-integer value, an exception is raised.</p> 
@@ -204,14 +204,14 @@ The arithmetic instructions are:-
 </ul>
 	</div></li>
    
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Logical Instructions</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Logical Instructions</a>
     <div id="collapse3" class="panel-collapse collapse">
                 
                     <p>Logical instructions are used for comparing values in registers. Strings can also 	be compared according to the lexicographic ordering of ASCII. Logical instructions are GT, LT, EQ, NE, GE, LE. </p>                                             
                
             </div></li>
  
-	<li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Branching Instructions</a></h3>
+	<li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Branching Instructions</a>
     <div id="collapse4" class="panel-collapse collapse">
                 
                     <p>Branching is achieved by changing the value of the IP to the word address of the target instruction specified by target_address.</p>
@@ -220,27 +220,27 @@ The arithmetic instructions are:-
                
             </div></li>
    
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Stack Instructions</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Stack Instructions</a>
     <div id="collapse5" class="panel-collapse collapse">
 
 <p>The stack instructions are PUSH and POP.</p>               
                                                                
     </div></li>            
 
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Subroutine Instructions</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Subroutine Instructions</a>
     <div id="collapse6" class="panel-collapse collapse">
 
 					<p>The subroutine instructions provide a neat mechanism for procedure invocations. The subroutine instructions are CALL and RET.</p>               
                                                                
     </div></li>            
 
-   <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Debug Instruction</a></h3>
+   <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Debug Instruction</a>
     <div id="collapse7" class="panel-collapse collapse">
 					<p>The machine when run in debug mode invokes the debugger when this 	instruction is executed. This instruction can be used for debugging system 	code. The instruction for entering the debug mode is DEBUG</p>             
                                                                
     </div></li> 
     
-       <li class="list-group-item"><h3 class="section_title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Interrupt (Trap) Instruction</a></h3>
+       <li class="list-group-item"><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Interrupt (Trap) Instruction</a>
     <div id="collapse8" class="panel-collapse collapse">
 					<p>Generates an interrupt to the kernel with n (3 to 18) as a parameter. The instruction for triggering interrupt is INT n, where n is the interrupt routine number.</p>             
                                                                
@@ -248,7 +248,7 @@ The arithmetic instructions are:-
 <br>
 <br>
 <br>
-The details  of the semantics of these instructions is given in [LINK].
+The details  of the semantics of these instructions is given in <a href="arch_spec-files/instruction_set.html" target="_blank">here</a>.
 </ul>
 </div>
  

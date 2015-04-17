@@ -110,7 +110,7 @@
                <br>
                <br>                                      
              
-              <p>Arguments: File Name (String) of the executable file (which must be of XEXE format)</p>
+              <p>Arguments: File Name (String) of the executable file (which must be of <a href="../abi.html#xexe" target="_blank">XEXE format</a>)</p>
               <p>Return Value:</p>
                     <table class="table table-bordered">
                             <tr>
@@ -119,8 +119,8 @@
                             </tr> 
                                                                                                         
                     </table>
-            <p><i>Description</i>: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
-            <p> The data structures that are modified in this system call are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+            <p><i>Description</i>: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking process and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
+            <p> The data structures that are modified in this system call are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -137,25 +137,31 @@
     
       </div>
              </div>
-	<p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse11" >Update the Page Table</a></p>
+	<p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse11" >Setup code and library pages</a></p>
             <div id="collapse11" class="panel-collapse collapse">
-    <p style="text-indent: 4em;">Fetch the code block numbers of the file from the Inode Table entry of the file.</p> 
-    <p style="text-indent: 4em;">In the page table of the current process, set the code page entries to the code blocks of the file.</p>
-    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to invalid and unreferenced.</p>
-<p style="text-indent: 4em;">Include the page numbers of shared library in the page table.</p> 
-<p style="text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Free the heap pages</a></p>
+				<p style="text-indent: 4em;">For each code page of the current process, <a data-toggle="collapse" data-parent="#accordion" href="#collapse17">release the code pages</a></p>
+				<div id="collapse17" class="panel-collapse collapse">
+
+				<p style="text-indent: 8em;">Decrement the corresponding  <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> entry.</p> 
+				<p style="text-indent: 8em;">If the value becomes 0, then increment MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a></p> 
+    </div>
+    <p style="text-indent: 4em;">In the <a href="process_table.html#per_page_table" target="_blank">page table</a> of the current process, set the code page entries to the code block numbers obtained from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.</p>
+    <p style="text-indent: 4em;"> Set the auxiliary information of code pages to <a href="process_table.html#per_page_table" target="_blank">invalid and unreferenced</a>. &nbsp; &nbsp; /* Executable file is not loaded in memory */</p>
+<p style="text-indent: 4em;">Include the page numbers of <a href="../os_spec-files/processmodel.html" target="_blank">shared library</a> in the page table and the set the auxillary information to valid and referenced.</p> 
+</div>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Free the heap pages</a></p>
 <div id="collapse1" class="panel-collapse collapse">
-                <p style="text-indent: 8em;">
-                    1. In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the heap pages.</p>
-                <p style="text-indent: 8em;"> 2. If the value becomes 0, then increment MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>    
-                <p style="text-indent: 8em;"> 3. The page table entries for the heap pages are invalidated. </p> 
+                <p style="text-indent: 4em;">
+                     In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the heap pages.</p>
+                <p style="text-indent: 4em;">  If the value becomes 0, then increment MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>    
+                <p style="text-indent: 4em;"> The page table entries for the heap pages are invalidated. &nbsp;&nbsp; /* Memory will be allocated when page fault occurs */</p> 
             </div>
-            </div>
-<p>In the process table entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.</p>  
+   
+<p>In the <a href="process_table.html" target="_blank">Process Table</a> entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.</p>  
 <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p>  
-<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html" target="_blank">Semrelease system call</a> */</p> 
-<p>Set SP and IP values to valid locations.</p> 
-<p>Return from system call.</p>       
+<p>Release all semaphores held by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="semaphore_algos.html#semrelease" target="_blank">Semrelease system call</a> */</p> 
+<p>Set SP to the start of the stack region and IP to the start of the code region. &nbsp;&nbsp;/*See <a href="../abi.html#xexe" target="_blank">XEXE format</a> for more.*/</p> 
+<p>Return from system call to newly loaded process.</p>       
          </div>
 		</div>
 		</div>

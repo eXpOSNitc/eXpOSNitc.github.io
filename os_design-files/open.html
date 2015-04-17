@@ -113,67 +113,57 @@
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
-            <td>fileDescriptor</td>
-                                                        <td>Success</td>
-                                                    </tr> 
+               <td>File Descriptor (Integer)</td>
+                     <td>Success, the return value is the file descriptor for the opened file.  </td>
+       </tr> 
+   <tr>
+     <td>-1</td>
+           <td>File not found or file is not a data or root file</td>
+     </tr> 
+ <tr>
+     <td>-2</td>
+      <td>Process has reached its limit of resources</td>
+  </tr>
+ <tr>
+    <td>-3</td>
+      <td>System has reached its limit of open files</td>
+     </tr>
                                                    
-                                                </table>
-                                                <p><i>Description</i>: The Open operation takes as input the Filename of the file to be opened. It checks for the validity of the file type, creates an entry for the file in the Per Process Resource Table of the process and also in the File Table. It returns from the system call with the Per-Process index of the file.</p>   
+        </table>
+                                                <p><i>Description</i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
+                                                <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
+                                                <br>
              <div><h4>Algorithm:</h4></div>
-             <p>If file is not present in Inode Table</p>
-             <p style=" text-indent: 5em;">Return -1</p>
-             
-			<p>If file type is not DATA or ROOT</p>
-<p style=" text-indent: 5em;">Return -1</p>
-<p>Store the Index corresponding to the Inode Table entry in <i>InodeIndex</i
+             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is of type EXEC, return -1.</p>
+            
+             <p>Find the index of the Inode Table entry of the file.
 
              <br><p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Allocate entry in Per Process Resource Table</a></p>
              <div id="collapse1" class="panel-collapse collapse">
-                <p>
-                    1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
-                          <p>  2.  Search for a free entry in the Per-Process Resource table of the process. </p>    
-<p>if there is no free entry</p>
-<p style=" text-indent: 5em;">then Return -1</p>
-<p>else</p>
-<p style=" text-indent: 5em;">Store the index of the Per-Process Resource table entry in <i>PerProcessIndex</i> </p>
-
-    
-                                           
+                 <p style="text-indent: 4em;">
+                    1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. &nbsp;&nbsp; /* This will be the PID of unique process in the state (RUNNING, _). */</p>
+                 <p style="text-indent: 4em;">  2. Find a free entry in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the process.  &nbsp;&nbsp;/* The index of this entry is the File Descriptor of the file. */</p>    
+                 <p style="text-indent: 4em;">3. If there is no free entry, return -2.&nbsp;&nbsp;/* Maximum number of open files per process has reached. */</p>                      
             </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Allocate entry in File Table</a></p>
-             <div id="collapse2" class="panel-collapse collapse">
-                <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-                    1. Check if file is already open by some process</a></p>
-<div id="collapse3" class="panel-collapse collapse">
-<p style=" text-indent: 5em;"> Search for an entry in the File Table entry with Inode Index field as InodeIndex</p>
-</div>                          <p> if an entry is found</p>   
-<p style=" text-indent: 5em;">then Store the index of the File Table entry in <i>FTIndex</i></p> 
-<p>else</p>
-<p style=" text-indent: 5em;">Search the File Table for a free entry.</p>
- <p style=" text-indent: 5em;">If there are no free entries</p>
-<p style=" text-indent: 8em;">then Return -1</p>
- <p style=" text-indent: 5em;">else</p>
-<p style=" text-indent: 8em;">Store the index of that File Table entry in <i>FTIndex.</i></p>
-</div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Update the Per-Process Resource Table entry.</a></p>
-             <div id="collapse4" class="panel-collapse collapse">
+             <p><b>If</b> file is already open &nbsp;&nbsp;/* Check for a <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry having the index of the Inode Table entry for the file */</p>
+             <p style=" text-indent: 4em;"> Get the File Table entry of the file.</p>
+             <p style=" text-indent: 4em;">Increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
+             <p><b>else</b></p>
 
-<p>Set the first field (Index of File Table) of this entry <i>FTIndex</i>.</p>
-<p> Set LSEEK Position field to 0.</p>
-</div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Update the File Table entry.</a></p>
+               <p style=" text-indent: 4em;">Find a free entry in the File Table. If there are no free entries, return -3.&nbsp;&nbsp;/* Reached maximum number of open files in the system. */</p>
+ <p style=" text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Update the File Table entry</a></p>
              <div id="collapse5" class="panel-collapse collapse">
 
-<p>Set the Inode Index field of the File Table entry <i>FTIndex</i>, with <i>InodeIndex</i>. </p>
-<p> Increment the File Open Count field in the File Table.</p>
-<p> Set the Locking PID field to -1. </p>
+<p style=" text-indent: 8em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
+<p style=" text-indent: 8em;">Set the File Open Count to 1, Ulock to -1 and Klock to -1 in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.&nbsp;&nbsp;/* file is not locked */</p>
+
 </div>
 
 
-          
-             
-            
-             <p>Return from System Call with <i>PerprocessIndex</i>, indicating success</p>
+<p>In the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry, set the first field (Index of File Table) to the File Table index found above and set LSEEK Position to 0.</p>
+  
+     
+<p>Return from system call with the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */</p>
         
                       
          </div>

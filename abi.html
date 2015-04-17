@@ -113,7 +113,18 @@
                 <h2 class="wow fadeInLeftBig">Application Binary Interface (ABI)</h2>
                 <br/>
                 <br/>
-                <p> Introduction to abi</p>
+                <p> The ABI defines the following:
+<ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+<li>  The machine model - that is, the instruction set and the virtual memory address space to which a compiler generating executable file must generate target code for.  This is very much architecture specific.  
+</li>
+<li>
+ A logical division of the memory address space into regions - text, stack, heap and library and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
+</li>
+<li>
+The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
+</li>
+<li>A low level system call interface which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent. .</li>
+</ol></p>
               </div>
 
               <!-- START ABOUT CONTENT -->
@@ -175,6 +186,7 @@ memory addresses 1024 and 2047 in the address space of the process.</p></p>
                           </div>
                         </div>
                         <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div id="xexe">
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
                             <h4 class="panel-title">
@@ -205,7 +217,7 @@ Example: program.xsm</p>
    <br>
    <p><b>XMAGIC</b> is a number indicating the type of executable file. All XEXE files will have magic number 0. For more on Magic Number, click <a href = "http://en.wikipedia.org/wiki/File_format#Magic_number" target="_blank">here</a>.</p>
  
-   <p><b>Entry point</b> contains the virtual address in memory of the first instruction to be executed (entry point) of the program after the OS loader has loaded it. During loading, the program counter must be initialized to this address.</p>
+   <p><b>Entry point</b> contains the virtual address in memory of the first instruction to be executed (entry point) of the program after the OS loader has loaded it. During loading, the program counter must be initialized to this address. The present version of eXpOS assumes that this value is 0. </p>
  
    <p><b>Text Size</b>, <b>Data Size</b>, <b>Heap Size</b> and <b>Stack size</b> indicates the sizes of Text, Data, Heap and Stack regions to be allocated by the OS loader when the file is loaded for execution. </p>
 
@@ -215,7 +227,7 @@ Example: program.xsm</p>
                                </div>
                           </div>
                         </div>
-                        
+                        </div>
                      <!-- START SINGLE FEATURED ITEM #4 -->
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
@@ -237,15 +249,14 @@ Example: program.xsm</p>
                                     
                                 </ul>
                                 <h3>Invoking a system call</h3>
-                                <p>A user process invokes a system call by first pushing the arguments and the system call number into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. </p>
+                                <p>A user process invokes a system call by first pushing the arguments and the system call number into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. In this implementation of XSM, the number of arguments pushed into the stack is fixed at three.</p>
                                 <p> A system call invocation using the high level application programmer's interface of a programming language like eXPL compiles to a set of machine instructions. They are the stack operations that must be performed by the user program before the INT instruction is executed (See machine instructions below). The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0' - see sample code below) is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. <p>
 <br>
 <pre style = "font-size:20px">
-	PUSH Argument_1         // Push arguments to the stack
-        .
-	.
-	PUSH Argument_n
-	PUSH R0	                // Push an empty space for RETURN VALUE
+	PUSH Argument_1         // Push argument 1 to the stack
+    PUSH Argument_2         // Push argument 2 to the stack
+    PUSH Argument_3         // Push argument 3 to the stack
+    PUSH R0	                // Push an empty space for RETURN VALUE
         PUSH System_Call_No     // Push system call number 
         INT number              // Invoke the corresponding INT instruction. The number 
                                    can be any number between 0 and 18 
@@ -264,10 +275,9 @@ Example: program.xsm</p>
 <pre style = "font-size:20px">
         POP System Call Number    // Pop and discard the system call number
 	POP Ri      		  // Pop and save the return value into some register Ri
-	POP Argument_n            // Pop and discard arguments
-        .
-        .
-        POP Argument_1  	  // Now the stack is popped back to the state before call 
+	POP Argument_3  	  // Pop and discard arguments
+    POP Argument_2  	  // Pop and discard arguments
+    POP Argument_1  	  // Now the stack is popped back to the state before call 
    
 </pre>
 

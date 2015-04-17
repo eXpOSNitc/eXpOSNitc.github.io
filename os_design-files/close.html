@@ -109,35 +109,43 @@
               <h2 class="wow fadeInLeftBig">Close System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: fileDescriptor (Integer) </p>
+            <p>Arguments: File Descriptor (Integer) </p>
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
-            <td>0</td>
+                                                        <td>0</td>
                                                         <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File is locked by the calling process.</td>
                                                     </tr> 
                                                    
                                                 </table>
-                                                <p><i>Description</i>: The Close operation takes as input the fileDescriptor of the file to be closed. It closes one open instance of the file by making corres.  Otherwise, it deleteponding updations in File Table and Per Process Resource Table.</p>   
+            <p><i>Description</i> :  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if the file was locked by the process which invoked the system call. </p>
+            <p>Data structures modified are <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>   
+                                                <br>
              <div><h4>Algorithm:</h4></div>
-             <p>If fileDescriptor is invalid</p>
-             <p style=" text-indent: 5em;">then Return -1</p>
-             
-			<p>If Per Process Resource Table entry corresponding to fileDescriptor is invalid </p>
+             <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>
+                      <p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the current process.</p>
+  
+	<p>If Per Process Resource Table entry corresponding to file descriptor is invalid, return -1.  &nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
 
-             <p style=" text-indent: 5em;">then Return -1</p>
-<p>Store the File Table Index corresponding to that entry in <i>FTIndex</i></p>
-
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Update File Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
+            
+<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry from Per-Process Resource Table entry.</p>
+<p>If file is locked by the current process, return -2. &nbsp;&nbsp;/* check the <a href="mem_ds.html#file_table"target="_blank">Ulock field</a>. */</p>
+            
                 <p>
-                    1. Find the File Table Entry corresponding to <i>FTIndex</i></p>
-                          <p>  2. Decrement the File Open Count. If the File Open Count becomes 0, invalidate the File Table entry.</p>        
+                    In the File Table Entry found above, decrement the File Open Count. If the count becomes 0, invalidate the entry.&nbsp;&nbsp; /* set to -1 */</p>        
                                            
-            </div>
+  
              
-             <p> Invalidate the Per Process Resource Table entry corresponding to <i>fileDescriptor</i></p>
-             <p>Return from System Call with 0, indicating success</p>
+                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp; /* set to -1 */</p> 
+             <p>Return from system call with 0. &nbsp;&nbsp; /* success */</p>
         
                       
          </div>

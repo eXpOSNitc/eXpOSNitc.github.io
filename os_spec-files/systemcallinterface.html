@@ -245,9 +245,12 @@
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
-                                                    
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File is locked by the calling process.</td>
+                                                    </tr> 
                                                 </table>
-                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.   </p>
+                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if file was locked by the process which invoked the system call.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -635,7 +638,7 @@
                                                     </tr> 
                                                                                                        
                                                 </table>
-                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to access the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.)  </p>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to read/write the file till the calling process unlocks it. (If the file is already locked by some other process, the Read/Write system call waits for the file to be unlocked, locks it, and returns to the calling process.)  </p>
                                             </div>
                                         </div>
                                     </div>
@@ -670,7 +673,7 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file. </p>
+                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from reading/writing the file. </p>
                                             </div>
                                         </div>
                                     </div>

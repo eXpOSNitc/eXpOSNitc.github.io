@@ -133,18 +133,91 @@
                 <p>The Per-Process Page Table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.    </p>  
 <p>Per-Process Page Tables are stored in Page 2, words 1024 – 1279 in the memory ( 256 words = MAX_PROC_NUM processes × MAX_NUM_PAGES entries per process )
 </p>
+
 <p>When a process is loaded, the actual pages are not loaded into memory. In demand paging, the actual pages are loaded only when the pages are accessed for the first time . Once all pages are loaded, the first word of each entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
+
 <p>The second word contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are not used by eXpOS, but can be used for future enhancements. The details of bits in Auxiliary information is given below.</p>
 
 <center><img src="../img/aux_info.png"></center>
 
-<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine. This bit is used for page replacement by the OS. (Refer Paging and Virtual Memory)</p>
+<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine. This bit is used for page replacement by the OS.</p>
+
 <p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address) or a disk block number (the physical page corresponding to the logical address resides in this disk block and needs to be loaded to memory). The Valid/Invalid bit is set by the OS. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
-              </div>
 
-              
 
-               
+                   <br><br>
+                <h4>Page Translation Scheme</h4>
+                <p>
+                When a process runs in user mode, it uses logical addresses which represent locations in virtual address space of the process. In this version of eXpOS, logical address can range from 0 to 8 * 512 – 1. In the kernel mode, these logical addresses are translated to physical addresses as the kernel works only with physical addresses. In this version of eXpOS, physical addresses can range from 0 to 128 * 512 – 1. The physical addresses represent locations in the primary memory of the system.
+                </p>
+                
+                <p>
+                Per-Process Page Table is used for page translation [ Link to page table] . Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiply the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
+
+<p style="text-indent:5em"><b>Location of page table entry = PTBR + 2 x (Logical Address / 512)</b></p>
+<p>The value stored in the first word in the page table entry corresponds to the physical page number.</p>
+<p style="text-indent:5em"><b>Physical Page Number = [ Location of page table entry + 0 ]</b> </p>
+<p>Offset into the page is calculated as </p>
+<p style="text-indent:5em"><b>offset = Logical Address % 512</b></p>
+<p>The physical address is computed by multiplying the physical page number by page size (=512) and adding the offset. </p>
+<p style="text-indent:5em"><b>Physical Address = Physical Page Number x 512 + offset</b></p>
+<p>NOTE: In user mode, logical addresses are translated to physical address by the machine using the address translation scheme. However, in kernel mode, the translation must be done manually using the procedure described above.</p>
+<p>Example:</p>
+<p>Assume the per-process page table is as shown below:</p>
+
+<br>
+<br>
+                                <table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Logical Page Number</th>
+                                        <th style="text-align: center;">Auxiliary Information</th>                                       
+                                    </tr>
+
+
+<tr>
+    <td>19</td>
+    <td>01</td>	
+</tr>
+<tr>
+    <td>20</td>
+    <td>01</td>	
+</tr>
+<tr>
+    <td>-1</td>
+    <td>00</td>	
+</tr>
+<tr>
+    <td>-1</td>
+    <td>00</td>	
+</tr>
+<tr>
+    <td>57</td>
+    <td>11</td>	
+</tr>
+<tr>
+    <td>68</td>
+    <td>11</td>	
+</tr>
+<tr>
+    <td>72</td>
+    <td>11</td>	
+</tr>
+<tr>
+    <td>-1</td>
+    <td>00</td>	
+</tr>
+</table>
+
+<p>Given a logical address of 2596, the translation occurs as follows:</p>
+<p style="text-indent:5em">Logical page number 	= index of page table entry</p>
+<p style="text-indent:15em"> 					= 2596/512 = 5</p>
+<p style="text-indent:5em">Location of page table entry	= PTBR + 2 * 5</p>
+<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 5 ] = first word of the 6th entry in page table = 68</p>
+<p style="text-indent:5em">Offset 	= 2596%512 = 36</p>
+<p style="text-indent:5em">Physical Address	= 68 * 512 + 36 = 34852</p>
+  
+</div>
+
                   
                 </div>
               </div>

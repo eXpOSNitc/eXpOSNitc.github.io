@@ -121,24 +121,20 @@
                                                         <td>No space for file</td>
                                                     </tr> 
                                                 </table>
-                                                <p><i>Description</i>: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to DATA and file size to 0. It also creates a root entry for that file. </p> 
-                                                <p> The data structures updated are <a href="disk_ds.html" target="_blank">Inode Table</a> and Root file</p>  
+                                                <p><i>Description</i> : The Create operation takes as input a filename. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to DATA and file size to 0. It also creates a root entry for that file. </p> 
+                                                <p> The data structures updated are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> and <a href="disk_ds.html#root_file" target="_blank">Root file</a>.</p>  
              <div><h4>Algorithm:</h4></div>
-             <p>If the file is present in the system, return 0 &nbsp;&nbsp;/* Check the Inode Table  */ </p>
+             <p>If the file is present in the system, return 0. &nbsp;&nbsp;/* Check the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  */ </p>
       
-             <p>Find the index of a free entry in the Inode Table. If no free entry found, return -1</p>
+             <p>Find the index of a free entry in the Inode Table. If no free entry found, return -1. &nbsp;&nbsp;/* Maximum number of files reached */</p>
              
-             <p>In the Inode Table entry found above, set file name to the file name given as argument, file size to 0 and file type to DATA</p>
+             <p>In the Inode Table entry found above, set file name to the given file name, file size to 0 and file type to DATA.</p>
+             <p>In the Inode Table entry, set the block numbers to -1.&nbsp;&nbsp;/* No disk blocks are allocated to the file */</p>
+             <p>In the <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry corresponding to the Inode Table index, set the file name field to the given file name, file size to 0 and file type to DATA.</p>
 
 
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Update Root File</a></p>
-             <div id="collapse2" class="panel-collapse collapse">
-
-             <p style="text-indent:4em;">1. Find the root file entry corresponding to the Inode Table index.</p>
-<p style="text-indent:4em;">2. Set the file name field to file name given, file size to 0 and file type to DATA</p>
-
-            </div> 
-             <p>Return from the system call.</p>
+         
+             <p>Return from the system call with 0.&nbsp;&nbsp;/* success */</p>
                                         
                                         
                                                                                            

@@ -132,7 +132,7 @@
 
 <p>The machine is equipped with an <b>instruction set</b>.  Two contiguous memory words are necessary to store each XSM instruction. The reader is assumed to have a basic understanding of the general principles of computer organization, hardware and software interrupts, exceptions, and hardware paging to follow the processor description in this document.  (Give web references/book references etc.)</p>  
 
-<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively.   [REFERENCE TO  – VIRTUAL MACHINE DOCUMENT].  XSM implements the virtual machine model using its <b>paging hardware</b>.  [Reference to the part dealing with paging hardware]
+<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <b>paging hardware</b>.  [Reference to the part dealing with paging hardware]
 </p>
 
                             </div>
@@ -153,7 +153,7 @@
 
 <p>The XSM architecture maintains 38 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
 
-<p>The  following table gives an overview of XSM registers according to their catagory.</p>
+<p>The  following table gives an overview of XSM registers according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
@@ -166,32 +166,32 @@
   <tr>
     <td>R0-R7</td>
     <td>General purpose user Registers</td>	
-    <td>Unpreviliged</td>
+    <td>Unprivileged</td>
   </tr>
   <tr>
     <td>BP, SP, IP</td>
     <td>Base, Stack and Instruction Pointers.</td>	
-    <td>Unpreviliged</td>
+    <td>Unprivileged</td>
   </tr>
   <tr>
     <td>S0 - S15</td>
     <td>S0 – S14 are General purpose System Registers. (S15 is reserved for console)</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>T0-T3</td>
     <td>General purpose registers, reserved for the use of system level program translators (compilers).</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>PTBR, PTLR</td>
     <td>Page Table (Base, Length) Registers</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>EIP, EC, EPN, EVA EMA</td>
     <td>Exception status registers</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
 </table>
 
@@ -200,7 +200,7 @@
                           </div>
                         </div>
                         
-
+<div id="mem_org">
                         <!-- START SINGLE FEATURED ITEM #2 -->
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
@@ -217,7 +217,7 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
 
 <p>When the machine is executing in privileged mode, a memory address “N” between 0 and  16384 refers to the word with offset (N mod 512) in  page number (N div 128).  </p>
 
-<p>Note:  Since the memory model is different when the machine operates in  unpreviliged mode, the total amount of memory and the intepretation of addresses are different and will be discussed in the [Link toVM document].</p>
+<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html">Virtual Machine Specification</a>.</p>
 
 <p>The  Memory of the XSM Machine is organised as follows :</p>
 
@@ -373,7 +373,8 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
                             </div>
                           </div>
                         </div>
-
+</div>
+<div id="disk">
                         <!-- START SINGLE FEATURED ITEM #3 -->
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
@@ -399,7 +400,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                             </div>
                           </div>
                         </div>
-                        
+               </div>         
                         <!-- START SINGLE FEATURED ITEM #4 -->
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
@@ -411,7 +412,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unpreviliged mode</b> (If the XSM_TICKS numbered instruction changes mode from unpreviliged to previliged, then the interrupt occurs before executing the next instruction after the machine is back to unpreviliged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the previliged mode and  executes the <b>timer interrupt service routine</b>.  (LINK TO TIMER ISR)</p>
+                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="../os_design-files/misc.html"><b>timer interrupt service routine</b></a>.  </p>
                             </div>
                           </div>
                         </div>
@@ -427,7 +428,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unpreviliged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unpreviliged to previliged, then the interrupt occurs before executing the next instruction after the machine is back to unpreviliged mode).  Upon receipt of the interrupt, the machine executes <b>disk interrupt service routine</b>.  (LINK TO THE DISK ISR).  
+                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="../os_design-files/disk_interrupt.html"><b>disk interrupt service routine</b></a>.    
 </p>
                             </div>
                           </div>
@@ -444,7 +445,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or read a word from the console to a register.   There are three macro instructions associated with I/O.  These are <b>out</b>, <b>in</b> and <b>ina</b>.  The first instruction results in transfer of a word from a register to the console.  The second results in the machine to wait for an input from the console and reads the input.  The ina macro allows the machine execution to continue, and the console device will send a hardware interrupt when the user inputs a word from the console.  The console interrupt handler routine is executed when the interrupt is raised.   The data must be read from a machine register designated for this purpose.  
+                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to a register.   There are two macro instructions associated with I/O.  These are <b>out</b> and <b>in</b>. The out instruction results in transfer of a word from a register to the console.  The in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.  The <a href="../os_design-files/term_handler.html">console interrupt handler</a> routine is executed when the interrupt is raised. The data must be read from a machine register designated for this purpose.  
 </p>
                             </div>
                           </div>
@@ -462,7 +463,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           <div id="collapse7" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) the the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
+When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
 </p>
                             </div>
                           </div>

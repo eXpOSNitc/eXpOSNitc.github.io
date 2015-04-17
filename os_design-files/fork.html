@@ -111,15 +111,15 @@
                <br>                                      
              
               <p>Arguments: None</p>
-                                                <p>Return Value:</p>
+                                                <p>Return Values:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>PID (Integer) </td>
-                                                        <td>Success, the return value to the parent is the process descriptor(PID) of the child process.</td>
+                                                        <td>Success, the return value to the <b>parent</b> is the process descriptor(PID) of the child process.</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>0</td>
-                                                        <td>Success, the return value to the child.</td>
+                                                        <td>Success, the return value to the <b>child</b>.</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
@@ -127,9 +127,9 @@
                                                     </tr> 
                                                     
                                                 </table>
-                                                 <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
+                                                 <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library <a href="../os_spec-files/processmodel.html" target="_blank">regions</a> of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
                                                  <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
-                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>(in case of swap pages) and <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>.</p>
+                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages) .</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -144,40 +144,41 @@
    <p style="text-indent: 4em;">Change the state of the current process to (WAIT_MEM, _ ).</p>
         <p style="text-indent: 4em;">Call scheduler. &nbsp; &nbsp;/* Scheduler will wake up the process when memory pages are available */</p> 
         <p><b>endwhile</b></p>
-        <p>Scan the page table of the parent process for the stack page entries. For each stack page do: </p>
+        <p>Scan the page table of the parent process for the stack page entries. For <b>each</b> stack page do: </p>
         <p style="text-indent: 4em;"><b>If</b> the stack page is valid</p>
        
-                <p style="text-indent: 8em;">Find a free memory page.</p>
-                 <p style="text-indent: 8em;">Update the <a href="mem_ds.html#mem_free_list">Memory Free List</a> by incrementing the entry for the selected page. </p>
-                  <p style="text-indent: 8em;">Decrement MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
+                <p style="text-indent: 8em;">Find a free memory page and increment its <a href="mem_ds.html#mem_free_list">Memory Free List</a> entry.</p>
+                 <p style="text-indent: 8em;">Decrement MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
                 <p style="text-indent: 8em;">  In the page table entry of the child's stack, set the page number field to the number of the selected page.</p>    
                 <p style="text-indent: 8em;">  Auxiliary information for that entry is copied from the page table of the parent process. </p> 
-                <p style="text-indent: 8em;"> Copy the stack page of the parent into the child stack page.</p>
+                <p style="text-indent: 8em;"> Copy the stack page of the parent into the child stack page. &nbsp; &nbsp;/* Word by word copy */</p>
       <div class="boxed" style="border:1px solid green">
     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
                      <div id="collapse14" class="panel-collapse collapse">
-    <p style="text-indent: 4em;"><b>else</b></p>
+    <p style="text-indent: 4em;"><b>else</b> &nbsp; &nbsp;/* The page is swapped out, share the swap block with the child */</p>
      
-     <p style="text-indent: 8em;">Copy the page table entry of that page into the page table of the child</p>
-     <p style="text-indent: 8em;">Increment the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry of the corresponding block</p>
+     <p style="text-indent: 8em;">Copy the page table entry of the page to the child</p>
+     <p style="text-indent: 8em;">Increment the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry of the corresponding swap block</p>
     
      <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
       </div>
              </div>
              
-            <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</p>
+            <p ><a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Construct the context of the child process</a></p>
             <div id="collapse1" class="panel-collapse collapse">
-        <p style="text-indent: 4em;">Copy the other page table entries from the parent's page table to that of the child</p>
-              <p style="text-indent: 4em;"> Copy the parent's Machine State (except PTBR) and Per-Process Resource Table to that of the child. </p>
-        <p style="text-indent: 4em;"> Set the PTBR field of the Machine State to the address of the page table of the child process. </p>
+        <p style="text-indent: 4em;">Copy the other page table entries (code, heap and library) from the parent's page table to the child &nbsp; &nbsp;/* Shared between parent and child */</p>
+        <p style="text-indent: 4em;">For each page shared, increment its value in the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a></p>
+              <p style="text-indent: 4em;"> Copy the parent's <a href="process_table.html#machine_state" target="_blank">Machine State</a> (except PTBR) and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the child  </p> <p style="text-indent: 4em;"> Set the PTBR field of the Machine State to the address of the page table of the child. </p>
         <p style="text-indent: 4em;">/* The parent and child are identical except for PID, PPID and PTBR */   </p>
-        <p style="text-indent: 4em;">Copy the Inode Index in Process Table entry of the parent to child's Inode Index field. </p>
-        <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in the File Table.</p>
-        <p style="text-indent: 4em;"> For every semaphore acquired by the parent, increment Process Count in the Semaphore Table.</p>
+        <p style="text-indent: 4em;">Copy the Inode Index in <a href="process_table.html" target="_blank">Process Table</a> entry of the parent to child's Inode Index field. &nbsp; &nbsp;/* Both processes execute the same file */ </p>
+        <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">File Table</a>.</p>
+        <p style="text-indent: 4em;"> For every semaphore acquired by the parent, increment Process Count in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>.</p>
        
         <p style="text-indent: 4em;"> Set state of child process to (READY, _ ).</p>
         </div>
-        <p>Return 0 to the child process and PID of the child process to the parent process.</p> 
+        <p>Set the return  value to 0 for the child process</p>
+        <p>The PID of the child process is set as the return value for the parent process</p>
+        <p>Return to the parent process.</p> 
                      
          </div>
 		</div>
