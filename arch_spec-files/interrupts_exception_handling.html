@@ -110,16 +110,9 @@
                 <br/>
 <p>XSM supports a total of 19 interrupts.  Each interrupt is identified by its number between 0 and 18.  Among these, Interrupt 0 is the exception handler, Interrupt 1 is the timer interrupt, Interrupt 2 is the disk controller interrupt and Interrupt 3 is the console interrupt. Interrupts 1, 2,and 3 are hardware interrupts. The remaining interrupts are software interrupts.  Software interrupts occur when they are invoked by a program in execution.  A program can invoke a software interrupt using the INT machine instruction.   However, hardware interrupts and the exception handler cannot be invoked from user mode programs.</p>  
 
-<p>The machine raises an exception when it runs in user mode and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions raise Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are discussed below.</p>  
-
 <p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table given in <a href="machine_organisation.html#mem_org" target="_blank" >Memory Organisation</a>.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>					
 
-
-	<p>Exceptions are anomalous situations which changes the normal flow of execution.  When an exception occurs when the machine is executing in User mode, the machine transfers control of execution – pushes instruction pointer to user stack and changes the value of IP to page number 2 (address = 1024) where the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler Routine</a> resides. However in Kernel Mode, the machine halts when it encounters an exception.</p>
-
-	<p>The XSM Register set consists of five special registers for storing the details regarding exceptions.</p>
-
-	<p>Exception encountered in the privileged mode include :</p>  
+<p>Exceptions are anomalous situations which changes the normal flow of execution. The machine raises an exception when it runs in user mode and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions raise Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are discussed below.</p>  
 
 <ul style="text-indent:5em">
 <li>1. Illegal Memory Access
@@ -155,6 +148,22 @@ Occurs when the page accessed by the process is not available in the memory.
 Occurs when the divisor is 0.
 </li>
 </ul>
+
+
+	<p>When an exception occurs when the machine is executing in User mode, the machine transfers control of execution – pushes instruction pointer to user stack and changes the value of IP to page number 2 (address = 1024) where the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler Routine</a> resides. However in Kernel Mode, the machine halts when it encounters an exception.</p>
+
+	<p>The XSM Register set consists of five special registers for storing the details regarding exceptions.</p>
+
+Exception IP
+
+Exception Cause
+
+Exception Page Number
+
+Exception Virtual Address
+
+Exception Memory Address
+
   
 </div>
 
