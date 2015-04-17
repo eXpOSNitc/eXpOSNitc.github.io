@@ -145,7 +145,7 @@
 <p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address) or a disk block number (the physical page corresponding to the logical address resides in this disk block and needs to be loaded to memory). The Valid/Invalid bit is set by the OS. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
 
 
-                   
+                   <br><br>
                 <h4>Page Translation Scheme</h4>
                 <p>
                 When a process runs in user mode, it uses logical addresses which represent locations in virtual address space of the process. In this version of eXpOS, logical address can range from 0 to 8 * 512 – 1. In the kernel mode, these logical addresses are translated to physical addresses as the kernel works only with physical addresses. In this version of eXpOS, physical addresses can range from 0 to 128 * 512 – 1. The physical addresses represent locations in the primary memory of the system.
@@ -162,8 +162,8 @@
 <p>The physical address is computed by multiplying the physical page number by page size (=512) and adding the offset. </p>
 <p style="text-indent:5em"><b>Physical Address = Physical Page Number x 512 + offset</b></p>
 <p>NOTE: In user mode, logical addresses are translated to physical address by the machine using the address translation scheme. However, in kernel mode, the translation must be done manually using the procedure described above.</p>
-Example:
-Assume the per-process page table is as shown below:
+<p>Example:</p>
+<p>Assume the per-process page table is as shown below:</p>
 
 <br>
 <br>
