@@ -132,7 +132,7 @@
 
 <p>The machine is equipped with an <b>instruction set</b>.  Two contiguous memory words are necessary to store each XSM instruction. The reader is assumed to have a basic understanding of the general principles of computer organization, hardware and software interrupts, exceptions, and hardware paging to follow the processor description in this document.  (Give web references/book references etc.)</p>  
 
-<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively.   [REFERENCE TO  – VIRTUAL MACHINE DOCUMENT].  XSM implements the virtual machine model using its <b>paging hardware</b>.  [Reference to the part dealing with paging hardware]
+<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <b>paging hardware</b>.  [Reference to the part dealing with paging hardware]
 </p>
 
                             </div>
@@ -153,7 +153,7 @@
 
 <p>The XSM architecture maintains 38 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
 
-<p>The  following table gives an overview of XSM registers according to their catagory.</p>
+<p>The  following table gives an overview of XSM registers according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
@@ -166,32 +166,32 @@
   <tr>
     <td>R0-R7</td>
     <td>General purpose user Registers</td>	
-    <td>Unpreviliged</td>
+    <td>Unprivileged</td>
   </tr>
   <tr>
     <td>BP, SP, IP</td>
     <td>Base, Stack and Instruction Pointers.</td>	
-    <td>Unpreviliged</td>
+    <td>Unprivileged</td>
   </tr>
   <tr>
     <td>S0 - S15</td>
     <td>S0 – S14 are General purpose System Registers. (S15 is reserved for console)</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>T0-T3</td>
     <td>General purpose registers, reserved for the use of system level program translators (compilers).</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>PTBR, PTLR</td>
     <td>Page Table (Base, Length) Registers</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
   <tr>
     <td>EIP, EC, EPN, EVA EMA</td>
     <td>Exception status registers</td>	
-    <td>Previliged</td>
+    <td>Privileged</td>
   </tr>
 </table>
 
@@ -217,7 +217,7 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
 
 <p>When the machine is executing in privileged mode, a memory address “N” between 0 and  16384 refers to the word with offset (N mod 512) in  page number (N div 128).  </p>
 
-<p>Note:  Since the memory model is different when the machine operates in  unpreviliged mode, the total amount of memory and the intepretation of addresses are different and will be discussed in the [Link toVM document].</p>
+<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html">Virtual Machine Specification</a>.</p>
 
 <p>The  Memory of the XSM Machine is organised as follows :</p>
 
