@@ -115,10 +115,10 @@
 
                 <br><br>
                    
-                <h4>Per-Process Page Table</h4>
-                <p>The Per-Process Page Table contains information relating to the actual location of the pages of the process in the memory. Each valid entry of a page table contains the page number in the memory where the data specified by the logical address resides. The address of Page Table of the currently executing process is stored in PTBR and length of the page table is set to MAX_NUM_PAGES in PTLR of the machine.</p>
+                <h4><b>Per-Process Page Table</b></h4>
+                <p>Every valid entry of a page table of a process contains the page number in the memory where the data specified by the logical address resides. The address of Page Table of the currently executing process is stored in PTBR and the number of entries in the Page Table, in PTLR of the machine.</p>
                 
-                <p>In eXpOS, MAX_PROC_NUM Page Tables are available. The structure of a Per-process Page Table entry is shown below.</p>
+                <p>The structure of a Page Table entry is shown below.</p>
                 <table class="table table-bordered">
                     <tr>
                         <td style="border: 1px solid black">
@@ -130,25 +130,24 @@
                         
                     </tr>
                 </table>
-                <p>The Per-Process Page Table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.    </p>  
-<p>Per-Process Page Tables are stored in Page 2, words 1024 – 1279 in the memory ( 256 words = MAX_PROC_NUM processes × MAX_NUM_PAGES entries per process )
-</p>
+                <p>The Per-Process Page Table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.</p>  
+				<p>Per-Process Page Tables are stored in Page 2, words 1024 – 1279 in the memory ( 256 words = MAX_PROC_NUM processes × MAX_NUM_PAGES entries per process )</p>
 
 <p>When a process is loaded, the actual pages are not loaded into memory. In demand paging, the actual pages are loaded only when the pages are accessed for the first time . Once all pages are loaded, the first word of each entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
 
-<p>The second word contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are not used by eXpOS, but can be used for future enhancements. The details of bits in Auxiliary information is given below.</p>
+<p>The second word of each page table entry contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are reserved for future enhancements. The details of bits in Auxiliary information is given below.</p>
 
 <center><img src="../img/aux_info.png"></center>
 
-<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine. This bit is used for page replacement by the OS.</p>
+<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine. (Highlight this point) This bit is used for page replacement by the OS.</p>
 
-<p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address) or a disk block number (the physical page corresponding to the logical address resides in this disk block and needs to be loaded to memory). The Valid/Invalid bit is set by the OS. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
+<p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address) or a disk block number (Not relevant here) (the physical page corresponding to the logical address resides in this disk block and needs to be loaded to memory). The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the Exception Handler routine (LINK), which is responsible for loading the correct physical page.</p>
 
 
                    <br><br>
                 <h4>Page Translation Scheme</h4>
                 <p>
-                When a process runs in user mode, it uses logical addresses which represent locations in virtual address space of the process. In this version of eXpOS, logical address can range from 0 to 8 * 512 – 1. In the kernel mode, these logical addresses are translated to physical addresses as the kernel works only with physical addresses. In this version of eXpOS, physical addresses can range from 0 to 128 * 512 – 1. The physical addresses represent locations in the primary memory of the system.
+                When the machine runs in user mode, it uses logical addresses which represent locations in virtual address space of the process. In this version of eXpOS, logical address can range from 0 to 8 * 512 – 1. In the kernel mode, these logical addresses are translated to physical addresses as the kernel works only with physical addresses. In this version of eXpOS, physical addresses can range from 0 to 128 * 512 – 1. The physical addresses represent locations in the primary memory of the system.
                 </p>
                 
                 <p>

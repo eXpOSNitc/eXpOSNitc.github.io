@@ -108,7 +108,7 @@
                 <h2 class="wow fadeInLeftBig">Instruction Set</h2>
                 <br/>
                 <br/>
-                <p>Every instruction in XSM is 2 words long. The instructions provided by the XSM architecture can be classified into unprivileged and privileged instructions. </p>
+                <p>Every instruction in XSM is 2 words long. The instructions provided by the XSM architecture can be classified into <b>unprivileged</b> and <b>privileged</b> instructions. </p>
              
      <!-- START SINGLE FEATURED ITEM #1 -->
                         <div class="panel panel-default wow fadeInLeft" id="unprivileged">
@@ -117,7 +117,7 @@
                             <h4 class="panel-title" style="padding-top: 20px" >Unprivileged Instructions</h4>
                           
                           <div class="panel-body">
-                              <p>XSM provides a set of unprivileged instructions. Only these instructions are available to the user program. The user program written in a high level language like APL will compile to only unprivileged instructions. The unprivileged instructions are MOV, Arithmetic Instructions, Logic Instructions, Stack Instructions (PUSH and POP), Sub-routine instructions, input/output instructions, debug instructions, END and INT(see Instructions in XSM).</p>
+                              <p>XSM provides a set of unprivileged instructions. Only these instructions are available to the user program. The user program written in a high level language like APL will compile to only unprivileged instructions. The unprivileged instructions are Data Transfer Instructions, Arithmetic Instructions, Logical Instructions, Stack Instructions (PUSH and POP), Sub-routine instructions, input/output instructions, debug instructions, END and INT(see Instructions in XSM).</p>
                                  <br><br>
                          <!--start instructions --->  
                          <!--start mov --->
@@ -125,7 +125,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >MOV</a>
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" >Data Transfer Instrucions</a>
                                             </h4>
                                         </div>
                                         <div id="collapse1" class="panel-collapse collapse">
@@ -306,29 +306,6 @@
                                 </div>
                          <!--end subroutine-->
                         
-                          <!-- input/output-->
-                                <div class="panel-group" id="accordion">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Input/Output Instructions</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapse7" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                
-                                                <ul>  <li>1. <b>IN</b><br>
-<i>Syntax</i> : IN Ri<br>
-<i>Semantics</i> : Transfers the contents of the standard input to Ri.
-Note that the in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.
-</li><br>
-<li>2. <b>OUT</b><br><i>Syntax</i> : OUT Ri<br><i>Semantics</i> : Transfers the contents of Ri to the standard output.
-</li></ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                         <!--end input/output-->
                            
                          <!-- debug-->
                                 <div class="panel-group" id="accordion">
@@ -352,27 +329,6 @@ Note that the in macro allows the machine to execute other processes (which do n
                                 </div>
                          <!--end debug-->
                          
-                         <!-- END-->
-                                <div class="panel-group" id="accordion">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse9">END</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapse9" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                
-                                                <ul>  <li>
-<i>Syntax</i> : END<br>
-<i>Semantics</i> : This instruction is marks the end of a program.<br>
-</li>
-</ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                         <!--end END-->
                          
                          <!-- INT-->
                                 <div class="panel-group" id="accordion">
@@ -387,7 +343,7 @@ Note that the in macro allows the machine to execute other processes (which do n
                                                 
                                                 <ul>  <li>
 <i>Syntax</i> : INT n<br>
-<i>Semantics</i> : Generates an interrupt to the kernel with n (1 to 7) as a parameter. It also disables the interrupts.<br>
+<i>Semantics</i> : Generates an interrupt to the kernel with n (4 to 18) as a parameter. It also disables the interrupts.<br>
 </li>
 </ul>
                                             </div>
@@ -572,6 +528,29 @@ Note that the in macro allows the machine to execute other processes (which do n
                                     </div>
                                 </div>
                          <!--end restore-->
+                          <!-- input/output-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">Input/Output Instructions</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <ul>  <li>1. <b>IN</b><br>
+<i>Syntax</i> : IN Ri<br>
+<i>Semantics</i> : Transfers the contents of the standard input to Ri.
+Note that the in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.
+</li><br>
+<li>2. <b>OUT</b><br><i>Syntax</i> : OUT Ri<br><i>Semantics</i> : Transfers the contents of Ri to the standard output.
+</li></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end input/output-->
                            
                          <!-- halt-->
                                 <div class="panel-group" id="accordion">
@@ -581,6 +560,7 @@ Note that the in macro allows the machine to execute other processes (which do n
                                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse19">HALT</a>
                                             </h4>
                                         </div>
+
                                         <div id="collapse19" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
