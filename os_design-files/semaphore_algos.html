@@ -207,18 +207,18 @@
                                                     
                                                     
                                                 </table>
-                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution.  
+                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Date Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
 </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
+             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.&nbsp;&nbsp;/*Invalid entries are denoted by -1. */</p>
              
-               <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
-              <p style=" text-indent: 12em;">Change the <a href="process_table.html#state">state</a> of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore)  </p>
-              <p style=" text-indent: 12em;">Call Scheduler.</p>
+               <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore)  </p>
+              <p style=" text-indent: 4em;">Call Scheduler.</p>
 
-             <p style=" text-indent: 8em;"> <b>endwhile</b></p>
-             <p> Change the LockingPID to PID of current process. </p>
+             <p> <b>endwhile</b></p>
+             <p> Change the Locking PID to PID of current process. </p>
             
              <p>Return 0. &nbsp;&nbsp;/* success */</p>
 
