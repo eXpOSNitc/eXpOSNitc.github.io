@@ -7,11 +7,16 @@ idle process also..
 producer consumer problem can be done /*write it in the diary*/
 actually what we wanted was the file pointer being shared /*write it in the diary*/
 
-
-
-
 add shutdown somewhere 
 
 
 PROBLEM: if a process was in WAIT_PROCESS state and it got swapped out. then 
 when it is swapped in, it will no longer wait for the other process.
+Solution: Create a new Swapped_Wait state 
+In signal : Swapped_wait to Swapped
+System Status table has to be updated
+
+
+do wait and signal again
+
+

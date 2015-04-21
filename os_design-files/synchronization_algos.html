@@ -113,7 +113,7 @@
               <p>Arguments: Process Identifier of the process for which the current
 process has to wait.
 </p>
-                                                <p>Return Value: </p>
+                                                <p>Return Values: </p>
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
@@ -124,12 +124,12 @@ process has to wait.
                                                       <td>Given process identifier is invalid or it is the pid of the invoking process</td>
                                                                                                       
                                                 </table>
-                                                <p><i>Description</i>:  The current process is blocked till the process with PID given as argument
-executes a Signal system call or exits. Note that the system call will fail
+                                                <p><i>Description </i>:  The current process is blocked till the process with PID given as argument
+executes a Signal system call or exits. The system call will fail
 if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /* Check the status of the argument process from Process table.  */ </p>
+             <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /* Check the status from Process table.  */ </p>
            
              <p> Change the status from (READY,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
              <p>Invoke the Scheduler to schedule the next process.</p>
