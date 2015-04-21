@@ -128,7 +128,7 @@
                                                     
                                                 </table>
                                                 <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
-                                           The calling process can share the semaphore with its child processes using the fork system call</p>
+                                           The calling process can share the semaphore with its child processes using the fork system call. Date Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table">Semaphore table</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p>Find the index of a free entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>. If no free entry, then return -1.</p>
@@ -167,11 +167,11 @@
                                                     </tr> 
                                                                                                  
                                                 </table>
-                                                <p>Description: This system call is used to release a semaphore descriptor held by the process. </p>
+                                                <p>Description: This system call is used to release a semaphore descriptor held by the process. Date Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table">Semaphore table</a>. </p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
+             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
              <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
              <p style=" text-indent: 4em;">Set the Locking PID to -1.</p>
              <p>Decrement the process count of semaphore.</p>
