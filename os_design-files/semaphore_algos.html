@@ -263,7 +263,7 @@
              <p><b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */</p>
               <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
               <p style=" text-indent: 4em;">Set the Locking PID to -1. &nbsp;&nbsp;/* Unlock the semaphore. */</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore). </p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for all the processes in the state (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore). </p>
              <p>Return 0.&nbsp;&nbsp; /* success */</p>
 
          </div>
