@@ -131,14 +131,14 @@
                                            The calling process can share the semaphore with its child processes using the fork system call</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b>no free entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
+             <p><b>If</b> no free entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
 			
-             <p>Find the index of free entry in Per-Process Resource table.</p>
-             <p><b>If</b> no free entry in <a href="mem_ds.html#sem_table">Semaphore table</a>, return -2.</p>
-             <p>Find the index of free entry in Semaphore table and increment the process count.</p>
-             <p>Store the Semaphore table entry index in Per Process Resource Table entry.</p>
+             <p>Find the index of a free entry in Per-Process Resource table.</p>
+             <p><b>If</b> no free entry in <a href="mem_ds.html#sem_table">Semaphore table</a>, return -2.&nbsp;&nbsp;/* Free entry is indicated by a Process Count of 0. </p>
+             <p>Find the index of a free entry in Semaphore table and increment the process count. &nbsp;&nbsp;/* This entry is allocated to the semaphore */</p>
+             <p>Store the index of the Semaphore table entry in the Per Process Resource Table entry.</p>
              
-             <p>Return Semaphore Table entry index.</p>
+             <p>Return Semaphore Table entry index. &nbsp;&nbsp;/* success */</p>
 
          </div>
     </div>
@@ -167,17 +167,18 @@
                                                         <td>-1</td>
                                                         <td>Semaphore Descriptor is invalid</td>
                                                     </tr> 
-                                                                                                        
+                                                                                                 
                                                 </table>
                                                 <p>Description: This system call is used to release a semaphore descriptor held by the process. </p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
-             <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
-             <p style=" text-indent: 4em;">Unlock the semaphore.</p>
-             <p>Decrement the process count of semaphore</p>
-			<p>Invalidate the Per-Process resource table entry. </p>
+             <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
+             <p style=" text-indent: 4em;">Set the Locking PID to -1.</p>
+             <p>Decrement the process count of semaphore.</p>
+             
+               <p>Invalidate the Per-Process resource table entry. </p>
 <p>Return 0</p>
                           
          </div>
@@ -213,16 +214,15 @@
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
-             <p><b>If</b> semaphore is locked. &nbsp;&nbsp;/*Check the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
-              <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore</p>
-              <p style=" text-indent: 8em;"><b>while</b> semaphore is locked, <b>do</b></p>
-              <p style=" text-indent: 12em;">Put the current process to sleep. &nbsp;&nbsp;/*Change the <a href="process_table.html#state">state</a> to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore) */ </p>
+             
+               <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
+              <p style=" text-indent: 12em;">Change the <a href="process_table.html#state">state</a> of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore)  </p>
               <p style=" text-indent: 12em;">Call Scheduler.</p>
 
              <p style=" text-indent: 8em;"> <b>endwhile</b></p>
-             <p> Lock the semaphore.   &nbsp; &nbsp; /* Change the LockingPID to PID of current process.  */</p>
+             <p> Change the LockingPID to PID of current process. </p>
             
-             <p>Return 0.</p>
+             <p>Return 0. &nbsp;&nbsp;/* success */</p>
 
          </div>
     </div>
@@ -261,13 +261,12 @@
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
-             <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the <a href="mem_ds.html#sem_table">Semaphore table</a>*/</p>
-             <p style=" text-indent: 4em;">Unlock the semaphore.</p>
-              <p style=" text-indent: 8em;">Wake up all process who were waiting for semaphore. &nbsp;&nbsp;/*Change the <a href="process_table.html#state">state</a> from (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore) to (READY, _ ) */ </p>
-              
-			<p style=" text-indent: 4em;"><b>else</b></p>
-             <p style=" text-indent: 8em;"> Return -2. /* The semaphore is locked by some other process.*/</p>
-             <p>Return 0.</p>
+         
+             <p><b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */</p>
+              <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
+              <p style=" text-indent: 4em;">Set the Locking PID to -1. &nbsp;&nbsp;/* Unlock the semaphore. */</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore). </p>
+             <p>Return 0.&nbsp;&nbsp; /* success */</p>
 
          </div>
     </div>
