@@ -137,12 +137,12 @@
              <p style=" text-indent: 12em;">Change the state of the process to (WAIT_TERMINAL, _ )in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
              
               <p style=" text-indent: 8em;"><b>endwhile</b></p>
-             <p style=" text-indent: 8em;"> Set the Status field to 1 and PID field to the PID of the current process in the <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a></p>
+             <p style=" text-indent: 8em;"> Set the Status field to 1 and PID field to the PID of the current process in the <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>&nbsp;&nbsp;/*Acquire the terminal*/</p>
            
-             <p style=" text-indent: 8em;"><b>while</b> terminal is acquired by the current process <b>do</b></p>
+             <p style=" text-indent: 8em;"><b>while</b> terminal is acquired by the current process <b>do</b>&nbsp;&nbsp;/*Check <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.*/</p>
              <p style=" text-indent: 12em;">Change the state of the process to (WAIT_TERMINAL, _ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. </p>
              
-             <p style=" text-indent: 8em;"><b>endwhile</b>&nbsp;&nbsp;/*This loop is required if the process is swapped out in (WAIT_TERMINAL, _ ) before it comes back to (READY, _ ) state.</p>
+             <p style=" text-indent: 8em;"><b>endwhile</b>&nbsp;&nbsp;/*This loop is required as the process maybe swapped out in (WAIT_TERMINAL, _ ) and come back to (READY, _ ) state.*/</p>
               </div>
              <p style=" text-indent: 4em;">Copy the word from the input buffer to the buffer passed as argument and return with 0. &nbsp;&nbsp;/* success */</p>
 			<p>/*If not terminal, read from file.*/</p>
