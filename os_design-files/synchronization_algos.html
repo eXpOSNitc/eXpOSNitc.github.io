@@ -126,7 +126,7 @@ process has to wait.
                                                 </table>
                                                 <p><i>Description </i>:  The current process is blocked till the process with PID given as argument
 executes a Signal system call or exits. The system call will fail
-if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.</p>
+if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to set to Kernel mode when process enters the system call and reset before exiting from the system call. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -135,7 +135,7 @@ if a process attempts to wait for itself. The only data structure updated is <a 
              <p> Change the status from (RUNNING,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
              
              <p>Invoke the Scheduler to schedule the next process.</p>
-             <p>Return 0.&nbsp;&nbsp;/*Success */</p>
+             <p>Return 0.&nbsp;&nbsp;/* Success */</p>
 
          </div>
     </div>
@@ -171,15 +171,14 @@ call does not fail. The only data structure updated is <a href="process_table.ht
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Wake up all processes waiting for the current process.</a></p>
              <div id="collapse1" class="panel-collapse collapse">
              <p style="text-indent: 4em;">Traverse through the <a href="process_table.html" target="_blank">Process Table</a></p>
-<p style="text-indent: 4em;"><b>If</b> there are processes in (SWAPPED_WAIT, pid) state</p>
-<p style="text-indent: 6em;">Change the state to (SWAPPED, _)</p>
+<p style="text-indent: 4em;"><b>If</b> there are processes in state (SWAPPED_WAIT, Pid) where Pid matches with the PID of the current process.</p>
+<p style="text-indent: 6em;">Change the state to (SWAPPED, _). &nbsp;&nbsp;/*It will be set to ready when set back.*/</p>
    <p style="text-indent: 4em;">else</p>
           <p style="text-indent: 6em;">Change the status to (READY, _ ) for those processes in state (WAIT_PROCESS, Pid) where Pid matches with the PID of the current process.
 </p>
-
 </div>
 
-             <p> Return 0.</p>
+             <p> Return 0. &nbsp;&nbsp;/* Success */</p>
              
          </div>
     </div>
@@ -224,7 +223,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
              <p> <b>endwhile</b></p>
              <p> Change the ULock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>
             
-             <p>Return 0.</p>
+             <p>Return 0. &nbsp;&nbsp;/* Success */</p>
 
          </div>
     </div>
@@ -271,7 +270,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (WAIT_FILE, file table index of the locked file). </p>
               
 			
-             <p>Return 0.</p>
+             <p>Return 0.&nbsp;&nbsp;/* Success */</p>
 
          </div>
     </div>
