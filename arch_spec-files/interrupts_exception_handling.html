@@ -115,8 +115,10 @@
 <h4><b>Timer Interrupt</b></h4>
 <p>The XSM architecture includes a timer that can cause periodic interrupts during execution in unprivileged mode. The timer ticks with each unprivileged instruction executed and once the number of ticks reaches a threshold specified during boot-time, the tick counter is reset and a timer interrupt is raised causing execution to be transferred to the timer interrupt handler (INT1) stored in page 4. If the instruction that causes the timer to reach its tick threshold raises an interrupt or exception, the interrupt/exception handler corresponding to that interrupt/exception is invoked first before the timer interrupt is raised. In eXpOS, the timer is used to allow time-sharing between user programs.</p>
 
+<div id="disk_interrupt">
 <h4><b>Disk Controller Interrupt</b></h4>
 <p>The Disk Controller allows for imitating asynchronous disk access by the OS. The Disk Controller, upon receiving a disk access request, initiates a timer that ticks with each unprivileged instruction executed. Once the timer reaches its threshold, a value specified during boot-time, a disk interrupt (INT2) is raised and execution is passed to the disk interrupt handler in page 6. The macros 'loada' and 'storea' are used to send requests to the Disk Controller.</p>
+</div>
 
 <h4><b>Console Interrupt</b></h4>
 
