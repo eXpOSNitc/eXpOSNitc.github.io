@@ -207,7 +207,7 @@
                                                     
                                                     
                                                 </table>
-                                                <p><i>Description </i>:  This system call is used to lock a semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
+                                                <p><i>Description </i>:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
 </p>
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -218,7 +218,7 @@
               <p style=" text-indent: 4em;">Call Scheduler.</p>
 
              <p> <b>endwhile</b></p>
-             <p> Change the Locking PID to PID of current process. </p>
+             <p> Change the Locking PID to PID of the current process in the <a href="mem_ds.html#sem_table" target="_blank">. </p>
             
              <p>Return 0. &nbsp;&nbsp;/* success */</p>
 
@@ -258,14 +258,16 @@
                                                 <p><i>Description </i>: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Set the mode to Ker</p>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
          
              <p><b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */</p>
               <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
               <p style=" text-indent: 4em;">Set the Locking PID to -1. &nbsp;&nbsp;/* Unlock the semaphore. */</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for all the processes in the state (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore). </p>
+              <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
              <p>Return 0.&nbsp;&nbsp; /* success */</p>
+             
 
          </div>
     </div>
@@ -273,7 +275,7 @@
                    
 
   </section>
- 
+ <
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
