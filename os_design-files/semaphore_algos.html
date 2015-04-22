@@ -131,11 +131,12 @@
                                            The calling process can share the semaphore with its child processes using the fork system call. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p>Find the index of a free entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>. If no free entry, then return -1.</p>
              <p>Find the index of a free entry in <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a> and increment the process count. If no free entry, return -2.</p>
              <p>/* Free entry is indicated by a Process Count of 0. */ </p>
              <p>Store the index of the Semaphore table entry in the Per Process Resource Table entry. &nbsp;&nbsp;/*Attach the semaphore to the process.*/</p>
-             
+             <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
              <p>Return Semaphore Table entry index. &nbsp;&nbsp;/* success */</p>
 
          </div>
@@ -171,12 +172,14 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
              <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the Locking PID in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
              <p style=" text-indent: 4em;">Set the Locking PID to -1.&nbsp;&nbsp;/* Unlock the semaphore before release */</p>
              <p>Decrement the process count of the semaphore.</p>
              
                <p>Invalidate the Per-Process resource table entry. &nbsp;&nbsp;/* Set to -1 */ </p>
+               <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
 <p>Return 0</p>
                           
          </div>
@@ -211,6 +214,7 @@
 </p>
               <br>
              <div><h4>Algorithm:</h4></div>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
              
                <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
@@ -219,7 +223,7 @@
 
              <p> <b>endwhile</b></p>
              <p> Change the Locking PID to PID of the current process in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table </a>. </p>
-            
+             <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
              <p>Return 0. &nbsp;&nbsp;/* success */</p>
 
          </div>
