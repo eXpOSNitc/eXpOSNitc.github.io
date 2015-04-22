@@ -123,6 +123,7 @@
                                                 </table>
                                                 <p><i>Description</i> : The Create operation takes as input a filename. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to DATA and file size to 0. It also creates a root entry for that file. </p> 
                                                 <p> The data structures updated are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> and <a href="disk_ds.html#root_file" target="_blank">Root file</a>.</p>  
+                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
              <div><h4>Algorithm:</h4></div>
              <p>If the file is present in the system, return 0. &nbsp;&nbsp;/* Check the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  */ </p>
       
