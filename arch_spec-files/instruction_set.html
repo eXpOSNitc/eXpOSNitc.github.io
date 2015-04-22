@@ -500,9 +500,8 @@
                                             <div class="panel-body">
                                                 
 1. <b>IN</b><br>
-<i>Syntax</i> : IN Ri<br>
-<i>Semantics</i> : Transfers the contents of the standard input to Ri.
-Note that the in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a <a href="interrupts_exception_handling.html#console_interrupt" target="_blank" >console interrupt</a> when the user inputs a word through the console.
+<i>Syntax</i> : IN<br>
+<i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word read from the console to the register S15 and raises a <a href="interrupts_exception_handling.html#console_interrupt" target="_blank" >console interrupt</a>.
                                             </div>
                                         </div>
                                     </div>
