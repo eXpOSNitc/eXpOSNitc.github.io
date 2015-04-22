@@ -377,7 +377,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : LOAD pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. Note that a synchronous LOAD would block all other processes until the instruction is complete.</p>
+                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. The machine will continue execution of the next instruction only after the block transfer is complete.</p>
 
                                             </div>
                                         </div>
@@ -397,8 +397,9 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : STORE blocknum pagenum</p>
-                                                <p><i>Semantics</i> : This instruction synchronously stores the page specified by the pagenum, from the memory, to the block specified by the blocknum in the disk. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. Note that a synchronous STORE would block all other processes until the instruction is complete.</p>
-
+                                                
+                                                <p><i>Semantics</i> : This instruction stores the memory page specified by pagenum to the disk block specified by blocknum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. The machine will continue execution of the next instruction only after the page transfer is complete.</p>
+                                                
                                             </div>
                                         </div>
                                     </div>
