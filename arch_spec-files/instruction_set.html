@@ -398,7 +398,7 @@
                                                 
                                                 <p> <i>Syntax</i> : STORE blocknum pagenum</p>
                                                 
-                                                <p><i>Semantics</i> : This instruction stores the memory page specified by pagenum to the disk block specified by blocknum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. The machine will continue execution of the next instruction only after the page transfer is complete.</p>
+                                                <p><i>Semantics</i> : This instruction stores the memory page specified by pagenum to the disk block specified by blocknum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. The machine will continue execution of the next instruction only after the block transfer is complete.</p>
                                                 
                                             </div>
                                         </div>
@@ -418,7 +418,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : LOADA pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction asynchronously loads the block specified by the blocknum , from the disk, to the page specified by the pagenum in the memory. blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. Note that an asynchronous load (LOADA) would allow the scheduler to schedule other processes which do not require disk access to continue their execution while the transfer happens. A disk interrupt is raised at the completion of disk access in order to wake up all processes waiting for disk.</p>
+                                                <p><i>Semantics</i> : This instruction loads the block specified by the blocknum, from the disk, to the page specified by the pagenum in the memory. Blocknum and pagenum should be numbers or registers containing numbers. This instruction initiates the transfer of the disk block specified by blocknum to the memory page specified by pagenum using the disk controller. The disk controller raises an interrupt when the tranfer is completed. </p>
 
                                             </div>
                                         </div>
@@ -438,7 +438,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : STOREA blocknum pagenum</p>
-                                                <p><i>Semantics</i> : This instruction asynchronously stores the page specified by the pagenum , from the memory, to the block specified by the blocknum in the disk. blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. Note that an asynchronous store (STOREA) would allow the scheduler to schedule other processes who do not require disk access to continue their execution while the transfer happens. A disk interrupt is raised at the completion of disk access in order to wake up all processes waiting for disk.</p>
+                                                <p><i>Semantics</i> : This instruction asynchronously stores the page specified by the pagenum, from the memory, to the block specified by the blocknum in the disk. blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. Note that an asynchronous store (STOREA) would allow the scheduler to schedule other processes who do not require disk access to continue their execution while the transfer happens. A disk interrupt is raised at the completion of disk access in order to wake up all processes waiting for disk.</p>
 
                                             </div>
                                         </div>
