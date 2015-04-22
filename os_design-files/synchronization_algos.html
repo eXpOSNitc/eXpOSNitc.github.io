@@ -129,7 +129,7 @@ executes a Signal system call or exits. The system call will fail
 if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
+             
              <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /* Check the status from Process table.  */ </p>
            
              <p> Change the status from (RUNNING,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
@@ -167,7 +167,6 @@ call does not fail. The only data structure updated is <a href="process_table.ht
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Wake up all processes waiting for the current process.</a></p>
              <div id="collapse1" class="panel-collapse collapse">
              <p style="text-indent: 4em;">Traverse through the <a href="process_table.html" target="_blank">Process Table</a></p>
@@ -178,7 +177,7 @@ call does not fail. The only data structure updated is <a href="process_table.ht
 </p>
 
 </div>
-<p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
+
              <p> Return 0.</p>
              
          </div>
@@ -213,7 +212,6 @@ be unlocked, locks it, and returns to the calling process. The data structures u
 </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
 
             <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
@@ -224,7 +222,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
 
              <p> <b>endwhile</b></p>
              <p> Change the ULock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>
-            <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
+            
              <p>Return 0.</p>
 
          </div>
@@ -263,7 +261,6 @@ be unlocked, locks it, and returns to the calling process. The data structures u
                                                 <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> file descriptor does not correspond to a valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
 
             <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
@@ -272,7 +269,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
               <p style=" text-indent: 4em;">Set the ULock to -1. &nbsp;&nbsp;/* Unlock the file. */</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (WAIT_FILE, file table index of the locked file). </p>
               
-			<p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
+			
              <p>Return 0.</p>
 
          </div>
