@@ -112,6 +112,13 @@
 
 <p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table given in <a href="machine_organisation.html#mem_org" target="_blank" >Memory Organisation</a>.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>					
 
+<h4>Timer Interrupt</h4>
+<p>The XSM architecture includes a timer that can cause periodic interrupts during execution in unprivileged mode. The timer ticks with each unprivileged instruction executed and once the no of ticks reaches a threshold specified during boot-time, the tick counter is reset and a timer interrupt is raised causing execution to be transferred to the timer interrupt handler (INT1) stored in page X. If the instruction that causes the timer to reach its tick threshold raises an interrupt, the interrupt handler corresponding to that interrupt is invoked first before the timer interrupt is raised. In eXpOS, the timer is used to allow time-sharing between user programs.
+</p>
+
+<h4>Disk Controller Interrupt</h4>
+<p>The Disk Controller allows for imitating asynchronous disk access by the OS. The Disk Controller, upon receiving a disk access request, initiates a timer that ticks with each unprivileged instruction executed. Once the timer reaches its threshold, a value specified during boot-time, a disk interrupt (INT2) is raised and execution is passed to the disk interrupt handler in page Y. The macros 'loada' and 'storea' are used to send requests to the Disk Controller.</p>
+
 <p>Exceptions are anomalous situations which changes the normal flow of execution. The machine raises an exception when it runs in user mode and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions raise Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are discussed below.</p>  
 
 
