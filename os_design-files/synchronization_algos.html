@@ -126,7 +126,7 @@ process has to wait.
                                                 </table>
                                                 <p><i>Description </i>:  The current process is blocked till the process with PID given as argument
 executes a Signal system call or exits. The system call will fail
-if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to set to Kernel mode when process enters the system call and reset before exiting from the system call. </p>
+if a process attempts to wait for itself. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -163,7 +163,7 @@ if a process attempts to wait for itself. The only data structure updated is <a 
                                                      
                                                 </table>
                                                 <p><i>Description</i>:  All processes waiting for the signaling process are resumed. The system
-call does not fail. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>. 
+call does not fail. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.
 </p>
               
               <br>
@@ -210,6 +210,7 @@ permitted to access the file till the calling process unlocks it. If the file is
 already locked by some other process, the system call waits for the file to
 be unlocked, locks it, and returns to the calling process. The data structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#file_table" target="_blank">File Table</a>.
 </p>
+<p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
@@ -258,7 +259,7 @@ be unlocked, locks it, and returns to the calling process. The data structures u
                                                     </tr> 
                                                     
                                                 </table>
-                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file. </p>
+                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> file descriptor does not correspond to a valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>

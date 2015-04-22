@@ -129,6 +129,7 @@
                                                 </table>
                                                 <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
                                            The calling process can share the semaphore with its child processes using the fork system call. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.</p>
+                                           <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -168,7 +169,7 @@
                                                     </tr> 
                                                                                                  
                                                 </table>
-                                                <p><i>Description </i>: This system call is used to release a semaphore descriptor held by the process. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. </p>
+                                                <p><i>Description </i>: This system call is used to release a semaphore descriptor held by the process. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
@@ -212,6 +213,7 @@
                                                 </table>
                                                 <p><i>Description </i>:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
 </p>
+<p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -261,6 +263,7 @@
                                                 </table>
                                                 <p><i>Description </i>: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. </p>
               <br>
+              <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
              <div><h4>Algorithm:</h4></div>
              <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
              <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
