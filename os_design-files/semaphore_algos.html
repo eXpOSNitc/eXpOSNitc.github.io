@@ -171,7 +171,7 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.&nbsp;&nbsp;/*Invalid entries are denoted by -1. */</p>
+             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
              <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the Locking PID in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
              <p style=" text-indent: 4em;">Set the Locking PID to -1.&nbsp;&nbsp;/* Unlock the semaphore before release */</p>
              <p>Decrement the process count of the semaphore.</p>
@@ -207,11 +207,11 @@
                                                     
                                                     
                                                 </table>
-                                                <p><i>Description </i>:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
+                                                <p><i>Description </i>:  This system call is used to lock a semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
 </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.&nbsp;&nbsp;/*Invalid entries are denoted by -1. */</p>
+             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
              
                <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore).  </p>
@@ -258,7 +258,8 @@
                                                 <p><i>Description </i>: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.&nbsp;&nbsp;/*Invalid entries are denoted by -1. */</p>
+             <p>Set the mode to Ker</p>
+             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
          
              <p><b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */</p>
               <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
@@ -272,7 +273,7 @@
                    
 
   </section>
- <
+ 
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
