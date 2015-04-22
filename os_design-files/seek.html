@@ -128,6 +128,7 @@
                                                 </table>
                                                 <p><i>Description</i> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>   
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
+                                                <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
                                                 
              <div><h4>Algorithm:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value must lie within the range from 0 to 7 (both included). */</p>

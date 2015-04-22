@@ -127,7 +127,7 @@
                                                    
                                                 </table>
             <p><i>Description</i> :  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if the file was locked by the process which invoked the system call. </p>
-            <p>Data structures modified are <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>   
+            <p>Data structures modified are <a href="mem_ds.html#file_table"target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>   
                                                 <br>
              <div><h4>Algorithm:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>

@@ -115,6 +115,7 @@
                                                 
                                                 <p><i>Description</i>: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
                                                 <p>Data structures modified are <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+                                                <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               <br>
               
              <div><h4>Algorithm:</h4></div>
@@ -122,8 +123,8 @@
              
                 <p>Unlock all files opened by the current process.&nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html" target="_blank">FunLock system call</a> */ </p>
                 <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p> 
-                <p>Release all the semaphores used by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="" target="_blank">Semrelease system call</a> */</p>
-
+                <p>Release all the semaphores used by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="semaphore_algos.html#semrelease" target="_blank">Semrelease system call</a> */</p>
+				<p>Wake up all processes waiting for the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html#signal" target="_blank">Signal system call</a> */</p>
 
             
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Invalidate the page table entries of the current process</a></p>
@@ -144,14 +145,9 @@
       </div>
              </div>
 	</div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Wake up all processes waiting for the current process.</a></p>
-<div id="collapse2" class="panel-collapse collapse">
-                <p style="text-indent: 4em;">
-                    1. In the Process Table, find the processes in WAIT_PROCESS state, having current PID as WAIT_PID. </p>
-                <p style="text-indent: 4em;"> 2. Change the state of the processes to READY. </p>    
-                </div>
 
-<p>Invoke the scheduler to schedule the next process</p> 
+<p>Invalidate the Process Table entries.</p>
+<p>Invoke the scheduler to schedule the next process. &nbsp;&nbsp;/*Scheduler never returns.*/</p> 
     
                               
                       
