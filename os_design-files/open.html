@@ -131,7 +131,7 @@
                                                    
         </table>
                                                 <p><i>Description</i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
-                                                <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
+                                                <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
                                                 <br>
              <div><h4>Algorithm:</h4></div>
              <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is of type EXEC, return -1.</p>
