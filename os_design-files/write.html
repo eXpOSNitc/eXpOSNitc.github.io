@@ -207,10 +207,11 @@
 <p style=" text-indent: 4em;">2. Change the state to (READY, __ ) for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a></p>
 
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for file</a></p>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
 <div id="collapse6" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. Change the state to (READY, __ ) for the processes in the state (WAIT_FILE, index of the File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
+<p style=" text-indent: 4em;">2. <b>If</b> the ULock is not acquired by the current PID &nbsp;&nbsp;/* Do not wake up the processes if the current process has locked the file. */</p> 
+<p style=" text-indent: 8em;">Change the state to (READY, __ ) for the processes in the state (WAIT_FILE, index of the File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
 </div>
 <p>Return 0. &nbsp;&nbsp;/* success */</p>
  
