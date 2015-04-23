@@ -166,7 +166,7 @@
 <p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
 <p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position to be read from.*/</p>
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Load the block to the buffer.</a></p>
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Bring the block to the buffer from the disk.</a></p>
 <div id="collapse9" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
 <p style=" text-indent: 4em;"><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
@@ -194,7 +194,7 @@
    <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
    <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
 </div>
- 
+ <br>
    <p>Copy the word at the offset position of the block into the buffer passed as argument.</p>
 <p>Increment lseek position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse16">Unlock the buffer and wake up all processes waiting for the buffer</a></p>
