@@ -153,19 +153,19 @@
 <p style=" text-indent: 4em;">Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. &nbsp;&nbsp;/* Index of the Inode Table entry can be obtained from the File Table entry. */</p>
 <p style=" text-indent: 4em;"><b>If</b> lseek position is same as the file size, return -2.&nbsp;&nbsp;/* End of file reached. Don't forget to change mode flag */</p>
 </div>
-
+<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the block and the position in the block from which input is read.</a></p>
+<div id="collapse8" class="panel-collapse collapse">
+<p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be read*/</p>
+<p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
+<p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position to be read from.*/</p>
+</div>
 
 <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
              <p> <b>endwhile</b> &nbsp;&nbsp;/* Wait for the file to be unlocked */</p>
 <p> Change the KLock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the position from which input is read.</a></p>
-<div id="collapse8" class="panel-collapse collapse">
-<p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be read*/</p>
-<p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
-<p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % XFS_MAXBSIZE gives the position to be read from.*/</p>
-</div>
+
 
 
  <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
