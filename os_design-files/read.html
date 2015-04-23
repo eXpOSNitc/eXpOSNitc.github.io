@@ -158,7 +158,7 @@
 <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
-             <p> <b>endwhile</b></p>
+             <p> <b>endwhile</b> &nbsp;&nbsp;/* Wait for the file to be unlocked */</p>
 <p> Change the KLock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the position from which input is read.</a></p>
 <div id="collapse8" class="panel-collapse collapse">
@@ -174,10 +174,10 @@
         <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
            
-<p style=" text-indent: 4em;"><b>endwhile</b></p>
+<p style=" text-indent: 4em;"><b>endwhile</b> &nbsp;&nbsp;/* Wait for the buffer to be unlocked */</p>
            
 
-<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/*Acquire the buffer */</p>
+<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Acquire the buffer */</p>
 <p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block and the dirty bit is set.&nbsp;&nbsp;/* Check Block number and Dirty fields of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
 <p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
  <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
