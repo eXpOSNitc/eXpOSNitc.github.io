@@ -198,12 +198,8 @@ The parent and the child continue execution from here on.  </li>
                           </div>
                           <div id="collapse1" class="panel-collapse collapse">
                             <div class="panel-body">
-                             <h3>Idle Process</h3>
-                             <p>The main purpose of the idle process is to run as a background process in an infinite loop. It is created by the system programmer and is stored in the disk. It will be loaded to the memory by the bootstrap loader. The Page Table and Process Table for the idle process will be set up by the bootstrap loader.  The PID of the idle process is fixed to be 0.  </p>
-                             <h3>Init Process</h3>
-                             <p>The first user program which is executed is called the INIT program. It is stored in the disk and will be loaded to memory by the bootstrap loader. The Page Table and Process Table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 1. It forks itself and creates other processes. </p>
-                              <h3>Shell Process</h3>
-                             <p>It is created by the init process to act like a console. It accepts a filename from the user, Forks itself and Execs the file given as filename. These steps are repeated to accept and execute other files from the console/terminal. </p>
+                             <p>eXpOS specifies two special processes, the idle and the init process. These are stored in a predefined location in the disk and loaded to the memory by the bootstrap loader. The main purpose of idle process is to run as a background process in an infinte loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The init process is the first process executed by the OS. The process identifiers for the idle and init processes are fixed as 0 and 1 respectively.</p>
+                             <p>A shell is an ExpL program which takes the name of an executable file as input and executes it. The shell process Forks itself and the child process invokes the Exec system call with the executable file as argument. The shell runs until the user stops the process.</p>
         
                             </div>
                           </div>
