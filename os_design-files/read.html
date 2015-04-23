@@ -178,21 +178,22 @@
            
 
 <p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Acquire the buffer */</p>
-<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block and the dirty bit is set.&nbsp;&nbsp;/* Check Block number and Dirty fields of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
+<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block.&nbsp;&nbsp;/* Check Block number of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
+<p style=" text-indent: 8em;"><b>If</b> the dirty bit is set &nbsp;&nbsp;/* Check Dirty bit of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
+<p style=" text-indent: 12em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
+ <p style=" text-indent: 16em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+
+<p style=" text-indent: 12em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the store operation to complete and acquire the disk for the next operation */</p>
+<p style=" text-indent: 12em;"><a href="load_store.html" target="_blank">Store the block in buffer to disk.</a> </p>  
+
 <p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
  <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
-<p style=" text-indent: 8em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the store operation to complete and acquire the disk for the next operation */</p>
-<p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Store the block in buffer to disk.</a> </p>  
 
-<p style=" text-indent: 4em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-
-<p style=" text-indent: 4em;"><b>endwhile</b></p>
-   <p style=" text-indent: 4em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a> </p>  
-   <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
-   <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
+<p style=" text-indent: 8em;"><b>endwhile</b></p>
+   <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a> </p>  
+   <p style=" text-indent: 8em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
+   <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
 </div>
  <br>
    <p>Copy the word at the offset position of the block into the buffer passed as argument.</p>
