@@ -191,7 +191,8 @@
 
 <p style=" text-indent: 4em;"><b>endwhile</b></p>
    <p style=" text-indent: 4em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a> </p>  
-   <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>   
+   <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
+   <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
 </div>
  
    <p>Copy the word at the offset position of the block into the buffer passed as argument.</p>
