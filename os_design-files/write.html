@@ -156,10 +156,10 @@
 
 
 <p><b>If</b> block number found above is -1 </p>
-<p style=" text-indent: 4em;"><b>If</b> there are no free blocks in the disk, set the KLock field to -1 and return -2.</p>
+<p style=" text-indent: 4em;"><b>If</b> there are no free blocks in the disk, set the KLock field to -1 and return -2. &nbsp;&nbsp;/* Release the lock before returning */</p>
 
 <p style=" text-indent: 4em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
-<p style=" text-indent: 4em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.</p>
+<p style=" text-indent: 4em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.&nbsp;&nbsp;/* Attach the block to the file */</p>
 
            
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Load the block to the buffer.</a></p>
@@ -173,7 +173,7 @@
 <p style=" text-indent: 4em;"><b>endwhile</b></p>
            
 
-<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.</p>
+<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Lock the buffer */</p>
 <p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block and the dirty bit is set.&nbsp;&nbsp;/* Check Block number and Dirty fieds of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
 <p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
  <p style=" text-indent: 12em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
