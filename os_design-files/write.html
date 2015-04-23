@@ -162,20 +162,21 @@
 <p style=" text-indent: 4em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
 <p style=" text-indent: 4em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.&nbsp;&nbsp;/* Attach the block to the file */</p>
 
+           <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
+<p><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
+
+        <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+
            
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Bring the block to the buffer from the disk.</a></p>
+<p><b>endwhile</b>&nbsp;&nbsp;/* Wait for the buffer to be free */ </p>
+           
+
+<p>Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Lock the buffer */</p>
+<p><b>If</b> the buffer contains a block other than the required block. &nbsp;&nbsp;/* Check Block number of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
+<p  style=" text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Bring the block to the buffer from the disk .</a></p>
 <div id="collapse9" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
-<p style=" text-indent: 4em;"><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
 
-        <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
-           
-<p style=" text-indent: 4em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the buffer to be free */ </p>
-           
-
-<p style=" text-indent: 4em;">Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Lock the buffer */</p>
-<p style=" text-indent: 4em;"><b>If</b> the buffer contains a block other than the required block. &nbsp;&nbsp;/* Check Block number of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
 <p style=" text-indent: 8em;"><b>If</b> the dirty bit is set &nbsp;&nbsp;/* Check Dirty bit of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
 <p style=" text-indent: 12em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
  <p style=" text-indent: 16em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
