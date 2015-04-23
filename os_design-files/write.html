@@ -138,7 +138,7 @@
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
              
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
- <p> <b>If</b> lseek is equal to MAX_FILE_SIZE - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded */</p>
+ <p> <b>If</b> lseek is equal to MAX_FILE_SIZE - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded; Don't forget to change mode flag */</p>
 <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
