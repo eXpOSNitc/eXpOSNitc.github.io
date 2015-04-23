@@ -152,17 +152,16 @@
 <p style=" text-indent: 8em;"><b>If</b> there are no free blocks in the disk return -2. &nbsp;&nbsp;/* Don't forget to change the mode flag */</p>
 <p style=" text-indent: 8em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
 <p style=" text-indent: 8em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.&nbsp;&nbsp;/* Attach the block to the file */</p>
+<br>
 </div>
+
 <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
              <p> <b>endwhile</b>&nbsp;&nbsp;/* Waiting for the file to be unlocked */</p>
 <p> Change the KLock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
 
-
-
-
-           <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
+ <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % MAX_BUFFER gives the index of the buffer to which the block is mapped.*/ </p>
 <p><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
 
         <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_BUFFER, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
