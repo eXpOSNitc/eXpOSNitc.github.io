@@ -122,7 +122,7 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>No disk space</td>
+                                                        <td>No disk space / File size exceeded</td>
                                                     </tr> 
                                                     
                                                 </table>
@@ -138,7 +138,7 @@
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
              
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
-
+ <p> <b>If</b> lseek is equal to MAX_FILE_SIZE - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded */</p>
 <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
@@ -147,7 +147,8 @@
 
 <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the position to which data has to be written.</a></p>
 <div id="collapse8" class="panel-collapse collapse">
-   
+  
+
 <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be read*/</p>
  <p style=" text-indent: 4em;">Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the File Table entry.</p>
 <p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
@@ -155,7 +156,7 @@
 </div>
 
 
-<p><b>If</b> block number found above is -1 </p>
+<p><b>If</b> block number found above is -1  &nbsp;&nbsp;/* New block has to be allocated */ </p>
 <p style=" text-indent: 4em;"><b>If</b> there are no free blocks in the disk, set the KLock field to -1 and return -2. &nbsp;&nbsp;/* Release the lock before returning */</p>
 
 <p style=" text-indent: 4em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
@@ -185,9 +186,11 @@
  <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
 
-<p style=" text-indent: 4em;"><b>endwhile</b></p>
+<p style=" text-indent: 4em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the disk store to complete and acquire the disk for the next operation */</p>
    <p style=" text-indent: 4em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a></p>  
+   
    <p style=" text-indent: 4em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>   
+   <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p>
 </div>
 
 
