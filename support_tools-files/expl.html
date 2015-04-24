@@ -93,7 +93,263 @@
 		<!--=========== End HEADER SECTION ================--> 
 		
 		
-       <p>WORK IN PROGRESS</p>
+       <section id="expfs">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 class="wow fadeInLeftBig">ExpL Specification</h2>
+                <br/>
+                <br/>
+                <p> intro to expl</p>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c1">
+                                 <span class="fa fa-check-square-o"></span>Data types supported by ExpL
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             
+                                <h3>Primitive data types</h3>
+                                <p><b>Integer</b> :  An integer type variable is declared using the keyword <b>int</b>.  <i>Example</i> : </p>
+                                <pre style = "font-size:16px">
+                int a, b, c;  /* Declares variables a, b, c of type integer */ 
+                                </pre>            
+
+                                <p><b>String</b> :  A string is a sequence of characters.  A string type variable is declared using the keyword <b>str</b>.   <i>Example</i> : </p>
+<pre style = "font-size:16px">
+                str mystring;   /*  Declares a variable mystring of type string.  */
+</pre>
+
+
+<p><b>Boolean</b> :  ExpL does not permit boolean variables. But logical expressions like (a < b) or (a==b) & (a<5) are supported and are considered to be of type boolean.  </p>
+    <h3>Composite data types</h3>
+    <p><b>Arrays</b></p>
+    <p style="text-indent: 3em;">Arrays can be of <b>integer</b> or <b>string</b> type only.  Only single-dimensional arrays are allowed.   The semantics is similar to that of C programming language.  Arrays are  allocated statically.  </p>
+    <p><i>Example</i> :</p>
+    <pre style = "font-size:16px">
+                int a[10];    /* array a indexed a[0],a[1],..a[9], can store 10 integers*/
+                str stringlist[10];   /* stringlist is an array of 10 strings */
+</pre>
+    <p><b>User-defined types</b></p> <p style="text-indent: 3em;">ExpL allows user defined data types. The (member) <b>fields</b> of a user defined type may be of type a) integer, b) string,  c) a previously defined user defined type or d) the type that is currently being defined. Arrays of user defined types are <b>not</b> allowed. The maximum number of fields in a user defined type is limited to the constant HBSIZE  by ExpL.  (The value of HBSIZE is left to the implementation).   </p>
+<p>
+    <i>Note</i> : ExpL specifies that the <b>store</b>  for variables of user defined types shall be <b>dynamically allocated</b>. Hence the programmer has to call the library function alloc() to allocate store for variables of user defined types before use.   User defined types take default value NULL unless allocated or assigned otherwise.  Store allocated for a variable of a user defined type is de-allocated using the free() library function.  
+</p>
+<p><i>Example</i> : A user defined type, mytype is defined as:</p>
+<pre style = "font-size:16px">
+                mytype
+                {
+	            int a;
+                    str b;
+                }
+</pre>
+<p>a variable of type mytype is declared as:</p>
+<pre style = "font-size:16px">
+                mytype var;
+</pre>
+<p>Storage for the variable is allocated as:</p>
+<pre style = "font-size:16px">
+                var=alloc();   /* Note:  Access without allocation can lead to run time errors */
+</pre>
+<p>Its fields may be accessed as:</p>
+<pre style = "font-size:16px">
+                var.a=10;     /*  the “.” symbol is used to access member fields */
+                var.b="hello";    
+</pre>
+<p>The memory allocate may be freed as:</p>
+<pre style = "font-size:16px">
+                retval = free(var); 
+</pre>
+<p><i>Note</i> :  The ExpL compiler may internally represent var like a pointer variable. The library function alloc may be designed so as to allocate memory and return pointer to allocated memory. (Library functions are explained in detail later on.) The returned pointer is stored in var.   </p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div id="root">
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c2">
+                                 <span class="fa fa-check-square-o"></span> General Program Structure
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>A program consists of the following components:  </p>
+                                <ul style="text-indent: 5em;">
+                                    <li>1.  Type Definitions (for user defined types)</li>
+                                    <li>2.  Global (global variables, arrays and functions) Declarations</li>
+                                    <li>3.  Function Definitions and the main Function Definition</li>
+                                </ul>
+
+
+                                <p>
+These components are explained below.  
+</p>
+<h3>Type Definitions</h3>
+<p>All user-defined types in the program must defined in the type definition section. Type Definition section starts with keyword <b>type</b> and ends with <b>endtype</b>.</p><p>
+    In the earlier example, mytype has to be defined in the type definition section, along with any other user defined types in the program.  </p>
+<p>
+    <i>Example</i> :
+</p>
+<pre style = "font-size:16px">
+                type   /* type definitions start here */
+                    type1
+                    {
+                        int x;
+                        type1 y;
+                    }
+                    type2
+                    {
+                        int z;
+                        type1 t;	        /* t is of a previously defined type */
+                        type2 next;      /* next is a variable of type2 */
+                    }
+                endtype    /* type definitions end here */
+
+</pre>
+<h3>Global Declarations</h3>
+<p>The global declaration part of an ExpL program begins with the keyword <b>decl</b> and ends with the keyword <b>enddecl</b>.  All global variables, arrays and functions in a program must be declared in this section.</p>
+<p>
+    Global variables may be of type <i>integer, string, a user defined type, an integer array or a string array</i>. The <b>variables declared globally must be allocated statically</b> by the compiler. Global variables are visible throughout the program <b>unless suppressed</b> by a redeclaration within the scope of some function. Array type variables can be declared only globally. Only single dimensional arrays are allowed. Variables <b>cannot</b> be assigned values during the declaration phase.</p>
+<p>
+    For every function except the special <b>main</b> function defined in an ExpL program, there must be a declaration. A function declaration should specify the name of the function, the name and type of each of its arguments and the return type of the function. A function can have integer/string/user defined type arguments.  The return type of a function also can be integer/string/user-defined type.   ExpL enforces <b>call-by-value</b> semantics for integer and string parameters and <b>call-by-reference</b> for user defined types.  (A variable of a user defined type typically stores a reference to its store.)   Arrays <b>cannot</b> be passed as arguments.  If a global variable name appears as an argument of a function, then within the scope of the function, the new declaration will be valid and global variable declaration is <b>suppressed</b>. Different functions may have arguments of the same name. However, the same name cannot be given to different arguments in a function.  The general form of declarations is as follows:
+</p>
+<p>type VarName1, VarName2 ;  &nbsp;&nbsp;/* variable declarations */</p>
+<p>
+    rettype FunctionName (ParameterList);  &nbsp;&nbsp;/*  A function declaration */</p>
+<p>type VarName[ArraySize];  &nbsp;&nbsp;/* An array declaration */  </p>
+<p><i>Note</i> : Declarations for variables/functions of the same type can be combined as shown in the following example.</p>
+<p><i>Example</i> :
+</p>
+<pre style = "font-size:16px">
+                decl   /* Please note the use of "," and ";" */
+                    int x,y,a[10],b[20];       /* x,y are integers, a,b are integer arrays */
+                    str t, q[10], f3(str x);   /*variable, array and a functions declared together*/
+                    mytype m, fun(mytype t);   /* myptype must be  a user defined type */
+                    /*  The argument and return value of fun are references to mytype */
+                enddecl     
+</pre>
+<p>Declaring functions at the beginning avoids the "forward reference" problem and facilitates single pass compilation.  If a variable/function is declared multiple times, a compilation error should result.</p>
+<h3>Function Definitions and the Main Function</h3>
+
+
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c3">
+                                <span class="fa fa-check-square-o"></span>Statements and Expressions
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c4">
+                                <span class="fa fa-check-square-o"></span>Dynamic Memory Allocation
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item 4-->    
+                        
+                     <!-- START SINGLE FEATURED ITEM #5 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c5">
+                                <span class="fa fa-check-square-o"></span>(High Level) System call interface to eXpOS
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c5" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item 5--> 
+                    
+                    <!-- START SINGLE FEATURED ITEM #6 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c6">
+                                <span class="fa fa-check-square-o"></span>Sample Programs
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c6" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item 6-->  
+                    
+                    <!-- START SINGLE FEATURED ITEM #6 -->
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c7">
+                                <span class="fa fa-check-square-o"></span>Appendix
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c7" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item 7-->  
+                      </div>
+                    </div>
+               
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       </section>
    
 		   
       <!--=========== BEGIN FOOTER ================-->
