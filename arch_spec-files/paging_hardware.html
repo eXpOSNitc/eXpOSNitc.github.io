@@ -152,9 +152,8 @@
                     </tr>    
                 </table>
                 <p>The Per-Process Page Table stores the physical page number corresponding to each logical page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.</p>  
-				<p>Per-Process Page Tables are stored in Page 2, words 1024 – 1279 in the memory ( 256 words = MAX_PROC_NUM processes × MAX_NUM_PAGES entries per process )</p>
 
-<p>When a process is loaded, the actual pages are not loaded into memory. In demand paging, the actual pages are loaded only when the pages are accessed for the first time . Once all pages are loaded, the first word of each entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
+<p>Once a page is loaded, the first word of the corresponding Page Table entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
 
 <p>The second word of each page table entry contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are reserved for future enhancements. The details of bits in Auxiliary information is given below.</p>
 
