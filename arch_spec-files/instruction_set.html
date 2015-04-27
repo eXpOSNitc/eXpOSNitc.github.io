@@ -525,7 +525,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : IRET</p>
-                                                <p><i>Semantics</i> : This instruction is used to return from the system call. This involves a change of mode from kernel to user mode. It then sets IP to the value pointed by SP and decrements SP by one. With the execution of the IRET instruction, interrupts are enabled. The address of the next instruction to executed by the user program is popped from the stack and set to the IP Register, following which the Stack Pointer is decremented. The execution mode is then switched to User Mode. Since the IP value must contain a virtual address while executing in User Mode, the value obtained from stack must be a virtual address and not a physical address.</p>
+                                                <p><i>Semantics</i> : This instruction is used to return control to a user mode program from an interrupt service routine/exception handler. This involves a change of mode from kernel to user mode. With the execution of the IRET instruction, interrupts are enabled. The address of the next instruction to be executed by the user program is popped from the stack and set to the IP Register, following which the Stack Pointer is decremented. Since the IP value must contain a virtual address while executing in User Mode, the value obtained from stack must be a virtual address and not a physical address.</p>
 
                                             </div>
                                         </div>
