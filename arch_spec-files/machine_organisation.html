@@ -127,12 +127,12 @@
                           </div>
                           <div id="ThreecollapseOne" class="panel-collapse collapse">
                             <div class="panel-body">
-                             <p>
-		The processor consists of a set of <b>registers</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register can store a string.</p>  
+
+<p>The processor consists of a set of <b>registers</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register can store a string.</p>  
 
 <p>The machine is equipped with an <b>instruction set</b>.  Two contiguous memory words are necessary to store each XSM instruction. The reader is assumed to have a basic understanding of the general principles of computer organization, hardware and software interrupts, exceptions, and hardware paging to follow the processor description in this document.</p>  
 
-<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.  
+<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.</p>
 
                             </div>
                           </div>
@@ -216,7 +216,7 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
 
 <p>When the machine is executing in privileged mode, a memory address “N” between 0 and  65535 refers to the word with offset (N mod 512) in  page number (N div 512).  </p>
 
-<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html">Virtual Machine Specification</a>.</p>
+<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a>.</p>
 
 <p>The  Memory of the XSM Machine is organised as follows :</p>
 
@@ -411,7 +411,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="../os_design-files/misc.html"><b>timer interrupt service routine</b></a>.  </p>
+                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.)  Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="../os_design-files/misc.html" target="_blank"><b>timer interrupt service routine</b></a>.  </p>
                             </div>
                           </div>
                         </div>
@@ -427,7 +427,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="../os_design-files/disk_interrupt.html"><b>disk interrupt service routine</b></a>.    
+                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="../os_design-files/disk_interrupt.html" target="_blank"><b>disk interrupt service routine</b></a>.    
 </p>
                             </div>
                           </div>
@@ -444,7 +444,7 @@ The machine instruction set includes four special <b>disk access macro routines<
                           </div>
                           <div id="collapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to a register.   There are two macro instructions associated with I/O.  These are <b>out</b> and <b>in</b>. The out instruction results in transfer of a word from a register to the console.  The in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.  The <a href="../os_design-files/term_handler.html">console interrupt handler</a> routine is executed when the interrupt is raised. The data must be read from a machine register designated for this purpose.  
+                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to a register.   There are two macro instructions associated with I/O.  These are <b>out</b> and <b>in</b>. The out instruction results in transfer of a word from a register to the console.  The in macro allows the machine to execute other processes (which do not require this input data to continue their execution) without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console.  The <a href="../os_design-files/term_handler.html" target="_blank">console interrupt handler</a> routine is executed when the interrupt is raised. The data must be read from a machine register designated for this purpose.  
 </p>
                             </div>
                           </div>
