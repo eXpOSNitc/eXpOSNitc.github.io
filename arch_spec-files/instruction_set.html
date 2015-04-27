@@ -403,7 +403,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : LOADA pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction initiates the transfer of the disk block specified by blocknum to the memory page specified by pagenum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html#disk_interrupt" target="_blank" > disk interrupt</a> when the tranfer is completed. </p>
+                                                <p><i>Semantics</i> : This instruction initiates the transfer of the disk block specified by blocknum to the memory page specified by pagenum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html" target="_blank" > disk interrupt</a> when the tranfer is completed. </p>
 
                                             </div>
                                         </div>
@@ -423,7 +423,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : STOREA blocknum pagenum</p>
-                                                <p><i>Semantics</i> : This instruction initiates the transfer of the memory page specified by pagenum to the disk block specified by blocknum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers.  The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html#disk_interrupt" target="_blank" >disk interrupt</a> when the tranfer is completed. </p>
+                                                <p><i>Semantics</i> : This instruction initiates the transfer of the memory page specified by pagenum to the disk block specified by blocknum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers.  The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt</a> when the tranfer is completed. </p>
 
                                             </div>
                                         </div>
@@ -443,7 +443,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : BACKUP Si</p>
-                                                <p><i>Semantics</i> : This instruction is used during context switch of a process to backup all the machine registers and store all the relevant information. This is done when a process is preempted from CPU due to some reason. The registers are stored in contiguous memory loactions starting from address provided in Si in the following order : BP, SP, PTBR, PTLR, R0 - R7, S0 -S15.
+                                                <p><i>Semantics</i> : This instruction is used during context switch of a process to backup all the machine registers (except IP and exception flag registers) into memory. The registers are stored in contiguous memory loactions starting from address provided in Si in the following order : BP, SP, PTBR, PTLR, R0 - R7, S0 -S15.
 
 </p>
 
@@ -465,7 +465,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : RESTORE Si</p>
-                                                <p><i>Semantics</i> : This instruction is used during context switch to restore all the machine registers and store all the relevant information. This is done when a process is scheduled by the scheduler for execution. The registers are restored contiguous memory locations starting from the address provided in Si in the following order : BP, SP, PTBR, PTLR, R0 - R7, S0 -S15.   
+                                                <p><i>Semantics</i> : This instruction is used during context switch to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address provided in Si in the following order : BP, SP, PTBR, PTLR, R0 - R7, S0 -S15.   
 </p>
 
                                             </div>
@@ -486,7 +486,7 @@
                                                 
 1. <b>IN</b><br>
 <i>Syntax</i> : IN<br>
-<i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the register S15 (which is reserved for the console interrupt) and raises the <a href="interrupts_exception_handling.html#console_interrupt" target="_blank" >console interrupt</a>.
+<i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the register S15 (which is reserved for the console interrupt) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.
                                             </div>
                                         </div>
                                     </div>
