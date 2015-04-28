@@ -146,17 +146,16 @@
              <p>Arguments: None</p>
             <p>Return Value:None</p>
                                                 
-             <p><i>Description</i>: Shutdown system call terminates all processes and halts the machine. </p>
+             <p><i>Description</i>: It is created by the init process to act like a console. It accepts a filename, forks itself and execs the file given as filename. These steps are repeated to accept and execute other files from the console. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in Disk Status Table */</p>
-             <p> Change the state of the process to WAIT_DISK.</p>
-             <p> Call scheduler</p>
-             <p>/* The following store operations are not done asynchronously */</p>
-             <p> Store Inode Table to the disk.</p>
-             <p> Store dirty pages contained in buffer to the disk.   &nbsp; &nbsp; /* Check dirty bit in Buffer Table */</p>
-             <p>Store Disk Free List to the disk.</p>
-             <p>Halt the machine.</p>
+             <p><b>while</b> 1 <b>do</b></p>
+             <p style="text-indent: 4em;"> Get the program to be executed using read system call </p>
+             <p style="text-indent: 4em;"> childPID = fork(); </p>
+             <p style="text-indent: 4em;"> <b>If</b> (childPID == 0) &nbsp;&nbsp;/*Only child process will do the exec */</p>
+             <p style="text-indent: 8em;"> Execute the program given by read.</p>
+             <p style="text-indent: 4em;"> <b>else</b> Wait for child to finish execution.   &nbsp; &nbsp; /* Using Wait system Call*/</p>
+             <p> endwhile</p>
          </div>
 		</div>
 		</div>
@@ -177,20 +176,12 @@
                <br>                                      
 
              
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
                                                 
-             <p><i>Description</i>: Shutdown system call terminates all processes and halts the machine. </p>
+             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 0.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in Disk Status Table */</p>
-             <p> Change the state of the process to WAIT_DISK.</p>
-             <p> Call scheduler</p>
-             <p>/* The following store operations are not done asynchronously */</p>
-             <p> Store Inode Table to the disk.</p>
-             <p> Store dirty pages contained in buffer to the disk.   &nbsp; &nbsp; /* Check dirty bit in Buffer Table */</p>
-             <p>Store Disk Free List to the disk.</p>
-             <p>Halt the machine.</p>
+             <p><b>while</b> 1 <b>do</b></p>
+            <p>endwhile</p>
          </div>
 		</div>
 		</div>
