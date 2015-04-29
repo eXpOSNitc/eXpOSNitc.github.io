@@ -147,7 +147,7 @@
                  
                  <p style="text-indent: 12em;"><b>If</b> there are swapped processes &nbsp; &nbsp; /* Check the SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
               
-            <p style="text-indent: 16em;"><a data-toggle="collapse"   href="#collapse7">For the senior most swapped process, find the block which has to be swapped in.</a></p>
+            <p style="text-indent: 16em;"><a data-toggle="collapse"   href="#collapse7">For the senior most swapped process not in SWAPPED_WAIT state, find the block which has to be swapped in.</a></p>
            <div id="collapse7" class="panel-collapse collapse">  
 			             <p style=" text-indent: 20em;">1. Process with highest value for TICK among the swapped process is the seniormost process.</p> 
                     <p style=" text-indent: 20em;">2. Using the SP value in the <a href="process_table.html#Machine_state" target="_blank">Machine State</a>, find the stack page to be swapped in.</p>   
@@ -183,7 +183,7 @@
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
 			<p style="text-indent: 16em;">/* Page Table, Process Table and System Status Table updates must be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> */ </p>
                         <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer of the process&nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
-<p style="text-indent: 16em;"><b>if</b> the process is in (WAIT_PROCESS, pid) state</p>
+<p style="text-indent: 16em;"><b>if</b> the process is in (WAIT_PROCESS, pid) state </p>
 <p style="text-indent: 18em;">Change the state to (SWAPPED_WAIT,pid)</p>
 <p style="text-indent: 16em;">else</p>
                         
