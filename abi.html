@@ -254,11 +254,11 @@ Example: program.xsm</p>
                                 <p> A system call invocation using the high level application programmer's interface of a programming language like eXPL compiles to a set of machine instructions. They are the stack operations that must be performed by the user program before the INT instruction is executed (See machine instructions below). The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0' - see sample code below) is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. <p>
 <br>
 <pre style = "font-size:20px">
+    PUSH System_Call_No     // Push system call number 
     PUSH Argument_1         // Push argument 1 to the stack
     PUSH Argument_2         // Push argument 2 to the stack
     PUSH Argument_3         // Push argument 3 to the stack
     PUSH R0	                // Push an empty space for RETURN VALUE
-    PUSH System_Call_No     // Push system call number 
     INT number              // Invoke the corresponding INT instruction. The number 
                                    can be any number between 0 and 18 
                                 
@@ -274,11 +274,11 @@ Example: program.xsm</p>
                                 <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the ExpL compiled machine code given in the previous step. </p>
 <br>
 <pre style = "font-size:20px">
-    POP System Call Number    // Pop and discard the system call number
 	POP Ri      		  // Pop and save the return value into some register Ri
 	POP Argument_3  	  // Pop and discard arguments
     POP Argument_2  	  // Pop and discard arguments
     POP Argument_1  	  // Now the stack is popped back to the state before call 
+    POP System Call Number    // Pop and discard the system call number
    
 </pre>
 
