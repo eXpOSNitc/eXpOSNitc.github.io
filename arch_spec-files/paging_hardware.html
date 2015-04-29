@@ -186,7 +186,7 @@
 <br>
 <br>
 
-<p>NOTE: In user mode, logical addresses are translated to physical address by the machine using the address translation scheme. However, in kernel mode, the translation must be done manually using the procedure described above.</p>
+<p><b>NOTE:</b> In user mode, logical addresses are translated to physical address by the machine using the address translation scheme. However, in kernel mode, the translation must be done manually using the procedure described above.</p>
 <p>Example:</p>
 <p>Assume the per-process page table is as shown below:</p>
 
@@ -220,7 +220,7 @@
     <td>11</td>	
 </tr>
 <tr>
-    <td>68</td>
+    <td>48</td>
     <td>11</td>	
 </tr>
 <tr>
@@ -233,13 +233,13 @@
 </tr>
 </table>
 
-<p>Given a logical address of 2596, the translation occurs as follows:</p>
+<p>Given a logical address of 13532, the translation occurs as follows:</p>
 <p style="text-indent:5em">Logical page number 	= index of page table entry</p>
-<p style="text-indent:15em"> 					= 2596/512 = 5</p>
+<p style="text-indent:15em"> 					= 13532/512 = 26</p>
 <p style="text-indent:5em">Location of page table entry	= PTBR + 2 * 5</p>
-<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 5 ] = first word of the 6th entry in page table = 68</p>
-<p style="text-indent:5em">Offset 	= 2596%512 = 36</p>
-<p style="text-indent:5em">Physical Address	= 68 * 512 + 36 = 34852</p>
+<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 5 ] = first word of the 6th entry in page table = 48</p>
+<p style="text-indent:5em">Offset 	= 13532%512 = 220</p>
+<p style="text-indent:5em">Physical Address	= 48 * 512 + 220 = 24796</p>
   
 </div>
 
