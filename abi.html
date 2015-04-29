@@ -246,11 +246,11 @@ Example: program.xsm</p>
                                 <p>For an application program, there are two stages in executing a system call:</p>
                                 <ul style="text-indent: 5em;">
                                     <li>1. <i>Before the system call</i>:   The calling application must set up the arguments in the (user) stack before executing the trap instruction.  </li>
-                                    <li>2. <i>After the system call</i>:   The return values of the system call must be extracted from the stack.  </li>
+                                    <li>2. <i>After the system call</i>:   The return value of the system call must be extracted from the stack.  </li>
                                     
                                 </ul>
                                 <h3>Invoking a system call</h3>
-                                <p>A user process invokes a system call by first pushing the arguments and the system call number into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. In this implementation of XSM, the number of arguments pushed into the stack is fixed at three.</p>
+                                <p>A user program invokes a system call by first pushing the system call number and then the arguments into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. In this implementation of XSM, the number of arguments pushed into the stack is fixed at three.</p>
                                 <p> A system call invocation using the high level application programmer's interface of a programming language like exPL compiles to a set of machine instructions. They are the stack operations that must be performed by the user program before the INT instruction is executed (See machine instructions below). The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0' - see sample code below) is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. <p>
 <br>
 <pre style = "font-size:20px">
