@@ -142,7 +142,7 @@
         <p>Set the PPID field of child process to the current PID.</p>
         <p>Count the number of <b>valid</b> <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> pages from the Page Table of the parent process.&nbsp; &nbsp;/* Count stack pages which are not swapped out */</p> 
         <p><b>while</b> sufficient number of free pages are not present in memory <b>do</b> &nbsp; &nbsp;/* Check the MEM_FREE_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
-   <p style="text-indent: 4em;">Change the state of the current process to (WAIT_MEM, _ ).</p>
+   <p style="text-indent: 4em;">Change the state of the current process to (WAIT_MEM, _ ) and increment the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>.</p>
         <p style="text-indent: 4em;">Call scheduler. &nbsp; &nbsp;/* Scheduler will wake up the process when memory pages are available */</p> 
         <p><b>endwhile</b></p>
         <p>Scan the page table of the parent process for the stack page entries. For <b>each</b> stack page do: </p>

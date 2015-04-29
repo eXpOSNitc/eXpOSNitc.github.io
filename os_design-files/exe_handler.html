@@ -125,7 +125,7 @@
              <p>/* Exception is due to page fault */</p>
              <p>Using the Exception registers, find the <a href="process_table.html#per_page_table" target="_blank">page table</a> entry of the page causing the exception.</p>
              <p><b>while</b> there are no free pages in memory <b>do</b> &nbsp;&nbsp; /* Check the MEM_FREE_COUNT in System Status Table */</p>
-             <p style="text-indent: 4em;">Change the state of the process to (WAIT_MEM, _ ) in the <a href="process_table.html" target="_blank">Process Table</a>. </p>
+             <p style="text-indent: 4em;">Change the state of the process to (WAIT_MEM, _ ) in the <a href="process_table.html" target="_blank">Process Table</a> and increment the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table">System Status Table</a>. </p>
              <p style=" text-indent: 4em;">Call scheduler.</p>
              <p><b>endwhile</b></p>
              <p>Find a free page in memory, increment its Memory Free List entry  and decrement MEM_FREE_COUNT in System Status Table.</p>
