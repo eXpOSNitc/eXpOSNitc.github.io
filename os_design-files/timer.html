@@ -165,7 +165,7 @@
              
             <p><b>else</b> &nbsp;&nbsp;&nbsp; /* When there is no free memory, <b>swap out</b> process, if necessary. */</p>
             <p style="text-indent: 4em;"><b>If</b> disk is free &nbsp; &nbsp; /* Check the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */</p>
-            <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp;&nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>*/</p>
+            <p style="text-indent: 8em;"><b>If</b> there are sleeping processes that require memory pages &nbsp;&nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>*/</p>
              
             <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html" target="_blank">modified second chance algorithm</a> to find an unreferenced page and the PID of the process that owns the page</p>
              <p style="text-indent: 12em;">Locate the page table of the process.&nbsp;&nbsp;/* Check the Process Table */</p>
@@ -184,8 +184,8 @@
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
 			<p style="text-indent: 16em;">/* Page Table, Process Table and System Status Table updates must be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> */ </p>
                         <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer of the process&nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
-<p style="text-indent: 16em;"><b>if</b> the process is in (WAIT_PROCESS, pid) state </p>
-<p style="text-indent: 18em;">Change the state to (SWAPPED_WAIT,pid)</p>
+<p style="text-indent: 16em;"><b>if</b> the process is in (WAIT_PROCESS, pid) state. &nbsp;&nbsp;/*If the process swapped out is waiting for a signal.</p>
+<p style="text-indent: 18em;">Change the state to (SWAPPED_WAIT,pid).&nbsp;&nbsp;/*This process will not be swapped in before Signal is invoked.*/</p>
 <p style="text-indent: 16em;">else</p>
                         
 			<p style="text-indent: 18em;">Set the state of the process to (SWAPPED , _ ) </p>
