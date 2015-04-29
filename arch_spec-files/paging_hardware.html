@@ -156,14 +156,13 @@
 
 <center><img src="../img/aux_info.png"></center>
 
-<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine i.e, as soon as any page is accessed for the first time, this bit is changed from 0 to 1. This bit is used for page replacement by the OS.</p>
+<p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine i.e, as soon as any page is accessed for the first time, this bit is changed from 0 to 1. Page replacement algorithms of operating systems use this bit.</p>
 
-<p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address). The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine </a>, which is responsible for loading the correct physical page.</p>
+<p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>, which is responsible for loading the correct physical page.</p>
 
-<p><b>Write Permission Bit (W)</b>: This bit is set </p>
+<p><b>Write Permission Bit (W)</b>: This bit is set if the user mode program is permitted to write into the page. Otherwise this bit is set to 0.</p>
 
-
-<p><b>Dirty Bit (D)</b>: </p>
+<p><b>Dirty Bit (D)</b>: This bit is set to 1 by the machine if an instruction modifies the contents of the page.</p>
 
 
                    <br><br>
