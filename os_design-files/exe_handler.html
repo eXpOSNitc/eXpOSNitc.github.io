@@ -116,7 +116,7 @@
                <p><i>Description</i> : If a process generates an illegal instruction or an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
                <p>The exception handler is also invoked when a page required by the process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
                <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html" target="_blank">Process Table</a>.</p>
-                <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
+               
                <br>
              <div><h4>Algorithm:</h4></div>
             
@@ -129,7 +129,7 @@
              <p style=" text-indent: 4em;">Call scheduler.</p>
              <p><b>endwhile</b></p>
              <p>Find a free page in memory, increment its Memory Free List entry  and decrement MEM_FREE_COUNT in System Status Table.</p>
-             <p><b>If</b> the page table entry found above contains a swap block number &nbsp;&nbsp; /* The page was swapped out */</p>
+             <p><b>If</b> the page table entry found above contains a block number &nbsp;&nbsp; /* The page is stored in the disk */</p>
              <p style="text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block to the memory page found above</a>.</p>
              <p>In the page table entry, set the Page Number field to the number of the page found above and auxiliary information to referenced and valid. </p>
   
