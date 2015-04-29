@@ -117,7 +117,7 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Save the context of current process and change its state from (RUNNING,_) to (READY,_)</a></p>
+             <p><a data-toggle="collapse"   href="#collapse1">Save the context of current process and change its state from (RUNNING,_) to (READY,_)</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p>
                     1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _).</p>
@@ -133,13 +133,13 @@
                 
              <p style=" text-indent: 4em;"><b>If</b> there are sleeping processes that requires memory pages &nbsp; &nbsp; /* Check the WAIT_MEM_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
             
-             <p style=" text-indent: 8em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">Wake up all processes that requires memory pages.</a></p>
+             <p style=" text-indent: 8em;"><a data-toggle="collapse"   href="#collapse5">Wake up all processes that requires memory pages.</a></p>
               <div id="collapse5" class="panel-collapse collapse">        
                     <p style=" text-indent: 8em;">1. Change the state from (WAIT_MEM,_) to (READY,_).</p>
                     <p style=" text-indent: 8em;">2. Reset the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a> to 0.</p>
             </div>
                  <div class="boxed" style="border:1px solid green">
-                     <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
+                     <p><a data-toggle="collapse"   href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
        
              <div id="collapse14" class="panel-collapse collapse">
                  <p style=" text-indent: 4em;"><b>else</b> &nbsp;&nbsp;&nbsp;/* Since there are no processes waiting for memory, <b>swap in</b> the seniormost swapped process. */</p>
@@ -147,7 +147,7 @@
                  
                  <p style="text-indent: 12em;"><b>If</b> there are swapped processes &nbsp; &nbsp; /* Check the SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. */</p>
               
-            <p style="text-indent: 16em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">For the senior most swapped process, find the block which has to be swapped in.</a></p>
+            <p style="text-indent: 16em;"><a data-toggle="collapse"   href="#collapse7">For the senior most swapped process, find the block which has to be swapped in.</a></p>
            <div id="collapse7" class="panel-collapse collapse">  
 			             <p style=" text-indent: 20em;">1. Process with highest value for TICK among the swapped process is the seniormost process.</p> 
                     <p style=" text-indent: 20em;">2. Using the SP value in the <a href="process_table.html#Machine_state" target="_blank">Machine State</a>, find the stack page to be swapped in.</p>   
@@ -192,12 +192,12 @@
             
 
                 </div> 
-             	    <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse10">Find the next process to be scheduled </a></p>
+             	    <p><a data-toggle="collapse"   href="#collapse10">Find the next process to be scheduled </a></p>
 			    <div id="collapse10" class="panel-collapse collapse">
                                 <p>1. Scan the Process Table in Round Robin fashion to find the next process in ready state (that is, state field has value (READY, _ ).</p>
                                 </div>
                                 
-             <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">Schedule the next ready process</a></p>
+             <p><a data-toggle="collapse"   href="#collapse11">Schedule the next ready process</a></p>
              <div id="collapse11" class="panel-collapse collapse">
                     <p>Change the state of that process to (RUNNING, _ ) and restore the execution context of the process using <a href="process_table.html#Machine_state" target="_blank">Machine State Pointer</a>. </p>   
                     <p><b>If</b> the <a href="process_table.html" target="_blank">mode flag</a> is set to the Kernel mode, then the return address is obtained from the Kernel Re-entry Point. </p>  

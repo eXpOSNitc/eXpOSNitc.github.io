@@ -139,7 +139,7 @@
              
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
  <p> <b>If</b> lseek is equal to MAX_FILE_SIZE - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded; Don't forget to change mode flag */</p>
- <p><a data-toggle="collapse" data-parent="#accordion" href="#collapse8">Find the block and position in the block to which data has to be written.</a></p>
+ <p><a data-toggle="collapse"   href="#collapse8">Find the block and position in the block to which data has to be written.</a></p>
 <div id="collapse8" class="panel-collapse collapse">
   
 
@@ -175,7 +175,7 @@
 
 <div class="boxed" style="border:1px solid green">
 
-<p  style=" text-indent: 4em;"><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">Bring the block to the buffer from the disk .</a>&nbsp;&nbsp;/* This step captures the main idea of disk access */</p>
+<p  style=" text-indent: 4em;"><a data-toggle="collapse"   href="#collapse9">Bring the block to the buffer from the disk .</a>&nbsp;&nbsp;/* This step captures the main idea of disk access */</p>
 <div id="collapse9" class="panel-collapse collapse">
 
 <p style=" text-indent: 8em;"><b>If</b> Dirty bit of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> is set &nbsp;&nbsp;/* Write back the dirty page before loading the required block */ </p>
@@ -202,13 +202,13 @@
   <p>Set dirty bit to 1 in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry .</p>
 <p>Increment LSEEK Position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
 <p>Increment file size in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry and <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry.</p>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse16">Unlock the buffer and wake up all processes waiting for buffer</a></p>
+<p><a data-toggle="collapse"   href="#collapse16">Unlock the buffer and wake up all processes waiting for buffer</a></p>
 <div id="collapse16" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to -1.</p>
 <p style=" text-indent: 4em;">2. Change the state to (READY, __ ) for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a></p>
 
 </div>
-<p><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
+<p><a data-toggle="collapse"   href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
 <div id="collapse6" class="panel-collapse collapse">
 <p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
 <p style=" text-indent: 4em;">2. <b>If</b> the ULock is not acquired by the current PID &nbsp;&nbsp;/* Do not wake up the processes if the current process has locked the file. */</p> 
