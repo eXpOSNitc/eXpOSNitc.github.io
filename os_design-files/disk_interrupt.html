@@ -131,10 +131,11 @@
              
              <p><b>else</b> &nbsp;&nbsp;/* The scheduler had initiated the disk load/store during a swap in/ swap out.*/</p> 
              <p style="text-indent: 4em;"><a data-toggle="collapse"   href="#collapse1">Get the PID of the process for which the scheduler had issued the load/store instruction.</a></p>
-             <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">1. The PID of the process will be the absolute value of the PID field of the Disk Status Table.</p></div>
+             <div id="collapse1" class="panel-collapse collapse"><p style="text-indent: 8em;">The PID of the process will be the absolute value of the PID field of the Disk Status Table.</p></div>
              
              
              <p style="text-indent: 4em;"><b>If</b> the disk operation was a load operation &nbsp;&nbsp; /* Check the load/store bit in the Disk Status Table. */</p>
+              <p style="text-indent: 8em;">/* Disk operation was initiated by scheduler for a block swap in. */ </p>
              <p style="text-indent: 8em;">Get the block number and the page number from the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. </p>
              <p style="text-indent: 8em;">Decrement the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List </a>entry. &nbsp;&nbsp; /* The block is swapped in */</p>
              <p style="text-indent: 8em;">Find the Page Table entry corresponding to the loaded block &nbsp;&nbsp; /* Page Number field will be the block number of the loaded block */</p>
