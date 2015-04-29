@@ -108,15 +108,12 @@
                 <h2 class="wow fadeInLeftBig">XSM Paging Hardware</h2>
                 <br/>
                 <br/>
-                <p> Paging is a memory management scheme by which a computer stores and retrieves data from the secondary storage for use in main memory. It permits the physical address space of a process to be non-contiguous. In the paging memory-management scheme, the operating system retrieves data from secondary storage in same-size blocks called pages.</p>
+                <p> Paging is a memory management scheme by which a computer stores and retrieves data from the secondary storage for use in main memory. It permits the physical address space of a user mode program to be non-contiguous. A page table maps the virtual address sapce of a user mode program to the physical address space of the machine.</p>
                 
-
-                <p>In eXpOS, each process has its own page table called the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">Per-Process Page Table</a>, which is used for paging. </p>
-
                 <br><br>
                    
                 <h4><b>Per-Process Page Table</b></h4>
-                <p>Every valid entry of a page table of a process contains the page number in the memory where the data specified by the logical address resides. The address of Page Table of the currently executing process is stored in PTBR and the number of entries in the Page Table, in PTLR of the machine.</p>
+                <p>Every valid entry of a page table contains the page number in the memory where the data specified by the logical address resides. The address of Page Table of the currently executing process is stored in PTBR and the number of entries in the Page Table, in PTLR of the machine.</p>
                 
                 <p>The structure of a Page Table entry is shown below.</p>
                 <table class="table table-bordered">
@@ -155,13 +152,18 @@
 
 <p>Once a page is loaded, the first word of the corresponding Page Table entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
 
-<p>The second word of each page table entry contains auxiliary information. The first three bits of auxiliary information are reserved as reference (R) bit and valid/invalid (V) bit . The remaining bits are reserved for future enhancements. The details of bits in Auxiliary information is given below.</p>
+<p>The second word of each page table entry contains auxiliary information. The first four bits of auxiliary information are reserved as reference (R) bit, valid/invalid (V) bit, write permision (W) bit and dirty (D) bit . The remaining bits are reserved for future enhancements. The details of bits in Auxiliary information is given below.</p>
 
 <center><img src="../img/aux_info.png"></center>
 
 <p><b>Reference Bit (R)</b>: Initially, this bit is set to 0 (unreferenced) by the machine. On a page access, this bit is set to 1 by the machine i.e, as soon as any page is accessed for the first time, this bit is changed from 0 to 1. This bit is used for page replacement by the OS.</p>
 
 <p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit has value 1 if the first word of this entry corresponds to a valid physical page number. It has value 0 if the entry is invalid. The first word of an invalid Per-process page table entry is either -1 (indicates that there is no physical page corresponding to the logical address). The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine </a>, which is responsible for loading the correct physical page.</p>
+
+<p><b>Write Permission Bit (W)</b>: This bit is set </p>
+
+
+<p><b>Dirty Bit (D)</b>: </p>
 
 
                    <br><br>
