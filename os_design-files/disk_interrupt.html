@@ -141,10 +141,8 @@
              <p style="text-indent: 8em;">Find the Page Table entry corresponding to the loaded block &nbsp;&nbsp; /* Find the Page Table Entry containing the block number of the loaded block. */</p>
              
              <p style="text-indent: 8em;">Set the Page Number field in the page table entry to the page number. </p>
-             <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p><p style="text-indent: 8em;"><b>If</b> state of the process is (SWAPPED_WAIT,pid)</p>
-<p style="text-indent: 10em;">Change the state to (WAIT_PROCESS, pid)</p>
-<p style="text-indent: 8em;">else</p>
-             <p style="text-indent: 10em;">Change the state of the process to (READY, _ ).</p>
+             <p style="text-indent: 8em;">In the page table entry, set the auxiliary information to referenced and valid.</p><p 
+             <p style="text-indent: 8em;">Change the state of the process to (READY, _ ).&nbsp;&nbsp;/*Processes in  SWAPPED_WAIT state should not be swapped in.*/</p>
              <p style="text-indent: 8em;">Reset the TICK of the process to 0.</p>
              <p style="text-indent: 8em;">Decrement SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
              
