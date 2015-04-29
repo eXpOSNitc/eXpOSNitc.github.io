@@ -123,7 +123,9 @@
 <li>
 The file format to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
 </li>
-<li>A low level system call interface which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent. .</li>
+<li>A low level system call interface which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent.</li>
+<li>The eXpOS runtime library interface provides a layer of abstraction between the low level system call interface and the application program
+by providing a unified interface for all system calls, hiding low level interrupt details from the application.  (Applications however, may choose to bypass this layer and directly invoke the low level system calls.)  In addition to the system call interface, application level dynamic memory allocator and deallocator functions are also part of the eXpOS library. </li>
 </ol></p>
               </div>
 
@@ -146,7 +148,7 @@ The file format to be followed for creating executable files by the compiler (th
                              <p>
 XSM Instruction set describes the target language in which a compiler must generate an executable file. Instructions are classified into privileged and unprivileged instructions. Programs run in user mode can make use of only unprivileged instructions while programs run in kernel mode make use of both privileged and unprivileged instructions.</p>
 <p>
-You can read more about the XSM instruction set <a href="instruction_set.html" target="_blank">here</a>.  
+You can read more about the XSM instruction set <a href="arch_spec-files/instruction_set.html" target="_blank">here</a>.  
 </p>
 
                             </div>
