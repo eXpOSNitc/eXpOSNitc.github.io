@@ -169,9 +169,12 @@
             <p style="text-indent: 12em;">Use the <a href="sec_chance_algo.html" target="_blank">modified second chance algorithm</a> to find an unreferenced page and the PID of the process that owns the page</p>
              <p style="text-indent: 12em;">Locate the page table of the process.&nbsp;&nbsp;/* Check the Process Table */</p>
             <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">code page</a> &nbsp;&nbsp;/* since code pages are not modified, they need not be stored back */</p>
+            <p style="text-indent: 16em;">Mark the unreferenced page as free by decrementing its <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> entry.</p>
+             <p style="text-indent: 16em;">Increment the MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
             <p style="text-indent: 16em;">Using pointer to <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, find the corresponding code block number</p>
 			<p style="text-indent: 16em;">In the page table entry of the unreferenced page, set Physical Page Number field to the code block number</p>
 			<p style="text-indent: 16em;">Mark the page as invalid in the <a href="process_table.html#per_page_table" target="_blank">Page Table</a> by updating the auxiliary information</p>
+			
 			
                         <p style="text-indent: 12em;"><b>If</b> the unreferenced page is a <a href="../os_spec-files/processmodel.html" target="_blank">stack</a> or <a href="../os_spec-files/processmodel.html" target="_blank">heap</a> page</p>
 			<p style="text-indent: 16em;">Find a free block in swap area. &nbsp;&nbsp;/* If no swap block is free, abort the swap out and schedule next ready process */</p>
