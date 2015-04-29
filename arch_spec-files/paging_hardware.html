@@ -171,7 +171,7 @@
                 When the machine runs in user mode, it uses logical addresses which represent locations in virtual address space of the process. In the current version of XSM, logical address can range from 0 to PTLR * 512 – 1. In the kernel mode, these logical addresses are translated to physical addresses as the kernel works only with physical addresses. In the current version of XSM, physical addresses can range from 0 to 128 * 512 – 1. The physical addresses represent locations in the primary memory of the system.
                 </p>
                 
-                <p>Page translation is done using the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">Per-Process Page Table</a>. Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiplying the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
+                <p>Page translation is done using the Page Table. Logical address / 512 gives the logical page number which is the index of the page in the page table. Since each page table entry has 2 words, multiplying the logical page number by 2 and adding PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
 
 <p style="text-indent:5em"><b>Location of page table entry = PTBR + 2 x (Logical Address / 512)</b></p>
 <p>The value stored in the first word in the page table entry corresponds to the physical page number.</p>
