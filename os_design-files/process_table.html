@@ -237,7 +237,7 @@
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS PAGE TABLE</h4>                          
                           <div class="panel-body">
                               <p>The Per-Process Page Table contains information regarding the physical location of the pages of a process. Each valid entry of a page table stores the physical page number corresponding to each logical (virtual) page associated with the process. The logical page number can vary from 0 to MAX_NUM_PAGES - 1 for each process. Therefore, each process has MAX_NUM_PAGES entries in the page table.  The address of Page Table of the currently executing process is stored in PTBR and length of the page table is stored in PTLR. In this version of eXpOS, MAX_NUM_PAGES is set to 8, hence PTLR is always set to 8.</p>
-                              <p>Associated with each page table entry, typically <b>auxiliary information </b>is also stored.  This is to store information like whether the page is dirty, referenced, valid etc.   The exact details are architecture dependent.  The eXpOS specification expects that the hardware provides support for reference and valid bits.   (See LINK for discussion on reference and valid bits). </p>
+                              <p>Associated with each page table entry, typically <b>auxiliary information </b>is also stored.  This is to store information like whether the process has write permission to the page, whether the page is dirty, referenced, valid etc.   The exact details are architecture dependent.  The eXpOS specification expects that the hardware provides support for reference, valid and write bits.   (See page table structure of XSM <a href="../arch_spec-files/paging_hardware.html" target="_blank">here</a>). </p>
                              
 
  
@@ -246,15 +246,15 @@
                       <td style="border: 1px solid black">PHYSICAL PAGE NUMBER</td>
                       <td style="border: 1px solid black">REFERENCE BIT</td>
                       <td style="border: 1px solid black">VALID BIT</td>
-                      
+                      <td style="border: 1px solid black">WRITE BIT</td>
                   </tr>
               </table>
  
  
         <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>Reference bit </b>- The reference bit for a page table entry is set to 0 by the OS when the page is loaded to memory and the page table initialized. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine. This bit is used by the page replacement algorithm of the OS.  </li>
-                   <li><b>Valid bit </b> - This bit is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. </li>
-                 
+                   <li><b>Valid bit </b> - This bit `is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. </li>
+                 <li><b>Write bit </b> - This bit `is set to 1 by the OS if the page can be written and is set to 0 otherwise. </li>
                   
                   </ul>
                   <br>
