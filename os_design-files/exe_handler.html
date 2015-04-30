@@ -113,15 +113,15 @@
                <br>   
                <p>Arguments : None</p>
                <p>Return value : None</p>
-               <p><i>Description</i> : If a process generates an illegal instruction or an invalid address (outside its virtual address space) or do a division by zero (or other faulty conditions which are machine dependent), the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it (or resources locked by it) and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
-               <p>The exception handler is also invoked when a page required by the process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
-               <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html" target="_blank">Process Table</a>.</p>
-               <p>Kernel mode flag is set upon entering the system call and reset while exiting.</p>
+               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) other faulty conditions which are machine dependent, the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it, resources locked by it and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
+               <p>The exception handler is also invoked when a page required by a process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
+               <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html#per_page_table" target="_blank">Page Table</a>.</p>
+               <p>Kernel mode flag must be set upon entering the system call and reset before returning.</p>
                
                <br>
              <div><h4>Algorithm:</h4></div>
             
-             <p><b>If</b> the exception is not caused by a page fault or it is caused by a reference to an invalid address &nbsp;&nbsp; /* Check the Exception Cause registers */ </p>
+             <p><b>If</b> the exception is not caused by a page fault &nbsp;&nbsp; /* Check the Exception Cause registers */ </p>
              <p style="text-indent: 4em;">Display the cause and exit the process &nbsp;&nbsp; /* Invoke the <a href="exit.html" target="_blank">Exit System Call</a>. */</p> 
              <p>/* Exception is due to page fault */</p>
              <p>Using the Exception registers, find the <a href="process_table.html#per_page_table" target="_blank">page table</a> entry of the page causing the exception.</p>
