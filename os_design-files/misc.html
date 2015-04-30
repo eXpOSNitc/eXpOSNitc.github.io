@@ -116,7 +116,7 @@
              <p><i>Description</i>: Shutdown system call terminates all processes and halts the machine. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in Disk Status Table */</p>
+             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
              <p style=" text-indent: 4em;"> Change the state of the process to WAIT_DISK and call the scheduler.</p>
              <p> <b>endwhile</b></p>
              <p>/* The following store operations are not done asynchronously */</p>
@@ -139,7 +139,7 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Shell System Call</h2>
+              <h2 class="wow fadeInLeftBig">Shell Process</h2>
                <br>
                <br>                                      
              
@@ -151,6 +151,7 @@
              <div><h4>Algorithm:</h4></div>
              <p><b>while</b> 1 <b>do</b></p>
              <p style="text-indent: 4em;"> Get the program to be executed using read system call </p>
+             <p style="text-indent: 4em;"> if the shutdown instruction is received, invoke shutdown system call. </p>
              <p style="text-indent: 4em;"> childPID = fork(); </p>
              <p style="text-indent: 4em;"> <b>If</b> (childPID == 0) &nbsp;&nbsp;/*Only child process will do the exec */</p>
              <p style="text-indent: 8em;"> Execute the program given by read.</p>
@@ -171,13 +172,13 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 class="wow fadeInLeftBig">Idle System Call</h2>
+              <h2 class="wow fadeInLeftBig">Idle Process</h2>
                <br>
                <br>                                      
 
              
                                                 
-             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 0.</p>
+             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 0.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>while</b> 1 <b>do</b></p>
