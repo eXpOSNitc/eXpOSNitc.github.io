@@ -113,7 +113,7 @@
                <br>   
                <p>Arguments : None</p>
                <p>Return value : None</p>
-               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) other faulty conditions which are machine dependent, the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it, resources locked by it and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
+               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) causes other faulty conditions which are machine dependent, the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it, resources locked by it and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
                <p>The exception handler is also invoked when a page required by a process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
                <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html#per_page_table" target="_blank">Page Table</a>.</p>
                <p>Kernel mode flag must be set upon entering the system call and reset before returning.</p>
@@ -136,7 +136,7 @@
  <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
 
              <p style="text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block to the memory page found above</a>. &nbsp;&nbsp;/* Disk free List is updated by <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> .*/</p>
-              <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+              <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.&nbsp;&nbsp; /* Wait for the disk transfer to complete */</p>
              <p>In the page table entry, set the Page Number field to the number of the page found above and auxiliary information to referenced and valid. </p>
   
              <p>Return to the user process.</p>
