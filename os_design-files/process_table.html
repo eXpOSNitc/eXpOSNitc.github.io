@@ -253,8 +253,8 @@
  
         <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>Reference bit </b>- The reference bit for a page table entry is set to 0 by the OS when the page is loaded to memory and the page table initialized. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine. This bit is used by the page replacement algorithm of the OS.  </li>
-                   <li><b>Valid bit </b> - This bit `is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. </li>
-                 <li><b>Write bit </b> - This bit `is set to 1 by the OS if the page can be written and is set to 0 otherwise. </li>
+                   <li><b>Valid bit </b> - This bit is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. The OS expects the architecture to generate a page fault if any process attempts to access an invalid page.  </li>
+                 <li><b>Write bit </b> - This bit is set to 1 by the OS if the page can be written and is set to 0 otherwise. The OS expects the architecture to generate an exception if any process attempts to modify a page whose write bit is not set. </li>
                   
                   </ul>
                   <br>
