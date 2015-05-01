@@ -234,7 +234,7 @@ Example: program.xsm</p>
                         <div class="panel panel-default wow fadeInLeft">
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+                              <a data-toggle="collapse" href="#collapse4">
                                 <span class="fa fa-check-square-o"></span>Low Level System Call Interface
                               </a>
                             </h4>
@@ -429,8 +429,44 @@ Associated with each system call, there is a system call number and interrupt ro
                         
                       </div>
                     </div>
-               
-                  
+               <!-- start-->
+                  <div id="lib_interface">
+                        <div class="panel panel-default wow fadeInLeft">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#collapse43">
+                                <span class="fa fa-check-square-o"></span>eXpOS Runtime Library Interface
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse43" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <br>
+                                <br>
+                               <p>The library region of eXpOS consists of two parts, viz, the <b>unified system call interface</b> and <b>dynamic memory management functions</b>. A page is allotted to each part, i.e the first page to the system call interface and the second page to the memory management functions.</p> 
+                               
+                               
+                               <h3>Unified System Call Interface</h3>
+                               
+                               <p>When a user program invokes a system call, the control is first transferred to the system call interface, which would invoke the corresponding interrupt service routine. The system call interface demands that the following information is passed to it through the stack.</p>
+                               
+<center>                        <img src="img/system_call_interface_stack.png"></center>
+                               
+                               <h3>Dynamic Memory Management Functions</h3>
+                               
+                                <p>The two functions provided by eXpOS for dynamic memory management are alloc and free.</p>
+                               
+								<p>alloc : It takes no argument. It allocates 8 contiguous words in the memory and returns the memory address of the first word allocated.</p>
+								
+								<p>free : It takes as argument a variable name, which must be a pointer to a memory location and deallocates the memory allocated to the variable.</p>
+
+<center>                        <img src="img/memory_management.png"></center>
+
+                               </div>
+                          </div>
+                        </div>
+                        </div>
+               <!--end-->
                 </div>
               </div>
             </div>
