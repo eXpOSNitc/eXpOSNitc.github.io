@@ -453,7 +453,7 @@ Associated with each system call, there is a system call number and interrupt ro
                                
                             <h3>Unified System Call Interface</h3>
                                
-                               <p>When a user program invokes a system call, the control is first transferred to the system call interface, which would invoke the corresponding interrupt service routine. The system call interface demands that the following information is passed to it through the stack.</p>
+                               <p>The library routine is linked to <i>virtual address0</i> of the address space of a process by the oS loader and requires four arguments ( system call number and three arguments to the system call) to be passed through the stack. The routine invokes the corresponding low level system call and returns to the user program the return value of the system call through the stack.</p>
                                
                                <center>                        <img src="img/system_call_interface_stack.png"></center>
                                
