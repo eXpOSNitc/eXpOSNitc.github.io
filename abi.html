@@ -124,8 +124,7 @@
 The <b>file format</b> to be followed for creating executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent.  
 </li>
 <li>A <b>low level system call interface</b> which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent.</li>
-<li>The <b>eXpOS runtime library interface</b> provides a layer of abstraction between the low level system call interface and the application program
-by providing a unified interface for all system calls, hiding low level interrupt details from the application.  (Applications however, may choose to bypass this layer and directly invoke the low level system calls.)  In addition to the system call interface, application level dynamic memory allocator and deallocator functions are also part of the eXpOS library. </li>
+<li>The <b>eXpOS runtime library interface :</b> The eXpOS runtime library interface is a set of user level routines which provides a layer of abstraction between the low level system call interface and the application program by providing a unified interface for all system calls, hiding low level interrupt details from the application.  (Applications however, may choose to bypass this layer and directly invoke the low level system calls.)  In addition to the system call interface, application level dynamic memory allocator and deallocator functions are also part of the eXpOS library. </li>
 </ol></p>
               </div>
 
@@ -264,7 +263,7 @@ Example: program.xsm</p>
                                 
 </pre>
 <br>
-                                <p>The following figure shows the data stored in process stack before an INT instruction. </p>
+                                <p>The following figure shows the data stored in process stack just before an INT instruction. </p>
 <center>                        <img src="img/system_call_stack1.png"></center>
                                 
                                 <p>The INT instruction in XSM will push the value of IP + 2 on to the stack. This is the address of the instruction immediately following the INT instruction in the user program. Each instruction is 2 words, hence IP is incremented by 2. Upon execution of the IRET instruction from the system call, execution resumes from this value of IP. The INT instruction changes mode from <b>User</b> mode to <b>kernel</b> mode and passes control to the Interrupt Routine corresponding to the system call. </p>
@@ -416,9 +415,15 @@ Associated with each system call, there is a system call number and interrupt ro
   <tr>
 	  <td>SemUnLock</td>
 	  <td>20</td>
-          <td>11</td>	
+      <td>11</td>	
   </tr>
   
+    <tr>
+	  <td>Exam</td>
+	  <td>99</td>
+      <td>14</td>	
+  </tr>
+
 </table>
             <p>For details on the specification of the system calls, click <a href="os_spec-files/systemcallinterface.html" target="_blank">here</a></p>
 
