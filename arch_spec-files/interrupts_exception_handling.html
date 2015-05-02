@@ -140,12 +140,12 @@
 		 E.g. :-<br> 	
 		 MOV 4  R0,<br>
 		 MOV IP  4  , when executed in user mode.<br>
-		 <br><br>
-		 <li><b>Page Fault </b>- Occurs when the page accessed by the process is not available in the memory. </li>
+		 <br>
+		 <li><b>Page Fault </b>- Occurs when the page accessed by the process is not available in the memory. See <a href="paging_hardware.html" target="_blank" >Paging Hardware</a></li>
 		 <br>                  
 		 <li><b>Arithmetic exception </b>- Occurs when the divisor is 0. </li>
 		 <br>                  
-		 <li><b>Illegal Write </b>- Occurs when the prcoess tries to write into pages whose Write access bit is not set.</li>
+		 <li><b>Illegal Write </b>- Occurs when the prcoess tries to write into pages whose Write access bit is not set in the page table (See <a href="paging_hardware.html" target="_blank" >Paging Hardware</a>).</li>
 		 <br>
 </ul>
 
@@ -173,7 +173,7 @@
 <li>5. <b>Exception Memory Address (EMA)</b> : Exception Memory Address register is relevant only in the case of illegal memory access. The illegal
 memory which was tried to be accessed is stored in the register. This field is relevant only when the address referred to is outside the range 0 - 512*(PTLR-1).</li>
 </ul>  
-
+<br>
 <h4><b>Software Interrupts</b></h4>
 <p>Software Interrupts (traps) are a mechanisms by which user mode programs can transfer control the code that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available(Interrupt 4 - Interrupt 18).</p>    
 
