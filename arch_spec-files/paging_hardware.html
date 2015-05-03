@@ -162,7 +162,7 @@
 
 <p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit must be set to 1 if the first word of this entry corresponds to a valid physical page number. Its  value is set to 0 if the entry is invalid. The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>.</p>
 
-<p><b>Write Permission Bit (W)</b>: This bit is set if the user mode program is permitted to write into the page. Otherwise this bit is set to 0.</p>
+<p><b>Write Permission Bit (W)</b>: This bit must be set to 1 if the user mode program is permitted to write into the page. Otherwise this bit must be set to 0. If a user mode program tries to modify a page whose Write Permision bit is set to 0, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>.</p>
 
 <p><b>Dirty Bit (D)</b>: This bit is set to 1 by the machine if an instruction modifies the contents of the page.</p>
 
