@@ -172,13 +172,12 @@ You can read more about the XSM instruction set <a href="virtual_machine_spec.ht
 <br>
 <br>
 <p><b>Shared library</b> can be shared by more than one executable file. The maximum size of this memory region is X_LSIZE.</p>
-<p>
-NOTE : eXpOS assumes that routines for dynamic memory allocation are loaded into the shared library region. The eXpOS implementation for the XSM architecture discussed here sets X_LSIZE to 1024 words.  Thus the shared library will be loaded into the region between
+
+<p>NOTE : eXpOS assumes that routines for unified system call interface and dynamic memory allocation are loaded into the shared library region. The eXpOS implementation for the XSM architecture discussed here sets X_LSIZE to 1024 words.  Thus the shared library will be loaded into the region between
 memory addresses 0 and 1023 in the address space of the process.</p>
 
 <p><b>Heap</b> is the portion of the address space of a process reserved as the memory pool from which dynamic memory allocation
-is done by the allocator routines in the shared library (for example, memory allocated via malloc in C). The maximum size of this memory region is X_HSIZE. Library functions access this portion of memory for dynamic memory allocation and deallocation.   The eXpOS execution semantics specify that when a process executes the Fork system call, this region will be shared between the parent process and the child process. The eXpOS implementation for the XSM architecture discussed here  sets X_HSIZE to 1024 words. Thus the heap region will be between
-memory addresses 1024 and 2047 in the address space of the process.</p></p>
+is done by the allocator routines in the shared library (for example, memory allocated via malloc in C). The maximum size of this memory region is X_HSIZE. Library functions access this portion of memory for dynamic memory allocation and deallocation.   The eXpOS execution semantics specify that when a process executes the Fork system call, this region will be shared between the parent process and the child process. The eXpOS implementation for the XSM architecture discussed here  sets X_HSIZE to 1024 words. Thus the heap region will be between memory addresses 1024 and 2047 in the address space of the process.</p>
 
 <p><b>Code</b> contains the header and code part of the XEXE executable file, which is loaded by the eXpOS loader from the file system when the Exec system call is executed.  The first eight words of the executable file contains the header. The rest of the code region contains the XSM instructions. The total size of code section cannot exceed X_CSIZE.  The eXpOS implementation for the XSM architecture discussed here  sets X_CSIZE to 1024 words. Hence, the code region will be between memory addressess 2048 and 3071 in the address space of the process.</p>
 
