@@ -108,14 +108,15 @@
                 <h2 class="wow fadeInLeftBig">XSM Paging Hardware</h2>
                 <br/>
                 <br/>
-                <p> The hardware <a  href="http://en.wikipedia.org/wiki/Paging" target="_blank" >paging</a> scheme of XSM maps the virtual address space of a user mode program to the physical address space of the machine. Read the <a  href="../virtual_machine_spec.html" target="_blank" >XSM Virtual Machine Specification</a> for an understanding of Virtual machine model provided by XSM before proceeding further.</p>
+                <p> The hardware <a  href="http://en.wikipedia.org/wiki/Paging" target="_blank" >paging</a> scheme of XSM maps the virtual address space of a user mode program to the physical address space of the machine. Read the <a  href="../virtual_machine_spec.html" target="_blank" >XSM Virtual Machine Model</a> for an understanding of Virtual machine model provided by XSM before proceeding further.</p>
                 
                 <br><br>
                    
                 <h4><b>Page Table</b></h4>
-                <p>Every user mode program has an associated page table which maps its virtual address space to the  machine's physical address space. The address of Page Table of the user mode program currently in execution must be stored in the page table base register(PTBR) and the number of entries in this Page Table must be stored in the page table length register(PTLR) for the hardware address translation to work.</p>
+                <p>Every user mode program has an associated page table which maps its virtual address space to the  machine's physical address space. The address of the Page Table of the user mode program currently in execution must be stored in the page table base register(PTBR) and the number of entries in this Page Table must be stored in the page table length register(PTLR) for the hardware address translation to work.</p>
                 
                 <p>The structure of a Page Table is shown below.</p>
+                <br>
                 <table class="table table-bordered" style="width: auto !important;margin : 0 auto;">
                     <tr>
                         <td style="border: 1px solid black">
@@ -148,6 +149,7 @@
                         </td>
                     </tr>    
                 </table>
+                <br>
                 <p>Each Page Table stores the physical page numbers corresponding to all the logical pages of a user mode program. The logical page numbers of a user mode program can vary from 0 to MAX_NUM_PAGES - 1. Therefore, each user mode program has a Page Table with MAX_NUM_PAGES entries. The current version of XSM sets MAX_NUM_PAGES to 8.</p>  
 
 <p>The entry in the page table for each logical page contains two words. The first word must be set to the physical page number in the memory where the logical page is actually loaded. In this case, the page table entry is said to be <b>valid</b>. If the page has not been loaded to the memory, the page table entry is said to be <b>invalid</b>.</p>
