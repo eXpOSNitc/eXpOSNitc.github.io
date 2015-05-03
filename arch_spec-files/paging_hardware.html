@@ -225,7 +225,7 @@
 </tr>
 <tr>
     <td>72</td>
-    <td>1111</td>	
+    <td>1110</td>	
 </tr>
 <tr>
     <td>-1</td>
@@ -240,6 +240,16 @@
 <p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 5 ] = first word of the 6th entry in page table = 48</p>
 <p style="text-indent:5em">Offset 	= 3532%512 = 460</p>
 <p style="text-indent:5em">Physical Address	= 48 * 512 + 460 = 25036</p>
+
+
+<p>As another example, suppose the machine runs in user mode with IP register pointing to the virtual address 40, and this memory contains the machine instruction MOV R0,[1032]. Then, since the memory address 1032 will be resolved as follows:</p>
+
+<p style="text-indent:5em">Logical page number = 1032/512=3.</p>
+
+<p>Since the valid bit is set to 0, in the page table, the page is not physically present in the memory. Hence, the hardware will generate a page fault exception with the exception flag registers set as the following:</p>
+
+EIP : 40 (Virtual IP address), EPN: 03 (exception page number), EC: 0 (exception cause - page fault), EVA : $$$$. EMA: $$$$.</p>
+  
   
 </div>
 
