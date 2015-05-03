@@ -148,11 +148,11 @@
                         </td>
                     </tr>    
                 </table>
-                <p>Each Page Table stores the physical page numbers corresponding to every logical page of the corresponding user mode program. The logical page numbers of a user mode program can vary from 0 to MAX_NUM_PAGES - 1. Therefore, each user mode program has MAX_NUM_PAGES entries in the page table. The current version of XSM sets MAX_NUM_PAGES to 8.</p>  
+                <p>Each Page Table stores the physical page numbers corresponding to all the logical pages of a user mode program. The logical page numbers of a user mode program can vary from 0 to MAX_NUM_PAGES - 1. Therefore, each user mode program has a Page Table with MAX_NUM_PAGES entries. The current version of XSM sets MAX_NUM_PAGES to 8.</p>  
 
-<p>Once a page is loaded, the first word of the corresponding Page Table entry contains the physical page number where the data specified by the logical address resides in the memory.</p>
+<p>The entry in the page table for each logical page contains two words. The first word must be set to the physical page number in the memory where the logical page is actually loaded. In this case, the page table entry is said to be <b>valid</b>. If the page has not been loaded to the memory, the page table entry is said to be <b>invalid</b>.</p>
 
-<p>The second word of each page table entry contains auxiliary information. The first four bits of auxiliary information are reserved as reference (R) bit, valid/invalid (V) bit, write permision (W) bit and dirty (D) bit . The remaining bits are reserved for future enhancements. The details of bits in Auxiliary information is given below.</p>
+<p>The second word in a page table entry stores a sequence of flag bits storing information regarding whether the page a) is <b>valid</b> or not b) is <b>read only/read write</b>, c) has been <b>referenced</b> by the program after being loading into the memory and d) has been modified after loading (<b>dirty</b>). The layout of this word is given below:</p>
 
 <center><img src="../img/aux_info.png"></center>
 
