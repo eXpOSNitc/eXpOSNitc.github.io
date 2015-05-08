@@ -134,6 +134,7 @@
              <p><b>If</b> the page table entry found above contains a block number &nbsp;&nbsp; /* The page is stored in the disk */</p>
              <p style=" text-indent: 4em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
  <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+ <p style=" text-indent: 4em;"><b>endwhile</b></p>
 
              <p style="text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block to the memory page found above</a>. &nbsp;&nbsp;/* Disk free List is updated by <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> .*/</p>
               <p style=" text-indent: 4em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.&nbsp;&nbsp; /* Wait for the disk transfer to complete */</p>
