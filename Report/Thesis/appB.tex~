@@ -1,0 +1,159 @@
+\chapter{Bison Specifications used}
+\label{app2}
+In this section the bison specifications used to parse the intermediate code and the machine description files are given. File inclusion, variable declarations etc can be given between \%\{ and \%\}.  \% tokens represents the tokens returned by the lexical analyzer. \%left is used to denote that those operators are left associative. The priority of the operators increases in downward direction. That is $\star$, /, \% have higher priority. \%start denotes the start symbol of the grammar. The grammar rules are given between \%\% and \%\%. 
+\section{Grammar for Parsing Intermediate Code}
+\begin{verbatim}
+%{
+  # include <stdio.h>
+  ...
+%}
+                                                                                                            
+%token       array call char1 code1 double1 float1 function goto1 if1
+             int1 main1 param symb table strng num id lt gt le ge
+             eq ne
+%left           '+' '-'
+%left           '*' '/' '%'
+                                                                                                            
+%start          s
+                                                                                                            
+%%
+s               :fundecls { printf ("SYNTAX SUCCESS\n"); }
+                ;
+fundecls        :fundecls fundecl
+                |fundecl
+                ;
+fundecl         :function fname stab cod
+                ;
+fname           :main1
+                |id
+                ;
+stab            :symb table idlsts
+                ;
+idlsts          :idlsts idlst
+                |
+                ;
+idlst           :num '.' id ',' typs
+                ;
+typs            :typ
+                |typ ',' array ',' num
+                ;
+typ             :int1
+                |char1
+                |float1
+                |double1
+                ;
+cod             :code1 stmtlst
+                ;
+stmtlst         :stmtlst num '.' stmt
+                |
+                ;
+stmt            :as
+                |cjs
+                |ujs
+                ;
+as              :var '=' exp ';'
+                ;
+var             :id
+                |id '[' exp ']'
+                ;
+exp             :var
+                |exp '+' exp
+                |exp '-' exp
+                |exp '*' exp
+                |exp '/' exp
+                |exp '%' exp
+                |'(' exp ')'
+                |num
+                ;
+cjs             :if1 '(' cexp ')' num ';'
+                ;
+cexp            :lxp
+                |as
+                |exp
+                ;
+lxp             :exp lop exp
+                ;
+lop             :lt
+                |gt
+                |le
+                |eq
+                |ne
+                ;
+ujs             :goto1 num ';'
+                ;
+                                                                                                            
+%%
+\end{verbatim}
+
+\section{Grammar for Parsing machine.md}
+\begin{verbatim}
+%{
+  # include <stdio.h>
+  ......
+%}
+                                                                                                            
+%token          clobber define_insn define_memory division DI match_opnd
+                mem minus mod mult parallel plus reg set SI i_t_e
+                lab_ref ne eq lt le gt ge pc strng num id
+                                                                                                            
+%start s
+                                                                                                            
+%%
+s               : insn_tmplts {printf ("SYNTAX SUCCESS\n");}
+                ;
+insn_tmplts     : insn_tmplts insn_tmplt
+                |
+                ;
+insn_tmplt      : def_mem
+                | def_insn
+                ;
+def_mem         : '(' define_memory strng rtl_tmplt strng ')'
+                ;
+def_insn        : '(' define_insn strng rtl_tmplt strng ')'
+                ;
+rtl_tmplt       : '[' insn_typ1 ']'
+                ;
+insn_typ1       : insn_typ
+                | par_insn
+                ;
+insn_typ        : set_insn
+                | clob_insn
+                | exp
+                ;
+set_insn        : '(' set exp exp ')'
+                ;
+par_insn        : '(' parallel '[' insn_typs ']' ')'
+                ;
+insn_typs       : insn_typs insn_typ
+                |
+                ;
+clob_insn       : '(' clobber exp ')'
+                ;
+exp             :'(' d_op ':' mode exp exp ')'
+                |'(' match_opnd ':' mode  num strng ')'
+                |'(' reg ':' mode num num ')'
+                |'(' pc ')'
+                |'(' lab_ref exp ')'
+                |'(' i_t_e c_op exp exp ')'
+                ;
+d_op            : plus
+                | minus
+                | mult
+                | division
+                | mod
+                ;
+c_op            :'(' cop ':' mode exp exp ')'
+                ;
+cop             :eq
+                |ne
+                |lt
+                |le
+                |gt
+                |ge
+                ;
+mode            : SI
+                | DI
+                ;
+%%
+                                                                                                            
+\end{verbatim}

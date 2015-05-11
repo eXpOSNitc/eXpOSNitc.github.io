@@ -1,0 +1,210 @@
+\chapter{Machine Description Files}
+\label{app1}
+The machine description files (machine.md and machine.h) used for MIPS machine are given in this section.
+\section{mips.md} 
+\begin{verbatim}
+(define_memory "mem_1"
+[(plus : SI (match_opnd : SI 0 "((r,(4)))")
+            (match_opnd : SI 1 "((i,(16)))"))]
+"%1[%0]"
+)
+(define_insn "addsi3"
+[(set (match_opnd : SI 0 "reg_opnd" "((r,(4)),(r,(4)))")
+     (plus : SI (match_opnd : SI 1 "((r,(4)),(r,(4)))")
+                (match_opnd : SI 2 "((r,(4)),(i,(16)))")))]
+"@
+add \t%0,%1,%2
+addi\t%0,%1,%2")
+(define_insn "subsi3"
+[(set (match_opnd : SI 0 "((r,(4)))")
+      (minus : SI (match_opnd : SI 1 "((r,(4)))")
+                  (match_opnd : SI 2  "((r,(4)))")))]
+"sub \t%0,%1,%2")
+(define_insn "multsi3"
+[(set (match_opnd : SI 0 "((r,(4)))")
+      (mult : SI (match_opnd : SI 1 "((r,(4)))")
+                 (match_opnd : SI 2 "((r,(4)))")))]
+"mul \t%0,%1,%2")
+(define_insn "divsi3"
+[(parallel[ (set (match_opnd : SI 0 "((r,(4)))")
+      (div : SI (match_opnd : SI 1  "((r,(4)))")
+                (match_opnd : SI 2  "((r,(4)))")))
+ (clobber (reg : SI 3  64))
+ (clobber (reg : SI 4 65))
+])]
+"div \t%1,%2;mflo\t%0")
+(define_insn "modsi3"
+[(parallel[
+ (set (match_opnd : SI 0 "((r,(4)))")
+      (mod : SI (match_opnd : SI 1 "((r,(4)))")
+                (match_opnd : SI 2 "((r,(4)))")))
+ (clobber (reg : SI 3 64))
+ (clobber (reg : SI 4 65))])]
+"div \t%1,%2;mfhi\t%0")
+(define_insn "movsi2"
+[(parallel [
+ (set (match_opnd : SI 0 "((m,(1)),(r,(4)),(r,(4)),(r,(4)))")
+      (match_opnd : SI 1 "((r,(4)),(m,(1)),(r,(4)),(i,(16)))"))
+ (clobber (reg : SI 2 0))
+])]
+"@
+sw  \t%1,%0
+lw  \t%0,%1
+or  \t%0,%1,$0
+ori \t%0,$0,%1")
+(define_insn "branch"
+[(set (pc) (label_ref 
+      (match_opnd : SI 0 "((l,(16)))"))
+)]
+"b   \t$L%0")
+(define_insn "beq_si"
+[(set (pc) (if_then_else (eq : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(r,(4)))"))
+      (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)))"))
+      (pc)
+))]
+"@
+beq \t%0,$0,$L%2
+beq \t%0,%1,$L%2")
+(define_insn "bne_si"
+[(set (pc) (if_then_else (ne : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(r,(4)))"))
+      (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)))"))
+      (pc)
+))]
+"@
+bne \t%0,$0,$L%2
+bne \t%0,%1,$L%2")
+(define_insn "blt_si"
+[(parallel [
+(set (pc) (if_then_else (lt : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(i,(16)),(r,(4)))"))
+     (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)),(l,(16)))"))
+     (pc)))
+(clobber (match_opnd : SI 3 "((r,(4)),(r,(4)),(r,(4)))"))]
+)]
+"@
+bltz\t%0,$L%2
+slti\t%3,%0,%1;bne \t%3,$0,$L%2
+slt \t%3,%0,%1;bne \t%3,$0,$L%2")
+(define_insn "ble_si"
+[(parallel [
+(set (pc) (if_then_else (le : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(r,(4)))"))
+     (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)))"))
+     (pc)))
+(clobber (match_opnd : SI 3 "((r,(4)),(r,(4)))"))]
+)]
+"@
+blez\t%0,$L%2
+slt \t%3,%1,%0;beq \t%3,$0,$L%2")
+(define_insn "bgt_si"
+[(parallel [
+(set (pc) (if_then_else (gt : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(r,(4)))"))
+     (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)))"))
+     (pc)))
+(clobber (match_opnd : SI 3 "((r,(4)),(r,(4)))"))]
+)]
+"@
+bgtz\t%0,$L%2
+slt \t%3,%1,%0;bne \t%3,$0,$L%2")
+(define_insn "bge_si"
+[(parallel [
+ (set (pc) (if_then_else (ge : SI
+        (match_opnd : SI 0 "((r,(4)),(r,(4)))")
+        (match_opnd : SI 1 "((i,(16),0),(r,(4)))"))
+      (label_ref (match_opnd : SI 2 "((l,(16)),(l,(16)))"))
+      (pc)))
+ (clobber (match_opnd : SI 3 "((r,(4)),(r,(4)))"))]
+)]
+" "
+"@
+bgez\t%0,$L%2
+slt \t%3,%0,%1;beq \t%3,$0,$L%2")
+\end{verbatim}    
+\section{mips.h}
+\begin{verbatim}  
+# define BITS_PER_UNIT 8
+# define MACHINE_BYTES 4
+# define MACHINE_OP_MOD "SI"
+/* Size in bytes of data types */
+# define INT_SIZE 4
+# define FLOAT_SIZE 4
+# define CHAR_SIZE 1
+/* mode */
+# define INT_MOD "SI"
+# define FLOAT_MOD "SF"
+# define CHAR_MOD "QI"
+/* Alignment of data types */
+# define INT_ALIGN 4
+# define FLOAT_ALIGN 4
+# define CHAR_ALIGN 1
+# define BIGGEST_ALIGNMENT 8
+/* Register information */
+# define FIRST_PSEUDO_REG 67
+# define GP_REG_FIRST 0
+# define GP_REG_LAST 31
+# define GP_REG_NUM (GP_REG_LAST - GP_REG_FIRST + 1)
+                                                                                                            
+# define SP_REG (GP_REG_FIRST + 29)
+# define FP_REG (GP_REG_FIRST + 30)
+# define STACK_GROWS_DOWN 1
+# define SP_OFFSET 0
+# define LOC_REF_BY FP_REG
+/* if frame not grows downward START_FP_OFFSET is set to
+the start of the first local variable else to
+the end of first local variable */
+                                                                                                            
+# define START_FP_OFFSET 0
+# define STACK_ALIGNMENT 4
+                                                                                                            
+# define FIXED_REGS \
+{        \
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
+        0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1, \
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
+        1,1,1 \
+}
+# define REG_NAMES \
+{ \
+        "$0","$1","$2","$3","$4","$5","$6","$7",         \
+        "$8","$9","$10","$11","$12","$13","$14","$15",   \
+        "$16","$17","$18","$19","$20","$21","$22","$23", \
+        "$24","$25","$26","$27","$28","$29","$30","$31", \
+        "$32","$33","$34","$35","$36","$37","$38","$39", \
+        "$40","$41","$42","$43","$44","$45","$46","$47", \
+        "$48","$49","$50","$51","$52","$53","$54","$55", \
+        "$56","$57","$58","$59","$60","$61","$62","$63", \
+        "$64","$65","$66"  \
+}
+/* Register classes */
+# define g0_ct 1
+# define g0_set 1
+# define g0 {0}
+# define g1_ct 1
+# define g1_set 1
+# define g1 {64}
+# define g2_ct 1
+# define g2_set 1
+# define g2 {65}
+# define g3_ct 2
+# define g3_set 1
+# define g3 {64,65}
+# define g4_ct 32
+# define g4_set 1
+# define g4 {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, \
+             16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}
+# define g5_ct 32
+# define g5_set 1
+# define g5 {32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47, \
+             48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63}
+# define MAX_REG_GROUPS 6
+# define cod_lab_syn "$L%0:"
+\end{verbatim}  

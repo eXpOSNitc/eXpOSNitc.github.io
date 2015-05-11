@@ -1,0 +1,49 @@
+\chapter{Introduction}
+\label{chap1}
+%\section{Introduction}
+Compiler Design has been an active topic of research and development since the mid-1950's. Compilers are software systems that translate programs written in high level languages into equivalent programs in machine language or assembly language of a target machine for execution on a computer. The process of compilation has been broadly classified into two phases. 
+\begin{itemize}
+\item {\bf Front-end} consisting of lexical analysis, syntax analysis, semantic analysis and intermediate code generation
+\item {\bf Back-end} consisting of code optimization and code generation
+\end{itemize}
+Unfortunately, systems like compilers, assemblers etc depend intrinsically on the processor architecture. The development platform has to be retargetted to the new processor architecture and this task is by no means trivial. \\
+Compiler component generators, such as lexical analyser generators and parser generators have long been used to facilitate the construction of compilers. The field of retargetable compilation has evolved to the point where a machine description can be used to model a processor micro-architecture, and a compiler can be generated automatically from such an architecture. Several sorts of issues to be considered in code generation are \\
+\begin{enumerate}
+\item Register addressing and instruction architecture of the target machine, \\
+\item Software conventions that must be observed, \\
+\item Method for binding variables to memory locations or symbolic registers, \\
+\item Structure and characteristics of the intermediate language, \\
+\item Implementations of intermediate language operators that do not correspond directly to target-machine instructions, \\
+\item Method for translating from intermediate code to machine code, and \\
+\item The target code level i.e. whether assembly code, relocatable or directly linkable code is required. 
+\end{enumerate}
+\section{Previous Works}
+While hand-crafted code generators are effective and fast, they have the disadvantage of being more difficult to modify and port than code generators that are automatically generated. Retargetable compilation has been an active area of research and development in the last few years. Several approaches have been developed that construct a code generator from a machine description. Some of those approaches are described below. 
+\subsection{Graham-Glanville method}
+In this method machine operations are represented by rules similar to those in a context-free grammar, along with corresponding machine instruction templates. Intermediate code is a Polish-prefix code string which represents a preorder traversal of a sequence of trees. When a rule matches a substring of a Polish-prefix intermediate code string and its associated semantic constraints are met, the part matched is replaced by an instantiation of the left-hand symbol of the rule and a corresponding instantiation of the instruction template is emitted. For example, Graham-Glanville machine-description rules and corresponding SPARC instruction templates can be shown as. \\
+\hspace*{3cm} $\; r.3 \Rightarrow +\ r.1\ k.2\ $ \{ add $r.1, k.2, r.3$ \}   \\
+It represents addition of the contents of a register and a constant. A Graham-Glanville code generator consists of three components, namely, intermediate-language transformations, the pattern matcher, and instruction generation. The first component transforms, the output of a compiler front end into a form suitable for pattern matching. For example, source-language operators not representable by machine operations are transformed into subroutine calls, and calls are transformed into sequences of explicit state-changing instructions. The second component does the pattern matching, determining what sequence of reductions is appropriate to consume an input string of intermediate code. The third, which is meshed with the second in its execution, actually generates an appropriate sequence of instructions and performs register allocation. 
+\subsection{Attribute- or affix-grammar method}
+This method presents a more powerful, and more complex approach to code generation from Polish-prefix intermediate code, developed by Ganapathi and Fischer, which adds semantics to the code-generation rules through the use of attributes. For the grammar variables, inherent attributes are denoted by preceding them with a down arrow ``$ \downarrow $'' and synthesized attributes with an up arrow ``$ \uparrow $ ''. Attribute values are written after the arrows. In addition to passing values up and down in code-generation process, attributes are used to control code generation and to compute new attribute values and produce side effects. Control is achieved through attributes written in capitalized italics that represent predicates. The most important side effect in an affix-grammar code generator is, of course, emitting code. For example, addition of the contents of a register and a constant can be shown as :\\
+$ r \uparrow {\mathbf r2} \Rightarrow \ + \ r \downarrow {\mathbf r1} \ \ k \downarrow {\mathbf k1} $ \ \ \ \  {\textit IsShort} (k1) \ \ \ \{ {\tt ALLOC} (r2), \\ 
+\hspace*{5cm} {\tt EMIT3} (``add'', r1, k1, r2)\} \\
+It is to be read as follows : Given a Polish-prefix string of the form $+ r k$ with the register number having the value {\em r1} and the constant {\em k1}, if the constant satisfies the predicate {\em IsShort}(k1), then allocate a register r2 to hold the result, emit the three operand add instruction obtained by substituting the values associated with the registers and the constant, reduce the string to r, and pass the value r2 upward as a synthesized attribute of the nonterminal r. Affix grammars can be used to do storage binding, to integrate several kinds of peephole optimizations into code generation, and to factor machine-description rule sets so as to significantly reduce their size. 
+
+\section{Present Approach}
+In this work a technique has been developed to make the code generation phase of a compiler automatic provided, a machine description for the target machine is available in the required format. 
+The developed system takes the machine description for a target machine as input and it generates all machine dependent functions of a code generator. The generated programs together with other machine independent functions generate the target code, by taking the intermediate code produced by the compiler front-end as input. The machine description used is similar to that of GNU C Compiler (GCC). Machine description includes a {\em machine.md} file, {\em machine.h} file and a {\em machine.c} file. The {\em machine. md} file contains a sequence of instruction patterns for each small operation which occurs as part of the intermediate code. Each instruction pattern has a standard pattern name specifing the operation done by that instruction pattern, an RTL template for RTL generation, and an ouput template specifing the assembly code to be produced for that operation. 
+The {\em machine. h} file contains macro definitions which specifies other machine related informations such as storage layout, source language data type layout, register usage and stack layout. 
+The {\em machine. c} contains some machine related functions. \\
+The code generator produced by this system supports a subset of C language consisting of integer arithmetic-logic, data transfer, and control transfer operation. In this work, we concentrate on 32 bit RISC machines. The code genertaed for MIPS32 machine has been executed successfully using SPIM simulator. A SPARC machine description has been given as input to the automatic code generator and the code generator program has been generated successfully. The code generated for SPARC machine has been checked manually.  
+\section{Organization of The Thesis}
+\begin{itemize}
+\item Chapter 2 gives an overview of GCC.
+\item Chapter 3 explains the RTL representation used in our work.
+\item Chapter 4 describes the design of the work and the important linux utilities (Flex and Bison) used in our work.
+\item Chapter 5 describes each machine description files in detail.
+\item Chapter 6 gives an idea of the intermediate code representation and its preprocessing.
+\item Chapter 7 describes how to process machine description files, mainly machine.md and machine.h files.
+\item Chapter 8 through 11 describes how each part of code generator are produced by the code generator, mainly RTL generation, register allocation and assembly code generation.
+\item Results of our work and some future directions are given in chapter 12.
+\item Chapter 13 concludes the work. 
+\end{itemize}
