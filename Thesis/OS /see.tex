@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%  see documentation for information about  %%%%%%%%%%
+%%%%%%%%%%%  the options (11pt, defaultstyle, etc.)   %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  http://www.Colorado.EDU/ITS/docs/latex/ThesisClass/  %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%	\documentclass[defaultstyle]{thesis}
+%	\documentclass[typewriterstyle]{thesis}
+% 	\documentclass[modernstyle]{thesis}
+	\documentclass[modernstyle,12pt]{thesis}
+
+% 	\documentclass[modernstyle,11pt]{thesis}
+% 	\documentclass[defaultstyle,12pt]{thesis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%    load any packages which are needed    %%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{latexsym}		% to get LASY symbols
+\usepackage{epsfig}		% to insert PostScript figures
+\usepackage{rotating}		% for sideways tables/figures
+\usepackage{eufrak}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%       all the preamble material:       %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Your title here}
+
+\author{Your name}{surname}
+
+%\otherdegrees{B.A., North Dakota State University, 1994 \\
+%	      M.S., University of Reno, 1997}
+
+\degree{\Large {$\mathfrak {Master\; of\; Technology}$}}		%  #1 {long descr.}
+	{M.Tech., Computer Science and Engineering}		%  #2 {short descr.}
+
+\dept{Department of}			%  #1 {designation}
+	{Computer Engineering}		%  #2 {name}
+
+\advisor{}{Your guide's name}			%  #1 {title}
+
+\reader{Dr. V.K. Govindan}		%  2nd person to sign thesis
+%\readerThree{Ms.~Thora Nea}		%  3rd person to sign thesis
+% \readerFour{Mr.~Alfred Remington}	%  4rd person to sign thesis
+
+\abstract{  \OnePageChapter	% one page only ??
+	Your abstract goes here}
+
+
+	}
+\acknowledgements{	\OnePageChapter	% *MUST* BE ONLY ONE PAGE!
+Your acknowledgements
+\begin{raggedright}
+\vspace*{10mm}
+\hspace*{117mm}
+\textbf{Your name}
+\end{raggedright}
+	}
+
+
+\ToCisShort	% a 1-page Table of Contents ??
+
+\LoFisShort	% a 1-page List of Figures ??
+% \emptyLoF	% no List of Figures at all ??
+
+\LoTisShort	% a 1-page List of Tables ??
+% \emptyLoT	% no List of Tables at all ??
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%       BEGIN DOCUMENT...         %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%  Weird footnotes??
+%%%%  default=\arabic; \roman, \Roman, \alph, \Alph, \fnsymbol
+%	\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%	\setcounter{footnote}{0}
+
+\begin{document}
+
+\input macros.tex
+\input ch1.tex
+\input ch2.tex
+%% all chapters can be input like this....%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%  Bibliography %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}	% or "siam", or "alpha", or "abbrv"
+				% see other styles in
+				% /usr/local/TeX/texmf/bibtex/bst
+
+\nocite{*}		% list all refs in database, cited or not.
+
+\bibliography{}		% bib database in "refs.bib"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%  Appendices %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix	% don't forget this line if you have appendices!
+\input appA.tex
+%% all appendices included in this manner%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%   THE END   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
