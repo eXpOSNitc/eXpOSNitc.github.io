@@ -983,10 +983,14 @@
 \newcommand{\th@dedicationStash}{\relax}
 \newcommand{\th@dedicationTitleStash}{\relax}
 \newcommand{\th@acknowledgementsStash}{\relax}
+\newif\if@shortLoS
 \newif\if@shortLoF
 \newif\if@shortLoT
+\newif\if@shortLoA
 \newif\if@shortToC
 \newif\if@makenoLoF
+\newif\if@makenoLoS
+\newif\if@makenoLoA
 \newif\if@makenoLoT
 \newif\if@makeDedication
 \newif\if@makeAcknowledgements
@@ -1043,7 +1047,10 @@
         \vspace*{1cm}
         \bf{A THESIS} \\\it{Submitted by}\\
         \vspace{3mm}
-        {\large\bf{\th@fwdname}}\\
+        {\large\bf{ KRUTHIKA SURESH VED B110300CS }}\\
+        {\large\bf{ SIKHA V MANOJ B110572CS}}
+and\\
+{\large\bf{ SONIA V MATHEW B110495CS}}\\
         \vspace{3mm}
         \it In partial fulfilment
         for the award of the degree of  \\
@@ -1104,11 +1111,8 @@
         \vspace*{1cm}
     \end{center}
         {\it
-This is to certify that the thesis entitled: ``{\bf\th@title}'' submitted by Sri/Smt/Ms {\bf\th@fwdname}
-to National Institute of Technology Calicut towards partial fulfillment of the requirements
-for the award of Degree of Bachelor of Technology in Computer Science Engineering
-is a bonafide record of the work carried out by him/her under my/our supervision and guidance.
-}
+This is to certify that the thesis entitled: ``{\bf\th@title}'' submitted by Sri/Smt/Ms {\bf{ KRUTHIKA SURESH VED B110300CS }},
+        {\bf{ SIKHA V MANOJ B110572CS}}, and {\bf{ SONIA V MATHEW B110495CS}} to National Institute of Technology Calicut towards partial fulfillment of the requirements for the award of Degree of Bachelor of Technology in Computer Science Engineering is a bonafide record of the work carried out by him/her under my/our supervision and guidance. }
         %This thesis entitled:} \\
         %\vspace{0.5cm}
         %{\Large\bf\th@title} \\
@@ -1214,6 +1218,14 @@ is a bonafide record of the work carried out by him/her under my/our supervision
  %       \normalfont\it{NIT Calicut}
  }
         \parbox[t]{8.5cm}{
+        \bf{Signature :}\\
+        \bf{Name :} \\
+        \bf{Reg.No:}\\
+        
+       \bf{Signature :}\\
+        \bf{Name :} \\
+        \bf{Reg.No:}\\
+        
         \bf{Signature :}\\
         \bf{Name :} \\
         \bf{Reg.No:}\\
@@ -1386,11 +1398,11 @@ is a bonafide record of the work carried out by him/her under my/our supervision
         \typeout{Making Abstract Page}
         \th@Abstractpage
         \setcounter{th@storepage}{\value{page}}
-        \typeout{Making LoS Page}
-        \th@symbolspage
-        \listofabbreviations
-        \typeout{Making LoT Page}
-        \th@LoTpage
+        %\typeout{Making LoS Page}
+        %\th@symbolspage
+        %\listofabbreviations
+        %\typeout{Making LoT Page}
+        %\th@LoTpage
         \typeout{Making LoF Page}
         \th@LoFpage
        \typeout{Making LoA Page}
@@ -1432,7 +1444,7 @@ is a bonafide record of the work carried out by him/her under my/our supervision
     \th@StoreIn{\th@dedicationTitleStash}{#1}
     \th@StoreIn{\th@dedicationStash}{#2}
 }
-\renewcommand*{\author}[2]{
+\renewcommand*{\author}[6]{
     \th@StoreIn{\th@fwdname}{#1 #2}
     \th@StoreIn{\th@revname}{#2, #1}
 }

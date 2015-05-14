@@ -1215,7 +1215,7 @@
 		\typeout{Making Acknowledgement Page}
 		\th@Acknowledgementpage
 		\typeout{Making Abstract Page}
-                %\th@Abstractpage
+                \th@Abstractpage
 		\setcounter{th@storepage}{\value{page}}
 		\typeout{Making ToC Page}
 		\th@ToCpage
