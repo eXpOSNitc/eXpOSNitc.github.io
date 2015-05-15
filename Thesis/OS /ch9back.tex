@@ -1,0 +1,541 @@
+\chapter{Algorithms Used}
+\label{chap9}
+%\section{File System calls}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/create.html}{Create System Call}}
+\begin{algorithmic}
+\REQUIRE Filename
+\ENSURE 0 (Success) or -1 (No Space for file)
+\STATE If the file is present in the system, return 0.   
+\STATE Find the index of a free entry in the Inode Table. If no free entry found, return -1.  
+\STATE Allocate the Inode Table entry to the file.
+\STATE Update the Root file by adding an entry for the new file.  
+\RETURN 0 
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/delete.html}{Delete System Call}}
+\begin{algorithmic}
+\REQUIRE Filename
+\ENSURE 0 (Success) or -1 (File not found) or -2 (File is open)
+\STATE If file is not present in Inode Table or if it is not a DATA file, return -1.
+\STATE Find the index of the file in the Inode Table.
+\STATE If File Table entry exists with the same index as found above, return -2. 
+\STATE Update Inode Table.
+\STATE Update the Root file by invalidating the root entry for the file.
+\RETURN 0 
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Open System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/open.html}{Open System Call}}
+\begin{algorithmic}
+\REQUIRE Filename
+\ENSURE File Descriptor (Success) or -1 (File not found) or -2 (Process has reached its limit of resources) or -3 (System has reached its limit of open files)
+\STATE If file is not present in Inode Table or if it is of type EXEC, return -1.
+\STATE Find the index of the Inode Table entry of the file.
+\STATE Allocate entry in Per Process Resource Table
+\IF{file is already open}
+    \STATE Get the File Table entry of the file and increment the File Open Count.
+\ELSE
+    \STATE Find a free entry in the File Table. If there are no free entries, return -3.
+\ENDIF
+\STATE Allocate the Per-Process Resource Table entry to the file.
+\STATE Update the File Table entry.
+\RETURN Index of the Per-Process Resource Table entry.
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Close System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/close.html}{Close System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor
+\ENSURE 0 (Success) or -1 (File Descriptor is invalid) or -2 (File is locked by calling process)
+\STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1   
+\STATE Get the index of the File Table entry from Per-Process Resource Table entry.
+\STATE If file is locked by the current process, return -2.   
+\STATE In the File Table Entry found above, decrement the File Open Count. If the count becomes 0, invalidate the entry.  
+\STATE Invalidate the Per-Process Resource Table entry.    
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Read System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/read.html}{Read System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor and a Buffer (a String/Integer variable) into which a word is to be read from the file
+\ENSURE 0 (Success) or -1 (File Descriptor is invalid) or -2 (File pointer has reached the end of file)
+\IF{input is to be read from terminal}
+    \STATE Wait till terminal gets the input for the current process.
+    \STATE Copy the word from the input buffer of the Process Table to the buffer passed as argument and return with 0. 
+\ENDIF
+\STATE If file descriptor does not correspond to a valid entry in Per Process Resource Table, return -1.
+\STATE Check the validity of the File pointer
+\STATE Find the block and the position in the block from which input is read.
+\WHILE{the file is locked by a process other than the current process}
+    \STATE put the process to sleep and call the scheduler.
+\ENDWHILE
+\STATE Lock the file.
+\STATE Get the buffer page number from block number.
+\WHILE{the buffer is locked by a process other than the current process}
+    \STATE put the process to sleep and call the scheduler.
+\ENDWHILE 
+\STATE Lock the buffer page.
+\IF{the buffer contains a block other than the required block}
+    \STATE Bring the block to the buffer from the disk
+\ENDIF 
+\STATE Copy the word at the offset position of the block into the buffer passed as argument and Increment lseek position.
+\STATE Unlock the buffer and wake up all processes waiting for the buffer.
+\STATE Unlock the file and wake up all processes waiting for the file.
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Write System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/write.html}{Write System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor and a Word to be written
+\ENSURE 0 (Success) or -1 (File Descriptor given is invalid) or -2 (No disk space)
+\IF{word is to be written to standard output}
+    \STATE Issue the machine instruction to output the given word and return 0.
+\ENDIF
+\STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1.
+\STATE Get the index of the File Table entry and lseek position from the Per Process Resource Table entry.
+\STATE If lseek is equal to MAX\_FILE\_SIZE - 1, return -2.  
+\STATE Find the block and position in the block to which data has to be written.
+\WHILE{the file is locked by a process other than the current process}
+    \STATE put the process to sleep and call the scheduler.
+\ENDWHILE
+\STATE Lock the file.
+\STATE Get the buffer page number from block number.
+\WHILE{the buffer is locked by a process other than the current process}
+    \STATE put the process to sleep and call the scheduler.
+\ENDWHILE 
+\STATE Lock the buffer page.
+\IF{the buffer contains a block other than the required block}
+    \STATE Bring the block to the buffer from the disk
+\ENDIF
+\STATE Copy the word passed as argument to the offset position in the buffer.  
+\STATE Set dirty bit to 1 in the Buffer Table entry and increment lseek position.
+\STATE Increment file size in the Inode Table entry and Root file entry.
+\STATE Unlock the buffer and wake up all processes waiting for buffer.
+\STATE Unlock the file and wake up all processes waiting for the file.
+\RETURN 0.   
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Seek System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/seek.html}{Seek System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor and Offset
+\ENSURE 0 (Success) or -1 (File Descriptor given is invalid) or -2 (Offset value moves the file pointer to a position outside the file)
+\STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1.
+\STATE Get the index of the File Table entry and lseek position from the Per Process Resource Table entry.
+\STATE Check the validity of the given offset
+\IF{given offset is 0}
+    \STATE Set lseek value in the Per-Process Resource Table entry to 0.
+\ELSE
+    \STATE Change the lseek value in the Per-Process Resource Table entry to lseek+offset.
+\ENDIF
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\section{Process System calls}
+
+%\subsection{Fork System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/fork.html}{Fork System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE Process Identifier to the parent process and 0 to child process (Success) or -1 (Number of processes has reached its maximum, returned to parent)
+\STATE If no free entry in the Process Table, return -1.  
+\STATE Find the index of a free entry in the Process Table and set the PID and PPID field.   
+\STATE Count the number of valid stack pages from the Page Table of the parent process.   
+\STATE If sufficient number of free pages are not present in memory, then increment the WAIT\_MEM\_COUNT in the System Status Table.
+\WHILE{sufficient number of free pages are not present in memory}
+    \STATE put the process to sleep and call the scheduler.
+\ENDWHILE
+\FOR{each stack page of the parent process}
+    \IF{the stack page is valid}
+        \STATE Allocate a free page to the child.
+        \STATE Copy the stack page of the parent into the child stack page.
+        \ELSE 
+            \STATE Share the swap block containing the stack page with the child.
+    \ENDIF
+\ENDFOR
+\STATE Construct the context of the child process.
+\STATE Set the return value to 0 for the child process.
+\RETURN The PID of the child process to the parent process.
+
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Exec System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/exec.html}{Exec System Call}}
+\begin{algorithmic}
+\REQUIRE Filename
+\ENSURE -1 (File not found or file is of invalid type)
+\STATE If file not found in system or file type is not EXEC, return -1. \STATE For each page of the current process that is swapped out, find the swap block and decrement its entry in the Disk Free List. 
+\STATE Setup code and library pages.
+\STATE Free the heap pages
+\STATE In the Process Table entry of the current process, set the Inode Index field to the index of Inode Table entry for the file.
+\STATE Close all files opened by the current process.     
+\STATE Release all semaphores held by the current process.   
+\STATE Set SP to the start of the stack region and IP to the start of the code region. 
+\RETURN
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Exit System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/exit.html}{Exit System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE None
+\STATE If no more processes to schedule, shutdown the machine.    
+\STATE Unlock and close all files opened by the current process.   
+\STATE Release all the semaphores used by the current process.     
+\STATE Wake up all processes waiting for the current process.     
+\STATE Invalidate the Process Table entry and the page table entries of the current process
+\STATE Invoke the scheduler to schedule the next process.  
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Getpid System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/proc_misc.html#getpid}{Getpid System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE Process Identifier (Success) 
+\STATE Find the PID of the current process from the Process Table.
+\RETURN the PID of current process. 
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Getppid System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/proc_misc.html#getppid}{Getppid System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE Process Identifier (Success) 
+ \STATE Find the PPID of the current process from the Process Table.
+\RETURN PPID.
+\end{algorithmic}
+\end{algorithm}
+
+%\section{System Calls for access control and synchronization}
+
+%\subsection{Wait System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/synchronization_algos.html#wait}{Wait System Call}}
+\begin{algorithmic}
+\REQUIRE Process Identifier of the process for which the current process has to wait.
+\ENSURE 0 (Success) or -1 (Given process identifier is invalid or it is the pid of the invoking process)
+\STATE If process is intending to wait for itself or for a non-existent process, return -1.    
+\STATE Change the status from (RUNNING, \_ ) to (WAIT\_PROCESS, Argument\_PID) in the Process Table.
+\STATE Invoke the Scheduler to schedule the next process.
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Signal System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/synchronization_algos.html#signal}{Signal System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE 0 (Success) 
+\STATE Wake up all processes waiting for the current process.
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{FLock System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/synchronization_algos.html#flock}{FLock System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor
+\ENSURE 0 (Success) or -1 (File Descriptor is invalid)
+\STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1.
+\WHILE{the file is locked by a process other than the current process}
+    \STATE Change the state to (WAIT\_FILE, ftindex) where ftindex is the File Table index of the locked file and call the Scheduler.
+\ENDWHILE
+\STATE Change the ULock field of the file table to PID of current process.     
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{FUnLock System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/synchronization_algos.html#funlock}{FUnLock System Call}}
+\begin{algorithmic}
+\REQUIRE File Descriptor
+\ENSURE 0 (Success) or -1 (File Descriptor is invalid) or -2 (File was not locked by the calling process)
+\STATE If file descriptor does not correspond to a valid entry in Per Process Resource Table, return -1.
+\IF{file is locked}
+    \STATE If current process has not locked the file, return -2.
+    \STATE Unlock the file.
+    \STATE Wake up all processes waiting for the file.
+\ENDIF
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+
+%\subsection{Semget System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/semaphore_algos.html#semget}{Semget System Call}}
+\begin{algorithmic}
+\REQUIRE None
+\ENSURE semaphore descriptor (Success) or -1 (Process has reached its limit of resources) or -2 (Number of semaphores has reached its maximum)
+\STATE Find the index of a free entry in Per Process Resource Table. If no free entry, then return -1.
+\STATE Find the index of a free entry in Semaphore table and increment the process count. If no free entry, return -2.
+\STATE Store the index of the Semaphore table entry in the Per Process Resource Table entry.  
+\RETURN Semaphore Table entry index.  
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Semrelease System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/semaphore_algos.html#semrelease}{Semrelease System Call}}
+\begin{algorithmic}
+\REQUIRE Semaphore Descriptor
+\ENSURE 0 (Success) or -1 (Semaphore Descriptor is invalid)
+\STATE If Semaphore descriptor is not valid or the entry in Per Process Resource Table is not valid , return -1.
+\IF{semaphore is locked by the current process}
+    \STATE Unlock the semaphore before release.
+\ENDIF
+\STATE Decrement the process count of the semaphore.
+\STATE Invalidate the Per-Process resource table entry.  
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{SemLock System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/semaphore_algos.html#semlock}{SemLock System Call}}
+\begin{algorithmic}
+\REQUIRE Semaphore Descriptor
+\ENSURE 0 (Success or the semaphore is already locked by the current process) or -1 (Semaphore Descriptor is invalid)
+\\
+\STATE If Semaphore descriptor is not valid or the entry in Per Process Resource Table is not valid , return -1.
+\WHILE{the semaphore is locked by a process other than the current process}
+    \STATE Put the current process to sleep 
+    \STATE Call scheduler
+\ENDWHILE
+\STATE Change the Locking PID to PID of the current process in the Semaphore Table.
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{SemUnLock System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/semaphore_algos.html#semunlock}{SemUnLock System Call}}
+\begin{algorithmic}
+\REQUIRE Semaphore Descriptor
+\ENSURE  0 (Success) or -1 (Semaphore Descriptor is invalid) or -2 (Semaphore was not locked by the calling process)
+\STATE If Semaphore descriptor not valid or the entry in Per Process Resource Table is not valid , return -1.
+\IF{semaphore is locked}
+    \STATE If current process has not locked the semaphore, return -2.
+    \STATE Unlock the semaphore.
+    \STATE Wake up all processes waiting for the semaphore.
+\ENDIF
+\RETURN 0
+\end{algorithmic}
+\end{algorithm}
+
+
+%\section{Hardware Interrupts and Exception Handlers}
+
+%\subsection{Timer Interrupt Handler}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/timer.html}{Timer Interrupt Handler}}
+\begin{algorithmic}
+\STATE Save the context of current process and mark it as ready.
+\STATE Increment TICK   
+\IF{free memory pages present}
+    \IF{there are sleeping processes that requires memory pages}
+        \STATE Wake up all processes that requires memory pages.
+    \ELSE
+        
+        \IF{disk is free and there are swapped processes}
+           
+            \STATE Swap in the seniormost swapped out process.
+           
+        \ENDIF
+    \ENDIF
+\ELSE
+   \IF{disk is free and there are processes that require memory pages}
+      
+            \STATE Use the modified second chance algorithm to find an unreferenced page 
+            \IF{the unreferenced page is a code page}
+                \STATE In the page table entry of the unreferenced page, store the code block number.
+            \ELSE
+                \STATE If the unreferenced page is a stack or heap page, swap the page to a free swap block in the disk.
+            \ENDIF
+            \IF{unreferenced page is pointed to by the stack pointer of the process}
+                \STATE Mark the process that owns the page as swapped out.
+            \ENDIF
+        
+   \ENDIF
+  
+\ENDIF
+\STATE Schedule the next ready process
+
+
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Disk Interrupt Handler}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/disk_interrupt.html}{Disk Interrupt Handler}}
+\begin{algorithmic}
+\STATE In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.
+\IF{load/store was issued by a process}  
+    \STATE Wake up all processes waiting for the disk.
+    \STATE If the loaded block was a swap block, decrement the corresponding Disk Free List entry.
+\ELSE
+   
+    \STATE Get the PID of the process for which the scheduler had issued the load/store instruction.
+    \IF{the disk operation was a load operation }
+        \STATE Update Disk Free List.
+        \STATE Update the Page Table of the process.
+        \STATE Mark the process as ready. 
+        \STATE Decrement SWAPPED\_COUNT in System Status Table.
+    \ELSE 
+        \STATE Update Memory Free List.
+        \STATE Update Page Table of the process.
+        \STATE Increment the MEM\_FREE\_COUNT in the System Status Table.
+    \ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Exception Handler}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/exe_handler.html}{Exception Handler}}
+\begin{algorithmic}
+\STATE If the exception is not caused by a page fault, display the cause and exit the process.
+\STATE Find the page table entry of the page causing the exception.
+\STATE If there are no free pages in the memory, then increment the WAIT\_MEM\_COUNT in the System Status Table.
+\WHILE{there are no free pages in memory}
+    \STATE Put the current process to sleep and call scheduler
+\ENDWHILE
+\STATE Find a free page in memory.
+\IF{the page that caused exception is stored in the disk}
+    \WHILE{the disk is busy}
+        \STATE Put the current process to sleep and call scheduler
+    \ENDWHILE
+    \STATE Load the block to the memory page found above.
+    \STATE Put the current process to sleep and call scheduler.
+\ENDIF
+\STATE Update the Page Table entry of the page that caused exception. 
+\RETURN
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Terminal Interrupt Handler}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/term_handler.html}{Terminal Interrupt Handler}}
+\begin{algorithmic}
+\STATE Set the status field in Terminal Status Table to 0.
+\STATE Locate the Process Table entry of the process that read the data.
+\STATE Copy the word read from standard input to the Input Buffer field in the Process Table entry.
+\STATE Set the PID field of Terminal Status Table to -1.
+\STATE Wake up all processes waiting for terminal.
+\end{algorithmic}
+\end{algorithm}
+
+
+%\section{Miscellaneous}
+
+%\subsection{OS Startup Code}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/os_startup.html}{OS Startup Code}}
+\begin{algorithmic}
+\STATE Load the software interrupts and handler routines to memory.
+\STATE Load the init program to memory and set up its machine context.
+\STATE Load the idle program to memory and set up its machine context.
+\STATE Load the disk data structures to the memory.
+\STATE Initialize all the memory data structures.
+\STATE Schedule the init process for execution.
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Shutdown System Call}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/misc.html#shutdown}{Shutdown System Call}}
+\begin{algorithmic}
+\WHILE{disk is not free}
+    \STATE Put the current process to sleep and call scheduler
+\ENDWHILE
+\STATE Store Inode Table to the disk.
+\STATE Store dirty pages contained in buffer to the disk.     
+\STATE Store Disk Free List to the disk.
+\STATE Halt the machine.
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Shell process}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/misc.html#shell}{Shell process}}
+\begin{algorithmic}
+\WHILE{true}
+    \STATE Get the program to be executed using read system call
+    \STATE If the shutdown instruction is received, invoke shutdown system call.
+    \STATE childPID = fork();
+    \IF{childPID == 0}
+        \STATE Execute the program given by read.
+    \ELSE 
+        \STATE Wait for child to finish execution.
+    \ENDIF
+\ENDWHILE
+
+\end{algorithmic}
+\end{algorithm}
+
+%\subsection{Idle process}
+
+\begin{algorithm}
+\caption{\href{http://exposnitc.github.io/os_design-files/misc.html#idle}{Idle process}}
+\begin{algorithmic}
+\WHILE{true}
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}

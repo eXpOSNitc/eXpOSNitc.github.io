@@ -47,7 +47,7 @@ The Root File is stored in the disk and has an entry for each file present in th
 
 \section {Memory Data Structures}
 
-\subsection {Process Table}
+\subsection{Process Table}
 
 The Process Table (PT) contains an entry for each process present in the system. The entry is created when the process is created by a Fork system call. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is 32.
 
@@ -140,7 +140,7 @@ Associated with each page table entry, typically auxiliary information is also s
 \item Write bit - This bit is set to 1 by the OS if the page can be written and is set to 0 otherwise. The OS expects the architecture to generate an exception if any process attempts to modify a page whose write bit is not set.
 \end {itemize}
 
-\subsection {File Table}
+\subsection{File Table}
 The File Table stores the information about all the files that are open while the OS is running. It consists of 32 entries. Thus, there can be at most 32 open files in the system at any time.
 \begin{figure}[ht]
 \centering
@@ -157,7 +157,7 @@ The File Table stores the information about all the files that are open while th
 \end {itemize}
 All invalid entries are set to -1.
 
-\subsection {Semaphore Table}
+\subsection{Semaphore Table}
 
 The Semaphore Table contains details about all the semaphores used by the processes. It consists of 32 entries. Thus, there can be at most 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table.
 \\
@@ -176,7 +176,7 @@ The Semaphore Table contains details about all the semaphores used by the proces
 
 All invalid entries are set to -1.
 
-\subsection {Buffer Table}
+\subsection{Buffer Table}
 The buffer table is a data structure that stores the information regarding the disk block stored in each buffer. The present version of eXpOS sets MAX\_BUFFER = 4. Each buffer is identified by its index in the buffer table.
 \begin{figure}[ht]
 \centering
@@ -192,7 +192,7 @@ The buffer table is a data structure that stores the information regarding the d
 
 Free entries are represented by -1 in all the fields.
 
-\subsection {Disk Status Table}
+\subsection{Disk Status Table}
 The Disk Status Table keeps track of these disk-memory transfers. Every time a disk operation is invoked, the information regarding the operation like the disk block and the memory page involved, the process that invoked the operation and type of disk operation are stored in Disk Status Table by the OS.
 \begin{figure}[ht]
 \centering
@@ -210,7 +210,7 @@ The Disk Status Table keeps track of these disk-memory transfers. Every time a d
 
 \end {itemize}
 
-\subsection {System Status Table}
+\subsection{System Status Table}
 It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable and, the number of processes in swapped state. 
 \begin{figure}[ht]
 \centering
@@ -224,7 +224,7 @@ It keeps the information about the number of free pages in memory, the number of
 \item Unused (1 word)
 \end {itemize}
 
-\subsection {Terminal Status Table}
+\subsection{Terminal Status Table}
 The Terminal Status Table keeps track of the Read operations done on the terminal. Every time a Read system call is invoked on the terminal, the PID of the process that invoked the system call is stored in Terminal Status Table. 
 \begin{figure}[ht]
 \centering
@@ -238,6 +238,6 @@ The Terminal Status Table keeps track of the Read operations done on the termina
 \item PID (1 word) - specifies the PID of the process which is currently reading input from the terminal. This field is invalid when STATUS is 0.
 \item Unused (2 words)
 \end {itemize}
-\subsection {Memory Free List}
+\subsection{Memory Free List}
 
 The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of 128 entries and each entry is of size one word. Each entry of the free list contains either the value 0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page. 

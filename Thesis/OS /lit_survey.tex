@@ -3,7 +3,7 @@
 
 There are several instructional operating systems available like Nachos, Topsy etc. developed by various universities.\\
 
-Not Another Completely Heuristic Operating System, or Nachos [1], is one such instructional software developed at the University of California, Berkeley. Nachos supports threads, user-level processes, virtual memory and interrupt-driven input output devices. The only difference between Nachos and a real operating system is that Nachos runs as a single Unix process. \\ 
+Not Another Completely Heuristic Operating System, or Nachos [2], is one such instructional software developed at the University of California, Berkeley. Nachos supports threads, user-level processes, virtual memory and interrupt-driven input output devices.\\ 
 
 In Nachos, a process is associated with an address space which is divided into Executable code, Stack for local variables and Heap for global variables and dynamically allocated memory. Nachos also supports threads which share the same code and global variables.\\
 
@@ -13,6 +13,10 @@ Nachos implements round robin scheduling which is handled by routines in the Sch
 
 Nachos supports a single top-level directory. In Nachos, files are accessed through several layers of objects. At the lowest level, a Disk object provides a interface for initiating I/O operations. Each Nachos file has an associated FileHeader structure, similar to a Unix inode. But unlike  a UNIX inode, FileHeader contains only direct pointers to the file's data blocks. Nachos requires that executables files be in the Noff format which includes Noff header.\\ 
 
-Similar to Nachos, Topsy [2], or Teachable Operating System, is an instructional tool developed by ETH-Zurich. The module Topsy can be seen as a collection of routines used by various kernel components. In short, it is the kernel library. Like Nachos, it also supports threads, running in one address space and may share global memory between them. The private area of a thread is its stack. Synchronization of shared memory is accomplished via messages between multiple threads.\\
+In Nachos, the OS code written is actually a C code running on Linux/Unix machine. When an application program invokes an OS system call, the MIPS simulator transfers control to a corresponding function in the simulating environment. It is the responsibility of the programmer to  write the C code in a way that it implements the system call routine. Since the MIPS machine is simulated, the code has access to its memory, registers etc. Thus the user can implement the system call, put return values in appropriate memory locations on the simulated MIPS machine and transfer control back to the calling program.\\ 
+
+But in eXpOS, the OS and the application programs run in the same machine as is the case in real systems. The compromise made in achieving this goal was to make the machine “unreal” and the OS simple enough so that additional complexity is manageable for a short term project.
+
+Similar to Nachos, Topsy [3], or Teachable Operating System, is an instructional tool developed by ETH-Zurich. The module Topsy can be seen as a collection of routines used by various kernel components. In short, it is the kernel library. Like Nachos, it also supports threads, running in one address space and may share global memory between them. The private area of a thread is its stack. Synchronization of shared memory is accomplished via messages between multiple threads.\\
 
 The memory is organized in paged manner. Topsy divides the memory into two address spaces: one for user threads and the other for the OS kernel.  Furthermore, the two address spaces are embedded in one virtual address space and no swapping of pages to secondary memory is supported.
