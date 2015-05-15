@@ -1,5 +1,7 @@
 \chapter{System Call Interface}
 \label{chap7}
+
+
 Application programmers interact with the Operating System using the system calls. System calls are stored in the disk and are loaded into memory when the OS is loaded by the bootstrap loader. When a process invokes a system call, the process is interrupted and control goes to the corresponding interrupt service routine of the kernel, resulting in a switch from user mode to kernel mode. Once the system call is carried out, the control goes back to the application program, with a switch back to the user mode.
 
 The system calls of eXpOS are classified into file system calls, process system calls and system calls for access control and synchronization.
@@ -7,111 +9,318 @@ The system calls of eXpOS are classified into file system calls, process system 
 \section{File System Calls}
 \begin{enumerate}
 \item{Create System Call}
-\vspace{3mm}\\
+Arguments: Filename (String)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & No space for file \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success). Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. 
 
 
 \item{Delete System Call}
-\vspace{3mm}\\
+Arguments: Filename (String)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File not found \\ \hline
+-2 & File is open \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 Delete removes the file from the file system and removes its root entry. A file that is currently opened by any application cannot be deleted. Root file also cannot be deleted.
  
 
 \item{Open System Call}
-\vspace{3mm}\\
-For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. The file descriptor must be passed as argument to other file system calls, to identify the open instance of the file.
-\vspace{2mm}\\
+Arguments: Filename (String)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File not found \\ \hline
+-2 & Process has reached its limit of resources \\ \hline
+-3 & System has reached its limit of open files \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
+For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which must be passed as argument to other file system calls, to identify the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. 
+\\
 The OS associates a file pointer with every open instance of a file. The file pointer indicates the current location of file access (read/write). The Open system call sets the file pointer to 0 (beginning of the file).
 
 
 \item{Close System Call}
-\vspace{2mm}\\
+Arguments: File Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File Descriptor given is invalid  \\ \hline
+-2 & File is locked by calling process \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. 
 
 
 \item{Read System Call}
-\vspace{2mm}\\
+Arguments: File Descriptor (Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File Descriptor given is invalid  \\ \hline
+-2 & File pointer has reached the end of file \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 The file descriptor is used to identify an open instance of the file. The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer. After each read operation, the file pointer advances to the next word in the file. 
 
 \item{Write System Call}
-\vspace{2mm}\\
+Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File Descriptor given is invalid  \\ \hline
+-2 & No disk space \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 The file descriptor is used to identify an open instance of the file. The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file.
 
 \item{Seek System Call}
-\vspace{3mm}\\
+Arguments: File Descriptor (Integer) and Offset (Integer) specifying the number of positions by which the file pointer has to be shifted\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0  & Success           \\ \hline
+-1 & File Descriptor given is invalid  \\ \hline
+-2 & Offset value moves the file pointer to a position outside the file \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. 
 \end{enumerate}
 
 \section{Process System Calls}
 \begin{enumerate}
 \item{Fork System Call}
-\\
+Arguments: None\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+PID (Integer)  	& Success, the return value to the parent is the PID of the child process. \\ \hline
+0  		& Success, the return value to the child. \\ \hline 
+-1 		& Failure, Number of processes has reached the maximum limit.\\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.
 \\
 When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent. Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.
  
 
 \item{Exec System Call}
-\\
+Arguments: File Name (String) of the executable file (which must be of XEXE format)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+-1 		& File not found or file is of invalid type \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 Exec destroys the present process and loads the executable file given as input into a new memory address space. A successful Exec operation results in the extinction of the invoking application and hence never returns to it. All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.
 
 
 \item{Exit System Call}
-\vspace{2mm}\\
- Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.
+Arguments: None\\
+Return Value: None\\
+
+Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.
 
 
 \item{Getpid System Call}\\
+Arguments: None\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Process Identifier (Integer)	& Success \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
  Returns the process identifier of the invoking process. The system call does not fail.
 
 
 \item{Getppid System Call}\\
+Arguments: None\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Parent Process Identifier (Integer)	& Success \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
  Returns to the calling process the value of the process identifier of its parent. The system call does not fail.
 
 
-\item{Shutdown System Call}
-\\
-Shutdown system call terminates all processes and halts the machine. \begin{description}
-\item[Arguments]: None
-\item[Return Value]: None
-\end{description} 
+\item{Shutdown System Call}\\
+Arguments: None\\
+Return Value: None \\
+
+Shutdown system call terminates all processes and halts the machine. 
 \end{enumerate}
 
 \section{System calls for access control and synchronization}
 \begin{enumerate}
 \item{Wait System Call}
 \\
+Arguments: Process Identifier (Integer) of the process for which the current process has to wait.\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success \\ \hline
+-1	& Given process identifier is invalid or it is the pid of the invoking process. \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 The current process is blocked till the process with PID given as argument executes a Signal system call or exits. Note that the system call will fail if a process attempts to wait for itself.  
 
 \item{Signal System Call}
 \\
+Arguments: None\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 All processes waiting for the signaling process are resumed. The system call does not fail.
 
 
 \item{FLock System Call}
 \\
+Arguments: File Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success. \\ \hline
+-1	& File Descriptor is invalid. \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 To lock a file so that other applications running concurrently are not permitted to access the file till the calling process unlocks it. If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.   
 
 
 \item{FUnLock System Call}
 \\
+Arguments: File Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success. \\ \hline
+-1	& File Descriptor is invalid \\ \hline
+-2	& File was not locked by the calling process. \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from accessing the file.   
  
 
 \item{Semget System Call}
 \\
-This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores. The calling process can share the semaphore with its child processes using the fork system call. 
+Arguments: None\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+SEMID (Integer)	& Success, returns a semaphore descriptor(SEMID). \\\hline
+-1	& Process has reached its limit of resources. \\ \hline
+-2	& Number of semaphores has reached its maximum. \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
 
+This system call is used to obtain a binary semaphore. 
 
 \item{Semrelease System Call}
 \\
+Arguments: Semaphore Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success. \\\hline
+-1	& Semaphore Descriptor is invalid \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 This system call is used to release a semaphore descriptor held by the process.  
 
 
 \item{SemLock System Call}
 \\
+Arguments: Semaphore Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success or the semaphore is already locked by the current process. \\ \hline
+-1	& Semaphore Descriptor is invalid \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. 
 
 \item{SemUnLock System Call}
 \\
+Arguments: Semaphore Descriptor (Integer)\\
+Return Value:
+\FloatBarrier \begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+0	& Success. \\ \hline
+-1	& Semaphore Descriptor is invalid. \\ \hline
+-2 	& Semaphore was not locked by the calling process. \\ \hline
+\end{tabular}
+\end{table} \FloatBarrier 
+
 This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. 
 \end{enumerate}

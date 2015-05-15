@@ -49,7 +49,7 @@
 \ENDIF
 \STATE Allocate the Per-Process Resource Table entry to the file.
 \STATE Update the File Table entry.
-\RETURN from system call with the index of the Per-Process Resource Table entry.
+\RETURN Index of the Per-Process Resource Table entry.
 \end{algorithmic}
 \end{algorithm}
 
@@ -182,8 +182,7 @@
 \ENDFOR
 \STATE Construct the context of the child process.
 \STATE Set the return value to 0 for the child process.
-\STATE The PID of the child process is set as the return value for the parent process.
-\RETURN to the parent process.
+\RETURN The PID of the child process to the parent process.
 
 \end{algorithmic}
 \end{algorithm}
@@ -202,7 +201,7 @@
 \STATE Close all files opened by the current process.     
 \STATE Release all semaphores held by the current process.   
 \STATE Set SP to the start of the stack region and IP to the start of the code region. 
-\RETURN from system call to newly loaded process.
+\RETURN
 \end{algorithmic}
 \end{algorithm}
 
@@ -256,7 +255,7 @@
 \REQUIRE Process Identifier of the process for which the current process has to wait.
 \ENSURE 0 (Success) or -1 (Given process identifier is invalid or it is the pid of the invoking process)
 \STATE If process is intending to wait for itself or for a non-existent process, return -1.    
-\STATE Change the status from (RUNNING, \_ ) to (WAIT\_PROCESS, Argument\_PID ) in the Process Table.
+\STATE Change the status from (RUNNING, \_ ) to (WAIT\_PROCESS, Argument\_PID) in the Process Table.
 \STATE Invoke the Scheduler to schedule the next process.
 \RETURN 0
 \end{algorithmic}
@@ -352,7 +351,7 @@
     \STATE Put the current process to sleep 
     \STATE Call scheduler
 \ENDWHILE
-\STATE Change the Locking PID to PID of the current process in the Semaphore Table .
+\STATE Change the Locking PID to PID of the current process in the Semaphore Table.
 \RETURN 0
 \end{algorithmic}
 \end{algorithm}
@@ -463,7 +462,7 @@
     \STATE Put the current process to sleep and call scheduler.
 \ENDIF
 \STATE Update the Page Table entry of the page that caused exception. 
-\RETURN to the user process.
+\RETURN
 \end{algorithmic}
 \end{algorithm}
 
