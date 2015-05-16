@@ -82,6 +82,7 @@
 \ENDIF
 \STATE If file descriptor does not correspond to a valid entry in Per Process Resource Table, return -1.
 \STATE Check the validity of the File pointer
+\STATE If the file is of type ROOT, read the word from the given position and return 0.
 \STATE Find the block and the position in the block from which input is read.
 \WHILE{the file is locked by a process other than the current process}
     \STATE put the process to sleep and call the scheduler.
@@ -108,11 +109,12 @@
 \caption{Write System Call}
 \begin{algorithmic}
 \REQUIRE File Descriptor and a Word to be written
-\ENSURE 0 (Success) or -1 (File Descriptor given is invalid) or -2 (No disk space)
-\IF{word is to be written to standard output}
+\ENSURE 0 (Success) or -1 (File Descriptor given is invalid) or -2 (No disk space) or -3 (File is of type ROOT).
+\IF{word is to be written to standard output} 
     \STATE Issue the machine instruction to output the given word and return 0.
 \ENDIF
 \STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1.
+\STATE If the file descriptor corresponds to Root file, return -3.
 \STATE Get the index of the File Table entry and lseek position from the Per Process Resource Table entry.
 \STATE If lseek is equal to MAX\_FILE\_SIZE - 1, return -2.  
 \STATE Find the block and position in the block to which data has to be written.
@@ -279,8 +281,9 @@
 \caption{FLock System Call}
 \begin{algorithmic}
 \REQUIRE File Descriptor
-\ENSURE 0 (Success) or -1 (File Descriptor is invalid)
+\ENSURE 0 (Success) or -1 (File Descriptor is invalid) or -2 (File is of type ROOT). 
 \STATE If file descriptor does not correspond to valid entry in Per Process Resource Table, return -1.
+\STATE If the file descriptor corresponds to Root file, return -2.
 \WHILE{the file is locked by a process other than the current process}
     \STATE Change the state to (WAIT\_FILE, ftindex) where ftindex is the File Table index of the locked file and call the Scheduler.
 \ENDWHILE

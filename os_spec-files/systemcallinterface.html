@@ -318,9 +318,13 @@
                                                         <td>-2</td>
                                                         <td>No disk space</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>File is the Root file</td>
+                                                    </tr>
                                                     
                                                 </table>
-                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file.</p>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file. Root file and the Executable file cannot be written.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -636,9 +640,10 @@
                                                         <td>-1</td>
                                                         <td>File Descriptor is invalid</td>
                                                     </tr> 
-                                                                                                       
+                                                       <tr><td>-2</td>
+                                                      <td>File is of type ROOT</td></tr>                                                
                                                 </table>
-                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to read/write the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.)  </p>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to read/write the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.) Root and Executable files cannot be locked. </p>
                                             </div>
                                         </div>
                                     </div>

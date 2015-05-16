@@ -153,6 +153,13 @@
 <p style=" text-indent: 4em;">Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. &nbsp;&nbsp;/* Index of the Inode Table entry can be obtained from the File Table entry. */</p>
 <p style=" text-indent: 4em;"><b>If</b> lseek position is same as the file size, return -2.&nbsp;&nbsp;/* End of file reached. Don't forget to change mode flag */</p>
 </div>
+<p>If the file descriptor corresponds to Root file &nbsp;&nbsp;/* Check the file type from Inode table.*/ </a></p>
+<p style=" text-indent: 4em;">Copy the word at the offset position of the page (see <a href="">Memory Organization</a>) into the buffer passed as argument.</p>
+<p style=" text-indent: 4em;">Increment lseek position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
+<p style=" text-indent: 4em;">Return 0. &nbsp;&nbsp;/* success */</p>
+
+
+
 <p><a data-toggle="collapse"   href="#collapse8">Find the block and the position in the block from which input is read.</a></p>
 <div id="collapse8" class="panel-collapse collapse">
 <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / XFS_MAXBSIZE gives the index of the block to be read*/</p>
