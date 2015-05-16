@@ -78,8 +78,8 @@
               <li><a href="../Roadmap.html">Roadmap</a></li>
               <li><a href="../Documentation.html">Documentation</a></li> 
                <li><a href="#pricing">Downloads</a></li> <!--Change here--> 
-               <li><a href="../FAQ.html">FAQ</a></li>
-              <li><a href="About_us.html">About Us</a></li>                                     
+               <li><a href="../faq.html">FAQ</a></li>
+              <li><a href="../About_us.html">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
@@ -138,7 +138,7 @@ eXpOS provides a sequence of file system calls through which application program
                              <p>
 The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
 
-As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size and type</b>, each attribute being one word long.   The filename must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
+As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size and type</b>, each attribute being one word long.   The file name must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
 
 There are three types of eXpFS files - <b>the root, data files and executable files</b>. Each file in eXpFS has an entry in the root called its <b>root entry</b>.  
 </p>
@@ -159,10 +159,31 @@ There are three types of eXpFS files - <b>the root, data files and executable fi
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - <b>filename, file-size and file-type</b>.  This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation. (The maximum size of the root file is defined by XFS_ROOTSIZE.).  
+The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - <b>file name, file-size and file-type</b>.  This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation.  
 
 Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, <b>confirm this </b>program.xexe, of 1025 words, the root file will contain the following information.  </p>
-<img src="../img/root_entry.jpg" alt="Root entry">
+<table class="table table-bordered">
+	<tr>
+		<td>File name</td>
+		<td>File size</td>
+		<td>File type</td>
+	</tr>
+	<tr>
+		<td>root</td>
+		<td>512</td>
+		<td>ROOT</td>
+	</tr>
+	<tr>
+		<td>file.dat</td>
+		<td>700</td>
+		<td>DATA</td>
+	</tr>
+	<tr>
+		<td>program.xexe</td>
+		<td>1025</td>
+		<td>EXEC</td>
+	</tr>
+</table>
 <p>The operations on the root file are <b>Open, Close, Read and Seek</b>.  
 
 Since the operations on the root file is a subset of the operations on data files, with the same syntax and semantics, these operations are discussed together with other operations on data files.  
@@ -215,7 +236,7 @@ These contain executable code for programs that can be loaded and run by the ope
     <b><i>Important Note:</i></b>  Application programs are typically written in a high level language like ExpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.  API describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the <a href="../support_tools-files/expl.html" target="_blank">ExpL </a> programming language and eXpOS <a href="../os_design.html" target="_blank">API</a> are  given.  The ExpL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for compiler back end design.   
 </p>
 <p>
-The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
+The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into two sections.  The first section is called header and the second section called the code (or text) section. The code section contains the program instructions. The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
 </p>
                             </div>
                           </div>
