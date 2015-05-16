@@ -204,7 +204,7 @@ A detailed specification of the file system calls is given <a href="systemcallin
                           <div id="ThreecollapseFour" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type is EXEC in the root entry. <b>eXpFS specification does not allow executable files to be created by application programs</b>.  They can only be created externally and loaded using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a> for XSM architecture.)  However, application programs can read executable files.  
+These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type is EXEC in the root entry. <b>eXpFS specification does not allow executable files to be created by application programs</b>.  They can only be created externally and loaded using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a> for XSM architecture.)
 </p>
 <p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the <b>executable file format</b>).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
     Typically, an application program written in a high level language (like <a href="../support_tools-files/expl.html" target="_blank">ExpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
@@ -216,9 +216,6 @@ These contain executable code for programs that can be loaded and run by the ope
 </p>
 <p>
 The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into three sections.  The first section is called header,   the second section called the code (or text) section and third called the (static) data section.   The code section contains the program instructions.  The data section contains the static data.   The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
-</p>
-<p>
-An application program can read an executable file like a data file using the standard system calls on data files.  In addition to this, the <b>Exec </b>system call invokes the eXpOS loader that loads an executable file in XEXE format into memory for execution.  
 </p>
                             </div>
                           </div>

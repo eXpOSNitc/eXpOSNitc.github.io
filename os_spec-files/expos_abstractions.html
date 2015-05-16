@@ -199,10 +199,9 @@
                           </div>
                           <div id="TwocollapseFour" class="panel-collapse collapse">
                             <div class="panel-body">
-                          <p>A process can open data files using the <b>Open</b> system call.  The open system call returns a <b>file handle</b>.  The file handle advances as data is read from the file.  Similarly, a process can acquire a semaphore using the Semget system call.</p>
-<p>When a process executes the Fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the Fork, the file pointers of both processes get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the Fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the other. </p> 
+
 <p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
-<p>Thus, eXpOS does not support any explicit primitives for file or memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
+<p>Thus, eXpOS does not support any explicit primitives for memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
 
 
                             </div>

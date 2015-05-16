@@ -33,7 +33,7 @@ The two most fundamental operations associated with process are Fork and Exec. T
 \subsection{Semantics of Fork operation}
 \begin{enumerate}
 \item A new child process with a new process id and address space is created which is an exact replica of the original process with the same library, code, stack and heap regions. (The OS assigns a new process id for the child and returns this value to the parent as the return parameter of the fork system call.) The heap, code and library regions of the parent are shared by the child. Stack is separate for the child and is not shared.
-\item All open file handles and semaphores are shared by the parent and the child. This means that if one of the processes write/read into/from or adjust the file handle using the lseek system call, the corresponding file handle of the other process also gets automatically updated. Note that file handles (or semaphore identifiers) of files (or semaphores) that are opened (or created) subsequent to the fork operation by the parent or the child will be exclusive to the particular process and will not be shared. The parent and the child continue execution from here on.
+\item All open file handles and semaphores are shared by the parent and the child. Note that file handles (or semaphore identifiers) of files (or semaphores) that are opened (or created) subsequent to the fork operation by the parent or the child will be exclusive to the particular process and will not be shared. The parent and the child continue execution from here on.
 \end{enumerate}
 
 \subsection{Other Operations}
