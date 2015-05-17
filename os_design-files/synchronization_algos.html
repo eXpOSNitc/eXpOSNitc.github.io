@@ -216,15 +216,16 @@ be unlocked, locks it, and returns to the calling process. Root and Executable f
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
+             <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
 <p><a data-toggle="collapse"   href="#collapse100">If the file descriptor corresponds to Root file, return -2.</a></p>
 <div id="collapse100" class="panel-collapse collapse">
   
 
-<p style=" text-indent: 4em;">Using the file descriptor, get the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
- <p style=" text-indent: 4em;">Using File table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry. Check for the file type. </p>
+
+ <p style=" text-indent: 4em;">Using File table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry and check the file type. </p>
 <br>
 </div>
-            <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
+            
               
               <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table">File Table</a>*/</p>
               <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (WAIT_FILE, ftindex) where ftindex is the <a href="mem_ds.html#file_table">File Table</a> index of the locked file. </p>
