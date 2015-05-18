@@ -1202,7 +1202,7 @@ This is to certify that the thesis entitled: ``{\bf\th@title}'' submitted by Sri
         \vspace*{1cm}
     \end{center}
         {\it
-``I hereby declare that this submission is my own work and that, to the best of my knowledge
+``We hereby declare that this submission is our own work and that, to the best of our knowledge
  and belief, it contains no material previously published or written by another person
   nor material which has been accepted for the award of any other degree or diploma of the
    university or other institute of higher learning, except where due acknowledgment has
