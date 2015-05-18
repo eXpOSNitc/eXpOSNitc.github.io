@@ -8,7 +8,7 @@ The system calls of eXpOS are classified into file system calls, process system 
 
 \section{File System Calls}
 \begin{enumerate}
-\item{Create System Call}
+\item{Create System Call}\\
 Arguments: Filename (String)\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -23,7 +23,7 @@ Return Value:
 The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success). Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. 
 
 
-\item{Delete System Call}
+\item{Delete System Call}\\
 Arguments: Filename (String)\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -39,7 +39,7 @@ Return Value:
 Delete removes the file from the file system and removes its root entry. A file that is currently opened by any application cannot be deleted. Root file also cannot be deleted.
  
 
-\item{Open System Call}
+\item{Open System Call}\\
 Arguments: Filename (String)\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -58,7 +58,7 @@ For a process to read/write a file, it must first open the file. Only data and r
 The OS associates a file pointer with every open instance of a file. The file pointer indicates the current location of file access (read/write). The Open system call sets the file pointer to 0 (beginning of the file).
 
 
-\item{Close System Call}
+\item{Close System Call}\\
 Arguments: File Descriptor (Integer)\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -74,7 +74,7 @@ Return Value:
  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. 
 
 
-\item{Read System Call}
+\item{Read System Call}\\
 Arguments: File Descriptor (Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -89,7 +89,7 @@ Return Value:
 
 The file descriptor is used to identify an open instance of the file. The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer. After each read operation, the file pointer advances to the next word in the file. 
 
-\item{Write System Call}
+\item{Write System Call}\\
 Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -105,7 +105,7 @@ Return Value:
 
 The file descriptor is used to identify an open instance of the file. The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file. Root file and the Executable file cannot be written.
 
-\item{Seek System Call}
+\item{Seek System Call}\\
 Arguments: File Descriptor (Integer) and Offset (Integer) specifying the number of positions by which the file pointer has to be shifted\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -123,7 +123,7 @@ The Seek operation allows the application program to change the value of the fil
 
 \section{Process System Calls}
 \begin{enumerate}
-\item{Fork System Call}
+\item{Fork System Call}\\
 Arguments: None\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -141,7 +141,7 @@ Replicates the process invoking the system call. The heap, code and library regi
 When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent. Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.
  
 
-\item{Exec System Call}
+\item{Exec System Call}\\
 Arguments: File Name (String) of the executable file (which must be of XEXE format)\\
 Return Value:
 \FloatBarrier \begin{table}[H]
@@ -155,7 +155,7 @@ Return Value:
 Exec destroys the present process and loads the executable file given as input into a new memory address space. A successful Exec operation results in the extinction of the invoking application and hence never returns to it. All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.
 
 
-\item{Exit System Call}
+\item{Exit System Call}\\
 Arguments: None\\
 Return Value: None\\
 
