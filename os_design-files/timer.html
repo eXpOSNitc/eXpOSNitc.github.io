@@ -117,7 +117,7 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><a data-toggle="collapse"   href="#collapse1">Save the context of current process and change its state from (RUNNING,_) to (READY,_)</a></p>
+             <p><a data-toggle="collapse"   href="#collapse1">Save the context of current process and change its state from (<a href="constants.html" target="_blank">RUNNING</a>,_) to (<a href="constants.html" target="_blank">READY</a>,_)</a></p>
              <div id="collapse1" class="panel-collapse collapse">
                 <p  style=" text-indent: 4em;">
                     1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. This will be the PID of unique process in the state (RUNNING, _ ).</p>
@@ -135,7 +135,7 @@
             
              <p style=" text-indent: 8em;"><a data-toggle="collapse"   href="#collapse5">Wake up all processes that requires memory pages.</a></p>
               <div id="collapse5" class="panel-collapse collapse">        
-                    <p style=" text-indent: 12em;">1. Change the state from (WAIT_MEM, _ ) to (READY, _ ).</p>
+                    <p style=" text-indent: 12em;">1. Change the state from (<a href="constants.html" target="_blank">WAIT_MEM</a>, _ ) to (READY, _ ).</p>
                     <p style=" text-indent: 12em;">2. Reset the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a> to 0.</p>
             </div>
                  <div class="boxed" style="border:1px solid green">
@@ -184,11 +184,11 @@
 			<p style="text-indent: 16em;"><a href="load_store.html" target="_blank">Store</a> the selected page in the swap block</p>
 			<p style="text-indent: 16em;">/* Page Table, Process Table and System Status Table updates must be done by the <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> */ </p>
                         <p style="text-indent: 12em;"><b>if</b> unreferenced page is pointed to by the stack pointer of the process&nbsp;	&nbsp; /* The process cannot run without this stack page */</p>
-<p style="text-indent: 16em;"><b>if</b> the process is in (WAIT_PROCESS, pid) state. &nbsp;&nbsp;/*If the process swapped out is waiting for a signal.</p>
-<p style="text-indent: 18em;">Change the state to (SWAPPED_WAIT,pid).&nbsp;&nbsp;/*This process will not be swapped in before Signal is invoked.*/</p>
+<p style="text-indent: 16em;"><b>if</b> the process is in (<a href="constants.html" target="_blank">WAIT_PROCESS</a>, pid) state. &nbsp;&nbsp;/*If the process swapped out is waiting for a signal.</p>
+<p style="text-indent: 18em;">Change the state to (<a href="constants.html" target="_blank">SWAPPED_WAIT</a>,pid).&nbsp;&nbsp;/*This process will not be swapped in before Signal is invoked.*/</p>
 <p style="text-indent: 16em;">else</p>
                         
-			<p style="text-indent: 18em;">Set the state of the process to (SWAPPED , _ ) </p>
+			<p style="text-indent: 18em;">Set the state of the process to (<a href="constants.html" target="_blank">SWAPPED</a>, _ ) </p>
 			<p style="text-indent: 16em;">Increment the SWAPPED_COUNT in <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
 			<p style="text-indent: 16em;">Reset the TICK for the process to 0.</p>
                         <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
