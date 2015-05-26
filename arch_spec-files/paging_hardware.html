@@ -220,13 +220,14 @@
     <td>1111</td>	
 </tr>
 <tr>
-    <td>48</td>
-    <td>1111</td>	
-</tr>
-<tr>
     <td>72</td>
     <td>1110</td>	
 </tr>
+<tr>
+    <td>48</td>
+    <td>1111</td>	
+</tr>
+
 <tr>
     <td>-1</td>
     <td>0000</td>	
@@ -234,10 +235,10 @@
 </table>
 
 <p>Given a logical address of 3532, the translation occurs as follows:</p>
-<p style="text-indent:5em">Logical page number 	= index of page table entry</p>
+<p style="text-indent:5em">Logical page number 	= index of page table entry    &nbsp;&nbsp;/* index starts from 0 */</p>
 <p style="text-indent:15em"> 					= 3532/512 = 6</p>
-<p style="text-indent:5em">Location of page table entry	= PTBR + 2 * 5</p>
-<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 5 ] = first word of the 6th entry in page table = 48</p>
+<p style="text-indent:5em">Location of page table entry	= PTBR + 2 * 6</p>
+<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 6 ] = first word of the 7th entry in page table = 48</p>
 <p style="text-indent:5em">Offset 	= 3532%512 = 460</p>
 <p style="text-indent:5em">Physical Address	= 48 * 512 + 460 = 25036</p>
 
