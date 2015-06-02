@@ -230,7 +230,24 @@
 </div>
 <p>Return 0. &nbsp;&nbsp;/* success */</p>
  
+<h4>Questions:</h4>
+<div class="panel-body">
+        <p><a data-toggle="collapse" href="#collapse101">1. What is the significance of two types of Locking systems: User Lock (ULock) and Kernel Lock (KLock)?</a></p>
+                     <div id="collapse101" class="panel-collapse collapse">
+             <p>ULock is set/reset when the application programmer does FLock/FUnlock.  Locking and Unlocking the file using FLock and FUnlock depends on application programmer and thus, is transparent.</p> 
+             <p>KLock is set/reset by the System call in kernel mode and is unknown to the application programmer. This was introduced because system call can call the scheduler while waiting for buffer/disk to be free. Meanwhile it cannot give access to the same file to another process.</p>                    
+         </div>
+       </div>
 
+<div class="panel-body">
+        <p><a data-toggle="collapse" href="#collapse102">2. What if ULock is acquired by some other process?</a></p>
+                     <div id="collapse102" class="panel-collapse collapse">
+             <p>Ans: This is not possible because :
+<p>(1) If ULock is acquired by some other process before this process executes read, then this process would be waiting until ULock is freed.</p>
+<p>(2) If it was acquired during Read, which is impossible because FLock checks KLock before ULocking it. </p>
+<p>Thus only 2 cases can arise : ULock is acquired by this process or it is -1.</p>               
+         </div>
+       </div>
 
 
 
