@@ -108,13 +108,11 @@
                 <h2 >Machine Organisation</h2>
                 <br/>
                 <br/>
-                <p> The XSM machine has various components, which are as described below. A high level diagram is given here.</p>
+                <!--p> The following is a detailed architecture diagram of XSM.</p-->
+		<center><img src="../img/architecture/machine_organisation.png" width="90%"></center>
               </div>
-<br>
-<br>
 		        <!--center><img src="../img/hw_model.jpg"></center-->
-<br>
-<br>
+
 
               <!-- START ABOUT CONTENT -->
               <div class="about_content">
@@ -157,7 +155,7 @@
                           <div id="ThreecollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
 
-<p>The XSM architecture maintains 38 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
+<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
 
 <p>The  following table gives an overview of XSM registers according to their category.</p>
 
@@ -170,24 +168,16 @@
 
 
   <tr>
-    <td>R0-R7</td>
-    <td>General purpose user Registers</td>	
+    <td>R0-R19</td>
+    <td>General Purpose User Registers<br/>
+        <span style="font-size:13px">R16-R19 are reserved for the use of SPL compiler</span> 
+    </td>	
     <td>Unprivileged</td>
   </tr>
   <tr>
     <td>BP, SP, IP</td>
-    <td>Base, Stack and Instruction Pointers.</td>	
+    <td>Base, Stack and Instruction Pointers</td>	
     <td>Unprivileged</td>
-  </tr>
-  <tr>
-    <td>S0 - S15</td>
-    <td>S0 – S14 are General purpose System Registers. (S15 is reserved for console)</td>	
-    <td>Privileged</td>
-  </tr>
-  <tr>
-    <td>T0-T3</td>
-    <td>General purpose registers, reserved for the use of system level program translators (compilers).</td>	
-    <td>Privileged</td>
   </tr>
   <tr>
     <td>PTBR, PTLR</td>
@@ -195,8 +185,8 @@
     <td>Privileged</td>
   </tr>
   <tr>
-    <td>EIP, EC, EPN, EVA EMA</td>
-    <td>Exception status registers</td>	
+    <td>EIP, EC, EPN, EMA</td>
+    <td>Exception Status Registers</td>	
     <td>Privileged</td>
   </tr>
 </table>
@@ -435,7 +425,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt service routine</a>.    
+                                <p>Disk Controller is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt service routine</a>. If the <b>load</b> macro or <b>store</b> macro is used for disk-memory transfer, the machine will continue execution of the next instruction only after the block transfer is complete.    
 </p>
                             </div>
                           </div>
@@ -452,7 +442,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to the S15 register. There are two macro instructions associated with I/O. These are <b>out</b> and <b>in</b>. The <b>out</b> instruction results in transfer of a word from a register to the console. The <b>in</b> instruction allows data from the console to be read into register S15, which is reserved for console input. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from a machine register S15 designated for this purpose.  
+                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a port to the console or from the console to the port. There are two macro instructions associated with I/O, <b>in</b> and <b>out</b>. The <b>in</b> instruction allows data from the console to be read into port <b>P0</b>. The <b>out</b> instruction results in transfer of a word from port <b>P1</b> to the console. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. When the user user inputs a word through the console, the console device will send a hardware interrupt. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from port P0 designated for this purpose.  
 </p>
                             </div>
                           </div>
@@ -470,7 +460,8 @@ The disk is block accessible and not word accessible. This means that a word wit
                           <div id="Threecollapse7" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
+When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the 1<sup>st</sup> disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the 1<sup>st</sup> instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code. 
+                                 <br/><code>Note</code> : Boot ROM contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1 which now contains Boot Block). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1.
 </p>
                             </div>
                           </div>
@@ -478,13 +469,7 @@ When XSM machine starts up, program execution starts at the first word of the fi
                         
 </div>
 
-<br>
-<br>
-<p style="font-size:16px">The following is a detailed architecture diagram of XSM.</p>
 
-<br>
-		        <center><img src="../img/full_diag .png" width="90%"></center>
-<br>
                       </div>
                     </div>
                
