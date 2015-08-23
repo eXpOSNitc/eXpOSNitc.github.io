@@ -485,8 +485,8 @@
                                             <div class="panel-body">
                                                 
 1. <b>IN</b><br>
-<i>Syntax</i> : IN<br>
-<i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the register S15 (which is reserved for the console interrupt) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.
+<i>Syntax</i> : IN Rj,P0<br>
+<i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the port P0 (which is reserved for the console interrupt) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.
                                             </div>
                                         </div>
                                     </div>
@@ -504,7 +504,8 @@
                                         <div id="collapse11" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-2. <b>OUT</b><br><i>Syntax</i> : OUT Si<br><i>Semantics</i> : Transfers the contents of Si to the standard output. The machine resumes execution only after the completion of the OUT instruction.
+2. <b>OUT</b><br><i>Syntax</i> : OUT P1,Rj<br>
+<i>Semantics</i> : Transfers the contents of Rj to the standard output. The machine resumes execution only after the completion of the OUT instruction.
 <br>
                                             </div>
                                         </div>
