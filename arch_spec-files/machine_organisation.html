@@ -148,16 +148,16 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse"  href="#ThreecollapseThree">
-                                <span class="fa fa-check-square-o"></span>XSM Machine Registers
+                                <span class="fa fa-check-square-o"></span>XSM Machine Registers/Ports
                               </a>
                             </h4>
                           </div>
                           <div id="ThreecollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
 
-<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
+<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes. The machine also contains 4 ports, of which one port is used for Standard Input and another one is used for Standard Output. The remaining ports are unused in the present version of XSM.</p>   
 
-<p>The  following table gives an overview of XSM registers according to their category.</p>
+<p>The  following table gives an overview of XSM registers/ports according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
@@ -170,7 +170,7 @@
   <tr>
     <td>R0-R19</td>
     <td>General Purpose User Registers<br/>
-        <span style="font-size:13px">R16-R19 are reserved for the use of SPL compiler</span> 
+        <span style="font-size:13px"><b>R16-R19 are reserved for the use of SPL compiler</b></span> 
     </td>	
     <td>Unprivileged</td>
   </tr>
@@ -187,6 +187,11 @@
   <tr>
     <td>EIP, EC, EPN, EMA</td>
     <td>Exception Status Registers</td>	
+    <td>Privileged</td>
+  </tr>
+  <tr>
+    <td>P0-P3<br/><b>(Ports)</b></td>
+    <td>P0-Input port, P1-Output port<br/>P2,P3-Unused</td>	
     <td>Privileged</td>
   </tr>
 </table>
