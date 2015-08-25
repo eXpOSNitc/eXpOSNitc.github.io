@@ -112,9 +112,7 @@
 		<center><img src="../img/architecture/machine_organisation.png" width="90%"></center>
               </div>
 		        <!--center><img src="../img/hw_model.jpg"></center-->
-<br>
-<br>
-<br>
+
 
               <!-- START ABOUT CONTENT -->
               <div class="about_content">
@@ -135,11 +133,11 @@
 
 <div id="content">
 
-<p>The processor consists of a set of <b>registers</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register can store a string.</p>  
+<p>The processor consists of a set of <b>registers</b> and <b>ports</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register/port can store a string.</p>  
 
 <p>The machine is equipped with an <b>instruction set</b>.  Two contiguous memory words are necessary to store each XSM instruction. The reader is assumed to have a basic understanding of the general principles of computer organization, hardware and software interrupts, exceptions, and hardware paging to follow the processor description in this document.</p>  
 
-<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.</p>
+<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and the memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.</p>
 
                             </div>
                           </div>
@@ -150,16 +148,16 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse"  href="#ThreecollapseThree">
-                                <span class="fa fa-check-square-o"></span>XSM Machine Registers
+                                <span class="fa fa-check-square-o"></span>XSM Machine Registers/Ports
                               </a>
                             </h4>
                           </div>
                           <div id="ThreecollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
 
-<p>The XSM architecture maintains 38 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
+<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes. The machine also contains 4 ports, of which one port is used for Standard Input and another one is used for Standard Output. The remaining ports are unused in the present version of XSM.</p>   
 
-<p>The  following table gives an overview of XSM registers according to their category.</p>
+<p>The  following table gives an overview of XSM registers/ports according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
@@ -170,24 +168,16 @@
 
 
   <tr>
-    <td>R0-R7</td>
-    <td>General purpose user Registers</td>	
+    <td>R0-R19</td>
+    <td>General Purpose User Registers<br/>
+        <span style="font-size:13px"><b>R16-R19 are reserved for the use of SPL compiler</b></span> 
+    </td>	
     <td>Unprivileged</td>
   </tr>
   <tr>
     <td>BP, SP, IP</td>
-    <td>Base, Stack and Instruction Pointers.</td>	
+    <td>Base, Stack and Instruction Pointers</td>	
     <td>Unprivileged</td>
-  </tr>
-  <tr>
-    <td>S0 - S15</td>
-    <td>S0 – S14 are General purpose System Registers. (S15 is reserved for console)</td>	
-    <td>Privileged</td>
-  </tr>
-  <tr>
-    <td>T0-T3</td>
-    <td>General purpose registers, reserved for the use of system level program translators (compilers).</td>	
-    <td>Privileged</td>
   </tr>
   <tr>
     <td>PTBR, PTLR</td>
@@ -195,8 +185,13 @@
     <td>Privileged</td>
   </tr>
   <tr>
-    <td>EIP, EC, EPN, EVA EMA</td>
-    <td>Exception status registers</td>	
+    <td>EIP, EC, EPN, EMA</td>
+    <td>Exception Status Registers</td>	
+    <td>Privileged</td>
+  </tr>
+  <tr>
+    <td>P0-P3<br/><b>(Ports)</b></td>
+    <td>P0-Input port, P1-Output port<br/>P2,P3-Unused</td>	
     <td>Privileged</td>
   </tr>
 </table>
@@ -218,11 +213,11 @@
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-It is the physical memory of the machine and is a volatile storage.  The memory is organized as sequence of <b>pages</b>.  Each page is a sequence of 512 words.  The total number of memory pages available is 128.    Thus there are in total 512 x 128 = 65536 words of storage.    The memory is word addressable.   The machine contains data transfer instructions that allow a word to be transferred from memory to a register and back.</p>    
+Memory refers to the physical memory of the machine and is a volatile storage. The memory is organized as a sequence of <b>pages</b>.  Each page is a sequence of 512 words.  The total number of memory pages available is 128. Thus there are in total 512 x 128 = 65536 words of storage. The memory is word addressable. The machine contains data transfer instructions that allow a word to be transferred from memory to a register/port and back.</p>    
 
 <p>When the machine is executing in privileged mode, a memory address “N” between 0 and  65535 refers to the word with offset (N mod 512) in  page number (N div 512).  </p>
 
-<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a>.</p>
+<p><code>Note</code> :  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a>.</p>
 
 <p>The  Memory of the XSM Machine is organised as follows :</p>
 
@@ -291,12 +286,6 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
     <td>16  - 17</td>
     <td>INT 7</td>	
     <td>8192 - 9215</td>
-    <td>1024</td>
-  </tr>
-  <tr>			
-    <td>12  - 13</td>
-    <td>INT 5</td>	
-    <td>6144 - 7167</td>
     <td>1024</td>
   </tr>
   <tr>					
@@ -368,7 +357,7 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
   <tr>											
     <td>40 - 127</td>
     <td>Unreserved Pages</td>	
-    <td>21518  - 65535</td>
+    <td>20480  - 65535</td>
     <td>44544</td>
   </tr>
   
@@ -435,7 +424,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt service routine</a>.    
+                                <p>Disk Controller is the device that controls the data transfer between the memory and the disk.  If the <b>loada</b> macro or <b>storea</b> macro is used for disk-memory transfer, then upon subsequent completion of XSM_DTIME instructions in the unprivileged mode,  the disk controller interrupts the machine.  (If the XSM_DTIME numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  Upon receipt of the interrupt, the machine executes <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt service routine</a>. If the <b>load</b> macro or <b>store</b> macro is used for disk-memory transfer, the machine will continue execution of the next instruction only after the block transfer is complete.    
 </p>
                             </div>
                           </div>
@@ -452,7 +441,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a register to the console or from the console to the S15 register. There are two macro instructions associated with I/O. These are <b>out</b> and <b>in</b>. The <b>out</b> instruction results in transfer of a word from a register to the console. The <b>in</b> instruction allows data from the console to be read into register S15, which is reserved for console input. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. The console device will send a hardware interrupt when the user inputs a word through the console. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from a machine register S15 designated for this purpose.  
+                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a port to the console or from the console to the port. There are two macro instructions associated with I/O, <b>in</b> and <b>out</b>. The <b>in</b> instruction allows data from the console to be read into port <b>P0</b>. The <b>out</b> instruction results in transfer of a word from port <b>P1</b> to the console. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. When the user inputs a word through the console, the console device will send a hardware interrupt. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from port P0 only.  
 </p>
                             </div>
                           </div>
@@ -470,7 +459,8 @@ The disk is block accessible and not word accessible. This means that a word wit
                           <div id="Threecollapse7" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the first disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the first instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code.
+When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the 1<sup>st</sup> disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the 1<sup>st</sup> instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code. 
+                                 <br/><code>Note</code> : Boot ROM contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1 which now contains Boot Block). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1.
 </p>
                             </div>
                           </div>
@@ -478,8 +468,6 @@ When XSM machine starts up, program execution starts at the first word of the fi
                         
 </div>
 
-<br>
-<br>
 
                       </div>
                     </div>

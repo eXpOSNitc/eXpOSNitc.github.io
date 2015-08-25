@@ -133,11 +133,11 @@
 
 <div id="content">
 
-<p>The processor consists of a set of <b>registers</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register can store a string.</p>  
+<p>The processor consists of a set of <b>registers</b> and <b>ports</b> along with the hardware for performing control and arithmetic/logic operations, paging etc. Each register/port can store a string.</p>  
 
 <p>The machine is equipped with an <b>instruction set</b>.  Two contiguous memory words are necessary to store each XSM instruction. The reader is assumed to have a basic understanding of the general principles of computer organization, hardware and software interrupts, exceptions, and hardware paging to follow the processor description in this document.</p>  
 
-<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.</p>
+<p>The processor has two fundamental modes of operation - <b>privileged execution mode</b> and the <b>unprivileged execution mode</b>.   A program executing in the privileged mode can execute any XSM instruction and has the full view of the memory and the disk.  A program executing in the unprivileged mode has access only to a restricted machine model called the <b>XSM virtual machine</b>.  The instruction set and the memory model available to a program executing in unprivileged mode is a subset of that in the privileged mode. These are called the virtual machine instruction set and the virtual machine memory model respectively. ( See <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a> for more).  XSM implements the virtual machine model using its <a href="paging_hardware.html" target="_blank"><b>paging hardware</b></a>.</p>
 
                             </div>
                           </div>
@@ -148,16 +148,16 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse"  href="#ThreecollapseThree">
-                                <span class="fa fa-check-square-o"></span>XSM Machine Registers
+                                <span class="fa fa-check-square-o"></span>XSM Machine Registers/Ports
                               </a>
                             </h4>
                           </div>
                           <div id="ThreecollapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
 
-<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes.</p>   
+<p>The XSM architecture maintains 29 registers, each capable of storing a word.  Only a few of them are accessible in unprivileged mode.  Several registers are special purpose registers reserved for specific purposes. The machine also contains 4 ports, of which one port is used for Standard Input and another one is used for Standard Output. The remaining ports are unused in the present version of XSM.</p>   
 
-<p>The  following table gives an overview of XSM registers according to their category.</p>
+<p>The  following table gives an overview of XSM registers/ports according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
                                     <tr>
@@ -170,7 +170,7 @@
   <tr>
     <td>R0-R19</td>
     <td>General Purpose User Registers<br/>
-        <span style="font-size:13px">R16-R19 are reserved for the use of SPL compiler</span> 
+        <span style="font-size:13px"><b>R16-R19 are reserved for the use of SPL compiler</b></span> 
     </td>	
     <td>Unprivileged</td>
   </tr>
@@ -187,6 +187,11 @@
   <tr>
     <td>EIP, EC, EPN, EMA</td>
     <td>Exception Status Registers</td>	
+    <td>Privileged</td>
+  </tr>
+  <tr>
+    <td>P0-P3<br/><b>(Ports)</b></td>
+    <td>P0-Input port, P1-Output port<br/>P2,P3-Unused</td>	
     <td>Privileged</td>
   </tr>
 </table>
@@ -208,11 +213,11 @@
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-It is the physical memory of the machine and is a volatile storage.  The memory is organized as sequence of <b>pages</b>.  Each page is a sequence of 512 words.  The total number of memory pages available is 128.    Thus there are in total 512 x 128 = 65536 words of storage.    The memory is word addressable.   The machine contains data transfer instructions that allow a word to be transferred from memory to a register and back.</p>    
+Memory refers to the physical memory of the machine and is a volatile storage. The memory is organized as a sequence of <b>pages</b>.  Each page is a sequence of 512 words.  The total number of memory pages available is 128. Thus there are in total 512 x 128 = 65536 words of storage. The memory is word addressable. The machine contains data transfer instructions that allow a word to be transferred from memory to a register/port and back.</p>    
 
 <p>When the machine is executing in privileged mode, a memory address “N” between 0 and  65535 refers to the word with offset (N mod 512) in  page number (N div 512).  </p>
 
-<p>Note:  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a>.</p>
+<p><code>Note</code> :  Since the memory model is different when the machine operates in  unprivileged mode, the total amount of memory and the interpretation of addresses are different and will be discussed in the <a href="../virtual_machine_spec.html" target="_blank">Virtual Machine Specification</a>.</p>
 
 <p>The  Memory of the XSM Machine is organised as follows :</p>
 
@@ -281,12 +286,6 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
     <td>16  - 17</td>
     <td>INT 7</td>	
     <td>8192 - 9215</td>
-    <td>1024</td>
-  </tr>
-  <tr>			
-    <td>12  - 13</td>
-    <td>INT 5</td>	
-    <td>6144 - 7167</td>
     <td>1024</td>
   </tr>
   <tr>					
@@ -358,8 +357,8 @@ It is the physical memory of the machine and is a volatile storage.  The memory 
   <tr>											
     <td>40 - 127</td>
     <td>Unreserved Pages</td>	
-    <td>21518  - 65535</td>
-    <td>44544</td>
+    <td>20480  - 65535</td>
+    <td>45056</td>
   </tr>
   
 </table>
