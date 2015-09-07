@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>ABI</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="Roadmap.html" target="_blank">Roadmap</a></li>
+              <li><a href="Documentation.html" target="_blank">Documentation</a></li> 
+               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="faq.html" target="_blank">FAQ</a></li>
+              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+		
+    <!--=========== End HEADER SECTION ================--> 
+    
+    <!--begin section-->
+    <section id="abi">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 >Application Binary Interface (ABI)</h2>
+                <br/>
+                <br/>
+                <p> The ABI defines the following:
+<ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+<li> The <b>machine model</b> - that is, the instruction set and the virtual memory address space to which an application/compiler generating executable file must generate target code for.  This is very much architecture specific.  
+</li>
+<li>
+ A logical division of the memory address space into <b>regions</b> - <i>text, stack, heap and library </i>and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
+</li>
+<li>
+The <b>file format</b> to be followed for executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent. Compilers must generate executable files adhering to this format. 
+</li>
+<li>A <b>low level system call interface</b> which gives the specification of the software interrupt instruction (trap) corresponding to each system call and the order in which arguments must be passed to the system call through the application program's stack.This part is architecture dependent.</li>
+<li>The <b>low level runtime library interface :</b> The low level runtime library interface consists of user level routines which provide a layer of abstraction between the low level system call interface and the application program by providing a unified interface for all system calls, hiding low level interrupt details from the application.  (Applications however, may choose to bypass this layer and directly invoke the low level system calls.)  In addition to the system call interface, application level dynamic memory allocator and deallocator functions are also part of the eXpOS library. </li>
+</ol></p>
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+                        <!-- START SINGLE FEATURED ITEM #1-->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#collapse1">
+                                 <span class="fa fa-check-square-o"></span>XSM User Level Instruction Set
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p>
+XSM Instruction set describes the target language in which a compiler must generate an executable file. Instructions are classified into privileged and unprivileged instructions. Programs run in user mode can make use of only unprivileged instructions while programs run in kernel mode make use of both privileged and unprivileged instructions.</p>
+<p>
+You can read more about the XSM user level instruction set <a href="virtual_machine_spec.html" target="_blank">here</a>.  
+</p>
+
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse"  href="#collapse2">
+                                 <span class="fa fa-check-square-o"></span>Virtual Address Space Model 
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                           <p>
+                               The (virtual) address space of any eXpOS process is logically divided into four parts namely <i>Shared Library, Heap, Code and Stack</i>.
+<br>
+</p>
+<center><img src="img/process_model.png"></center>
+<br>
+<br>
+<p><b>Shared library</b> can be shared by more than one executable file. The maximum size of this memory region is X_LSIZE.</p>
+
+<p>NOTE : eXpOS assumes that routines for unified system call interface and dynamic memory allocation are loaded into the shared library region. The eXpOS implementation for the XSM architecture discussed here sets X_LSIZE to 1024 words.  Thus the shared library will be loaded into the region between
+memory addresses 0 and 1023 in the address space of the process.</p>
+
+<p><b>Heap</b> is the portion of the address space of a process reserved as the memory pool from which dynamic memory allocation
+is done by the allocator routines in the shared library (for example, memory allocated via malloc in C). The maximum size of this memory region is X_HSIZE. Library functions access this portion of memory for dynamic memory allocation and deallocation.   The eXpOS execution semantics specify that when a process executes the Fork system call, this region will be shared between the parent process and the child process. The eXpOS implementation for the XSM architecture discussed here  sets X_HSIZE to 1024 words. Thus the heap region will be between memory addresses 1024 and 2047 in the address space of the process.</p>
+
+<p><b>Code</b> contains the header and code part of the XEXE executable file, which is loaded by the eXpOS loader from the file system when the Exec system call is executed.  The first eight words of the executable file contains the header. The rest of the code region contains the XSM instructions. The total size of code section cannot exceed X_CSIZE.  The eXpOS implementation for the XSM architecture discussed here  sets X_CSIZE to 1024 words. Hence, the code region will be between memory addressess 2048 and 3071 in the address space of the process.</p>
+
+<p><b>Stack</b> is the space reserved for the runtime stack of the process. Parameters and local variables associated with functions in a program are allocated in the stack. In the XSM architecture, the stack grows upwards and the maximum stack size is X_SSIZE. Global variables must be allocated in the stack as the executable file format does not support a separate <a href = "http://en.wikipedia.org/wiki/Data_segment" target="_blank">Data region</a>. The eXpOS implementation for the XSM architecture discussed here  sets X_SIZE to 1024 words.Thus the stack will occupy the region betweem memory address 3072 and 4095 in the address space of the process.</p>
+
+<p>A description of the user level address space provided by XSM is given <a href="virtual_machine_spec.html" target="_blank">here</a>.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div id="xexe">
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse"  href="#collapse3">
+                                <span class="fa fa-check-square-o"></span>XEXE Executable File Format
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <br>
+                                <br>
+                                <p> Executable files in eXpOS must be in the XEXE format[ADD LINK***] as eXpOS executes only files of such format.</p>
+   <p>An executable file in eXpOS consists of two parts:</p>
+   <ul style="text-indent: 5em;">
+       <li>1. Header</li>
+       <li>2. Code</li>
+   </ul>
+<center><img src="img/exe_file.jpeg"></center>
+   <br>
+   <p>The maximum size of the file (including the header) is limited by the constant EXE_SIZE. The eXpOS implementation for the XSM architecture discussed here  sets EXE_SIZE to 1024 words.</p>
+   <p>The first eight words of an executable file are reserved for the header which describes the features of file. The structure of the header is :</p>
+<br>
+<center>   <img src="img/header.png"></center>
+   <br>
+   <p><b>XMAGIC</b> is a number indicating the type of executable file. All XEXE files will have magic number 0. For more on Magic Number, click <a href = "http://en.wikipedia.org/wiki/File_format#Magic_number" target="_blank">here</a>.</p>
+ 
+   <p><b>Entry point</b> contains the virtual address in memory of the first instruction to be executed (entry point) of the program after the OS loader has loaded it. During loading, the program counter must be initialized to this address. The present version of eXpOS assumes that this value is 0. </p>
+ 
+   <p><b>Text Size</b>, <b>Data Size</b>, <b>Heap Size</b> and <b>Stack size</b> indicates the sizes of Text, Data, Heap and Stack regions to be allocated by the OS loader when the file is loaded for execution. </p>
+
+   <p>Note that Data and stack has to be in the same area and must be managed by the compiler / application program. So, in the present implementation of eXpOS ignores the value of the field Data Size.</p>
+   
+   <p>If the <b>Runtime Library</b> must be included when the file is loaded, the Library Flag is set to 1. Generally, memory is not allocated for the heap if this flag is not set.</p>
+                               </div>
+                          </div>
+                        </div>
+                        </div>
+                     <!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#collapse4">
+                                <span class="fa fa-check-square-o"></span>Low Level System Call Interface
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>The <b>Low level system call interface</b> describes the conventions to be followed by application programs that invoke <a href="os_spec-files/systemcallinterface.html" target="_blank" >eXpOS system calls</a> on the XSM architecture.  The interface describes the software interrupt instruction (trap) corresponding to each system call  and the calling conventions for passing arguments and extracting return values of the system call through the application program's stack. This part is architecture dependent.</p>
+                                <h3>System Calls</h3>
+                                <p>For an application program, there are two stages in executing a system call:</p>
+                                <ul style="text-indent: 5em;">
+                                    <li>1. <i>Before the system call</i>:   The calling application must set up the arguments in the (user) stack before executing the trap instruction.  </li>
+                                    <li>2. <i>After the system call</i>:   The return value of the system call must be extracted from the stack.  </li>
+                                    
+                                </ul>
+                                <h3>Invoking a system call</h3>
+                                <p>A user program invokes a system call by first pushing the system call number and then the arguments into the stack and then invoking the <b>INT</b> machine instruction corresponding to the system call. In this implementation of XSM, the number of arguments pushed into the stack is fixed at three.</p>
+                                <p> A system call invocation using the high level application programmer's interface of a programming language like ExpL compiles to a set of machine instructions. They are the stack operations that must be performed by the user program before the INT instruction is executed (See machine instructions below). The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0' - see sample code below) is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. <p>
+<br>
+<pre style = "font-size:20px">
+    PUSH System_Call_No     // Push system call number 
+    PUSH Argument_1         // Push argument 1 to the stack
+    PUSH Argument_2         // Push argument 2 to the stack
+    PUSH Argument_3         // Push argument 3 to the stack
+    PUSH R0	                // Push an empty space for RETURN VALUE
+    INT number              // Invoke the corresponding INT instruction. The number 
+                                   can be any number between 0 and 18 
+                                
+</pre>
+<br>
+                                <p>The following figure shows the data stored in process stack just before an INT instruction. </p>
+<center>                        <img src="img/system_call_stack1.png"></center>
+                                
+                                <p>The INT instruction in XSM will push the value of IP + 2 on to the stack. This is the address of the instruction immediately following the INT instruction in the user program. Each instruction is 2 words, hence IP is incremented by 2. Upon execution of the IRET instruction from the system call, execution resumes from this value of IP. The INT instruction changes mode from <b>User</b> mode to <b>kernel</b> mode and passes control to the Interrupt Routine corresponding to the system call. </p>
+                                <p>The following figure shows the contents of the stack immediately after the execution of the INT instruction. </p>
+<center>                        <img src="img/system_call_stack2.png"></center>
+                                <h3>After return from the system call</h3>
+                                <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the ExpL compiled machine code given in the previous step. </p>
+<br>
+<pre style = "font-size:20px">
+    POP Ri                    // Pop and save the return value into some register Ri
+    POP Rj                    // Pop and discard argument 3
+    POP Rj                    // Pop and discard argument 2
+    POP Rj                    // Pop and discard argument 1
+    POP System Call Number    // Pop and discard the system call number
+                              // Now the stack is popped back to the state before call 	
+</pre>
+
+<p>The machine code above pops the values from the stack. The system call number and arguments were inputs to the system call and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program by popping out to some register.   </p>
+                                <h3>System calls and their translation</h3>
+<p>
+Associated with each system call, there is a system call number and interrupt routine number. The system call number is used to identify a system call. The interrupt routine number denotes the number of the interrupt routine which  handles the system call. An interrupt routine may handle more than one system call.       
+</p>       
+                                <table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">System Call</th>
+                                        <th style="text-align: center;">System Call Number</th>
+                                        <th style="text-align: center;">Interrupt Routine Number</th>
+                                    </tr>
+  <tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>1</td>
+  </tr>
+
+  <tr>
+    <td>Delete</td>
+    <td>4</td>	
+    <td>1</td>	    
+  </tr>
+
+  <tr>
+	  <td>Seek</td>
+	  <td>6</td>
+          <td>1</td>	
+  </tr>
+
+  <tr>
+    <td>Open</td>
+    <td>2</td>		
+    <td>2</td>	
+  </tr>
+
+  <tr>
+	  <td>Close</td>
+	  <td>3</td>
+          <td>2</td>	
+  </tr>
+
+
+  <tr>
+	  <td>Read</td>
+	  <td>7</td>
+          <td>3</td>	
+  </tr>
+
+  <tr>
+	  <td>Write</td>
+	  <td>5</td>
+          <td>4</td>	
+  </tr>
+
+  <tr>
+    <td>Fork</td>
+    <td>8</td>
+    <td>5</td>	
+  </tr>		
+  <tr>
+    <td>Exec</td>
+    <td>9</td>
+    <td>6</td>	
+    
+  </tr>
+
+  <tr>
+    <td>Exit</td>
+    <td>10</td>		
+    <td>7</td>	
+  </tr>
+
+  <tr>
+	  <td>Getpid</td>
+	  <td>11</td>
+          <td>8</td>	
+  </tr>
+
+  <tr>
+	  <td>Getppid</td>
+	  <td>12</td>
+          <td>8</td>	
+  </tr>
+
+  <tr>
+    <td>Shutdown</td>
+    <td>21</td>		
+    <td>12</td>	
+  </tr>
+
+  <tr>
+    <td>Signal</td>
+    <td>14</td>	
+    <td>8</td>	
+  </tr>
+
+  <tr>
+    <td>Wait</td>
+    <td>13</td>	
+    <td>8</td>	    
+  </tr>
+
+  <tr>
+    <td>FLock</td>
+    <td>15</td>		
+    <td> 9</td>	
+  </tr>
+
+  <tr>
+	  <td>FUnLock</td>
+	  <td>16</td>
+      <td>9</td>	
+  </tr>
+
+  <tr>
+	  <td>Semget</td>
+	  <td>17</td>
+      <td>10</td>	
+  </tr>
+
+  <tr>
+	  <td>Semrelease</td>
+	  <td>18</td>
+      <td>10</td>	
+  </tr>
+
+  <tr>
+	  <td>SemLock</td>
+	  <td>19 </td>
+          <td>11</td>	
+  </tr>
+  <tr>
+	  <td>SemUnLock</td>
+	  <td>20</td>
+      <td>11</td>	
+  </tr>
+  
+    <tr>
+	  <td>Test</td>
+	  <td>99</td>
+      <td>14</td>	
+  </tr>
+
+</table>
+            <p>For details on the specification of the system calls, click <a href="os_spec-files/systemcallinterface.html" target="_blank">here</a></p>
+
+                               </div>
+                          </div>
+                        </div>
+                        
+                     <!--start-->
+                     <div id="library">
+                     <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#collapse5">
+                                 <span class="fa fa-check-square-o"></span>Low Level Runtime Library Interface
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="collapse5" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                
+                            <p>The eXpOS library consists of a collection of user level routines provided as part of the operating system. These routines are loaded to the memory during OS start up and can be linked to the address space of any user process by the OS loader (exec system call). The OS loader will link these routines to the shared library region of the address space if the library flag in the header of the executable file being loaded is set to 1. 
+                             
+							The library provides a <b>uniform system call interface</b> through which application program can invoke system calls by providing the system call number and the arguements. The interface hides the details of the interrupt service routine corresponding to the system call from the application program, thereby making it architecture independent.
+
+							The library also provides user level routines for <b>dynamic memory management (allocation and de-allocation)</b> from the <i>heap region</i> of the application.</p> 
+                               
+                               
+                            <h3>Unified System Call Interface</h3>
+                               
+                               <p>This library routine is linked to <i>virtual address 0</i> of the address space of a process by the OS loader and requires four arguments (system call number and three arguments to the system call) to be passed through the stack. The routine invokes the corresponding low level system call and returns to the user program the return value of the system call through the stack. The following figure shows the contents of the stack just before a call to this library routine.</p>
+                               
+                               <center>                        <img src="img/system_call_interface_stack.png"></center>
+                               
+                               <h3>Dynamic Memory Management Module Interface</h3>
+                               
+                                <p>The dynamic memory management module interface takes two inputs - a function code (0 for alloc and 1 for free - see <a>high level library interface</a> for specification) and one argument passed through the stack. The retrun value is passed back to the application through the stack. The OS loader of the present version of eXpOS for XSM architecture links this routine to <i>virtual address 512</i> of the application process. The following figure shows the contents of the stack just before a call to this library routine.</p>
+                               
+<center>                        <img src="img/memory_management.png"></center>
+
+
+                            </div>
+                          </div>
+                        </div>
+                     </div>
+                     
+                     
+                     <!--end-->   
+                      </div>
+                    </div>
+                               </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       	
+		 
+    </section>
+    
+    <!--end section-->
+                
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="js/map_js.js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>

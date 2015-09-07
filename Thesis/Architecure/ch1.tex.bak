@@ -1,0 +1,179 @@
+\chapter{Introduction}
+\label{chap1}
+%\section{Introduction}
+ Today, the architecture of distributed computer systems is dominated by client/
+server platforms relying on synchronous request/reply. This
+architecture is not well suited to implement information-driven
+applications like news delivery, stock quoting, air traffic control,
+and dissemination of auction bids due to the inherent mismatch
+between the demands of these applications and the characteristics of
+those platforms. In contrast to that, publish/subscribe directly
+reflects the intrinsic behavior of information-driven applications
+because communication here is indirect and initiated by producers of
+information: Producers publish notifications and these are delivered
+to subscribed consumers by the help of a notification service that
+decouples the producers and the consumers. Therefore,
+publish/subscribe should be the fist choice for implementing such
+applications.
+\\
+
+
+In client/server systems two roles exist: A component acts as a
+client if it requests data or functionality from another component;
+it acts as a server if it responds to a client's request. Moreover,
+a client is blocked after it has issued a request, until the
+corresponding reply arrives. One of the main deficiencies is the
+tight coupling among the involved components, i.e., the clients and
+the servers: A client needs to explicitly address the server that
+shall process the request, the server must be ready and able to
+process the request, and the client is blocked, until it receives
+the reply. Because of these inherent disadvantages a large range of
+applications cannot be realized efficiently by using request/reply.
+These problems are approached by a new communication paradigm called
+publish/subscribe that recently gained increased publicity in the
+distributed systems research area. Publish/subscribe is an
+asynchronous communication paradigm that is also the basis for
+extensions  and supplementary services  that have been added to
+standard middleware recently.
+
+ \subsection{Publish Subscribe Systems}
+A publish/subscribe system consists of a set of clients that
+asynchronously exchange notifications, decoupled by a notification
+service that is interposed between them. Clients can be
+characterized as producers or consumers. Producers publish
+notifications such as current stock quotes, and consumers subscribe
+to notifications by issuing subscriptions, which are essentially
+stateless message filters. Consumers can have multiple active
+subscriptions, and after a client has issued a subscription the
+notification service delivers all future matching notifications that
+are published by any producer until the client cancels the
+respective subscription. Publish/subscribe systems have a number of
+interesting characteristics. Firstly, producers do not need to
+address consumers and vice versa. Secondly, communication is
+asynchronous, thereby removing the disadvantages and inflexibility
+of synchronous communication described above. Thirdly, producers and
+consumers do not need to be available at the same time. Finally,
+publish/subscribe directly reects the intrinsic behavior of
+information-driven applications because communication is initiated
+by producers of information.
+
+\section{Previous Works}
+\subsection{PASTRY}
+Pastry \cite{pastry} is  a scalable, distributed object location and
+routing substrate for wide-area peer-to-peer applications. Pastry
+performs application-level routing and object location in a
+potentially very large overlay network of nodes connected via the
+Internet.\\
+ Each node in the Pastry network has a unique identifier (nodeId).
+When presented with a message and a key, a Pastry node efficiently
+routes the message to the node with a nodeId that is numerically
+closest to the key, among all currently live Pastry nodes. Each
+Pastry node keeps track of its immediate neighbors in the nodeId
+space, and notifies applications of new node arrivals, node failures
+and recoveries. Pastry takes into account network locality; it seeks
+to minimize the distance messages travel, according to a to scalar
+proximity metric like the number of IP routing hops. Pastry is
+completely decentralized, scalable, and self-organizing.
+
+
+
+\begin{tabular}{|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Routing Performance &  logxN
+ where x=2b and N is the total number of nodes.
+  \\& For one it is the order of the diameter of the graph.  \\\hline
+  No. Of Messages & logxN where x=2b and \\& N is the total number of nodes \\\hline
+  Routing Table Size & leaf set=2*2b and neighbor set=2*2b and
+  \\&routing table=2b * logxN where x=2b \\&and N is the total number of nodes.  \\
+  \hline
+  Overhead on node & involves passing routing tables among at least logxN nodes\\Addition and deletion &(where x=2b and N is the total number of nodes.) \\
+  \hline
+  Fault Tolerance & not tolerant \\\hline
+  Node Failure & self adjusts \\\hline
+  Link Failure & not specified \\\hline
+  Traffic adaptability & adaptable to scalar traffic metrics \\\hline
+  Requirement for  & not required \\global Knowledge&\\\hline
+  Scalability & Scalable \\\hline
+  Correctness of algorithm & correct \\\hline
+
+\end{tabular}
+\subsection{MEDYM}
+MEDYM: Match Early with DYnamic Multicast\cite{medym}. Unlike
+existing approaches, MEDYM does not build ëstaticí overlay networks
+for event delivery. Its event delivery process is as shown in Figure
+4. When an event is published, it is first matched against
+subscriptions from remote servers, to obtain a destination list of
+servers with matching subscriptions. Then, the event is routed to
+the destination servers through dynamic multicast: On receiving an
+event message, based on its destination list, a server dynamically
+computes the next-hop servers to which to forward the message, as
+well as the new destination list for each of the next-hop servers.
+In this way, a transient dynamic multicast tree is constructed on
+the fly. Along this tree, the event is routed to all the servers
+with matching subscriptions.
+\begin{tabular}{|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Routing Performance & For one subscriber it is the order of the diameter of the graph \\\hline
+  No. Of Messages & For one subscriber it is the order of the diameter of the graph \\\hline
+  Routing Table Size & directly proportional to the number of nodes in the network \\\hline
+  Overhead on node &dynamically adjusts to new node arrivals and node deletions\\Addition and deletion &  \\\hline
+  Fault Tolerance & tolerance is not part of MEDYM \\\hline
+  Node Failure & The topological changes do not affect the algorithm \\\hline
+  Link Failure & The topological changes do not affect the algorithm \\\hline
+  Traffic adaptability &The routing can be done to optimize any metric  \\\hline
+  Requirement for &The complete knowledge of the entire network is required. \\global Knowledge & And the information has to be updated periodically \\\hline
+  Scalability & Not Scalable\\ \hline
+  Correctness of algorithm  & correct \\\hline
+
+\end{tabular}
+\subsection{SIENA}
+SIENA(Scalable Internet Event Notification
+Architecture)\cite{siena}. SIENA's topology is static. The
+subscriptions are propagated along the the topology to the
+publisher. and the subscriptions are stored along
+the path. The publications are delivered in the reverse path.\\
+\begin{tabular}{|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Routing Performance & For one subscription it is the diameter of the tree. \\\hline
+  No. Of Messages & For one subscriber it is the order of the diameter of the graph \\\hline
+  Routing Table Size & proportional to the number of subscriptions in the descendents \\\hline
+  Overhead on node &the node addition and deletion has to \\Addition and deletion & ensure that the static overlay topology is maintained. \\\hline
+  Fault Tolerance & The system is not adaptable to faults \\\hline
+  Node Failure & The node failure has is not handled by the SIENA \\\hline
+  Link Failure & Link failure can jeopardize the system \\
+  &as there are no redundant paths. \\\hline
+  Traffic adaptability &The optimization depending upon various metrics is \\&not possible due to static overlay  \\\hline
+  Requirement for & not required \\global Knowledge \\\hline
+  Scalability & Scalable\\\hline
+  Correctness of algorithm  & correct \\\hline
+
+\end{tabular}
+\subsection{Rebeca}
+Rebeca(Rebeca Event Based Electronic Commerce Architecture) also
+uses a static architecture. The basic routing is similar to SIENA
+but the subscriptions are stored using covering and merging
+techniques.\\
+\begin{tabular}{|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Routing Performance & For one subscription it is the diameter of the tree. \\\hline
+  No. Of Messages & For one subscriber it is the order of the diameter of the graph \\\hline
+  Routing Table Size & Subscriptions are stored in a different format.\\& Uses covering, merging techniques to store subscriptions \\\hline
+  Overhead on node &  should maintain the properties of the static topology \\addition and deletion& overhead depends on the choice of the node. \\& depends on the number of nodes already present in the network\\\hline
+Fault Tolerance & The faults are tolerated by leased subscriptions.
+\\\hline
+  Node Failure & no specific details \\\hline
+  Link Failure & cannot adapt to link failures
+  \\\hline
+  Traffic adaptability &cannot adapt to traffic due to static topology  \\\hline
+  Requirement for &not required \\global Knowledge \\\hline
+  Scalability & Scalable\\\hline
+  Correctness of algorithm  & correct \\\hline
+
+\end{tabular}
+\section{Present Approach}
+
+\section{Organization of The Thesis}

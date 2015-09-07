@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+   
+    <body>
+	<div id="Create">
+		<h1>Create System Call</h1> 
+        <p>Description: The Create operations allow application programs to create new data files.</p>
+        <p>Arguments: <b><i>Filename</i></b></p>
+        <p>Return Value: 0 (Success)</p>
+        <dl>
+            <dt>1. Inode Table Validation</dt>
+            <dd>The memory copy of Inode table is searched for <b><i>Filename</i></b>. If the entry is found, return from the system call with 0, indicating success. If not, check for free entry in Inode Table. If there is no free entry, return from system call with error code XFS_NOSP. If an entry is found, store the index in <b><i>InodeIndex</i></b>.
+</dd>
+            <dt>2. Updating Inode Table</dt>
+            <dd>In the entry corresponding to <b><i>InodeIndex</i></b>, set the file name field with <b><i>Filename</i></b>. The File size field is initialized to 0. Set the file type field as “DATA ”. 
+</dd> 
+            <dt>3. Update the root file entry</dt>
+            <dd>The entry for the file in the root is at <b><i>InodeIndex</i></b>. Set the filename field with <b><i>Filename</i></b>, file size to 0 and file type as “DATA”.
+</dd>
+            <dt>4. Return from the system call with return value 0, indicating success.</dt> 
+
+        </dl>
+    
+	</div>	
+	<div id="Delete"></div>
+	<div id="Open"></div>
+	<div id="Close"></div>
+	<div id="Read"></div>
+	<div id="Write"></div>
+	<div id="Seek"></div>
+	</body>
+</html>

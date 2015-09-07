@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Device Handler Interrupt</title>	
+</head>
+
+<body>
+	<h1>Device Handler Interrupt</h1>
+	<p>Description: It handles interrupt from I/O devices</p>
+	<dl>
+		<dt>1. Change the device status register contents to 0.</dt>
+		<dt>2. Check who issued the load/store instruction using Disk Status Table.</dt>
+		<dd>If the load/store instruction was issued by a process, go through the Process Table and wake up those processes whose state is (WAIT_DISK,_).</dd>
+                <dd>If the load/store instruction was issued by scheduler, then check if the instruction was a store instruction. If so, set the stored page free, by updating the memory free list and increment MEM_FREE_COUNT. If the instruction was a load, then check if the block loaded was in swap area. If so, set the block free by updating the memory copy of disk free list. </dd>
+                
+                <dt>3. Return</dt>
+	</dl>
+</body>
+
+</html>

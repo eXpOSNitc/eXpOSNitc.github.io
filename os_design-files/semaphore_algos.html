@@ -1,0 +1,330 @@
+<!--This document consists of header and footer only -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Semaphore System Calls</title>
+
+ <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li class="../index.html"><a href="#">Home</a></li>
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+              <li><a href="../Documentation.html" target="_blank">Documentation</a></li> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+
+   <!--=========== BEGIN  ================-->
+  <section id="semget">
+       <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >Semget system call</h2>
+               <br>
+               <br>                                      
+             
+              <p>Argument: None</p>
+                                                <p>Return Value : </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>SEMID (Integer) </td>
+                                                        <td>Success, returns a semaphore descriptor(SEMID)</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Process has reached its limit of resources </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Number of semaphores has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
+                                           The calling process can share the semaphore with its child processes using the fork system call. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.</p>
+                                           <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
+              <br>
+             <div><h4>Algorithm:</h4></div>
+             
+             <p>Find the index of a free entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>. If no free entry, then return -1.</p>
+             <p>Find the index of a free entry in <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a> and increment the process count. If no free entry, return -2.</p>
+             <p>/* Free entry is indicated by a Process Count of 0. */ </p>
+             <p>Store the index of the Semaphore table entry in the Per Process Resource Table entry. &nbsp;&nbsp;/*Attach the semaphore to the process.*/</p>
+             
+             <p>Return Semaphore Table entry index. &nbsp;&nbsp;/* success */</p>
+
+<h4>Questions</h4>
+<p>1. Will interchanging the first two steps change the effect of semget system call? How?</p>
+         </div>
+    </div>
+    </div>
+                   
+
+        
+    </section>
+    <section id="semrelease">
+      <br><br><br>
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >Semrelease system call</h2>
+               <br>
+               <br>                                      
+             
+              <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                 
+                                                </table>
+                                                <p><i>Description </i>: This system call is used to release a semaphore descriptor held by the process. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
+              
+              <br>
+             <div><h4>Algorithm:</h4></div>
+             
+             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
+             <p><b>If</b> semaphore is locked by the current process. &nbsp;&nbsp;/*Check the Locking PID in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
+             <p style=" text-indent: 4em;">Set the Locking PID to -1.&nbsp;&nbsp;/* Unlock the semaphore before release */</p>
+             <p>Decrement the process count of the semaphore.</p>
+             
+               <p>Invalidate the Per-Process resource table entry. &nbsp;&nbsp;/* Set to -1 */ </p>
+               
+<p>Return 0</p>
+                          
+         </div>
+    </div>
+    </div>
+          </section>
+          <section id="semlock">         
+       <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >SemLock system call</h2>
+               <br>
+               <br>                                      
+             
+             <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success or the semaphore is already locked by the current process</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                                <p><i>Description </i>:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
+</p>
+<p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
+              <br>
+             <div><h4>Algorithm:</h4></div>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
+             <p><b>If</b> Semaphore descriptor is not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
+             
+               <p><b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> of the current process to (<a href="constants.html" target="_blank">WAIT_SEMAPHORE</a>, Semaphore table index of the locked semaphore).  </p>
+              <p style=" text-indent: 4em;">Call Scheduler.</p>
+
+             <p> <b>endwhile</b></p>
+             <p> Change the Locking PID to PID of the current process in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table </a>. </p>
+             <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
+             <p>Return 0. &nbsp;&nbsp;/* success */</p>
+
+         </div>
+    </div>
+    </div>
+                   
+
+  </section>
+   <section id="semunlock">         
+       <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >SemUnLock system call</h2>
+               <br>
+               <br>                                      
+             
+             <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Semaphore was not locked by the calling process</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p><i>Description </i>: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. Data Structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. </p>
+              <br>
+              <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
+             <div><h4>Algorithm:</h4></div>
+             <p>Set the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to Kernel mode.</p>
+             <p><b>If</b> Semaphore descriptor not valid or the entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid , return -1.</p>
+         
+             <p><b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */</p>
+              <p style=" text-indent: 4em;"><b>If</b> current process has not locked the semaphore, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
+              <p style=" text-indent: 4em;">Set the Locking PID to -1. &nbsp;&nbsp;/* Unlock the semaphore. */</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for all the processes in the state (<a href="constants.html" target="_blank">WAIT_SEMAPHORE</a>, Semaphore table index of the locked semaphore). </p>
+              <p>Reset the mode flag in the <a href="process_table.html" target="_blank">Process Table</a> to User mode.</p>
+             <p>Return 0.&nbsp;&nbsp; /* success */</p>
+             
+
+         </div>
+    </div>
+    </div>
+                   
+
+  </section>
+ <
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
+

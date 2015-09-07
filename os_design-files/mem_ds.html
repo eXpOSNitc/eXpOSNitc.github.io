@@ -1,0 +1,388 @@
+<!--give description DataStructuresNov18 -->
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Memory DS</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li class="../index.html"><a href="#">Home</a></li>
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+              <li><a href="../Documentation.html" target="_blank">Documentation</a></li> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+ 
+ <!--=========== BEGIN file Table SECTION ================-->
+    <section id="file_table">
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >File Table</h2>
+               <br>
+               <br>
+              <p>The File Table stores the information about all the files that are open while the OS is running.  It consists of MAX_OPENFILE_NUM (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_OPENFILE_NUM = 32 open files in the system at any time. </p>
+              <p>
+              The Open system call creates an entry in the File table when a process opens a file that is not opened by any process in execution.  If the file is opened again by some other process (or the same process), the Open system call updates the same file table entry.  The first field (Inode Index) of the File table entry for a file is set to the index of the Inode Table entry for the file.  The second field (File Open Count) stores the number of open instances of the file and is incremented/decremented when a process opens/closes the file. 
+              </p><p>
+              If the file open count reaches zero (that is if the last open instance has been closed) then, all fields of 
+              the corresponding file table entry is invalidated by setting to -1.   </p>
+              <p>Each entry is of size 8 words of which the last 4 are left unused.</p>
+              <p>Every entry of the File Table has the following format :</p>
+              <table class="table table-bordered  table-responsive" >
+                  <tr >
+                      <td style="border: 1px solid black">INODE INDEX</td>
+                      <td style="border: 1px solid black">FILE OPEN COUNT</td>
+                      <td style="border: 1px solid black">ULOCK</td>
+                      <td style="border: 1px solid black">KLOCK</td>
+                      <td style="border: 1px solid black">Unused</td>
+                                            
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>INODE INDEX </b> (1 word) - specifies the index of the entry for the file in the Inode table.</li>
+                   <li><b>FILE OPEN COUNT</b> (1 word) - specifies the number of open instances of the file  </li>
+                   <li><b>ULOCK</b> (1 word)- If the file was locked by a process using  FLock system call, this field specifies the PID of the process, otherwise, it is set to -1. </li>
+                   <li><b>KLOCK</b> (1 word)- If the file is locked by the process inside a system call, this field specifies the PID of the process, otherwise, it is set to -1. </li>
+                   
+                  <li><b>Unused</b> (4 words)</li>
+                                     
+              </ul>  
+              
+              <p>All invalid entries are set to -1</p>  
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+
+ <section id="sem_table">
+	    <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >Semaphore Table</h2>
+               <br>
+               <br>
+              <p>The Semaphore Table contains details about all the semaphores used by the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
+              
+              <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore table entry for the semaphore. </p>
+              <p>The Process count field specifies the number of processes which are sharing the semaphore. Semget sets the Process Count to 1. When a process forks, all semaphores acquired by the parent is shared with the child and hence, process count is incremented. Semrelease system call decrements the Process Count. Process Count is also decremented when a process exits.</p>
+              <p>SemLock system call sets the Locking PID field to the PID of the process invoking it. When the semaphore is not locked, Locking PID is -1. </p>        
+
+              <p>Each semaphore table entry is of size 4 words of which the last two are unused.</p>
+              <table class="table table-bordered" >
+                  <tr >
+                      <td style="border: 1px solid black">LOCKING PID</td>
+                      <td style="border: 1px solid black">PROCESS COUNT</td>
+                      <td style="border: 1px solid black">Unused</td>
+                                                                  
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>LOCKING PID </b> (1 word)- specifies the PID of the process which has locked the semaphore </li>
+                   <li><b>PROCESS COUNT</b> (1 word) - specifies the number of processes which are sharing the semaphore.  </li>
+                   <li><b>Unused</b> (2 words)</li>                                     
+              </ul> 
+              
+              <p>All invalid entries are set to -1</p>     
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+ 
+ <section id="ds_table">
+	    <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 > Disk Status Table</h2>
+               <br>
+               <br>
+              <p> It is assumed that the machine provides a <i>load</i> instruction to transfer a disk block to a memory page and a <i>store</i> instruction to transfer a memory page to a disk block. The Disk Status Table keeps track of these disk-memory transfers. Every time a disk operation is invoked, the information regarding the operation like the disk block and the memory page involved, the process that invoked the operation and type of disk operation are stored in Disk Status Table by the OS. In the present version of eXpOS, it is assumed that, the disk does not support multiple disk-memory transfers at the same time and is considered busy while a transfer is going on. The state of the disk (busy or free) is also stored in the Disk Status Table. </p>
+              <p> The size of the table is 8 words of which the last 3 are unused.</p>
+              <table class="table table-bordered table-responsive" >
+                  <tr >
+                       <td style="border: 1px solid black">STATUS</td>  
+                      <td style="border: 1px solid black">LOAD/STORE BIT</td>
+                      <td style="border: 1px solid black">PAGE NUMBER</td>
+                      <td style="border: 1px solid black">BLOCK NUMBER</td>
+                       <td style="border: 1px solid black">PID</td>   
+                      <td style="border: 1px solid black">Unused</td>  
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>STATUS </b>(1 word) - specifies whether the disk is free (indicated by 0) or busy (indicated by 1) handling a memory-disk transfer.</li>
+                   <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load (indicated by 0) or store (indicated by 1).</li>
+                   <li><b>PAGE NUMBER</b> (1 word) - specifies the memory page number involved in the disk transfer</li>
+                   <li><b>BLOCK NUMBER</b> (1 word) - specifies the disk block number involved in the disk transfer.</li>
+                  <li><b>PID</b> (1 word) - specifies the PID of the process which invoked the disk transfer. It is set to -PID if the disk transfer was initiated by the scheduler, to load/store a page of the process with identifier PID.</li>
+                  <li><b>Unused</b> (3 words) </li>
+              </ul>    
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+
+ <section id="buffer_table">
+	    <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >Buffer Table</h2>
+               <br>
+               <br>
+               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER = 4. Each buffer is identified by its index in the buffer table. </p> 
+
+			<p>Since 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified. The dirty bit indicates whether the page has been modified.</p> 
+
+			<p>When a disk block is required to be brought into the buffer, the buffer to which it must be loaded is identifed by the formula :
+			</p><p> Buffer_number = Disk_block_number % MAX_BUFFER   </p>
+              <p> Each entry of the Buffer Table has the following format:</p>
+              <table class="table table-bordered" >
+                  <tr >
+                      <td style="border: 1px solid black">BLOCK NUMBER</td>
+                      <td style="border: 1px solid black">DIRTY BIT</td>
+                      <td style="border: 1px solid black">LOCKING PID</td>
+                      <td style="border: 1px solid black">Unused</td>
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block which is currently stored in the buffer. It is set to -1 if the buffer does not contain any valid disk block.</li>
+                   <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. It is set to 0 when a disk block is loaded into the buffer and is set to 1 when modified by the Write System Call.</li>
+                   <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer while executing a file system call.</li>
+                   <li><b>Unused</b> (1 word)</li>
+               </ul>
+              <p>Free entries are represented by -1 in all the fields.</p>
+              
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+
+ <section id="ss_table">
+	    <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 >System Status Table</h2>
+               <br>
+               <br>
+              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable and, the number of processes in swapped state. The size of the table is 4 words out of which 1 word is unused.</p>
+              <p> The System Status Table has the following format:</p>
+              <table class="table table-bordered" >
+                  <tr >
+                      <td style="border: 1px solid black">MEM_FREE_COUNT</td>
+                      <td style="border: 1px solid black">WAIT_MEM_COUNT</td>
+                      <td style="border: 1px solid black">SWAPPED_COUNT</td>
+                      <td style="border: 1px solid black">Unused</td>
+                                           
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>MEM_FREE_COUNT</b> (1 word) - specifies the number of free pages available in memory.</li>
+                   <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting for memory. </li>
+                   <li><b>SWAPPED_COUNT</b> (1 word) - specifies the number of processes in (SWAPPED, _ ) or (SWAPPED_WAIT, _ ) state.</li>
+                   <li><b>Unused</b> (1 word)</li>
+               </ul>
+              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+ 
+<section id="ts_table">
+	    <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2>Terminal Status Table</h2>
+               <br>
+               <br>
+              <p>The Terminal Status Table keeps track of the Read operations done on the terminal. Every time a Read system call is invoked on the terminal, the PID of the process that invoked the system call is stored in Terminal Status Table. The table also contains information on the status of the terminal (whether free or busy). The size of the table is 4 words of which the last 2 are unused.</p>
+              <p> Every entry of the Terminal Status Table has the following format:</p>
+              <table class="table table-bordered table-responsive" >
+                  <tr >
+                       <td style="border: 1px solid black">STATUS</td>  
+                       <td style="border: 1px solid black">PID</td>  
+                       <td style="border: 1px solid black">Unused</td>
+                       
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>STATUS </b>(1 word) - specifies whether the terminal is free or is being used by a process to read input. This field is initially set to 0. It is changed to 1 whenever terminal is busy. The Terminal Interrupt Handler sets back the status to 0 upon completion of Terminal Read.</li>
+                    <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal. This field is invalid when STATUS is 0.</li>
+                   <li><b>Unused</b> (2 words)</li>                       
+              </ul>    
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+
+ <!--=========== BEGIN mem free list SECTION ================-->
+    <section id="mem_free_list">
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+        
+            
+            <div class="heading">
+                <h2>Memory Free List</h2>
+               <br>
+              <br>
+              <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. The number of memory pages available to the OS is architecture dependent. For the version of XSM discussed here, MAX_MEM_PAGE = 128.</p><p>Each entry of the free list contains either the value  0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page.</p>
+       
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+ 
+   
+    <!--=========== END mem free list SECTION ================-->
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>

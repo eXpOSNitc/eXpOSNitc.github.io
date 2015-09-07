@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Synchronization and Access control</title>
+</head>
+<body>
+	<h1>Synchronization and Access control</h1>
+	<p>eXpOS assumes a single processor multi programming environment.  This means that all processes exist concurrently in the machine and the OS time shares the machine between various processes.  The OS specification requires that <b>round robin scheduling is used with co-operative time-sharing.</b> <b>[WIKI LINK] </b>   This is discussed in <a href="miscellaneous.html">Section 6 </a>. The OS does not provide any promise to the application program about the order in which processes will be executed.  </p>
+	<p>However, application programs often need to stop and wait for another process to execute certain operations before proceeding.  The OS provides system calls that allow user processes to <b>synchronize execution. </b>   </p>
+	
+	<h2>Process Synchronization</h2>
+	<p>eXpOS provides the <b>wait</b> and <b>signal</b> system calls for process synchronization.  When a process executes the wait system call specifying the process id of another process as argument, the OS puts the calling process to <b>sleep.</b>   This means, the OS will schedule the process out and won't execute it until one of the following events occur:</p>
+	<ol>
+		<li>The process specified as argument terminates by the <b>exit </b>system call.</li>
+		<li>The process specified executes a <b>signal </b>system call specifying the original process id as argument. The specification of signal and wait system calls are given <a href="API.html#Signal">here</a>   </li>
+	</ol>
+	
+	<h2>Access Control</h2>
+    <p> A second major concurrency related requirement is that when multiple processes access the same data (in memory or files), it is often required to have some kind of locking mechanism to ensure that when one processes is accessing the shared data, no other process is allowed to modify the same.  This is to ensure data integrity and this issue is called the <b>critical section problem </b>  <b>[Link to Wiki].</b>  </p>
+    <p>eXpOS provides (binary) <b>semaphores </b>to allow application programs to handle the critical section problem.  A (binary) semaphore is conceptually a binary-valued variable whose value can be set or reset only by the OS through designated system call.   (Internally how it is implemented is an OS concern and is oblivious to the application programmer). </p>
+    <p>A process can acquire a semaphore using the <b>semget </b>system call, which returns a unique <b>semid </b>for the semaphore.  The semaphore is initially not set.   A process may open several files and semaphores and execute the fork system call multiple times to create an several process that shares all the opened file handles, the heap memory region and all the semaphores acquired by the parent.  </p>
+    <p>Any of these processes sharing a semaphore identifier can set the semaphore (called locking) using the <b>semlock </b>system call giving the semid as an argument. </p>
+  
+    <h3>Semantics of Semlock </h3>
+    <ol>
+		<li>If the semaphore is already locked, the process goes to sleep and wakes up only when the semaphore is reset.</li>
+        <li>Otherwise, lock the semaphore and continue execution. </li> 
+        <p><b>Semunlock </b>will reset (called release) the semaphore waking up all other processes which went to sleep trying to lock the semaphore.  </p>
+        <p>Just like semaphores, files can also be locked using the <b>fLock </B>and <b>funlock </b>system calls.  They are discussed <a href="SystemCallInterface.html">here</a>. </p>
+
+    </ol>
+</body>
+</html>	

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Application Programmers Interface</title>
+</head>
+
+<body>
+	 <h1>Application Programmers Interface</h1> 
+      <p>Application programmer interacts with the Operating System using system calls. System calls are stored in the disk and loaded into memory when the OS is loaded by bootstrap loader. When a process invokes a system call, the process is interrupted and control goes to the kernel. Therefore, system calls can also be considered as interrupts. Once the system call is carried out, the control goes back to user mode.</p>
+      <p>There are system calls associated with processes, files and semaphores. In eXpOS, there are three process system calls, nine file system calls and four system calls related to semaphores.</p>
+      <p>As said before, when the OS is loaded, the first process executed is INIT process. For a user to implement his/her applications, he/she can either create a new process using <b>Fork </b>or change the existing process using <b>Exec.</b></p>
+      <p><b> Fork </b>system call is used to replicate the process which invoked it. The new process which is created is known as the child and the process which invoked this system call is known as its parent. The heap and the code area will be shared but the stack will get duplicated.</p>
+      <p>When a process executes the <b>Fork </b>system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Note that semaphores and the files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
+      <p>In order to change the existing process, we use Exec system call.<b>Exec </b>loads the executable program into the memory address space of the calling process, overlaying the calling application with the newly loaded program. After the fork system call, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact. A successful <b>Exec </b>operation results in extinction of the calling application and never returns to the caller application.</p>
+      <p>If the user wants to terminate a process, the <b>Exit </b>system call is used. <b>Exit </b>system call terminates the execution of the process which invoked it and removes it from the memory. It schedules the next ready process and starts executing it. When there is no other ready process to run, it halts the machine.</p>
+      <p>Any process can use multiple resources. Resources can be either files or semaphores. A process can create a new data file in the disk using <b>Create </b>system call and delete them using <b>Delete.</b> Analogously, a process can create a new semaphore using <b>Semget </b>and delete/release the semaphore using <b>Semrelease.</b></p>
+      <p>The <b>Create </b>operation takes as input a filename and creates an empty file by that name.  It also creates the root entry for the file and makes sure that every file has a unique name. Note that the file name must be a character string and must not be named "root".</p>
+      
+******complete section 7***************
+
+
+
+
+
+</body>
+</html>

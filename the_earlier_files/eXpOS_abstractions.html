@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The fundamental eXpOS Abstractions</title>
+</head>
+
+<body> <h1>The fundamental eXpOS Abstractions</h1> 
+<div><p>eXpOS provides the following fundamental abstractions to an application program: </p>
+<ol>
+	<li>The eXpFS logical <i>file system</i></li>
+	<li>The <i>process</i> abstraction for programs in execution</li>
+	<li>Methods of resource sharing</li>
+	<li>Primitives for concurrent access control and  process synchronization</li>
+	<li>The <b>system call interface</b> that specifies the interface through which application programs can invoke the system calls and access the OS services.  </li>
+</ol>
+</div>
+<div><h3>The eXpFS logical file system.  </h3>
+<p>The eXpOS kernal provides a hardware independent logical file system model (called the <b>experimental file system or eXpFS</b>) for the application programs.       The application program views files as being organized and stored in the eXpFS logical file system.  Application programs are not permitted to access files directly.  Instead, they must invoke the appropriate <b>file system call</b> for creating, modifying or accessing files.   The OS routine implementing each system call internally translates the request into disk block operations, hiding the hardware details from the application program.</p>
+<p>XFS support three kinds of files – <b>data files, program files </b> (executable files) and a special file called the <b>root file. </b> The root file is a meta-data file that contains the list of all files in the file system.  A data file consists of a sequence of words.  A program contains the sequence of machine instructions of the program together with the static data of the program and a header. </p>
+<p>eXpOS does not provide any mechanisms for application programs to create <b>executable files</b>.    Executable files have to be pre-loaded into the disk using some other external disk access mechanism before OS bootstrap.   Since such mechanisms are implementation dependent, they are not part of the OS specification.  For instance, the <a href="xfs_interface.html">XFS-Interface</a> tool for eXpOS implementation on the XSM machine is one such mechanism. </p>
+<p>Executable files follow certain format called the <b>experimental executable format or XEXE format</b>.  The OS will execute only program files stored in the file system in the XEXE format.  Hence system programs like compilers that translate high level application programs must ensure that the executable files adhere to the XEXE format.  </p>
+<p>Application programs can create, modify and delete data files using appropriate OS system calls.  These are discussed <a href="#System_calls">here</a>.</p>
+<p>A detailed discussion of the file system structure, file system calls and XEXE format is given in <a href="eXpfs.html">Section</a>.</p>
+</div>
+<div><h3>The eXpOS process Abstraction</h3>
+<p>It was noted earlier that at the end of bootstrap, eXpOS loads into memory a program stored in a pre-determined part of the disk and create the first process called the INIT process.  Once a process is created, it can spawn new processes using the <b>fork </b> system call.    When a process spawns a new process, the former is called the <b>parent process</b> and the later is called the <b>child process</b>.  A process can decide to terminate itself using the <b>exit</b> system call.  </p>
+<p>Associated with each process, there is a (virtual) address space (or logical memory space).  This address space is a sequence of memory locations, each of which can store a word.    XOS logically divides the address space of a process is into four regions – (shared) library, code, stack and heap. </p>
+<p>When a process is created using the fork system call, the OS creates a virtual address space for the new process.   Each process is given a view that it has its own virtual address space containing its code, data, library, stack and heap.  The virtual address space is a continuous address space starting from address 0 up to a maximum limit that is implementation dependent.  Internally, the OS maps the virtual address space into the machine memory using hardware mechanisms available in the machine like paging/segmentation.( Check mapping <a href="paging_translation.html">here</a>)</p>
+<p>The code region of a process contains the machine instructions that are to be executed.    This code consists of the instructions stored in some executable file in the file system. When a new process is created using the fork system call, the child process shares the library, code and heap with the parent.  This means that any modifications to memory words in these regions by one process will result in modification of the contents for both processes.  The stack and the data regions of the parent and the child will be separate. The parent and the child concurrently proceeds execution from the instruction immediately after the fork system call in the code. </p>
+<p>The stack and the data regions of a process stores the variables (including static variables) and stack frames during the execution of the program.   Dynamic memory allocation is normally done from the heap region.  Variables to be shared between different processes could also be allocated in the heap.   Finally all (standard) library code (which is typically shared by all applications) is mapped to the library region.  </p>
+<p>A process can load a XEXE executable file from the file system into the virtual address space (of the calling process) using the <b>exec</b> system call.  The exec system call determines the size of the code, stack and heap regions for the loaded program using the information in the <b>header</b> of the executable file. During such loading, the original code, data and heap regions are overlayed by those of the newly loaded program.  However, if the original process had shared its heap with its parent  process (or any other process), the OS ensures that the heap area is allocated separately so that other processes do not lose their shared heap data. Finally, the (shared) library is common to every application. </p>
+<p>The OS expects that executable files respect the programming conventions laid down by the OS (called the <b>Application Binary Interface-ABI</b>) like the division of memory into stack, data, code, heap and library.  Each XEXE executable file must have a header which specifies the how much size must be allocated by the OS for each region when the program is loaded for execution.  Application programs are typically written in high level languages like <a href="apl.html">APL</a>  eXpOS expects the compiler to generate code respecting the ABI specification.  </p>
+<p>It must be noted here that an application program is free to violate the ABI conventions and decide to use its virtual address space in its own way.  It is only required that the executable file follows XEXE format in order to ensure that exec system call does not fail.  As long as such a process operates within its own address space, the OS permits the process to execute.  However, if at any point during its execution, the process generates a virtual address beyond its permitted virtual address space, a hardware exception will be generated and the OS routine handling the exception will terminate the process. </p>
+</div>
+<div id="Access_Control"><h3>Access Control and Synchronization</h3>
+<p>Two concurrently executing processes sharing resources like files or memory (for example, parent and child processes sharing the heap) would like to ensure that only one of them execute critical section code that access/modify a resource that is shared between them. </p>
+<p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29">semaphores</a>. A process can acquire a semaphore using the semget system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the semlock system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the semunlock system call.  </p>
+<p>A process can lock a (data) file using the <b>flock</b> system call.  Once locked, every other process trying to execute any system call on the file will be blocked by the OS till the file is unlocked by the original process using the <b>funlock</b> system call. </p>
+<p>The <b>wait</b> system call allows a process to suspend its own execution until another process wakes it up using the <b>signal</b> system call.  This primitive is useful when a process must be made to wait at a point during its execution until another related process signals it to continue.</p>
+
+</div>
+<div><h3>Resource Sharing in eXpOS</h3>
+<p>A process can open data files using the <b>open</b> system call.  The open system call returns a <b>file handle</b>.  The file handle advances as data is read from the file.  Similarly, a process can acquire a <a href="#Access_Control"><b>semaphore</b></a> using the semget system call.</p>
+<p>When a process executes the fork system call, the child process shares with the parent all the file handles and semaphores previously opened by the parent. Thus, when either the parent or the child process write into the file after the fork, the file pointers of both process get updated.  This allows processes to synchronize access.   Note that semaphores and files handles acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective processes and will not be shared with the parent. </p> 
+<p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
+<p>Thus, eXpOS does not support any explicit primitives for file or memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
+<p><b>Figures to be added.</b></p>
+</div>
+
+<div id="System_calls">
+<p>The XOS system calls are software interrupt routines of the eXpOS kernal which are loaded to the memory when the OS is bootstrapped.    These routines define the services provided by the OS to application programs.   These services include accessing files and semaphores,  creating a new processes , sending a signal to another process etc. </p>
+<p>Application programs are not permitted to directly access files/semaphores or create new processes.  Instead they must invoke the corresponding system call routines.  The system calls are kernal routines and operate in <b>privileged or system mode</b>.  Thus when an application program invokes a system call (by invoking the corresponding software interrupt), a change of mode from unprivileged mode to privileged mode occurs.  The system call code checks whether the request is valid and the process has permission to the resources/actions requested and then perform the request.  Upon completion of the interrupt service routine, control is transferred back to the user process with a switch back to the unprivileged mode.  </p>
+<p>eXpOS system calls can be classified as file system calls, process system calls and system calls for access control and synchronization.    The following table lists the system calls.  A detailed specification can be found <a href="APInterface.html">here</a></p>
+<h3>File system calls</h3>
+<table border="1" style="width:75%">
+  <tr>
+    <td><a href="API.html#Create">Create</a></td>
+    <td>Create an XFS file</td>		
+  <tr>
+    <td><a href="API.html#Delete">Delete</a></td>
+    <td>Delete an XFS  file</td>		
+    
+  </tr>
+  <tr>
+    <td><a href="API.html#Open">Open</a></td>
+    <td>Open an XFS file and return a file handle to the calling process</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="API.html#Close">Close</a></td>
+	  <td>Close an XFS file already opened by the calling process</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Read">Read</a></td>
+	  <td>Read one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Write">Write</td>
+	  <td>Write one word from the location pointed to by the file handle and advance the file handle to the next word in the file</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Seek">Seek</td>
+	  <td>Change the position of the file handle</td>
+  </tr>
+</table>
+<h3>Process system calls</h3>
+<table border="1" style="width:75%">
+  <tr>
+    <td><a href="API.html#Fork">Fork</a></td>
+    <td>Create a child process allocating a new address space.  </td>		
+  <tr>
+    <td><a href="API.html#Exec">Exec</a></td>
+    <td>Load and execute an XFS executable file into the virtual address space of the present process.  </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="API.html#Exit">Exit</a></td>
+    <td>Destroy the process invoking the call</td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="API.html#Getpid">Getpid</a></td>
+	  <td>Get the Process ID of the invoking Process</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Getppid">Getppid</a></td>
+	  <td>Get the process ID of the parent process of the invoking process.</td>
+  </tr>
+  
+</table>
+<h3>System calls for access control and synchronization:</h3>
+<table border="1" style="width:75%">
+  <tr>
+    <td><a href="API.html#Signal">Signal</a></td>
+    <td>Send a signal to a process specified in the call. </td>		
+  <tr>
+    <td><a href="API.html#Wait">Wait</a></td>
+    <td>Suspend execution of the current process until a signal is received from the process specified or the process specified terminates. </td>		
+    
+  </tr>
+  <tr>
+    <td><a href="API.html#FLock">FLock</a></td>
+    <td>Wait until an exclusive access permission to file is obtained.  </td>		
+    
+  </tr>
+  <tr>
+	  <td><a href="API.html#FunLock">FunLock</a></td>
+	  <td>Release the lock on a file already acquired.</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Semget">Semget</a></td>
+	  <td>Acquire a new semaphore</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#Semrelease">Semrelease</a></td>
+	  <td>Release a semaphore already acquired by the process</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#SemLock">SemLock</a></td>
+	  <td>Wait till the process get exclusive lock of the semaphore</td>
+  </tr>
+  <tr>
+	  <td><a href="API.html#SemunLock">SemunLock</a></td>
+	  <td>Release the lock on a semaphore already acquired</td>
+  </tr>
+  
+</table>
+</div>
+</body>
+</html> 

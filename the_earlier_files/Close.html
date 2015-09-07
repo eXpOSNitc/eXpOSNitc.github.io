@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Close System Call</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Close System Call</h1>
+        <p>Description: The Close system call is used to close a file. </p>
+        <p>Arguments: <b><i>fileDescriptor</i></b></p>
+        <p>Return Value: 0 (Success) </p>
+        <dl>
+            <dt> 1. Per-process Resource Table Validation</dt>
+            <dd>Check if <b><i>fileDescriptor</i></b> is valid by checking whether its value lies between 0 to XFS_MAXFDES. If invalid, return from the system call with error XFS_INVFDES, indicating failure. Check the entry corresponding to  <b><i>fileDescriptor</i></b> is valid. If the entry is invalid, which is indicated by a -1, return from the system call with error code XFS_INVFDES. Othewise, store the File Table Index of that entry in <b><i>FTindex</i></b>. </dd>
+            <dt>2. Updation of the File Table</dt>
+            <dd>In the entry corresponding to <b><i>FTindex</i></b>, decrement the File Open Count. If the File Open Count becomes 0, invalidate the File Table entry.</dd>
+            <dt>3. Invalidate the Per-Process Resource Table entry.</dt>
+            <dt>4. Return from system call with 0 (success). </dt>
+          </dl>
+    </body>
+</html>
