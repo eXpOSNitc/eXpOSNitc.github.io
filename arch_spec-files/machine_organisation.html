@@ -389,7 +389,7 @@ The disk is block accessible and not word accessible. This means that a word wit
 
 <p>The block 0 of the disk is reserved for <i>boot block</i> and will be loaded into the memory at the time of system startup.</p>
 
-<p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
+                                <p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea - <a href="instruction_set.html#privileged_instruction" target="_blank" > See Instruction Set </a>) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
 <p>
 <code>Note</code>:  The fact that both page-size and block-size are the same makes disk to memory transfer easy in XSM.  In real machines, this is normally not the case and the disk access routines have to do the necessary size mappings.  
 </p>
@@ -408,7 +408,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.) Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="interrupts_exception_handling.html#timer_interrupt" target="_blank" >timer interrupt service routine</a>.</p>
+                                <p>Timer is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.) Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="interrupts_exception_handling.html#timer_interrupt" target="_blank" >timer interrupt service routine</a>.</p>
                             </div>
                           </div>
                         </div>
