@@ -178,11 +178,11 @@ memory which was tried to be accessed is stored in the register. This field is r
 <p>Software Interrupts (traps) are the primary mechanisms by which user mode programs can transfer control to the code that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available (Interrupt 4 - Interrupt 18).</p>    
                   
 
-<p>In Kernel mode, hardware interrupts (Interrupts 0, 1, 2 and 3) may also be invoked. Note that user mode programs cannot invoke the hardware interrupts</p>
+<p>In Kernel mode, hardware interrupt (Interrupts 0, 1, 2 and 3) routines may also be invoked. Note that user mode programs cannot invoke the hardware interrupt routines.</p>
                   
 <p>If a software interrupt is invoked from the kernel mode, the address of the next instruction is pushed into the 
 stack and the interrupt handler is executed.  If the return from a software/hardware interrupt routine is to a program
-in kernel mode, the RET instruction must be used instead of the IRET instruction to ensure that execution continues in the kernel mode upon return.  <a href="instruction_set.html#privileged_instruction" target="_blank" >(see Instruction set)</a>.</p>            
+in kernel mode, the RET instruction must be used instead of the IRET instruction to ensure that execution continues in the kernel mode upon return <a href="instruction_set.html#privileged_instruction" target="_blank" >(see instruction set)</a>.</p>            
 </div>
 
                   
