@@ -441,7 +441,13 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a port to the console or from the console to the port. There are two macro instructions associated with I/O, <b>in</b> and <b>out</b>. The <b>in</b> instruction allows data from the console to be read into port <b>P0</b>. The <b>out</b> instruction results in transfer of a word from port <b>P1</b> to the console. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. When the user inputs a word through the console, the console device will send a hardware interrupt. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from port P0 only.  
+                                <p>The console device is a single device that handles the standard input and output. </p>
+<p>The OUT instruction displays the contents of port P1 onto the terminal. </p>
+<p>If the XSM machine executes an IN instruction, the console device waits for the user to enter a word
+into the console.  When a word is entered, the console device transfers the word to the port P0 and raises the console  interrupt <a href="interrupts_exception_handling.html" target="_blank" >(see console interrupt handling)</a>. The console device ignores any further input entered by the user before the execution of another IN instruction. </p>
+<p>The contents of port P0 may be transfered to other registers/memory using the MOV
+instruction inside the console interrupt routine.  Note that P0 may not contain any valid data if its contents
+are read before the interrupt is raised.  
 </p>
                             </div>
                           </div>
