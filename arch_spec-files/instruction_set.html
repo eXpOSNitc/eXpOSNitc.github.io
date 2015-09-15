@@ -347,7 +347,7 @@
                             <h4 class="panel-title" id="privileged_instruction">Privileged Instructions</h4>
                           
                             <div class="panel-body">
-                                <p>Privileged instructions can only be executed in kernel mode. Both previliged instructions and unpreviliged instructions can be executed in the kernel mode. It should be noted that all the addresses in the kernel mode should be <b>physical addresses</b>, whereas the user mode uses <b>logical addresses</b>, with address translation done using the <a href="paging_hardware.html" target="_blank" >Paging hardware</a>. Privileged Instructions are:</p>
+                                <p>Privileged instructions can be executed only in the kernel mode (both priviliged instructions and unpriviliged instructions can be executed in the kernel mode). It should be noted that all the addresses in the kernel mode should be <b>physical addresses</b>, whereas the user mode uses <b>logical addresses</b>, with address translation done using the <a href="paging_hardware.html" target="_blank" >Paging hardware</a>. Privileged Instructions are:</p>
                          <!--start privileged instructions --->   
                               <br>                             
                            <!-- load-->
@@ -362,7 +362,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : LOAD pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. An exception is raised for invalid arguments or illegal memory access. The machine will continue execution of the next instruction only after the block transfer is complete.</p>
+                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. <b>The machine will continue execution of the next instruction only after the block transfer is completed by the disk controller.</b></p>
 
                                             </div>
                                         </div>
