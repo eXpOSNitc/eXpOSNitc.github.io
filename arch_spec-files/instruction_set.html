@@ -443,8 +443,7 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : BACKUP</p>
-                                                <p><i>Semantics</i> : This instruction is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed by SP in the order : BP, PTBR, PTLR, R0 - R19.
-
+                                                <p><i>Semantics</i> : This instruction is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed by SP in the order : BP, PTBR, PTLR, R0 - R19. SP gets incremented accordingly.
 </p>
 
                                             </div>
@@ -464,8 +463,8 @@
                                         <div id="collapse18" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p> <i>Syntax</i> : RESTORE Si</p>
-                                                <p><i>Semantics</i> : This instruction is used to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address provided in Si in the order : BP, SP, PTBR, PTLR, R0 - R7, S0 -S15.   
+                                                <p> <i>Syntax</i> : RESTORE</p>
+                                                <p><i>Semantics</i> : This instruction is used to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, PTLR, PTBR, BP. SP gets decremented accordingly.  
 </p>
 
                                             </div>
