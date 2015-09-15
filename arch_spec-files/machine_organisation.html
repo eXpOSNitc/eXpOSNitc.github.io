@@ -389,7 +389,7 @@ The disk is block accessible and not word accessible. This means that a word wit
 
 <p>The block 0 of the disk is reserved for <i>boot block</i> and will be loaded into the memory at the time of system startup.</p>
 
-                                <p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea - <a href="instruction_set.html#privileged_instruction" target="_blank" > See Instruction Set </a>) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
+                                <p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea - <a href="instruction_set.html#privileged_instruction" target="_blank" > see instruction set </a>) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
 <p>
 <code>Note</code>:  The fact that both page-size and block-size are the same makes disk to memory transfer easy in XSM.  In real machines, this is normally not the case and the disk access routines have to do the necessary size mappings.  
 </p>
@@ -442,7 +442,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           <div id="Threecollapse6" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <p>The console device is a single device that handles the standard input and output. </p>
-<p>The OUT instruction displays the contents of port P1 onto the terminal. </p>
+                                <p>The OUT instruction displays the contents of port P1 onto the terminal.<a href="instruction_set.html#privileged_instruction" target="_blank" >(see instruction set)</a></p>
 <p>If the XSM machine executes an IN instruction, the console device waits for the user to enter a word
 into the console.  When a word is entered, the console device transfers the word to the port P0 and raises the console  interrupt <a href="interrupts_exception_handling.html" target="_blank" >(see console interrupt handling)</a>. The console device ignores any further input entered by the user before the execution of another IN instruction. </p>
 <p>The contents of port P0 may be transfered to other registers/memory using the MOV
