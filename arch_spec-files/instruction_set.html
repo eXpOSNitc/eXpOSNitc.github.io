@@ -275,7 +275,7 @@
                                         </div>
                                         <div id="collapse6" class="panel-collapse collapse">
                                             <div class="panel-body">
-                                                <p>The CALL instruction copies the address of the next instruction to be fetched on to location SP + 1. It also increments SP by one and transfers control to the instruction specified by the target_address. The address of the instruction to be fetched is in IP + 2 (each instruction is 2 memory words). The RET instruction restores the IP value stored at location pointed by SP, decrements SP by one and continues execution fetching the next instruction pointed to by IP.</p>
+                                                <p>The CALL instruction copies the address of the next instruction to be fetched(this value must be IP + 2 since each instruction is <b>two</b> memory words) on to location SP + 1. It also increments SP by one and transfers control to the instruction specified by the target_address. The RET instruction restores the IP value stored at location pointed by SP, decrements SP by one and continues execution fetching the next instruction pointed to by IP.</p>
                                                 <ul>  <li>1. <b>CALL</b><br>
 <i>Syntax</i> : CALL target_address<br>
 <i>Semantics</i> : Increments SP by 1, transfers IP + 2 to location pointed to by SP and jumps to instruction specified by target_address.
@@ -325,7 +325,7 @@
                                                 
                                                 <ul>  <li>
 <i>Syntax</i> : INT n<br>
-<i>Semantics</i> : Generates an interrupt to the kernel with n (4 to 18) as a parameter. This involves a <b>change of mode from user to kernel mode</b>. It also disables the interrupts. The (virtual) address of the next instruction after the current value of IP is pushed to the Stack, the Stack Pointer is incremented and then, execution mode is switched to Kernel Mode. Since the IP value must contain a virtual address while executing in User Mode, the value pushed into stack is a virtual address and not a physical address. (See <a href="paging_hardware.html" target="_blank" >Address Translation</a>)
+<i>Semantics</i> : Generates an interrupt to the kernel with n (4 to 18) as a parameter. This involves a <b>change of mode from user to kernel mode</b>. It also disables the interrupts. The (virtual) address of the next instruction after the current value of IP is pushed to the Stack, the Stack Pointer is incremented and then, execution mode is switched to Kernel Mode. When INT is invoked from the User Mode, the IP value must contain a virtual address and hence, the value pushed into stack is a virtual address and not a physical address. (See <a href="paging_hardware.html" target="_blank" >Address Translation</a>)
 <br>
 
 </li>
