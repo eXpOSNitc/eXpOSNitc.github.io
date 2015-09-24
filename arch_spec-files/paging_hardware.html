@@ -110,51 +110,15 @@
                 <br/>
                 <p> The hardware <a  href="http://en.wikipedia.org/wiki/Paging" target="_blank" >paging</a> scheme of XSM maps the virtual address space of a user mode program to the physical address space of the machine. Read the <a  href="../virtual_machine_spec.html" target="_blank" >XSM Virtual Machine Model</a> before proceeding further.</p>
                 
-                <br><br>
-                   
+                <br> 
                 <h4><b>Page Table</b></h4>
-                <p>Every user mode program has an associated page table which maps its virtual address space to the  machine's physical address space. For the hardware address translation to work, the base address of the Page Table (of the user mode program currently in execution) must be stored in the Page Table Base Register(PTBR) and the number of entries in this Page Table must be stored in the Page Table Length Register(PTLR). The page tables must be set up in the <b>privileged mode</b>.</p>
+                  <p>Every user mode program has an associated page table which maps its virtual address space to the  machine's physical address space. For the hardware address translation to work, the base address of the Page Table (of the user mode program currently in execution) must be stored in the Page Table Base Register (<b>PTBR</b>) and the number of entries in this Page Table must be stored in the Page Table Length Register (<b>PTLR</b>). The page tables must be set up in the <b>privileged mode</b>.</p>
                 
-                <p>The structure of a Page Table is shown below.</p>
+                <center><img src="../img/architecture/Page_Table_Structure.png"></center>
                 <br>
-                <table class="table table-bordered" style="width: auto !important;margin : 0 auto;">
-                    <tr>
-                        <td style="border: 1px solid black">
-                            <center>PAGE NUMBER 1</center>
-                        </td>
-                    </tr>
-					<tr>
-	                        <td style="border: 1px solid black">
-                            <Center>AUXILIARY INFORMATION 1</Center>
-                        </td>
-                    </tr>    
-                    <tr>
-                        <td style="border: 1px solid black">
-                            <center>PAGE NUMBER 2</center>
-                        </td>
-                    </tr>
-					<tr>
-	                        <td style="border: 1px solid black">
-                            <center>AUXILIARY INFORMATION 2</center>
-                        </td>
-                    </tr>    
-                    <tr>
-                        <td style="border: 1px solid black">
-                            <center>.</center>
-                        </td>
-                    </tr>
-					<tr>
-	                        <td style="border: 1px solid black">
-                            <center>.</center>
-                        </td>
-                    </tr>    
-                </table>
-                <br>
-                <p>Each Page Table stores the physical page numbers corresponding to all the logical pages of a user mode program. The logical page numbers of a user mode program can vary from 0 to PTLR - 1. Therefore, each user mode program has a Page Table with PTLR entries.</p>  
+                  <p>Each Page Table stores the physical page number corresponding to all the logical pages of a user mode program. The logical page numbers of a user mode program can vary from <b>0</b> to <b>PTLR - 1</b>. Therefore, each user mode program has a Page Table with PTLR entries.</p>  
 
-<p>The entry in the page table for each logical page contains two words. The first word must be set to the physical page number in the memory where the logical page is actually loaded. In this case, the page table entry is said to be <b>valid</b>. If the page has not been loaded to the memory, the page table entry is said to be <b>invalid</b>.</p>
-
-<p>The second word in a page table entry stores a sequence of flag bits storing information regarding whether the page a) is <b>valid</b> or not b) is <b>read only/read write</b>, c) has been <b>referenced</b> by the program after being loaded into the memory and d) has been modified after loading (<b>dirty</b>). The layout of this word is given below:</p>
+                  <p>Each page table entry for a logical page is of <b>2 words</b>. The 1<sup>st</sup> word must be set to the physical page number in the memory where the logical page is actually loaded. In this case, the page table entry is said to be <b>valid</b>. If the page has not been loaded in to the memory, the page table entry is said to be <b>invalid</b>. The 2<sup>nd</sup> word in a page table entry stores a sequence of flag bits storing information regarding whether the page a) is <b>valid</b> or not b) is <b>read only/read write</b>, c) has been <b>referenced</b> by the program after being loaded into the memory and d) has been modified after loading (<b>dirty</b>). The layout of this word is given below:</p>
 
 <center><img src="../img/aux_info.png"></center>
 
@@ -162,7 +126,7 @@
 
 <p><b>Valid/Invalid Bit (V)</b>: This bit indicates whether the entry of the page table is valid or invalid. The Valid/Invalid bit must be set to 1 if the first word of this entry corresponds to a valid physical page number. Its  value is set to 0 if the entry is invalid. The Valid/Invalid bit is set by the application, typically the operating system. If memory access is made to a page whose page table entry is invalid, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>.</p>
 
-<p><b>Write Permission Bit (W)</b>: This bit must be set to 1 if the user mode program is permitted to write into the page. Otherwise this bit must be set to 0. If a user mode program tries to modify a page whose Write Permision bit is set to 0, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>.</p>
+<p><b>Write Permission Bit (W)</b>: This bit must be set to 1 if the user mode program is permitted to write into the page, otherwise it must be set to 0. If a user mode program tries to modify a page whose Write Permision bit is set to 0, the machine transfers control to the <a href="../os_design-files/exe_handler.html" target="_blank">Exception Handler routine</a>.</p>
 
 <p><b>Dirty Bit (D)</b>: This bit is set to 1 by the machine if an instruction modifies the contents of the page.</p>
 
@@ -172,7 +136,7 @@
                 
                 <p>The addresses generated by the machine while executing in user mode are logical addresses. The paging hardware translates these addresses to physical addresses as described below.</p>
                                 
-                <p>Address translation is done using the Page Table. Logical address / 512 gives the logical page number which is the index of the page table entry for the logical page in the page table. Since each page table entry has 2 words, multiplying the logical page number by 2 and adding the base address of the page table given in the PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
+                <p>Address translation is done using the Page Table. Logical address/512 gives the logical page number which is the index of the page table entry for the logical page in the page table. Since each page table entry has 2 words, multiplying the logical page number by 2 and adding the base address of the page table given in the PTBR to it gives the location of the page table entry corresponding to the given logical address.</p> 
 
 <p style="text-indent:5em"><b>Location of page table entry = PTBR + 2 x (Logical Address / 512)</b></p>
 <p>The value stored in the first word in the page table entry corresponds to the physical page number.</p>
@@ -187,16 +151,14 @@
 <br>
 <br>
 
-<p>Example:</p>
+                  <p><i>Example:</i></p>
 <p>Assume the per-process page table is as shown below:</p>
 
-<br>
-<br>
-                                <table class="table table-bordered" style="text-align: center;">
-                                    <tr>
-                                        <th style="text-align: center;">Physical Page Number</th>
-                                        <th style="text-align: center;">Auxiliary Information (R,V,W,D)</th>                                       
-                                    </tr>
+<table class="table table-bordered" style="text-align: center;">
+    <tr>
+        <th style="text-align: center;">Physical Page Number</th>
+        <th style="text-align: center;">Auxiliary Information (R,V,W,D)</th>                                       
+    </tr>
 
 
 <tr>
@@ -234,22 +196,26 @@
 </tr>
 </table>
 
+<b>Example 1 </b>
 <p>Given a logical address of 3532, the translation occurs as follows:</p>
+
+                  
 <p style="text-indent:5em">Logical page number 	= index of page table entry    &nbsp;&nbsp;/* index starts from 0 */</p>
 <p style="text-indent:15em"> 					= 3532/512 = 6</p>
 <p style="text-indent:5em">Location of page table entry	= PTBR + 2 * 6</p>
-<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 6 ] = first word of the 7th entry in page table = 48</p>
+<p style="text-indent:5em">Physical Page Number	= [PTBR + 2 * 6 ] = first word of the 7<sup>th</sup> entry in page table = 48</p>
 <p style="text-indent:5em">Offset 	= 3532%512 = 460</p>
 <p style="text-indent:5em">Physical Address	= 48 * 512 + 460 = 25036</p>
 
 
-<p>As another example, suppose the machine runs in user mode with IP register pointing to the virtual address 40, and this memory contains the machine instruction MOV R0,[1032]. Then, since the memory address 1032 will be resolved as follows:</p>
+<b>Example 2</b>
+<p>Suppose the machine runs in user mode with IP register pointing to the virtual address 40, and this memory contains the machine instruction <br/>MOV R0,[1032]. Memory address 1032 will be resolved as follows:</p>
 
-<p style="text-indent:5em">Logical page number = 1032/512=2.</p>
+<p style="text-indent:5em">Logical page number = 1032/512 = 2</p>
 
 <p>Since the valid bit is set to 0, in the page table, the page is not physically present in the memory. Hence, the hardware will generate a page fault exception with the exception flag registers set as the following:</p>
 
-<p>EIP : 40 (Virtual IP address), EPN: 02 (exception page number), EC: 0 (exception cause - page fault), EVA : $$$$. EMA: $$$$.</p>
+<p>EIP : 40 (Virtual IP address), EPN: 02 (exception page number), EC: 0 (exception cause - page fault), EMA: $$$$.</p>
   
   
 </div>
