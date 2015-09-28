@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>SPL</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+              <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+              <li><a href="../Documentation.html" target="_blank">Documentation</a></li> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+
+      
+    </header>
+		<!--=========== End HEADER SECTION ================--> 
+		
+		
+       <section id="expfs">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2>XSM Simulator Usage Specification</h2>
+                <br/>
+                <br/>
+                <p><b>The XSM Simulator</b> (eXperimental String Machine) is used to simulate the XSM hardware.</p>
+
+                <p> Within your XSM directory, use the following command to run the simulator </p>
+				<ul>
+					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>flag</i></b></tt></p></li>
+				</ul>
+                
+              </div>
+
+              <!-- START ABOUT CONTENT -->
+              <div class="about_content">
+                <div class="row">
+                   <div class="about_featured">
+                      <div class="panel-group" id="accordion">
+
+                        <!-- START SINGLE FEATURED ITEM #1-->
+
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c1">
+                                 <span class="fa fa-check-square-o"></span>Flags
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                               <ul>
+  			        <li> 
+                                <i>Syntax</i>: <tt>--debug</tt>
+				</br>
+				<i>Semantics</i>: This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Further details are given in the section below.
+                                </li>
+				</br>
+				<li> 
+				<i>Syntax</i>: <tt>--timer=value</tt>
+				</br>
+				<i>Semantics</i>: This flag sets the number of instructions after which timer interrupt is triggered to value. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
+				</li>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- START SINGLE FEATURED ITEM #2 -->
+
+                        <div id="root">
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#c2">
+                                 <span class="fa fa-check-square-o"></span>Debugging
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="c2" class="panel-collapse collapse">
+                            <div class="panel-body">
+				
+			 	<p>The <tt>--debug</tt> flag is used to debug the running machine. When this flag is set and the machine encounters a breakpoint instruction, it is set into the DEBUG mode.
+				   In this mode a prompt is displayed which allows the user to enter commands to inspect the state of the machine. 
+                          	</p>
+
+				<p>The commands in DEBUG mode are : </p>
+
+				<div>
+				  <ul>
+					<li><p> <tt> step / s </tt> :<br/> The execution proceeds by a single step</p> </li>
+					<li><p> <tt> continue / c </tt> :<br/> The execution proceeds till the next <tt>breakpoint</tt> instruction. </p> </li>
+					<li><p> <tt> reg / r </tt> :<br/> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EFR, R0-R7, S0-S15 and T0-T3</tt>. <br/> Sample usage: <tt>reg </tt></p> </li>
+					<li><p> <tt> reg / r &lt;register_name&gt; </tt> :<br/> Displayes the content of the specified register. <br/> Sample usage: <tt>r R5, reg PTLR</tt></p> </li>
+					<li><p> <tt> reg / r &lt;register_name_1&gt; &lt;register_name_1&gt; </tt> : <br/>Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_1&gt;.</p> </li>
+					<li><p> <tt> mem / m &lt;page_num&gt; </tt> :<br/> Displays contents of the memory page &lt;page_num&gt;. <br/> Sample usage: <tt>mem 5, m 20 </tt> </p> </li>
+					<li><p> <tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;. <br/> Sample usage: <tt>mem 5 8, m 0 10 </tt></p> </li>
+					<li><p> <tt> pcb / p </tt> :<br/> Displays the Process Control Block of the process with the state as RUNNING.</p> </li>
+					<li><p> <tt> pcb / p &lt;pid&gt; </tt> :<br/> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </p> </li>
+					<li><p> <tt> pagetable / pt </tt> :<br/>Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register). </p></li>
+					<li><p> <tt> pagetable / pt &lt;pid&gt; </tt> :<br/> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </p></li>
+					<li><p> <tt> filetable / ft </tt> :<br/> Displays the System Wide Open File Table.</p></li>
+					<li><p> <tt> memfreelist / mf </tt> :<br/> Displays the Memory Free List.</p></li>
+					<li><p> <tt> diskfreelist / df </tt> :<br/> Displays the Memory copy of Disk Free List.</p></li>
+					<li><p> <tt> fat </tt> :<br/> Displays the memory copy of the File Allocation Table (FAT).</p></li>
+					<li><p> <tt> location / l &lt;address&gt; </tt> :<br/> Displays the content at memory address (Address Translation takes place if used in USER mode). </p></li>
+					<li><p> <tt> watch  / w &lt;physical_address&gt; </tt> :<br/> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</p></li>
+					<li><p> <tt> watchclear  / wc </tt> :<br/> Clears all the watch points. </p></li>
+					<li><p> <tt> exit / e </tt> :<br/>  Exits the debug prompt and halts the machine.</p></li>
+					<li><p> <tt> help / h </tt> :<br/> Displays commands.</p></li>
+
+				</ul>
+				</div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        
+			<!-- End of Contents -->
+
+		    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       </section>
+   
+		   
+      <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
+
