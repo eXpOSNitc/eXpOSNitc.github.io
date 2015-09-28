@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>SPL</title>
+     <title>XSM Simulator</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -136,15 +136,15 @@
                             <div class="panel-body">
                                <ul>
   			        <li> 
-                                <i>Syntax</i>: <tt>--debug</tt>
+                                <i>Syntax</i> : <tt>--debug</tt>
 				</br>
-				<i>Semantics</i>: This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Further details are given in the section below.
+				<i>Semantics</i> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Further details are given in the section below.
                                 </li>
 				</br>
 				<li> 
-				<i>Syntax</i>: <tt>--timer=value</tt>
+				<i>Syntax</i> : <tt>--timer=value</tt>
 				</br>
-				<i>Semantics</i>: This flag sets the number of instructions after which timer interrupt is triggered to value. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
+				<i>Semantics</i> : This flag sets the number of instructions after which timer interrupt is triggered to value. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
 				</li>
                             </div>
                           </div>
@@ -164,7 +164,7 @@
                           <div id="c2" class="panel-collapse collapse">
                             <div class="panel-body">
 				
-			 	<p>The <tt>--debug</tt> flag is used to debug the running machine. When this flag is set and the machine encounters a breakpoint instruction, it is set into the DEBUG mode.
+			 	<p>The  <tt><b>--debug</b></tt>  flag is used to debug the running machine. When this flag is set and the machine encounters a breakpoint instruction, it is set into the DEBUG mode.
 				   In this mode a prompt is displayed which allows the user to enter commands to inspect the state of the machine. 
                           	</p>
 
@@ -172,26 +172,46 @@
 
 				<div>
 				  <ul>
-					<li><p> <tt> step / s </tt> :<br/> The execution proceeds by a single step</p> </li>
-					<li><p> <tt> continue / c </tt> :<br/> The execution proceeds till the next <tt>breakpoint</tt> instruction. </p> </li>
-					<li><p> <tt> reg / r </tt> :<br/> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EFR, R0-R7, S0-S15 and T0-T3</tt>. <br/> Sample usage: <tt>reg </tt></p> </li>
-					<li><p> <tt> reg / r &lt;register_name&gt; </tt> :<br/> Displayes the content of the specified register. <br/> Sample usage: <tt>r R5, reg PTLR</tt></p> </li>
-					<li><p> <tt> reg / r &lt;register_name_1&gt; &lt;register_name_1&gt; </tt> : <br/>Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_1&gt;.</p> </li>
-					<li><p> <tt> mem / m &lt;page_num&gt; </tt> :<br/> Displays contents of the memory page &lt;page_num&gt;. <br/> Sample usage: <tt>mem 5, m 20 </tt> </p> </li>
-					<li><p> <tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;. <br/> Sample usage: <tt>mem 5 8, m 0 10 </tt></p> </li>
-					<li><p> <tt> pcb / p </tt> :<br/> Displays the Process Control Block of the process with the state as RUNNING.</p> </li>
-					<li><p> <tt> pcb / p &lt;pid&gt; </tt> :<br/> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </p> </li>
-					<li><p> <tt> pagetable / pt </tt> :<br/>Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register). </p></li>
-					<li><p> <tt> pagetable / pt &lt;pid&gt; </tt> :<br/> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </p></li>
-					<li><p> <tt> filetable / ft </tt> :<br/> Displays the System Wide Open File Table.</p></li>
-					<li><p> <tt> memfreelist / mf </tt> :<br/> Displays the Memory Free List.</p></li>
-					<li><p> <tt> diskfreelist / df </tt> :<br/> Displays the Memory copy of Disk Free List.</p></li>
-					<li><p> <tt> fat </tt> :<br/> Displays the memory copy of the File Allocation Table (FAT).</p></li>
-					<li><p> <tt> location / l &lt;address&gt; </tt> :<br/> Displays the content at memory address (Address Translation takes place if used in USER mode). </p></li>
-					<li><p> <tt> watch  / w &lt;physical_address&gt; </tt> :<br/> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</p></li>
-					<li><p> <tt> watchclear  / wc </tt> :<br/> Clears all the watch points. </p></li>
-					<li><p> <tt> exit / e </tt> :<br/>  Exits the debug prompt and halts the machine.</p></li>
-					<li><p> <tt> help / h </tt> :<br/> Displays commands.</p></li>
+					<li><i>Synatax</i> : </i><tt> step / s </tt><br/>
+					    <i>Semantics</i> : </i> The execution proceeds by a single step</li>
+					<li><i>Synatax</i> : </i><tt> continue / c </tt><br/>
+					    <i>Semantics</i> : </i> The execution proceeds till the next <tt>breakpoint</tt> instruction.</li>
+					<li><i>Synatax</i> : </i><tt> reg / r </tt><br/>
+					    <i>Semantics</i> : </i> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EFR, R0-R7, S0-S15 and T0-T3</tt>. <br/> Sample usage: <tt>reg </tt></li>
+					<li><i>Synatax</i> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displayes the content of the specified register. <br/> Sample usage: <tt>r R5, reg PTLR</tt></p> </li>
+					<li><i>Synatax</i> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_1&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_1&gt;.</li>
+					<li><i>Synatax</i> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displays contents of the memory page &lt;page_num&gt;. <br/> Sample usage: <tt>mem 5, m 20 </tt> </p> </li>
+					<li><i>Synatax</i> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
+					    <i>Semantics</i> : </i> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;. <br/>Sample usage: <tt>mem 5 8, m 0 10 </tt></li>
+					<li><i>Synatax</i> : </i><tt> pcb / p </tt><br/>
+					    <i>Semantics</i> : </i> Displays the Process Control Block of the process with the state as RUNNING.</li>
+					<li><i>Synatax</i> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </li>
+					<li><i>Synatax</i> : </i><tt> pagetable / pt </tt><br/>
+					    <i>Semantics</i> : </i> Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register).</li>
+					<li><i>Synatax</i> : </i><tt> pagetable / pt &lt;pid&gt; </tt> :<br/>
+					    <i>Semantics</i> : </i> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </li>
+					<li><i>Synatax</i> : </i><tt> filetable / ft </tt><br/>
+					    <i>Semantics</i> : </i> Displays the System Wide Open File Table.</li>
+					<li><i>Synatax</i> : </i><tt> memfreelist / mf </tt><br/>
+					    <i>Semantics</i> : </i> Displays the Memory Free List.</li>
+					<li><i>Synatax</i> : </i><tt> diskfreelist / df </tt><br/>
+					    <i>Semantics</i> : </i> Displays the Memory copy of Disk Free List.</li>
+					<li><i>Synatax</i> : </i><tt> fat </tt><br/>
+					    <i>Semantics</i> : </i> Displays the memory copy of the File Allocation Table (FAT).</li>
+					<li><i>Synatax</i> : </i><tt> location / l &lt;address&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displays the content at memory address (Address Translation takes place if used in USER mode)</li>
+					<li><i>Synatax</i> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</li>
+					<li><i>Synatax</i> : </i><tt> watchclear  / wc </tt><br/>
+					    <i>Semantics</i> : </i> Clears all the watch points.</li>
+					<li><i>Synatax</i> : </i><tt> exit / e </tt><br/>
+					    <i>Semantics</i> : </i> Exits the debug prompt and halts the machine.</li>
+					<li><i>Synatax</i> : </i><tt> help / h </tt><br/>
+					    <i>Semantics</i> : </i> Displays commands.</li>
 
 				</ul>
 				</div>
