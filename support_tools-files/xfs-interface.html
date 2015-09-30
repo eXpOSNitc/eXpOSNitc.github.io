@@ -118,273 +118,105 @@
 
                 <p> The various commands available in XFS Interface are discussed below. </p>
 
-              </div>
-
-              <!-- START ABOUT CONTENT -->
-              <div class="about_content">
-                <div class="row">
-                   <div class="about_featured">
-                      <div class="panel-group" id="accordion">
-
-                        <!-- START SINGLE FEATURED ITEM #1-->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c1">
-                                 <span class="fa fa-check-square-o"></span>Help Command
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c1" class="panel-collapse collapse">
-                            <div class="panel-body">
-                             
-                                <i>Syntax</i> : <tt><b>help</b></tt>
-				</br>
-				<i>Semantics</i> : It displays the general syntax and function of all the commands.
-                                
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- START SINGLE FEATURED ITEM #2 -->
-
-                        <div id="root">
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c2">
-                                 <span class="fa fa-check-square-o"></span>Command for Disk Format
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c2" class="panel-collapse collapse">
-                            <div class="panel-body">
-				
-			 	<i>Syntax</i> : <tt><b>fdisk</b></tt>
-			 	</br>
-				<i>Semantics</i> : It is used to create the disk (”disk.xfs”) or to format the disk if already created. 
-				                  On a newly created disk or formatted disk the Disk Free List and FAT entries are initialized.                          
-
-                            </div>
-                          </div>
-                        </div>
-                        </div>
-
-                        <!-- START SINGLE FEATURED ITEM #3 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c3">
-                                <span class="fa fa-check-square-o"></span>Command to Load Files
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c3" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                
-				<p>The command <b>load</b> is used to load files from the UNIX filesystem to the XFS disk.
+             <ul class="list-group">
+                 <li class="list-group-item list-group-item-success"><b>Help</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b>help</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It displays the general syntax and function of all the commands.</li></ul>
+                 </li>    
+                 <li class="list-group-item list-group-item-success"><b>Disk Format</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b>fdisk</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It is used to create the disk (”disk.xfs”) or to format the disk if already created. 
+				                  On a newly created disk or formatted disk the Disk Free List and FAT entries are initialized. </li></ul>
+                 </li>
+                 <li class="list-group-item list-group-item-success"><b>Load Files</b> <br/>
+                     <p style="color:black">The command <b>load</b> is used to load files from the UNIX filesystem to the XFS disk.
 				The type of the file that is loaded is specified by the first argument. The second argument <b> &lt;pathname&gt; </b>
 				is the path to the UNIX file which is to be loaded to the filesystem. <br/>
 				The command checks the size of the file (executable or data files) and allocates blocks to it. 
 				A corresponding FAT entry is created for the file. For the OS startup code, interrupt routines and 
 				exception handler, the file is loaded to the corresponding location in the disk.
 				</p>
-				</br>
-				<p>The various <b>load</b> commands are listed below :
-
-				<div>
-				<ol>
-					<li><i>Syntax</i> : <tt><b>load</b> --exec &lt;pathname&gt; </tt>
-					    </br><i>Semantics</i> : Loads an executable file to XFS disk. </li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --init &lt;pathname&gt; </tt>
+                <p style="color:black">The various <b>load</b> commands are listed below :     
+				<br/>
+                <ul class="list-group"><ol>
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --exec &lt;pathname&gt; </tt><br/>
+                            <i>Semantics</i> : Loads an executable file to XFS disk. </li>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --init &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads INIT code to XFS disk. </li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --data &lt;pathname&gt; </tt>
-					    </br><i>Semantics</i> : Loads a data file to XFS disk. </li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --os &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --data &lt;pathname&gt; </tt><br/>
+					    <i>Semantics</i> : Loads a data file to XFS disk. </li>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --os &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads OS startup code to XFS disk. </li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --int=timer &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=timer &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads Timer Interrupt routine to XFS disk. </li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --int=[4-18] &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=[4-18] &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads the specified Interrupt routine to XFS disk.</li>
-					</br>
-					<li><i>Syntax</i> : <tt><b>load</b> --exhandler &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --exhandler &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads exception handler routine to XFS disk.</li>
-				</ol>
-                 		</div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- START SINGLE FEATURED ITEM #4 -->
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c4">
-                                <span class="fa fa-check-square-o"></span>Command to Remove Files
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c4" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                
-				<p> The command <b>rm</b> is used to remove files from the filesystem. The first argument specifies the type of file 
+				</ol></ul>
+                 </li>
+                <li class="list-group-item list-group-item-success"><b>Remove Files</b> <br/>
+                     <p style="color:black">The command <b>rm</b> is used to remove files from the filesystem. The first argument specifies the type of file 
 				to be removed. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.<br/>
 				The command searches the FAT entries for the file (executable/data file) and clears the blocks 
 				corresponding to the file. In the case of OS startup code, interrupt routines and exception handler 
 				the corresponding blocks in the disk are cleared. 
-				</p>                                    
-
-				<div>
-				<ol>
-					<li><i>Syntax</i> : <tt><b>rm</b> --exec &lt;xfs_filename&gt; </tt>
+				</p>    
+                <p style="color:black">The various <b>load</b> commands are listed below :     
+				<br/>
+                <ul class="list-group"><ol>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --exec &lt;xfs_filename&gt; </tt>
 					    </br><i>Semantics</i> : Removes an executable file from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --init </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --init </tt>
 					    </br><i>Semantics</i> : Removes INIT code from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --data &lt;xfs_filename&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --data &lt;xfs_filename&gt; </tt>
 					    </br><i>Semantics</i> : Removes a data file from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --os </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --os </tt>
 					    </br><i>Semantics</i> : Removes OS startup code from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --int=timer </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --int=timer </tt>
 					    </br><i>Semantics</i> : Removes the Timer Interrupt routine from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --int=[4-18] </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --int=[4-18] </tt>
 					    </br><i>Semantics</i> : Removes the specified Interrupt routine from XFS disk.</li>
-					<br/>
-					<li><i>Syntax</i> : <tt><b>rm</b> --exhandler </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --exhandler </tt>
 					    </br><i>Semantics</i> : Removes the exception handler routine from XFS disk.</li>
 				</ol>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                    <!--end item 4-->    
-                        
-                     <!-- START SINGLE FEATURED ITEM #5 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c5">
-                                <span class="fa fa-check-square-o"></span>Command to List Files
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c5" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <i>Syntax</i> : <tt><b>ls</b></tt>
-				</br>
-				<i>Semantics</i> : It lists all the files which are loaded into the filesystem. 
+                </ul>
+                 </li>
+    <li class="list-group-item list-group-item-success"><b>List Files</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>ls</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It lists all the files which are loaded into the filesystem. 
 				                  The size of the file is also displayed in number of words.
-				                  The FAT entries are traversed and all the files and their corresponding sizes are displayed.
-                    
-                      	   </div>
-                    	</div>
-                     </div>
-		   <!--end item 5--> 
-
-		   
-		   <!-- START SINGLE FEATURED ITEM #6 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c6">
-                                <span class="fa fa-check-square-o"></span>Command to Display Disk Free List
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c6" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <i>Syntax</i> : <tt><b>df</b></tt>
-				</br>
-				<i>Semantics</i> : It displays the disk free list. 
-					  	  It also displays the total number of blocks and the number of free blocks.
-                    
-                      	   </div>
-                    	</div>
-                     </div>
-		   <!--end item 6--> 
-
-		   <!-- START SINGLE FEATURED ITEM #7 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c7">
-                                <span class="fa fa-check-square-o"></span>Command to Display File Contents
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c7" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <i>Syntax</i> : <tt><b>cat</b> &lt;xfs_filename&gt;</tt>
-				</br>
-				<i>Semantics</i> : It displays the contents of a file in the filesystem.
+				                  The FAT entries are traversed and all the files and their corresponding sizes are displayed.</li></ul>
+                 </li> 
+<li class="list-group-item list-group-item-success"><b>Display Disk Free List</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>df</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It displays the disk free list. 
+					  	  It also displays the total number of blocks and the number of free blocks.</li></ul>
+                 </li> 
+<li class="list-group-item list-group-item-success"><b>Display File Contents</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>cat</b> &lt;xfs_filename&gt;</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It displays the contents of a file in the filesystem.
 				                   The FAT entries are searched to get the blocks corresponding to the file. The blocks are displayed.
-                    
-                      	   </div>
-                    	</div>
-                     </div>
-		   <!--end item 7--> 
-
-		   <!-- START SINGLE FEATURED ITEM #8 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c8">
-                                <span class="fa fa-check-square-o"></span>Command to Copy Disk Blocks to a UNIX File
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c8" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <i>Syntax</i> : <tt><b>copy</b> &lt;start_block&gt; &lt;end_block&gt; &lt;unix_filename&gt;</tt>
-				</br>
-				<i>Semantics</i> : It copies the contents of specified block(s) in the filesystem to an 
+                </li></ul>
+                 </li> 
+<li class="list-group-item list-group-item-success"><b>Copy Disk Blocks to a UNIX File</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>copy</b> &lt;start_block&gt; &lt;end_block&gt; &lt;unix_filename&gt;</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It copies the contents of specified block(s) in the filesystem to an 
 				                  external UNIX file. The arguments &lt;start_block&gt; and &lt;end_block&gt; denotes the range of blocks to be copied 
-				                  (including both). &lt;unix_filename&gt; specifes the destination UNIX file to which the contents are copied.
-                    
-                      	   </div>
-                    	</div>
-                     </div>
-		   <!--end item 8--> 
-
-		  <!-- START SINGLE FEATURED ITEM #9 -->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c9">
-                                <span class="fa fa-check-square-o"></span>Command to Exit Interface
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c9" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <i>Syntax</i> : <tt><b>exit</b></tt>
-				</br>
-				<i>Semantics</i> : It quits the inteface.
-                    
-                      	   </div>
-                    	</div>
-                     </div>
-		   <!--end item 9--> 
-		   
-		    </div>
-                  </div>
-                </div>
+				                  (including both). &lt;unix_filename&gt; specifes the destination UNIX file to which the contents are copied.</li></ul>
+                 </li> 
+                <li class="list-group-item list-group-item-success"><b>Exit Interface</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b>exit</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It quits the interface.</li></ul>
+                 </li>    
+            </ul>      
               </div>
             </div>
           </div>
