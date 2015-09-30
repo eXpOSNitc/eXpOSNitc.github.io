@@ -111,10 +111,41 @@
 
                 <p> Within your XSM directory, use the following command to run the simulator </p>
 				<ul>
-					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>flag</i></b></tt></p></li>
-				</ul>
+					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>[--timer=#1] [--disk=#2] [--console=#3] [--debug]</i></b></tt></p></li>
+				
                 
+                  			        
+				<li> 
+				<i>Syntax</i> : <tt>--timer=value</tt>
+				</br>
+                <i>Semantics</i> : This flag sets the number of instructions after which timer interrupt is triggered to the <tt>value</tt> specified. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
+				</li>
+                       <br/>
+                       <li> 
+				<i>Syntax</i> : <tt>--disk=value</tt>
+				</br>
+            <i>Semantics</i> : This flag sets the number of instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+				</li>
+                    <br/>
+                  <li> 
+				<i>Syntax</i> : <tt>--console=value</tt>
+				</br>
+           <i>Semantics</i> : This flag sets the number of instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+				</li>
+                <br/>
+                <li><p> 
+                                        <i>Syntax</i> : <tt>--debug</tt><br/>
+				<i>Semantics</i> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Any BRKP instruction in the program will be ignored by the machine if this flag is not set. Further details are given in the section below.
+                  </p></li>
+				
+    </ul>
+
               </div>
+
+                <!-- START SINGLE FEATURED ITEM #1-->
+                
+           
+
 
               <!-- START ABOUT CONTENT -->
               <div class="about_content">
@@ -122,34 +153,7 @@
                    <div class="about_featured">
                       <div class="panel-group" id="accordion">
 
-                        <!-- START SINGLE FEATURED ITEM #1-->
-
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c1">
-                                 <span class="fa fa-check-square-o"></span>Flags
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="c1" class="panel-collapse collapse">
-                            <div class="panel-body">
-                               <ul>
-  			        <li> 
-                                <i>Syntax</i> : <tt>--debug</tt>
-				</br>
-				<i>Semantics</i> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Further details are given in the section below.
-                                </li>
-				</br>
-				<li> 
-				<i>Syntax</i> : <tt>--timer=value</tt>
-				</br>
-				<i>Semantics</i> : This flag sets the number of instructions after which timer interrupt is triggered to value. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
-				</li>
-                            </div>
-                          </div>
-                        </div>
-
+                        
                         <!-- START SINGLE FEATURED ITEM #2 -->
 
                         <div id="root">
@@ -164,7 +168,7 @@
                           <div id="c2" class="panel-collapse collapse">
                             <div class="panel-body">
 				
-			 	<p>The  <tt><b>--debug</b></tt>  flag is used to debug the running machine. When this flag is set and the machine encounters a breakpoint instruction, it is set into the DEBUG mode.
+			 	<p>The  <tt><b>--debug</b></tt>  flag is used to debug the running machine. When this flag is set and the machine encounters a breakpoint instruction, the machine enters the DEBUG mode.
 				   In this mode a prompt is displayed which allows the user to enter commands to inspect the state of the machine. 
                           	</p>
 
@@ -179,15 +183,15 @@
 					    <i>Semantics</i> : </i> The execution proceeds till the next <tt>breakpoint</tt> instruction.</li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> reg / r </tt><br/>
-					    <i>Semantics</i> : </i> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EFR, R0-R19</tt>.<br/>
+					    <i>Semantics</i> : </i> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EIP, EC, EPN, EMA, R0-R19</tt> in that order.<br/>
 					    Sample usage: <tt>reg </tt></li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
 					    <i>Semantics</i> : </i> Displayes the content of the specified register.<br/>
 					    Sample usage: <tt>r R5, reg PTLR</tt></li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_1&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_1&gt;.</li>
+					<li><i>Syntax</i> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_2&gt; </tt><br/>
+					    <i>Semantics</i> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_2&gt; in the order specified in (3).</li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
 					    <i>Semantics</i> : </i> Displays contents of the memory page &lt;page_num&gt;.<br/> 
@@ -216,7 +220,7 @@
 					    <i>Semantics</i> : </i> Displays the Memory Free List.</li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> diskfreelist / df </tt><br/>
-					    <i>Semantics</i> : </i> Displays the Memory copy of Disk Free List.</li>
+					    <i>Semantics</i> : </i> Displays the memory copy of Disk Free List.</li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> fat </tt><br/>
 					    <i>Semantics</i> : </i> Displays the memory copy of the File Allocation Table (FAT).</li>
@@ -224,7 +228,7 @@
 					<li><i>Syntax</i> : </i><tt> location / l &lt;address&gt; </tt><br/>
 					    <i>Semantics</i> : </i> Displays the content at memory address (Address Translation takes place if used in USER mode)</li>
 					<br/>
-					<li><i>Syntaxx</i> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
+					<li><i>Syntax</i> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
 					    <i>Semantics</i> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</li>
 					<br/>
 					<li><i>Syntax</i> : </i><tt> watchclear  / wc </tt><br/>
