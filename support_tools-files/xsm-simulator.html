@@ -108,35 +108,31 @@
                 <br/>
                 <br/>
                 <p><b>The XSM Simulator</b> (eXperimental String Machine) is used to simulate the XSM hardware.</p>
-
                 <p> Within your XSM directory, use the following command to run the simulator </p>
 				<ul>
-					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>[--timer=#1] [--disk=#2] [--console=#3] [--debug]</i></b></tt></p></li>
-				
-                
-                  			        
+					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>[--timer=#1] [--disk=#2] [--console=#3] [--debug]</i></b></tt>                           </p></li>	        
 				<li> 
-				<i>Syntax</i> : <tt>--timer=value</tt>
-				</br>
-                <i>Semantics</i> : This flag sets the number of instructions after which timer interrupt is triggered to the <tt>value</tt> specified. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
+                    <b style="font-size:16px;color:#009100">(i) </b> <b><i>Syntax</i></b> : <tt>--timer=value</tt>
+				    </br>
+                  <b><i>Semantics</i></b> : This flag sets the number of instructions after which timer interrupt is triggered to the <tt>value</tt> specified. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
 				</li>
                        <br/>
-                       <li> 
-				<i>Syntax</i> : <tt>--disk=value</tt>
+                <li> 
+                    <b style="font-size:16px;color:#009100">(ii) </b><b><i>Syntax</i></b> : <tt>--disk=value</tt>
 				</br>
-            <i>Semantics</i> : This flag sets the number of instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+              <b><i>Semantics</i></b> : This flag sets the number of instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
 				</li>
                     <br/>
                   <li> 
-				<i>Syntax</i> : <tt>--console=value</tt>
-				</br>
-           <i>Semantics</i> : This flag sets the number of instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+                      <b style="font-size:16px;color:#009100">(iii) </b><b><i>Syntax</i></b> : <tt>--console=value</tt>
+				    </br>
+          <b><i>Semantics</i></b> : This flag sets the number of instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
 				</li>
                 <br/>
-                <li><p> 
-                                        <i>Syntax</i> : <tt>--debug</tt><br/>
-				<i>Semantics</i> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Any BRKP instruction in the program will be ignored by the machine if this flag is not set. Further details are given in the section below.
-                  </p></li>
+                <li>
+                    <b style="font-size:16px;color:#009100">(iv) </b><b><i>Syntax</i></b> : <tt>--debug</tt><br/>
+                    <b><i>Semantics</i></b> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Any BRKP instruction in the program will be ignored by the machine if this flag is not set. Further details are given in the section below.
+                </li>
 				
     </ul>
 
@@ -175,72 +171,73 @@
 				<p>The commands in DEBUG mode are : </p>
 
 				<div>
-				  <ol>
-					<li><i>Syntax</i> : </i><tt> step / s </tt><br/>
-					    <i>Semantics</i> : </i> The execution proceeds by a single step</li>
+				  <ul>
+                      <li><b style="font-size:16px;color:#009100">(1) </b><b><i>Syntax</i></b> : <tt> step / s </tt><br/>
+                          <b><i>Semantics</i></b> : </i> The execution proceeds by a single step.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> continue / c </tt><br/>
-					    <i>Semantics</i> : </i> The execution proceeds till the next <tt>breakpoint</tt> instruction.</li>
+                              <li><b style="font-size:16px;color:#009100">(2) </b><b><i>Syntax</i> : </i></b><tt> continue / c </tt><br/>
+                            <b><i>Semantics</i> : </i></b> The execution proceeds till the next <tt>breakpoint</tt> instruction.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> reg / r </tt><br/>
-					    <i>Semantics</i> : </i> Displays the contents of all the registers in the machine namely <tt>IP, SP, BP, PTBR, PTLR, EIP, EC, EPN, EMA, R0-R19</tt> in that order.<br/>
-					    Sample usage: <tt>reg </tt></li>
+                            <li><b style="font-size:16px;color:#009100">(3) </b><b><i>Syntax</i></b> : </i><tt> reg / r </tt><br/>
+                       <b><i>Semantics</i></b> : </i> Displays the contents of all the machine registers namely <tt>IP, SP, BP, PTBR, PTLR, EIP, EC, EPN, EMA, R0-R19</tt> in that order.<br/>
+                    </li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displayes the content of the specified register.<br/>
+					<li>
+                        <b style="font-size:16px;color:#009100">(4) </b><b><i>Syntax</i></b> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
+                    <b><i>Semantics</i></b> : </i> Displays the contents of the specified register.<br/>
 					    Sample usage: <tt>r R5, reg PTLR</tt></li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_2&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_2&gt; in the order specified in (3).</li>
+<li><b style="font-size:16px;color:#009100">(5) </b><b><i>Syntax</i></b> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_2&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_2&gt; in the order specified in <b style="font-size:16px;color:#009100">(3)</b>.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displays contents of the memory page &lt;page_num&gt;.<br/> 
+<li><b style="font-size:16px;color:#009100">(6) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the contents of the memory page &lt;page_num&gt;.<br/> 
 					    Sample usage: <tt>mem 5, m 20 </tt></li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
-					    <i>Semantics</i> : </i> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;.<br/>
+<li><b style="font-size:16px;color:#009100">(7) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
+<b><i>Semantics</i></b> : </i> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;.<br/>
 					    Sample usage: <tt>mem 5 8, m 0 10 </tt></li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> pcb / p </tt><br/>
-					    <i>Semantics</i> : </i> Displays the Process Control Block of the process with the state as RUNNING.</li>
+<li><b style="font-size:16px;color:#009100">(8) </b><b><i>Syntax</i></b> : </i><tt> pcb / p </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Process Control Block of the process with the state as RUNNING.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </li>
+<li><b style="font-size:16px;color:#009100">(9) </b><b><i>Syntax</i></b> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> pagetable / pt </tt><br/>
-					    <i>Semantics</i> : </i> Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register).</li>
+<li><b style="font-size:16px;color:#009100">(10) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register).</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> pagetable / pt &lt;pid&gt; </tt> :<br/>
-					    <i>Semantics</i> : </i> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </li>
+<li><b style="font-size:16px;color:#009100">(11) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt &lt;pid&gt; </tt> :<br/>
+<b><i>Semantics</i></b> : </i> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> filetable / ft </tt><br/>
-					    <i>Semantics</i> : </i> Displays the System Wide Open File Table.</li>
+<li><b style="font-size:16px;color:#009100">(12) </b><b><i>Syntax</i></b> : </i><tt> filetable / ft </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the System Wide Open File Table.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> memfreelist / mf </tt><br/>
-					    <i>Semantics</i> : </i> Displays the Memory Free List.</li>
+<li><b style="font-size:16px;color:#009100">(13) </b><b><i>Syntax</i></b> : </i><tt> memfreelist / mf </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Memory Free List.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> diskfreelist / df </tt><br/>
-					    <i>Semantics</i> : </i> Displays the memory copy of Disk Free List.</li>
+<li><b style="font-size:16px;color:#009100">(14) </b><b><i>Syntax</i></b> : </i><tt> diskfreelist / df </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the memory copy of Disk Free List.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> fat </tt><br/>
-					    <i>Semantics</i> : </i> Displays the memory copy of the File Allocation Table (FAT).</li>
+<li><b style="font-size:16px;color:#009100">(15) </b><b><i>Syntax</i></b> : </i><tt> fat </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the memory copy of the File Allocation Table (FAT).</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> location / l &lt;address&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Displays the content at memory address (Address Translation takes place if used in USER mode)</li>
+<li><b style="font-size:16px;color:#009100">(16) </b><b><i>Syntax</i></b> : </i><tt> location / l &lt;address&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the content at memory address (Address Translation takes place if used in USER mode)</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
-					    <i>Semantics</i> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</li>
+<li><b style="font-size:16px;color:#009100">(17) </b><b><i>Syntax</i></b> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, debug interface is invoked. Atmost 16 watch points can be set.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> watchclear  / wc </tt><br/>
-					    <i>Semantics</i> : </i> Clears all the watch points.</li>
+<li><b style="font-size:16px;color:#009100">(18) </b><b><i>Syntax</i></b> : </i><tt> watchclear  / wc </tt><br/>
+<b><i>Semantics</i></b> : </i> Clears all the watch points.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> exit / e </tt><br/>
-					    <i>Semantics</i> : </i> Exits the debug prompt and halts the machine.</li>
+<li><b style="font-size:16px;color:#009100">(19) </b><b><i>Syntax</i></b> : </i><tt> exit / e </tt><br/>
+<b><i>Semantics</i></b> : </i> Exits the debug prompt and halts the machine.</li>
 					<br/>
-					<li><i>Syntax</i> : </i><tt> help / h </tt><br/>
-					    <i>Semantics</i> : </i> Displays commands.</li>
+<li><b style="font-size:16px;color:#009100">(20) </b><b><i>Syntax</i></b> : </i><tt> help / h </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays commands.</li>
 
-				</ol>
+				</ul>
 				</div>
                             </div>
                           </div>
