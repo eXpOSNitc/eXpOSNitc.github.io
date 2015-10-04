@@ -111,6 +111,8 @@
                       <td style="border: 1px solid black">FILE TYPE</td>
                       <td style="border: 1px solid black">FILE NAME</td>
                       <td style="border: 1px solid black">FILE SIZE</td>
+		      <td style="border: 1px solid black"><font color="red">USER ID</font></td>
+		      <td style="border: 1px solid black"><font color="red">PERMISSION</font></td>
                       <td style="border: 1px solid black">DATA BLOCK 1</td>
                       <td style="border: 1px solid black">DATA BLOCK 2</td>
                       <td style="border: 1px solid black">DATA BLOCK 3</td>
@@ -123,9 +125,10 @@
                    <li><b>FILE TYPE </b> (1 word) - specifies the type of the given file (ROOT indicated by 1 , DATA indicated by 2 or EXEC indicated by 3). More information about file types is given <a href="../os_spec-files/eXpFS.html" target="_blank">here</a>. </li>
                    <li><b>FILE NAME</b> (1 word) - Name of the file </li>
                    <li><b>FILE SIZE</b> (1 word) - Size of the file. Maximum size for File = MAX_FILE_SIZE = 2048 words </li>
-                  
+                   <li><b><font color="red">USER ID</b> (1 word) - User Id of the owner of the file.</font> </li>
+                   <li><b><font color="red">PERMISSION</b> (1 word) - Permission of the file; it can be open or exclusive.</font> </li>                  
                    <li><b>DATA BLOCK 1 to 4</b> (4 words) - each DATA BLOCK column stores the block number of a data block of the file. If a file does not use a particular DATA BLOCK , it is set to -1.</li>
-                   <li><b>Unused</b> (9 words) </li>
+                   <li><b>Unused</b> (7 words) </li>
                   
               </ul>  
               
@@ -189,7 +192,9 @@
                       <td style="border: 1px solid black">FILE NAME</td>
                       <td style="border: 1px solid black">FILE SIZE</td>
                       <td style="border: 1px solid black">FILE TYPE</td>
-                       <td style="border: 1px solid black">Unused        </td>
+		      <td style="border: 1px solid black"><font color="red">USER NAME</font></td>
+		      <td style="border: 1px solid black"><font color="red">PERMISSION</font></td>
+                       <td style="border: 1px solid black">Unused</td>
                       
                   </tr>
               </table>
@@ -197,8 +202,10 @@
                    
                    <li><b>FILE NAME</b> (1 word) - Name of the file </li>
                    <li><b>FILE SIZE</b> (1 word) - Size of the file</li>
-                   <li><b>FILE TYPE </b> (1 word) - specifies the type of the given file (ROOT indicated by 1 , DATA indicated by 2 or EXEC indicated by 3). </li>
-                   <li><b>Unused</b> (5 words) </li>
+                   <li><b>FILE TYPE </b> (1 word) - Specifies the type of the given file (ROOT indicated by 1 , DATA indicated by 2 or EXEC indicated by 3). </li>
+                   <li><b><font color="red">USER NAME</b> (1 word) - Name of the owner of the file </font></li>
+                   <li><b><font color="red">PERMISSION</b> (1 word) - Permission of the file; open or exclusive  </font></li>
+                   <li><b>Unused</b> (3 words) </li>
                   
               </ul>  
               
@@ -209,6 +216,45 @@
         
       </div>
     </section>
+
+<!--=========== BEGIN  User Table SECTION ================-->
+    <section id="user_table">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2 class="Big" >User Table</h2>
+               <br>
+               <br>
+              <p>The User table is stores in the disk and has an entry for each user.(A copy of the User table is maintained in the memory when the OS is running). It consists of MAX_USER_NUM entries. This version of eXpOS sets MAX_USER_NUM = 16 including kernel and root. </p>
+              
+             <p> Each User table entry stores the user name and encrypted password of a user. Each User table entry consists of 2 words. </p> 
+              
+              <p>The entry of an User table has the following format:</p>
+              <table class="table table-bordered" >
+                  <tr >
+                      <td style="border: 1px solid black">USER NAME</td>
+                      <td style="border: 1px solid black">ENCRYPTED PASSWORD</td>                      
+                  </tr>
+              </table>
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                   <li><b>USER NAME</b> (1 word) - Name of the user </li>                                                      
+                   <li><b>ENCRYPTED PASSWORD</b> (1 word) - Password of the user in an encrypted form.</li>                  
+              </ul>  
+              
+              <p>All unused entries are set to -1.</p>  
+</div>
+                  
+        </div>
+        
+      </div>
+    </section>
+ 
+ <br>
+ <br>
+ <!--=========== END User Table Section ================-->
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
