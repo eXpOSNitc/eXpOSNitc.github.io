@@ -115,34 +115,10 @@
 	      <p>A user can change his/her password using <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">setpwd</a> system call which takes username and password as arguments. A user, other than the root is allowed to change only his/her own password. Root can change the password of any user, including itself.</p>
 	      <p>The <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">getuid</a> system call returns the user id of the current user. The <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">getuname</a> system call returns the username corresponding to a userid.</p>
 	      <p>The API specification of all the multi­user system calls can be seen <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">here</a></p>
+	      <p>When a file is created by a process using the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">Create</a> system call, the process can set its permission to exclusive, to restrict access permissions. When a file is created with the exclusive flag set, write and delete system calls to that file will fail if executed by any user  other than the owner of the file or the root. The root file has default userid set to 0. The root can modify/delete any file (except the root file) irrespective of the permissions. Kernel processes have unrestricted access to all <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">system calls</a>.</p>
               </div>
 
-              <!-- START ABOUT CONTENT -->
-              <div class="about_content">
-                <div class="row">
-                   <div class="about_featured">
-                      <div class="panel-group" id="accordion">
-                        <!-- START SINGLE FEATURED ITEM #1-->
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse"   href="#FourcollapseOne">
-                                 <span class="fa fa-check-square-o"></span>File Access Permissions
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="FourcollapseOne" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                
-				<p>When a file is created by a process using the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">Create</a> system call, the process can set its permission to exclusive, to restrict access permissions. When a file is created with the exclusive flag set, write and delete system calls to that file will fail if executed by any user  other than the owner of the file or the root. The root file has default userid set to 0. The root can modify/delete any file (except the root file) irrespective of the permissions. Kernel processes have unrestricted access to all <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html">system calls</a>.</p>
-                            </div>
-                          </div>
-                        </div>
-                       
-                        
-                      </div>
-              </div>
-            </div>
+            
           </div>
         </div>       
       </div>
