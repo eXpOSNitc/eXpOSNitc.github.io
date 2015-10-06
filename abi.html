@@ -220,9 +220,9 @@ is done by the allocator routines in the shared library (for example, memory all
  
    <p><b>Text Size</b>, <b>Data Size</b>, <b>Heap Size</b> and <b>Stack size</b> indicates the sizes of Text, Data, Heap and Stack regions to be allocated by the OS loader when the file is loaded for execution. </p>
 
-<p><code>Note : </code>The eXpOS virtual address space model requires that the data and stack must be in the same memory area and must be managed by the compiler / application program. The value of Data Size field is ignored.</p>
+<p><code>Note : </code>The present eXpOS virtual address space model requires that the data and stack must be in the same memory area and must be managed by the compiler / application program. The value of Data Size field is ignored.</p>
    
-   <p>If the <b>Runtime Library</b> must be included when the file is loaded, the Library Flag is set to 1. Generally, memory is not allocated for the heap if this flag is not set.</p>
+   <p>If the <b>Runtime Library</b> must be included when the file is loaded, the Library Flag is set to 1. If this flag is not set then neither the memory is allocated for the heap nor the library is linked to the address space of the process.</p>
                                </div>
                           </div>
                         </div>
@@ -275,7 +275,7 @@ is done by the allocator routines in the shared library (for example, memory all
     POP Rj                    // Pop and discard argument 3
     POP Rj                    // Pop and discard argument 2
     POP Rj                    // Pop and discard argument 1
-    POP System_Call_Number    // Pop and discard the system call number
+    POP Rj                   // Pop and discard the system call number
                               // Now the stack is popped back to the state before call 	
 </pre>
 
