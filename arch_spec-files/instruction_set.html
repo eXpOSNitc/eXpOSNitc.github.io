@@ -199,7 +199,7 @@
                                         <div id="collapse3" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                              <p>Logical instructions are used for comparing values in registers. Strings can also be compared according to the lexicographic ordering of ASCII. The logical instructions are LT, GT, EQ, NE, GE and LE.</p>
+                                              <p>Logical instructions are used for comparing values in registers. Strings can also be compared according to the lexicographic ordering of ASCII. If one of the operands is a string, the other operand will also be considered as a string. The logical instructions are LT, GT, EQ, NE, GE and LE.</p>
 <br>
 <b>LT, GT, EQ, NE, GE, LE</b><br>
 <i>Syntax</i> : OP Ri, Rj<br>
@@ -519,6 +519,25 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse7">INA</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+
+<p><i>Syntax</i> : INA<br></p>
+<p><i>Semantics</i> : INA initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the port P0 (which is reserved for the console input) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end input-->
+                        <!-- input-->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
                                                  <a data-toggle="collapse"  href="#collapse7">IN</a>
                                             </h4>
                                         </div>
@@ -526,13 +545,14 @@
                                             <div class="panel-body">
                                                 
 
-<p><i>Syntax</i> : IN<br></p>
-<p><i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the port P0 (which is reserved for the console input) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.</p>
+<p><i>Syntax</i> : IN Ri<br></p>
+<p><i>Semantics</i> : IN initiates reading a word from the standard console. The machine waits for the console read to complete before proceeding to the execution of the next instruction. When a word is read from the console, the console controller stores the word to the register Ri. Console interrupt is not raised here.</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                          <!--end input-->
+                                
 
                           <!-- output-->
                                 <div class="panel-group">

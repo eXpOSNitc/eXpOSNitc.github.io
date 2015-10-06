@@ -312,11 +312,12 @@
 				The relational operators supported by SPL are  <b><tt>
                     >, <, >=, <=, !=, ==</tt></b>.
 				Standard meanings apply to these operators. A relational operator will take in two arguments and return 1 if the relation is valid and 0 otherwise. <br/>
-                    <p>The relational operators can also be applied to strings. <tt> <, >, <=, >= </tt> compares two strings lexicographically. <tt>!= </tt> and <tt>==</tt> checks for equality in the case of strings.</p>
+                    <p>The relational operators can also be applied to strings. <tt> <, >, <=, >= </tt> compares two strings lexicographically. <tt>!= </tt> and <tt>==</tt> checks for equality in the case of strings. If one of the operands is a string, the other operand will also be considered as a string.</p>
                         <p><i>Examples:</i></p>
                         <p>
 				 <p><tt> "adam" < "apple"      // This returns 1 </tt></p>
 				 <p><tt> "hansel" == "gretel"     // This returns 0 </tt></p>
+                <p><tt> "3" == 3     // This returns 1, as 3 will be treated as "3" </tt></p>        
 				<p>Logical expressions themselves may be combined using logical operators, && (logical and) , || (logical or) and ! (not).</p>
 						
 			
@@ -325,7 +326,7 @@
                     A word in the memory is accessed by specifying the addressing element, i.e. memory location within <b>[ ]</b>. 
 				This corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address.<br/>
                         <p><i>Examples :</i></p>
-				<p><tt>[1024], [S3], [S5+[S7]+128], [FAT + S2] </tt>etc.</p>
+				<p><tt>[1024], [S3], [S5+[S7]+128], [INODE_TABLE + S2] </tt>etc.</p>
 			
                                     
                                     
