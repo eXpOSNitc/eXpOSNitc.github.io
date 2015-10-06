@@ -109,7 +109,7 @@
                 <br/>
                 <p>	<b>SPL</b> or <i>System Programmer’s Language</i> is an untyped programming language designed for the implementation of an operating system on <b>XSM</b> 
 				<i>(eXperimental String Machine)</i> architecture. The language is minimalistic and consists only of basic constructs required for the implementation. 
-				Programming using SPL requires a basic understanding of the underlying XSM architecture and operating system concepts.</p>
+				Programming using SPL requires a basic understanding of the underlying XSM architecture.</p>
               </div>
 
               <!-- START ABOUT CONTENT -->
@@ -160,8 +160,8 @@
 					<p><b>Invalid :</b> <tt> 9blocks</tt>, <tt>$n</tt> etc.</p></p>
                           
                 <h3>Literals</h3>
-				<p>	Integer and String literals are permitted in SPL.</p><p> An integer literal is a sequence of digits representing an integer. 
-				Negative integers are represented with a negative sign preceding the sequence of digits.
+                            <p>	Integer and String literals are permitted in SPL.</p><p> An integer literal is a sequence of digits representing an integer. 
+				Negative integers are represented with a negative sign preceding the sequence of digits.  e.g. <tt>3, -512, 1024</tt>
 				<p>A string literal is a sequence of characters which are enclosed within double quotes (" ").
 				  e.g. <tt> "alice"</tt>
 
@@ -205,6 +205,7 @@
 				<p>	Any register can be referred to by using a different name. A name is assigned to a particular register using the <b>alias</b> keyword. 
 				Each register can be assigned to only one alias at any particular point of time. However, a register can be reassigned to a different alias at a later point. 
 				Aliasing can also be done inside the <b>if</b> and <b>while</b> block. However, an alias defined within the <b>if</b> and <b>while</b> blocks will only be valid within the block.  No two registers can have the same alias name simultaneously.</p>
+                                
                             </div>
                           </div>
                         </div>
@@ -226,24 +227,44 @@
                                 <h3>Predefined Constants</h3>
 				<p>	SPL provides a set of predefined constants. 
 				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
-				These constants are mostly starting addresses of various OS components in the memory.
-				The predefined set of constants provided in SPL are :</p>
+                    These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>. They are specifically tuned for the eXperimental Operating System which runs on the XSM architecture.
+				The predefined set of constants provided in SPL are:</p>
                                 <table class="table table-bordered" style="text-align: center;">
                 <tr class="success">
                                         <th style="text-align: center;">Name</th>
                                         <th style="text-align: center;">Default Value</th>
+                                        <th style="text-align: center;">Comments</th>
                                     </tr>
-					<tr> <td>SCRATCHPAD</td> 	<td>512</td> </tr>
+                    <tr> <td>INODE_TABLE</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>DISK_FREE_LIST</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>ROOT_FILE</td> 	<td>...</td><td></td> </tr> 
+                    <tr> <td>USER_TABLE</td> 	<td>...</td><td></td> </tr>  
+                    <tr> <td>PROCESS_TABLE</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>FILE_TABLE</td> 	<td>...</td><td></td> </tr>  
+                    <tr> <td>SEMAPHORE_TABLE</td> 	<td>...</td><td></td> </tr> 
+                    <tr> <td>DISK_STATUS_TABLE</td> 	<td>...</td><td></td> </tr>  
+                    <tr> <td>BUFFER_TABLE</td> 	<td>...</td><td></td> </tr> 
+                    <tr> <td>SYSTEM_STATUS_TABLE</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>TERMINAL_STATUS_TABLE</td> 	<td>...</td><td></td> </tr> 
+                    <tr> <td>MEMORY_FREE_LIST</td> 	<td>...</td><td></td> </tr>   
+                    <tr> <td>EXCEPTION</td> 	<td>...</td><td></td> </tr>
+					<tr> <td>TIMER</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>DISK</td> 	<td>...</td><td></td> </tr>  
+                    <tr> <td>CONSOLE</td> 	<td>...</td> </tr>                
+					<!--tr> <td>SCRATCHPAD</td> 	<td>512</td> </tr>
 					<tr> <td>PAGE_TABLE</td> 	<td>1024</td> </tr>
 					<tr> <td>MEM_LIST</td> 		<td>1280</td> </tr>
 					<tr> <td>FILE_TABLE</td> 	<td>1344 </td> </tr>
-					<tr> <td>READY_LIST</td> 	<td>1536</td> </tr>
-					<tr> <td>FAT</td> 		  	<td>2560 </td> </tr>
+					<tr> <td>PROCESS_TABLE</td> 	<td>1536</td> </tr>
+					<tr> <td>INODE_TABLE</td>  <td>2560 </td> </tr>
 					<tr> <td>DISK_LIST</td> 	<td>3072 </td> </tr>
-					<tr> <td>EX_HANDLER</td> 	<td>3584 </td> </tr>
-					<tr> <td>T_INTERRUPT</td> 	<td>4608 </td> </tr>
+					<tr> <td>EXCEPTION</td> 	<td>3584 </td> </tr>
+					<tr> <td>TIMER</td> 	<td>4608 </td> </tr>
+                    <tr> <td>DISK</td> 	<td>4608 </td> </tr>
+                    <tr> <td>CONSOLE</td> 	<td>4608 </td> </tr>
 					<tr> <td>INTERRUPT</td> 	<td>5632 </td> </tr>
 					<tr> <td>USER_PROG</td> 	<td>12800 </td> </tr>
+                    <tr> <td>DISK_BUFFER</td> 	<td>.... </td> </tr!-->              
 				</table>
 
                  
@@ -265,10 +286,10 @@
                                 <p>	An expression specifies the computation of a value by applying operators to operands. SPL supports arithmetic and logical expressions.</p>
                                 
                                 <h3>Arithmetic Expressions</h3>
-				<p>	Registers, constants, and 2 or more arithmetic expressions connected using arithmetic operators are categorized as arithmetic expressions. 
+				<p>	Registers, constants, and two or more arithmetic expressions connected using arithmetic operators are categorized as arithmetic expressions. 
                     SPL provides five arithmetic operators, viz., <b>+, -, *, /</b> (Integer Division) and <b>%</b> (Modulo operator) through which arithmetic expressions may be combined. 
 				Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold.</p>
-                                <p><i>Examples:</i></p><p><tt>(5*x) + 3</tt> </p><p> <tt>10 % 4</tt></p>
+                                <p><i>Examples:</i></p><p><tt>(5*R4) + 3</tt> </p><p> <tt>10 % 4</tt></p>
 			
 			
 				<h3>Logical Expressions</h3>
