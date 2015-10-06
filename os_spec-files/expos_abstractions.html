@@ -113,6 +113,7 @@
 	<li>Methods of resource sharing</li>
 	<li>Primitives for concurrent access control and  process synchronization</li>
 	<li>The <b>system call interface</b> that specifies the interface through which application programs can invoke the system calls and access the OS services.  </li>
+	<li>The extended eXpOS specification provides a <font color="red">user abstraction</font> as discussed <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">here</a>.</li>
 </ol>
               </div>
 </div>
@@ -202,6 +203,7 @@
 
 <p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
 <p>Thus, eXpOS does not support any explicit primitives for memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
+<p>The file sharing semantics between users in <font color="red">Multiuser </font>extension to eXpOS is described <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">here</a>.
 
 
                             </div>
@@ -318,6 +320,37 @@
   
 </table>
 
+</table>
+<h3><a href="systemcallinterface.html#synsystemcalls"  target="_blank"><font color="red">System calls for Multiuser extension to eXpOS:</font></a></h3>
+<table class="table table-bordered">
+  <tr>
+    <td>Login</td>
+    <td> </td>		
+  <tr>
+    <td>Setpwd</td>
+    <td> </td>		
+    
+  </tr>
+  <tr>
+    <td>Newusr</td>
+    <td> </td>		
+    
+  </tr>
+  <tr>
+	  <td>Remusr</td>
+	  <td></td>
+  </tr>
+  <tr>
+	  <td>Getuid</td>
+	  <td></td>
+  </tr>
+  <tr>
+	  <td>Getuname</td>
+	  <td></td>
+  </tr>
+  
+</table>
+
                             </div>
                           </div>
                         </div>
@@ -336,7 +369,7 @@
       <a href="../os_spec.html"><img src="../img/spec_icon.jpg"  style="float:right;margin-right: 80px;"/></a>  
     </section>
     <!--=========== END ABOUT SECTION 2================-->
-    
+   
     
 		   
       <!--=========== BEGIN FOOTER ================-->
