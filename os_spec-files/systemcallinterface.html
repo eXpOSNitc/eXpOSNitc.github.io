@@ -840,6 +840,156 @@
                             <div class="panel-body">
                           
                          <!--start multiuser system calls --->   
+
+			 <!-- newusr system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse23">Newusr</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse23" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name, Password</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User already exists</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end newusr system call-->
+
+			 <!-- remusr system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse24">Remusr</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse24" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User does not exist</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end remusr system call-->
+
+			 <!-- setpwd system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse25">Setpwd</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse25" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name, Password</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Unauthorised attempt to change password</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end setpwd system call-->
+
+			 <!-- getuid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse26">Getuid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse26" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Access denied</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>uid</td>
+                                                        <td>User ID of the corresponding user</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: If the username is valid, this system call returns the userid corresponding to the username passed.Otherwise,it returns -1.>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getuid system call-->
+
+			 <!-- getuname system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse27">Getuid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse27" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User ID</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Access denied</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>uname</td>
+                                                        <td>User name of the corresponding user</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getname system call-->
+
+
      
                          <!-- login system call-->
                                 <div class="panel-group" id="accordion">
