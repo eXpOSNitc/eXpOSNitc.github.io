@@ -163,17 +163,21 @@
                           
                 <h3>Literals</h3>
                             <p>	Integer and String literals are permitted in SPL.</p><p> An integer literal is a sequence of digits representing an integer. 
-				Negative integers are represented with a negative sign preceding the sequence of digits.  e.g. <tt>3, -512, 1024</tt>
+				Negative integers are represented with a negative sign preceding the sequence of digits.  eg. <tt>3, -512, 1024</tt>
 				<p>A string literal is a sequence of characters which are enclosed within double quotes (" ").
-				  e.g. <tt> "alice"</tt>
+				  eg. <tt> "alice"</tt>
 
 				</p>
+                 <span style="color:blue">
+                <h3>Labels</h3>
+                     <p>	SPL supports labels which are used along with <tt>goto</tt> and <tt>call</tt>. Labels follow the same naming convention as that of the identifiers.<br/>
+                                eg. <tt>label1:<br/> .<br/> .<br/> .<br/> goto label1</tt></p>
                             </div>
                           </div>
-                        </div>
+                        </div></span>           
                         <!-- START SINGLE FEATURED ITEM #2 -->
                         <div id="root">
-                        <div class="panel panel-default ">
+                        <div class="panel panel-default "> 
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse" data-parent="#accordion" href="#c2">
@@ -436,18 +440,35 @@
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>
 				    <p><b>read</b> Register;<br/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;<b>print</b> Register / Number / String / Expression / [Address];</tt></p>   
-                
-                            
-                <h3>Load/Store Statement</h3>
-				<p>	Loading and storing between filesystem and memory is accomplished using <b>load</b> and <b>store</b> statements in SPL. 
-				<b>load</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
-				<b>store</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
-				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.<br/>
+                <span style="color:blue">
+                <h3>Loada/Storea Statement</h3>
+				<p>	Loading and storing between filesystem and memory can be accomplished using <b>loada</b> and <b>storea</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
+				<p><b>loada</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
+				<b>storea</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
+				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
 				
                 <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
 				<p><b>load</b> (page_number, block_number);<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;<b>store</b> (page_number, block_number);</tt></p>
-                            
+                
+                
+                <h3>Load/Store Statement</h3>
+				<p>	Loading and storing between filesystem and memory can also be accomplished using <b>load</b> and <b>store</b> statements in SPL. But here, the machine will continue execution of the next instruction only after the block transfer is completed.
+                    <p><b>load</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
+				<b>store</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
+				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
+				
+                <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
+				<p><b>load</b> (page_number, block_number);<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<b>store</b> (page_number, block_number);</tt></p>
+          
+                 <h3>Halt Statement</h3>
+            <p>The <b>Halt</b> statement is used to halt the machine.<br/></p>
+				
+                    <p><tt><b>SYNTAX : </b><b>halt</b>;</tt></p>
+					This instruction translates to HALT machine instruction.           
+                
+                </span>
                 <h3>Halt Statement</h3>
             <p>The <b>Halt</b> statement is used to halt the machine.<br/></p>
 				
