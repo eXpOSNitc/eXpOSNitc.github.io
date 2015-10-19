@@ -141,12 +141,14 @@
 					<tr><td>define</td> <td>endif </td> <td>ireturn</td> <td>break</td> <td>continue</td></tr>
 					<tr><td>do</td> <td>endwhile</td> <td>load</td> <td>then</td> <td>read</td></tr>
 					<tr> <td>print</td>  <td>breakpoint</td> <td>halt</td> <td>inline</td></tr>
+                    <tr style="color:blue"> <td>goto</td>  <td>call</td> <td>return</td> <td>loada</td></tr>
+                    <tr style="color:blue"> <td>storea</td>  <td>backup</td> <td>reada</td> <td>encrypt</td></tr>
 				</table></pre>
 				</tt></p>
                                 <h3>Operators and Delimiters</h3>
 				<p>	The following are the operators and delimiters in SPL
 				<pre><table style="text-align:center; width:50%">
-					<tr> <td>(</td> <td>)</td> <td>;</td> <td>[</td> <td>]</td> <td>/</td> <td>*</td> <td>+</td> <td>-</td> <td>%</td> </tr>
+					<tr> <td>(</td> <td>)</td> <td>;</td> <td>[</td> <td>]</td> <td>/</td> <td>*</td> <td>+</td> <td>-</td> <td>%</td><td style="color:blue">:</td> </tr>
 					<tr> <td>></td> <td><</td> <td>>=</td> <td><=</td> <td>!=</td> <td>==</td> <td>=</td> <td>&&</td> <td>||</td> <td>!</td> </tr>
 				</table></pre>
 				</p>
@@ -182,7 +184,7 @@
                           <div id="c2" class="panel-collapse collapse">
                             <div class="panel-body">
                             <p>	SPL doesn’t allow the use of declared variables. Instead a fixed set of registers is provided. 
-                                The register set in SPL contains 29 registers. There is a direct mapping between these registers and the machine registers in XSM.</p>
+                                The register set in SPL contains 29 registers. There is a direct mapping between these registers and the machine registers in XSM. <span style="color:blue">Note that ports are considered as registers but not vice versa.</span></p>
 			
 			<table class="table table-bordered" style="text-align: center;">
                 <tr class="success">
@@ -199,6 +201,13 @@
                     <tr> <td>Exception Cause</td> <td>EC </td> </tr>
                     <tr> <td>Exception Page Number</td> <td>EPN </td> </tr>
                     <tr> <td>Exception Memory Address</td> <td>EMA </td> </tr>
+                 <tr class="success">
+                                        <th style="text-align: center;">Name</th>
+                                        <th style="text-align: center;">Port</th>
+                                    </tr>
+                    <tr style="color:blue"> <td>Input Port</td> <td>P0</td> </tr>
+                    <tr style="color:blue"> <td>Output Port</td> <td>P1</td> </tr>
+                    <tr style="color:blue"> <td>Unused Ports</td> <td>P2, P3</td> </tr>
 				</table>   
                 
                 <h3>Aliasing</h3>
