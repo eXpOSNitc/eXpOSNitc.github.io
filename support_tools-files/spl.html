@@ -392,7 +392,7 @@
 				S1 = "hello world"; <br/>
 			</pre>
                
-                <h3>If Statment</h3>
+                <h3>If Statement</h3>
 				<p>	<b>If</b> statements specify the conditional execution of two branches according to the value of a logical expression. 
 				If the expression evaluates to 1, the <b>if</b> branch is executed, otherwise the <b>else</b> branch is executed. The <b>else</b> part is optional. <br/>
 				
@@ -462,12 +462,40 @@
 				<p><b>load</b> (page_number, block_number);<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;<b>store</b> (page_number, block_number);</tt></p>
           
-                 <h3>Halt Statement</h3>
-            <p>The <b>Halt</b> statement is used to halt the machine.<br/></p>
+                 <h3>Backup Statement</h3>
+            <p>The backup statement is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed to by SP in the order : BP, PTBR, PTLR, R0 - R19. The value of SP gets incremented accordingly.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>halt</b>;</tt></p>
-					This instruction translates to HALT machine instruction.           
-                
+                    <p><tt><b>SYNTAX : </b><b>backup</b>;</tt></p>
+					           
+                <h3>Restore Statement</h3>
+            <p>The restore statement is used to restore the backed up machine registers from the memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, PTLR, PTBR, BP. The value of SP gets decremented accordingly.  </p>
+				
+                    <p><tt><b>SYNTAX : </b><b>restore</b>;</tt></p>
+				
+                <h3>Encrypt Statement</h3>
+            <p> The encrypt statement replaces the value in the register Ri with its encrypted value. The details of the encryption scheme used is left unspecified.   
+          </p>
+				
+                    <p><tt><b>SYNTAX : </b><b>encrypt Ri</b>;</tt></p>
+				
+                  <h3>Goto Statement</h3>
+            <p> The goto statement transfers control to the specified labelled statement.</p>
+				
+                    <p><tt><b>SYNTAX : </b><b>goto label</b>;</tt></p>
+                    <p>eg.:  goto label1;</p>
+				
+            <h3>Call Statement</h3>
+            <p> The call statement saves procedure linking information on the stack and branches to the procedure specified by the argument.</p>
+				
+                    <p><tt><b>SYNTAX : </b><b>call label</b>;</tt></p>
+                    <p>eg.:  call label1;</p>
+				
+            <h3>Return Statement</h3>
+            <p> The return statement transfers the control back to the calling program.</p>
+				
+                    <p><tt><b>SYNTAX : </b><b>return</b>;</tt></p>
+                    
+                        
                 </span>
                 <h3>Halt Statement</h3>
             <p>The <b>Halt</b> statement is used to halt the machine.<br/></p>
