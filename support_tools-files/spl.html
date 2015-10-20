@@ -467,23 +467,23 @@
                 <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
 				<p><b>load</b> (page_number, block_number);<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;<b>store</b> (page_number, block_number);</tt></p>
-          <span style="color:blue">
+          
                  <h3>Backup Statement</h3>
             <p>The backup statement is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed to by SP in the order : BP, PTBR, PTLR, R0 - R19. The value of SP gets incremented accordingly.</p>
 				
                     <p><tt><b>SYNTAX : </b><b>backup</b>;</tt></p>
-					           
+				<p>This statement translates to the BACKUP machine instruction.</p>	           
                 <h3>Restore Statement</h3>
             <p>The restore statement is used to restore the backed up machine registers from the memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, PTLR, PTBR, BP. The value of SP gets decremented accordingly.  </p>
 				
                     <p><tt><b>SYNTAX : </b><b>restore</b>;</tt></p>
-				
+				<p>This statement translates to the RESTORE machine instruction.</p>	           
                 <h3>Encrypt Statement</h3>
-            <p> The encrypt statement replaces the value in the register Ri with its encrypted value. The details of the encryption scheme used is left unspecified.   
+            <p> The encrypt statement replaces the value in the register Ri with its encrypted value. 
           </p>
 				
                     <p><tt><b>SYNTAX : </b><b>encrypt Ri</b>;</tt></p>
-				
+				<p>This statement translates to the ENCRYPT machine instruction.</p>	           
                   <h3>Goto Statement</h3>
             <p> The goto statement transfers control to the specified labelled statement.</p>
 				
@@ -497,10 +497,10 @@
                     <p>eg.:  call label1;</p>
 				
             <h3>Return Statement</h3>
-            <p> The return statement transfers the control back to the calling program.</p>
+            <p> The return statement is used to transfer the control from a subroutine to the calling program in the kernel mode.</p>
 				
                     <p><tt><b>SYNTAX : </b><b>return</b>;</tt></p>
-                    
+                <p>This statement translates to the RET machine instruction.</p>	               
                         
                 </span>
                 <h3>Halt Statement</h3>
