@@ -359,40 +359,40 @@
                           </div>
                           <div id="c5" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>	Statements control the execution of the program. All statements in SPL are terminated with a semicolon <b>;</b></p>    
+                                <p>	Statements control the execution of the program. All statements in SPL are terminated with a semicolon <b>( ; )</b> .</p>    
                                 <h3>Define Statement</h3>
-				<p>	Define statement is used to define a symbolic name for a value. Define statements should be used <b>before any other statement</b> in an SPL program. 
+                                <p>	The <b>define</b> statement is used to define a symbolic name for a value. Define statements should be used <b>before any other statement</b> in an SPL program. 
 				The keyword <b>define</b> is used to associate a literal to a symbolic name.<br/>		
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX :</b> <b>define</b> constant_name value;</tt></p>
 				<pre>define DISK_BLOCK 437;</pre>
                                 
                 <h3>Alias Statement</h3>
-				<p>	An <b>alias</b> statement is used to associate a register with a name. Alias statements can be used anywhere in the program.<br/>
+				<p>	An <b>alias</b> statement is used to associate a register/port with a name. Alias statements can be used anywhere in the program.<br/>
 				
 				<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX :</b> <b>alias</b> alias_name register_name;</tt></p>
-			    <pre>alias counter S0;</pre>
+			    <pre>alias counter R0;</pre>
 				                 
                 <h3>Breakpoint Statement</h3>
-				<p>	The <b>Breakpoint</b> statement is used to debug the program. The program when run in debug mode pauses the execution at this instruction.<br/>
+                                <p>	The <b>breakpoint</b> statement is used to debug the program. The program when run in the <a href="xsm-simulator.html" target="_blank" >debug mode</a> pauses the execution at this instruction.<br/>
 				
 					<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX :</b><b>breakpoint</b>;</tt>
-					</br> This instruction translates to BRKP machine instruction.</p>
+                                </br> This instruction translates to <a href="../arch_spec-files/instruction_set.html" target="_blank">BRKP machine instruction</a>.</p>
                 
                 <h3>Assignment Statement</h3>
-				<p>	The SPL assignment statement assigns the value of an expression or value stored in a memory address to a register or a memory address. 
-				= is the assignment operator used in SPL. The operand on the right hand side of the operator is assigned to the left hand side. 
+				<p>	The SPL assignment statement assigns the value of an expression/value stored in a memory address to a register/memory address. 
+				<b>=</b> is the assignment operator used in SPL. The operand on the right hand side of the operator is assigned to the left hand side. 
 				<br/>
 				
 				<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b> Register / Alias / [Address] = Register / Port / Number / String / Expression / [Address];</tt></p>
 			 <pre>
-				S0 = S2 * 10 + 5; <br/>
+				R2 = P0; <br/>
 				counter = counter + 1; <br/>
 				[PTBR + 3] = [1024] + 10; <br/>
-				S1 = "hello world"; <br/>
-			</pre>
+				R1 = "hello world"; <br/>
+            </pre>
                
                 <h3>If Statement</h3>
-				<p>	<b>If</b> statements specify the conditional execution of two branches according to the value of a logical expression. 
+				<p>	<b>If</b> statement specifies the conditional execution of two branches according to the value of a logical expression. 
 				If the expression evaluates to 1, the <b>if</b> branch is executed, otherwise the <b>else</b> branch is executed. The <b>else</b> part is optional. <br/>
 				
 				<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b> <br/></p>
@@ -413,45 +413,43 @@
 				<b>&nbsp;&nbsp;&nbsp; endwhile</b>;</tt></p> 
                             
                 <h3>Break Statement</h3>
-				<p>	<b>Break</b> statement is a statement which is used in a while loop block. 
-				This statement stops the execution of the loop in which it is used and passes the control of execution to the next statement after the loop. 
+				<p>	<b>Break</b> statement when used inside a while loop block, stops the execution of the loop in which it is used and passes the control of execution to the next statement after the loop. 
 				This statement cannot be used anywhere else other than while loop.<br/>
 				
 					<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>break</b>;</tt></p>    
                 
                 <h3>Continue Statement</h3>
-				<p>	<b>Continue statement</b> is a statement which is also used only in a while loop block. 
-				This statement skips the current iteration of the loop and passes the control to the next iteration after checking the loop condition. <br/>
+				<p>	<b>Continue statement</b> when used inside a while loop block, skips the current iteration of the loop and passes the control to the next iteration after checking the loop condition. <br/>
 					
 					<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>continue</b>;</tt></p>  
                             
                 <h3>Ireturn Statement</h3>
-				<p>	<b>ireturn</b> statement or the Interrupt Return statement is used to pass control from kernel mode to user mode.<br/>
+				<p>	<b>ireturn</b> statement or the Interrupt Return statement is used to pass control from a kernel mode interrupt service routine to the user mode program which invoked it.<br/>
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>ireturn</b>;</tt><br/></p>
                     <p>The <b>ireturn</b> is generally used at the end of an interrupt code.<br/></p>
 				This instruction translates to IRET machine instruction.
                 
                 <h3>Read/Print Statements</h3>
 				<p>	The <b>read</b> and <b>print</b> statements are used as standard input and output statements. The <b>read</b> statement reads a value from the standard input device and stores it in a register. 
-					<p><code>Note :</code> String read or printed must not exceed 10 characters </p>
+					<p><code>Note :</code> String read or printed must not exceed 10 characters.</p>
 					The <b>print</b> statement outputs value of a register or an integer/string literal or value of a memory location.<br/>
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>
 				    <p><b>read</b> Register;<br/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;<b>print</b> Register / Number / String / Expression / [Address];</tt></p>   
-                <span style="color:blue">
+
                 
                 <h3>Reada Statement</h3>
-				<p>	The <b>reada</b> statement is used as a standard input statement. The <b>reada</b> statement reads a value from the standard input device and stores it in the port P0. 
-					<p><code>Note :</code> String read must not exceed 10 characters </p>
+				<p>	The <b>reada</b> statement initiates the transfer of a string from the console to the standard input port P0 using the INA machine instruction. The machine proceeds to execute the next instruction without waiting for the completion of the string transfer.</p>
+					<p><code>Note :</code> String read must not exceed 10 characters.</p>
 					
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b>
-				    <b>reada</b>;<br/>  
+				    <b>reada</b>;<br/></tt>  
                 <span style="color:blue">
-                    
+<span style="color:blue">                    
                     <h3>Loada/Storea Statements</h3>
-				<p>	Loading and storing between filesystem and memory can be accomplished using <b>loada</b> and <b>storea</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
+				<p>	Loading and storing between the disk and the memory of the XSM machine can be accomplished using <b>loada</b> and <b>storea</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
 				<p><b>loada</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
 				<b>storea</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
 				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
