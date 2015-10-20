@@ -107,9 +107,9 @@
                 <h2 >SPL Specification</h2>
                 <br/>
                 <br/>
-                <p>	<b>SPL</b> or <i>System Programmer’s Language</i> is an untyped programming language designed for the implementation of an operating system on <b>XSM</b> 
-				<i>(eXperimental String Machine)</i> architecture. The language is minimalistic and consists only of basic constructs required for the implementation. 
-				Programming using SPL requires a basic understanding of the underlying XSM architecture.</p>
+                <p>	<b>SPL</b> or <i>System Programmer’s Language</i> is an untyped programming language designed for the implementation of an operating system on the <b>XSM</b> 
+				<i>(eXperimental String Machine)</i> architecture. The language is minimalistic and consists only of very basic constructs. 
+                    Programming using SPL requires an understanding of the underlying <a href="../arch_spec.html" target="_blank" >XSM architecture</a>.</p>
               </div>
 
               <!-- START ABOUT CONTENT -->
@@ -121,7 +121,7 @@
                         <div class="panel panel-default ">
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c1">
+                              <a data-toggle="collapse" href="#c1">
                                  <span class="fa fa-check-square-o"></span>Lexical Elements
                               </a>
                             </h4>
@@ -137,12 +137,12 @@
 				<p>	The following are the reserved words in SPL and it cannot be used as identifiers.
 				<tt>
 				<pre><table style="text-align:center; width:50%;">
-					<tr><td>alias </td> <td>else</td> <td>if</td> <td>store</td> <td>while</td></tr>
-					<tr><td>define</td> <td>endif </td> <td>ireturn</td> <td>break</td> <td>continue</td></tr>
-					<tr><td>do</td> <td>endwhile</td> <td>load</td> <td>then</td> <td>read</td></tr>
-					<tr> <td>print</td>  <td>breakpoint</td> <td>halt</td> <td>inline</td></tr>
-                    <tr style="color:blue"> <td>goto</td>  <td>call</td> <td>return</td> <td>loada</td></tr>
-                    <tr style="color:blue"> <td>storea</td>  <td>backup</td> <td>reada</td> <td>encrypt</td></tr>
+					<tr><td>alias </td> <td>if</td> <td>then</td> <td>else</td> <td>endif</td></tr>
+					<tr><td>while</td> <td>do </td> <td>endwhile</td> <td>read</td> <td>reada</td></tr>
+					<tr><td>store</td> <td>storea</td> <td>load</td> <td>loada</td> <td>print</td></tr>
+					<tr> <td>define</td>  <td>breakpoint</td> <td>halt</td> <td>inline</td><td>goto</td></tr>
+                    <tr> <td>break</td> <td>continue</td> <td>call</td> <td>return</td> <td>ireturn</td></tr>
+                    <tr> <td>backup</td>  <td>restore</td> <td>encrypt</td> <td></td></tr>
 				</table></pre>
 				</tt></p>
                                 <h3>Operators and Delimiters</h3>
@@ -153,7 +153,7 @@
 				</table></pre>
 				</p>
                 <h3>Registers and Ports</h3>
-				<p>	SPL allows the use of 29 registers for various operations. (<tt>R0-R19, BP, SP, IP, PTBR, PTLR, EIP, EC EPN, EMA</tt>) and 4 ports, which can be used for standard input and output.</p>                     
+				<p>	SPL allows the use of 29 registers for various operations. (<tt>R0-R19, BP, SP, IP, PTBR, PTLR, EIP, EC EPN, EMA</tt>) and 4 ports (P0-P3), which can be used for standard input and output.</p>                     
                 <h3>Identifiers</h3>
 				<p>	Identifiers are used as symbolic names for constants and aliases for registers.
 				Identifiers should start with an alphabet but may contain alphabets, digits and/or underscore ( _ ). 
@@ -174,13 +174,16 @@
                                 eg. <tt>label1:<br/> .<br/> .<br/> .<br/> goto label1</tt></p>
                             </div>
                           </div>
-                        </div></span>           
+                        </div></span>     
+                    
+                    
+                    
                         <!-- START SINGLE FEATURED ITEM #2 -->
                         <div id="root">
                         <div class="panel panel-default "> 
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c2">
+                              <a data-toggle="collapse" href="#c2">
                                  <span class="fa fa-check-square-o"></span>Register Set
                               </a>
                             </h4>
@@ -227,7 +230,7 @@
                         <div class="panel panel-default ">
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c3">
+                              <a data-toggle="collapse" href="#c3">
                                 <span class="fa fa-check-square-o"></span>Constants
                               </a>
                             </h4>
@@ -305,7 +308,7 @@
                         <div class="panel panel-default ">
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c4">
+                              <a data-toggle="collapse" href="#c4">
                                 <span class="fa fa-check-square-o"></span>Expressions
                               </a>
                             </h4>
@@ -353,7 +356,7 @@
                         <div class="panel panel-default ">
                           <div class="panel-heading">
                             <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#c5">
+                              <a data-toggle="collapse" href="#c5">
                                 <span class="fa fa-check-square-o"></span>Statements
                               </a>
                             </h4>
