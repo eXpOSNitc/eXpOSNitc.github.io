@@ -131,7 +131,7 @@
                                         <div id="collapse1" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Filename (String) </p>
+                                                <p>Arguments: Filename (String),<font color="red"> Permission (Integer) </font> </p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -144,6 +144,7 @@
                                                     </tr> 
                                                 </table>
                                                 <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -176,8 +177,13 @@
                                                         <td>-2</td>
                                                         <td>File is open</td>
                                                     </tr>
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
                                                 </table>
                                                 <p>Description: Delete removes the file from the file system and removes its root entry.   A file that is currently opened by any application cannot be deleted.  Root file and Executable files also cannot be deleted.</p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be deleted by any user other than the owner, root or kernel.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -320,11 +326,12 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-3</td>
-                                                        <td>File is the Root file</td>
+                                                        <td>Permission denied</td>
                                                     </tr>
                                                     
                                                 </table>
-                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file. Root file and the Executable file cannot be written.</p>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file. Root file and Executable files cannot be written.</p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be written into by any user other than the owner, root or kernel.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -410,6 +417,7 @@
                                                 </table>
                                                  <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
                                                  <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
+                                                 <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the child process inherits the userid of the parent process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -437,6 +445,7 @@
                                                                                                         
                                                 </table>
                                                 <p>Description: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the newly created process inherits the userid of the invoking process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -641,9 +650,10 @@
                                                         <td>File Descriptor is invalid</td>
                                                     </tr> 
                                                        <tr><td>-2</td>
-                                                      <td>File is of type ROOT</td></tr>                                                
+                                                      <td>Permission denied</td></tr>                                                
                                                 </table>
                                                 <p>Description: To lock a file so that other applications running concurrently are not permitted to read/write the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.) Root and Executable files cannot be locked. </p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be locked by any user other than the owner, root or kernel.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -856,13 +866,22 @@
                                                 <p>Return Value: </p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>User already exists</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified.</p>
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. </p>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -884,13 +903,21 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>User does not exist</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
                                                     </tr> 
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user.</p>
+                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -918,7 +945,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
+                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -982,7 +1009,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.>
+                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1008,6 +1035,10 @@
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>Invalid username or password</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
                                                     </tr> 
                                                                                                         
                                                 </table>
