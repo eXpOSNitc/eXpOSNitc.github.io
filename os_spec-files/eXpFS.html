@@ -237,6 +237,7 @@ A detailed specification of the file system calls is given <a href="systemcallin
                              <p>
 These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type is EXEC in the root entry. <b>eXpFS specification does not allow executable files to be created by application programs</b>.  They can only be created externally and loaded using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a> for XSM architecture.)
 </p>
+<p><font color="red">*</font> The access permission field for executable files is not used.</p>
 <p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the <b>executable file format</b>).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
     Typically, an application program written in a high level language (like <a href="../support_tools-files/expl.html" target="_blank">ExpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
 </p>
