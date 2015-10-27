@@ -138,7 +138,7 @@ eXpOS provides a sequence of file system calls through which application program
                              <p>
 The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
 
-As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size</b> and <b>type</b>, each attribute being one word long.   The file name must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
+As noted already, every eXpFS file is a sequence of words. Associated with each eXpFS file there are three attributes - <b>name, size</b> and <b>type</b>, each attribute being one word long. The file name must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
 
 <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> extended eXpOS</a>, a file has two additional attributes, <b>username</b> and <b>permission</b>.</p>
 
@@ -217,9 +217,9 @@ Since the operations on the root file is a subset of the operations on data file
 
 <p>eXpOS allows an application program to perform the following operations (by invoking appropriate system calls) on data files:    <b>Create</b>, <b>Delete</b>, <b>Open, Close, FLock, FUnlock, Read, Write, Seek</b>.
 Application programs can create only data files using the Create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a>).   
-In addition to the above, the description of the operations  FLock and FUnlock are discussed in <a href="synchronization.html"  target="_blank">Section 5</a> .  
+The description of the operations  FLock and FUnlock are discussed in <a href="synchronization.html"  target="_blank">Section 5</a> .  
 A detailed specification of the file system calls is given <a href="systemcallinterface.html" target="_blank">here</a>.</p>
-<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">Multiuser</a> implementattion of eXpOS, the username for a data file corresponds to the user who creates the file. It's permission can be either exclusive(0) or open(1).</p> 				
+<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">Multiuser</a> implementattion of eXpOS, the username of a data file corresponds to the user who creates the file. Its permission can be either exclusive (0) or open (1).</p> 				
                             </div>
                           </div>
                         </div>
@@ -248,7 +248,7 @@ These contain executable code for programs that can be loaded and run by the ope
     <b><i>Important Note:</i></b>  Application programs are typically written in a high level language like ExpL.  A high level language implementation for an OS comes with an Application Programmers Interface (API) for the OS system calls.  API describes the library functions which the application programs must invoke for each operating system call.  The compiler will translate the library call to corresponding low level interrupt calls as specified in the ABI.  Thus, application programmers need to know only API.   A description of the <a href="../support_tools-files/expl.html" target="_blank">ExpL </a> programming language and eXpOS <a href="../os_design.html" target="_blank">API</a> are  given.  The ExpL compiler for eXpOS running on the XSM machine generates target code based on the ABI specification for eXpOS on XSM.   Thus the ABI becomes the most important document for compiler back end design.   
 </p>
 <p>
-The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into two sections.  The first section is called header and the second section called the code (or text) section. The code section contains the program instructions. The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
+The executable file format recognized by eXpOS is called the Experimental executable file (<a href="http://exposnitc.github.io/abi.html#xexe" target="_blank">XEXE</a>) format.    In this format, an executable file is divided into two sections.  The first section is called header and the second section called the code (or text) section. The code section contains the program instructions. The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
 </p>
 <p><font color="red">*</font> By default, the owner of all excecutable files is set to 0 (kernel).</p> 
                             </div>
