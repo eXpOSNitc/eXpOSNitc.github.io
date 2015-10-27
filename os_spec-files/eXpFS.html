@@ -138,9 +138,11 @@ eXpOS provides a sequence of file system calls through which application program
                              <p>
 The eXpFS logical file system comprises of files organized in a single directory called the <b>root</b>. The root is also treated conceptually as a file.
 
-As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size and type</b>, each attribute being one word long.   The file name must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
+As noted already, every eXpFS file is a sequence of words.    Associated with each eXpFS file there are three attributes - <b>name, size</b> and <b>type</b>, each attribute being one word long.   The file name must be a string.  Each file must have a unique name.  The size of the file will be the total number of words stored in the file.  (The maximum size of a file is operating system dependent).  
 
-There are three types of eXpFS files - <b>the root, data files and executable files</b>. Each file in eXpFS has an entry in the root called its <b>root entry</b>.  
+<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> extended eXpOS</a>, a file has two additional attributes, <b>username</b> and <b>permission</b>.</p>
+
+There are three types of eXpFS files - the <b>root, data files </b>and <b>executable files</b>. Each file in eXpFS has an entry in the root called its <b>root entry</b>.  
 </p>
 
                             </div>
@@ -159,7 +161,7 @@ There are three types of eXpFS files - <b>the root, data files and executable fi
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - <b>file name, file-size and file-type</b>.  This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation.  
+The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root file stores three words of information - <b>file name, file-size and file-type</b>. (<font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> extended eXpOS</a>, the root file stores two additional words - <b>user name</b> and <b>permission</b>.) This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation.  
 
 Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, <b>confirm this </b>program.xexe, of 1025 words, the root file will contain the following information.  </p>
 <table class="table table-bordered">
@@ -167,21 +169,29 @@ Example:  If the file system stores two files - a data file, file.dat,  of size 
 		<td>File name</td>
 		<td>File size</td>
 		<td>File type</td>
+		<td><font color="red">User name</font></td>	
+		<td><font color="red">Permission</font></td>			
 	</tr>
 	<tr>
 		<td>root</td>
 		<td>512</td>
 		<td>ROOT</td>
+		<td></td>
+		<td></td>
 	</tr>
 	<tr>
 		<td>file.dat</td>
 		<td>700</td>
 		<td>DATA</td>
+		<td></td>
+		<td></td>
 	</tr>
 	<tr>
 		<td>program.xexe</td>
 		<td>1025</td>
 		<td>EXEC</td>
+		<td></td>
+		<td></td>
 	</tr>
 </table>
 <p>The operations on the root file are <b>Open, Close, Read and Seek</b>.  
@@ -227,6 +237,7 @@ A detailed specification of the file system calls is given <a href="systemcallin
                              <p>
 These contain executable code for programs that can be loaded and run by the operating system.   From the point of view of the eXpFS file system alone, executable files are just like data files except that file type is EXEC in the root entry. <b>eXpFS specification does not allow executable files to be created by application programs</b>.  They can only be created externally and loaded using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a> for XSM architecture.)
 </p>
+<p><font color="red">*</font> The access permission field for executable files is not used.</p>
 <p>Executable files are essentially program files that must be loaded and run by the operating system.  Hence the Operating system imposes certain structure on these files (called the <b>executable file format</b>).  Moreover, the instructions must execute on the machine on which the OS is running.  Thus, there is dependency on the hardware as well.  
     Typically, an application program written in a high level language (like <a href="../support_tools-files/expl.html" target="_blank">ExpL</a> )  is compiled using a compiler that generates the executable file.   The compiler generates executable file that is dependent on the operating system as well as the target machine.  
 </p>
