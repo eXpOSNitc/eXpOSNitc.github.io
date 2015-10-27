@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>System Call Interface</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+           <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+              <li><a href="../Documentation.html" target="_blank">Documentation</a></li> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+		<!--=========== End HEADER SECTION ================--> 
+		
+		
+    
+   <!--=========== BEGIN SECTION 7================-->
+    <section id="systemcallinterface">
+    <br>
+    <br>
+    <br>
+      <div class="container" style="padding-top: 60px;">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START HEADING -->
+              <div class="heading">
+                <h2>High Level Interface for allocator</h2>
+                <br/>
+                <br/>
+                              <p>The library functions <b>alloc()</b>, <b>free()</b> and <b>initialise()</b> are used as follows:  </p>
+<pre style = "font-size:16px">
+            t = alloc(); /* Allocates HBSIZE contiguous locations in the heap –
+                            t must be a user defined variable */
+            t = free(t);  /* Free the allocated block – t must be a user defined variable */
+            <span style="color:blue">t = initialise(); /* Initialises the heap area.*/</span>
+</pre>     
+                                <p>A call to alloc() allocates HBSIZE contiguous memory locations in the heap memory (memory reserved for dynamic memory allocation) and returns the address of the starting location. In this version of ExpL, HBSIZE is set to 16 words. This address may be stored in a variable of user defined type .  A call to free() deallocates HBSIZE contiguous memory locations in the heap memory that is referenced by user defined type variable t. The function free()  returns NULL on successful deallocation.  Otherwise, the value of t is unchanged by call to free().    All unallocated user defined variables are set to predefined constant  NULL.  
+
+</p>
+      
+     <!-- START SINGLE FEATURED ITEM #1 -->
+                        <div class="panel panel-default " id="filesystemcalls">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px" >File System Calls</h4>
+                          
+                          <div class="panel-body">
+                          
+                         <!--start file system calls --->   
+                         <!-- create system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse1" id="create">Create</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Filename (String),<font color="red"> Permission (Integer) </font> </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>No space for file</td>
+                                                    </tr> 
+                                                </table>
+                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end create system call-->
+                         
+                         <!-- delete system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse2">Delete</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Filename (String)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File not found or file is not a data file.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File is open</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
+                                                </table>
+                                                <p>Description: Delete removes the file from the file system and removes its root entry.   A file that is currently opened by any application cannot be deleted.  Root file and Executable files also cannot be deleted.</p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be deleted by any user other than the owner, root or kernel.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end delete system call-->
+      
+                         <!-- open system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse3">Open</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse3" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Filename (String)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>File Descriptor (Integer)</td>
+                                                        <td>Success, the return value is the file descriptor for the opened file.  </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File not found or file is not a data or root file</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Process has reached its limit of resources</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>System has reached its limit of open files</td>
+                                                    </tr>
+                                                </table>
+                                                <p>Description: For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. The file descriptor must be passed as argument to other file system calls, to identify the open instance of the file.</p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end open system call-->
+          
+                         
+                         <!-- close system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse4">Close</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse4" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File is locked by the calling process.</td>
+                                                    </tr> 
+                                                </table>
+                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if file was locked by the process which invoked the system call.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end close system call-->
+          
+                         <!-- read system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse5">Read</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse5" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor (Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File pointer has reached the end of file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer.   After each read operation, the file pointer advances to the next word in the file. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end read system call-->
+          
+                         <!-- write system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse6">Write</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse6" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>No disk space</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
+                                                    
+                                                </table>
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file. Root file and Executable files cannot be written.</p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be written into by any user other than the owner, root or kernel.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end write system call-->
+                        
+                          <!-- seek system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse7">Seek</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor (Integer) and Offset (Integer) specifying the number of positions by which the file pointer has to be shifted</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor given is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Offset value moves the file pointer to a position outside the file</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards).  An Offset of 0 will reset the pointer to the beginning of the file. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end seek system call-->
+                           
+                          </div>
+                        </div>
+                         <!--end file system calls-->   
+		
+                         <!-- START SINGLE FEATURED ITEM #2 -->
+                        <div class="panel panel-default " id="processsystemcalls">
+                          <br>
+                            <br>                            
+                            <h4 class="panel-title" >Process System Calls</h4>
+                          
+                            <div class="panel-body">
+                          
+                         <!--start process system calls --->   
+     
+                         <!-- fork system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse8">Fork</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse8" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>PID (Integer) </td>
+                                                        <td>Success, the return value to the parent is the process descriptor(PID) of the child process.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success, the return value to the child.</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure, Number of processes has reached the maximum limit. Returns to the parent</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                 <p>Description: Replicates the process invoking the system call. The heap, code and library regions of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
+                                                 <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
+                                                 <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the child process inherits the userid of the parent process.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end fork system call-->
+     
+                         <!-- exec system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse9">Exec</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse9" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Name (String) of the executable file (which must be of XEXE format)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File not found or file is of invalid type</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                <p>Description: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the newly created process inherits the userid of the invoking process.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exec system call-->
+     
+                           <!-- exit system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse10">Exit</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse10" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: None</p>
+                                                
+                                                <p>Description: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
+
+						<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, if the process created by the login process (shell) exits, all processes with that userid has to be killed and the login process that was waiting for its exit has to be awakened.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end exit system call-->
+     
+                         <!-- getpid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse11">Getpid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse11" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Process Identifier (Integer) </td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                      
+                                                </table>
+                                                <p>Description:  Returns the process identifier of the invoking process. The system call does not fail.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getpid system call-->
+     
+                         <!-- getppid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse12">Getppid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse12" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>Parent Process Identifier (Integer)</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                     
+                                                </table>
+                                                <p>Description:  Returns to the calling process the value of the process identifier of its parent. The system call does not fail.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getppid system call-->
+                         
+                         <!-- shutdown system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse21">Shutdown</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse21" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value:None</p>
+                                                
+                                                <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end shutdown system call-->
+     
+                           
+                          </div>
+                        </div>
+                         <!--end process system calls-->
+                         
+                         <!--synchronization and access control system calls-->
+                         
+                         <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default " id="synsystemcalls">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" >
+                              System Calls for access control and synchronization
+                            </h4>
+                          
+                          
+                            <div class="panel-body">
+                          
+                         <!--start system calls --->   
+     
+                         <!-- wait system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse13">Wait</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse13" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Process Identifier (Integer) of the process for which the current process has to wait.</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Given process identifier is invalid or it is the pid of the invoking  process.</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: The current process is blocked till the process with PID given as argument executes a Signal system call or exits. Note that the system call will fail if a process attempts to wait for itself. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end wait system call-->
+     
+                         <!-- signal system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse14">Signal</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse14" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                   
+                                                    
+                                                </table>
+                                                <p>Description:  All processes waiting for the signaling process are resumed. The system call does not fail. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end signal system call-->
+     
+                         <!-- flock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse15">FLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse15" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                       <tr><td>-2</td>
+                                                      <td>Permission denied</td></tr>                                                
+                                                </table>
+                                                <p>Description: To lock a file so that other applications running concurrently are not permitted to read/write the file till the calling process unlocks it. (If the file is already locked by some other process, the system call waits for the file to be unlocked, locks it, and returns to the calling process.) Root and Executable files cannot be locked. </p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be locked by any user other than the owner, root or kernel.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end flock system call-->
+         
+                             <!-- funlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse16">FunLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse16" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: File Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>File Descriptor is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>File was not locked by the calling process</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: FUnLock operation allows an application program to unlock a file which the application had locked earlier, so that other applications are no longer restricted from reading/writing the file. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end funlock system call-->
+     
+                             <!-- semget system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse17">Semget</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse17" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Argument: None</p>
+                                                <p>Return Value : </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>SEMID (Integer) </td>
+                                                        <td>Success, returns a semaphore descriptor(SEMID)</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Process has reached its limit of resources </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Number of semaphores has reached its maximum</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: This system call is used to obtain a binary semaphore. eXpOS has a fixed number of semaphores.
+                                           The calling process can share the semaphore with its child processes using the fork system call</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semget system call-->
+     
+                         <!-- semrelease system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse18">Semrelease</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse18" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                <p>Description: This system call is used to release a semaphore descriptor held by the process. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semrelease system call-->
+     
+                         <!-- semlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse19">SemLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse19" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success or the semaphore is already locked by the current process</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    
+                                                    
+                                                </table>
+                                                <p>Description:  This system call is used to lock the semaphore. If the semaphore is already locked by some other process, then the calling process goes to sleep and wakes up only when the semaphore is unlocked. Otherwise, it locks the semaphore and continues execution.  
+</p>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semlock system call-->
+     
+                         <!-- semunlock system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"   href="#collapse20">SemUnLock</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse20" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: Semaphore Descriptor (Integer)</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Semaphore Descriptor is invalid</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Semaphore was not locked by the calling process</td>
+                                                    </tr> 
+                                                    
+                                                </table>
+                                                <p>Description: This system call is used to unlock a semaphore that was previously locked by the calling process. It wakes up all the processes which went to sleep trying to lock the semaphore while the semaphore was locked by the calling process. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end semunlock system call-->
+     
+                         
+                          </div>
+                        </div>
+  
+                         <!-- end syn and access control system calls-->
+                         
+                         
+      
+             
+
+<!-- START SINGLE FEATURED ITEM #4 -->
+                        <div class="panel panel-default " id="multiusersystemcalls">
+                          <br>
+                            <br>                            
+                            <h4 class="panel-title" ><font color="red">Multiuser System Calls</font></h4>
+                          
+                            <div class="panel-body">
+                          
+                         <!--start multiuser system calls --->   
+
+			 <!-- newusr system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse23">Newusr</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse23" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name, Password</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User already exists</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. </p>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end newusr system call-->
+
+			 <!-- remusr system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse24">Remusr</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse24" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User does not exist</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end remusr system call-->
+
+			 <!-- setpwd system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse25">Setpwd</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse25" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name, Password</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Unauthorised attempt to change password</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end setpwd system call-->
+
+			 <!-- getuid system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse26">Getuid</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse26" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid Username</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>User Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: If the username is valid, this system call returns the userid corresponding to the username passed.Otherwise,it returns -1.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getuid system call-->
+
+			 <!-- getuname system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse27">Getuname</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse27" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User ID</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid UserID</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>User Name</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end getuname system call-->
+
+
+     
+                         <!-- login system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse22">Login</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse22" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: User name, Password</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid username or password</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p>Description: This system call is used to login a new user. It can be executed only from a process with userid 0 (kernel process). It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end login system call-->
+                           
+                          </div>
+                        </div>
+                         <!--end multiuser system calls-->
+              
+                        
+                      </div>
+                    </div>
+               
+                 
+		</div>
+               <a href="../os_spec.html"><img src="../img/spec_icon.jpg"  style="float:right;margin-right: 80px;"/></a>
+            </section>
+    <!--=========== END SECTION 7================-->
+     
+   
+		   
+      <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
+
