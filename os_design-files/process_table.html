@@ -114,6 +114,7 @@
                       <td style="border: 1px solid black">TICK</td>
                       <td style="border: 1px solid black">PID</td>
                       <td style="border: 1px solid black">PPID</td>
+                      <td style="border: 1px solid black"><font color="red">USERID</font></td>
                       <td style="border: 1px solid black">STATE</td>
                       
                       <td style="border: 1px solid black">PER-PROCESS RESOURCE TABLE</td>
@@ -130,6 +131,7 @@
                    <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory. It has an initial value of 0 and is updated whenever the scheduler is called. TICK is reset to 0 when a process is swapped out or in.</li>
                    <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call.</li>
                   <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call.</li>
+                  <li><b>USERID </b>(1 word) - Userid of the currently logged in user. This field is set by Fork System Call.</li>
                   <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. </li>
                   
                   
@@ -141,11 +143,12 @@
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the kernel stack area of the process. </li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
                   <li><b>DISK MAP TABLE POINTER</b> (1 word) - pointer to <a href="#disk_map_table">DISK MAP TABLE</a>.</li>
-				  <li><b>Unused</b> (5 words)</li>
+				  <li><b>Unused</b> (4 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
               <p>Note: In this version of eXpOS, the Per-Process Resource Table is included within the Process Table entry. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
+              
               <!-- START ITEM #1 -->
                         <div class="panel panel-default " id="state">
                             <br>

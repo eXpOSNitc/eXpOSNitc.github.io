@@ -109,6 +109,7 @@
                 <br/>
                 <br/>
                 <p>A program under execution is called a process.   A process is newly created when a process already in execution invokes the <b>Fork</b> system call.    The first process, the INIT process, is created by the OS during bootstrap by loading a code stored in a pre-defined disk location to memory and setting up a process.   The OS assigns a unique integer identifier called <b>process id</b> for each process when it is created.  The process id does not change during the lifetime of the process.  The process that creates the new process is called the <b>parent process</b> of the newly created process. </p>
+                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implemention of eXpOS, each process is assigned a userid corresponding to the currently logged in user.</p>
               </div>
 
               <!-- START ABOUT CONTENT -->
@@ -178,6 +179,7 @@
 The parent and the child continue execution from here on.  </li>
 	</ol>
 	<p>The <b>Exit</b> system call terminates a process after closing all files and semaphores.  The <b>Wait</b> system call suspends the execution of a process till another process exits or executes a <b>Signal</b> system call. <a href="systemcallinterface.html#synsystemcalls" target="_blank">(System calls for access control and synchronization)</a>.  The <b>Signal</b> system call resumes the execution of a process that was suspended by wait. Wait and Signal operations are discussed in more detail in the next section.</p>
+	<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser </a> implemention of eXpOS, the child inherits the userid of the parent process .</p>
 	
                           </div>
                         </div>
