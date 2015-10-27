@@ -227,7 +227,7 @@
                           <div id="SixcollapseSix" class="panel-collapse collapse">
                             <div class="panel-body">
                             
-                                <p> Idle process is a user process created by the kernel during the bootstrap process. It executes an infinite loop. Its purpose is to ensure that there is atleast one user process for the timer to schedule. The OS will schedule the idle process when all the other user processes are in sleep state.</p>
+                                <p> Idle process is a user process created by the kernel during the bootstrap process. It executes an infinite loop. Its purpose is to ensure that there is atleast one user process for the scheduler to schedule. The OS will schedule the idle process when all the other user processes are in sleep state.</p>
                                 
                              
                             </div>
@@ -239,38 +239,30 @@
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse"   href="#SixcollapseSeven">
-                                <span class="fa fa-check-square-o"></span>Shell Process
+                                <span class="fa fa-check-square-o"></span>Init, Shell and <font color="red">Login Process</font>
                               </a>
                             </h4>
                           </div>
                           <div id="SixcollapseSeven" class="panel-collapse collapse">
                             <div class="panel-body">
                             
-                                <p>Shell process is a user process that takes in an executable file as input, executes it and waits for it to exit. It is executed after the login process logs in a user. The shell process is assigned the userid of the logged in user.</p>
+                                <p>
+The OS has an INIT program pre-loaded in the disk, which is loaded for execution at the time of bootstrap.  
+The resulting process is the first process scheduled for execution and is called the INIT process.  
+The INIT program is typically designed to repeatedly wait for user commands (executable file names) and execute 
+them, and such a program is called a shell.  The algorithm design for a typical eXpOS shellis given here.
+
+* In the multi-user extension of eXpOS, the INIT program is expected to run a login program that validates a
+user trying to log into the system using the login system call.   Hence,the INIT process in this case is called
+the login process.  A shell is created upon successful login
+and the INIT (login) process waits for the exit of the shell to log in the next user.  The algorithm design for
+a typicall login process is given here.   </p>
                                 
                              
                             </div>
                           </div>
                         </div> 
-                        
-                        <!-- START SINGLE FEATURED ITEM #8 -->
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse"   href="#SixcollapseEight">
-                                <span class="fa fa-check-square-o"></span><font color="red">Login Process</font>
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="SixcollapseEight" class="panel-collapse collapse">
-                            <div class="panel-body">
-                            
-                                <p> Login process is a user process created by kernel at boot-time. Its purpose is to login a user. The login process waits after invoking the (terminal) read system call for a username and password to be input from the console. The login process executes the Login system call with the username and the password as the arguments. The login system call verifies the user and creates a new shell process with the userid of the logged in user.</p>
-                                
-                             
-                            </div>
-                          </div>
-                        </div>
+                                                
                         
                       </div>
                     </div>
