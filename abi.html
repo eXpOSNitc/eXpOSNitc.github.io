@@ -145,7 +145,7 @@ The <b>file format</b> to be followed for executable files by the compiler (the 
                           <div id="collapse1" class="panel-collapse collapse">
                             <div class="panel-body">
                              <p>
-XSM Instruction set describes the target language in which a compiler must generate an executable file. Instructions are classified into privileged and unprivileged instructions. Programs run in user mode can make use of only unprivileged instructions while programs run in kernel mode make use of both privileged and unprivileged instructions.</p>
+XSM Instruction set describes the target language in which a compiler must generate an executable file. Instructions are classified into privileged and unprivileged instructions. Since application programs run in the user mode, they can make use of only unprivileged instructions.</p>
 <p>
 You can read more about the XSM user level instruction set <a href="virtual_machine_spec.html" target="_blank">here</a>.  
 </p>
@@ -173,7 +173,7 @@ You can read more about the XSM user level instruction set <a href="virtual_mach
 <br>
 <p><b>Shared library</b> can be shared by more than one executable file. The maximum size of this memory region is X_LSIZE.</p>
 
-<p>NOTE : eXpOS assumes that routines for unified system call interface and dynamic memory allocation are loaded into the shared library region. The eXpOS implementation for the XSM architecture discussed here sets X_LSIZE to 1024 words.  Thus the shared library will be loaded into the region between
+                                <p><code>Note :</code> eXpOS assumes that routines for unified system call interface and dynamic memory allocation are loaded into the shared library region. The eXpOS implementation for the XSM architecture discussed here sets X_LSIZE to 1024 words.  Thus the shared library will be loaded into the region between
 memory addresses 0 and 1023 in the address space of the process.</p>
 
 <p><b>Heap</b> is the portion of the address space of a process reserved as the memory pool from which dynamic memory allocation
@@ -220,7 +220,7 @@ is done by the allocator routines in the shared library (for example, memory all
  
    <p><b>Text Size</b>, <b>Data Size</b>, <b>Heap Size</b> and <b>Stack size</b> indicates the sizes of Text, Data, Heap and Stack regions to be allocated by the OS loader when the file is loaded for execution. </p>
 
-<p><code>Note : </code>The present eXpOS virtual address space model requires that the data and stack must be in the same memory area and must be managed by the compiler / application program. The value of Data Size field is ignored.</p>
+<p><code>Note : </code>The present eXpOS virtual address space model requires that the data and stack must be in the same memory area and must be managed by the compiler / application program. The value of Data Size field is ignored. Moreover, the size allocated for text and stack regions in memory are set to 1024 irrespective of the values present in the header.</p>
    
    <p>If the <b>Runtime Library</b> must be included when the file is loaded, the Library Flag is set to 1. If this flag is not set then neither the memory is allocated for the heap nor the library is linked to the address space of the process.</p>
                                </div>
