@@ -161,7 +161,7 @@ There are three types of eXpFS files - the <b>root, data files </b>and <b>execut
                           <div id="ThreecollapseTwo" class="panel-collapse collapse">
                             <div class="panel-body">
                            <p>
-The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root file stores three words of information - <b>file name, file-size and file-type</b>. (<font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> extended eXpOS</a>, the root file stores two additional words - <b>user name</b> and <b>permission</b>.) This triple is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation.  
+The root file has the name root and contains <i>meta-data</i> about the files stored in the file system. For each file stored in eXpFS, the root file stores three words of information - <b>file name, file-size and file-type</b>. (<font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> extended eXpOS</a>, the root file stores two additional words - <b>user name</b> and <b>permission</b>.) This triple( <font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">extended eXpOS</a>, 5-tuple) is called the <b>root entry</b> for the file. The first root entry is for the root itself. The order in which the remaining entries appear is not specified and can vary with the implementation.  
 
 Example:  If the file system stores two files - a data file, file.dat,  of size 700 words and an executable file, <b>confirm this </b>program.xexe, of 1025 words, the root file will contain the following information.  </p>
 <table class="table table-bordered">
@@ -176,22 +176,22 @@ Example:  If the file system stores two files - a data file, file.dat,  of size 
 		<td>root</td>
 		<td>512</td>
 		<td>ROOT</td>
-		<td></td>
-		<td></td>
+		<td>kernel</td>
+		<td>0</td>
 	</tr>
 	<tr>
 		<td>file.dat</td>
 		<td>700</td>
 		<td>DATA</td>
-		<td></td>
-		<td></td>
+		<td><i>username</i></td>
+		<td>0/1</td>
 	</tr>
 	<tr>
 		<td>program.xexe</td>
 		<td>1025</td>
 		<td>EXEC</td>
-		<td></td>
-		<td></td>
+		<td>kernel</td>
+		<td>unused</td>
 	</tr>
 </table>
 <p>The operations on the root file are <b>Open, Close, Read and Seek</b>.  
@@ -219,6 +219,7 @@ Since the operations on the root file is a subset of the operations on data file
 Application programs can create only data files using the Create system call.  In addition to this, data files may be loaded into the eXpFS file system using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a>).   
 In addition to the above, the description of the operations  FLock and FUnlock are discussed in <a href="synchronization.html"  target="_blank">Section 5</a> .  
 A detailed specification of the file system calls is given <a href="systemcallinterface.html" target="_blank">here</a>.</p>
+<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">Multiuser</a> implementattion of eXpOS, the username for a data file corresponds to the user who creates the file. It's permission can be either exclusive(0) or open(1).</p> 				
                             </div>
                           </div>
                         </div>
@@ -249,6 +250,7 @@ These contain executable code for programs that can be loaded and run by the ope
 <p>
 The executable file format recognized by eXpOS is called the Experimental executable file (XEXE) format.    In this format, an executable file is divided into two sections.  The first section is called header and the second section called the code (or text) section. The code section contains the program instructions. The header section contains information like the size of the text and data segments in the file, the space to be allocated for stack and heap areas when the program is loaded for execution etc.   This information is used by the OS loader to map the file into a virtual address space and create a process in memory for executing the program.
 </p>
+<p><font color="red">*</font> By default, the owner of all excecutable files is set to 0 (kernel).</p> 
                             </div>
                           </div>
                         </div>
