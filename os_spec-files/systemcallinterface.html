@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>System Call Interface</title>
+     <title>High Level System Call Interface</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -110,6 +110,7 @@
                 <br/>
                 <p>Application programmers interact with the Operating System using the system calls. System calls are stored in the disk and are loaded into memory when the OS is loaded by the bootstrap loader. When a process invokes a system call, the process is interrupted and control goes to the corresponding interrupt service routine of the kernel, resulting in a switch from user mode to kernel mode. Once the system call is carried out, the control goes back to the application program, with a switch back to the user mode.</p>
       <p>The system calls of eXpOS are classified into file system calls, process system calls and system calls for access control and synchronization.</p>
+      <p><font color="red">*</font> In addition to this, <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">Multiuser</a> extension of eXpOS includes system calls for handling multiple users.</p> 
       
      <!-- START SINGLE FEATURED ITEM #1 -->
                         <div class="panel panel-default " id="filesystemcalls">
@@ -141,6 +142,10 @@
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>No space for file</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>If the file already exists</td>
                                                     </tr> 
                                                 </table>
                                                 <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
@@ -442,6 +447,10 @@
                                                         <td>-1</td>
                                                         <td>File not found or file is of invalid type</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Out of memory or disk swap space</td>
+                                                    </tr> 
                                                                                                         
                                                 </table>
                                                 <p>Description: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking application and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
@@ -466,7 +475,7 @@
                                                 <p>Arguments: None</p>
                                                 <p>Return Value: None</p>
                                                 
-                                                <p>Description: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
+                                                <p>Description: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns. All processes waiting for this process using <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#synsystemcalls" target="_blank">Wait system call</a>, are awakened on exit of this process.  Exit never fails.</p>
 
 						<p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, if the process created by the login process (shell) exits, all processes with that userid has to be killed and the login process that was waiting for its exit has to be awakened.</p>
                                             </div>
@@ -544,6 +553,8 @@
                                                 <p>Return Value:None</p>
                                                 
                                                 <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
+                                                
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser </a> implemention of eXpOS, only the root and kernel can shutdown.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -882,7 +893,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. </p>
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. This system call can be executed only by processes whose user is either root or kernel.</p>
                                                 
                                             </div>
                                         </div>
@@ -919,7 +930,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
+                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed. This system call can be executed only by processes whose user is either root or kernel.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -947,7 +958,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
+                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password. This system call can be executed only by processes whose user is either root or kernel.</p>
                                             </div>
                                         </div>
                                     </div>
