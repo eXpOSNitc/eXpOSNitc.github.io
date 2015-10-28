@@ -111,10 +111,25 @@
                <br>
                <br>                                      
              
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
+             <p>Arguments: User name, Password</p>
+            <p>Return Value:</p>
+            <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User already exists</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr>
+                                                                                                        
+                                                </table>
                                                 
-             <p><i>Description</i>: </p>
+             <p><i>Description</i>: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 
@@ -141,10 +156,25 @@
                <br>
                <br>                                      
              
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
+             <p>Arguments: User name</p>
+            <p>Return Value:</p>
+             <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>User does not exist</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
                                                 
-             <p><i>Description</i>:  </p>
+                                                <p><i>Description</i>: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -167,10 +197,17 @@
                <br>
                <br>                                      
              
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
+             <p>Arguments: User name, Password</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Unauthorised attempt to change password</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
                                                 
-             <p><i>Description</i>:  </p>
+                                                <p><i>Description</i>: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -195,7 +232,21 @@
 
              
                                                 
-             <p><i>Description</i>: </p>
+             <p>Arguments: User name</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid Username</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>User Identifier</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p><i>Description</i>: If the username is valid, this system call returns the userid corresponding to the username passed.Otherwise,it returns -1.
               <br>
              <div><h4>Algorithm:</h4></div>
              
@@ -217,7 +268,56 @@
 
              
                                                 
-             <p><i>Description</i>: </p>
+            <p>Arguments: User ID</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid UserID</td>
+                                                    </tr> 
+						    <tr>
+                                                        <td>User Name</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p><i>Description</i>: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.</p>
+              <br>
+             <div><h4>Algorithm:</h4></div>
+             
+         </div>
+		</div>
+		</div>
+		</section>
+		
+		<section id="login">
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2>Login</h2>
+               <br>
+               <br>                                      
+
+             
+                                                
+            <p>Arguments: User name, Password</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid username or password</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+                                                <p><i>Description</i>: This system call is used to login a new user. It can be executed only from a process with userid 0 (kernel process). It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              
