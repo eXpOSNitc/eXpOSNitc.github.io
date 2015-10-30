@@ -265,9 +265,12 @@
              <p><b>while</b> 1 <b>do</b></p>
              <p style="text-indent: 4em;">username = read from console</p>
              <p style="text-indent: 4em;">password = read from console</p>
-             <p style="text-indent: 4em;">Invoke Login system call with username and password as arguments</p>             
-             <p style="text-indent: 4em;">If Login system call returns failure</p>
+             <p style="text-indent: 4em;">Retval = Login (username, password)</p>             
+             <p style="text-indent: 4em;">if Retval = -1</p>
              <p style="text-indent: 8em;">	Write to console "Invalid username or password"</p>             
+             <p style="text-indent: 4em;">else if Retval = -2</p>
+             <p style="text-indent: 8em;">	Write to console "Permission denied"</p>             
+             <p style="text-indent: 4em;">endif</p>
              <p><b>endwhile</b></p>
              
              
