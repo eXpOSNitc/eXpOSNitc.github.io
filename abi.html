@@ -110,30 +110,15 @@
              
                 <!-- START ABOUT HEADING -->
               <div class="heading">
-                <h1 >Application Binary Interface (ABI)</h1>
+                <h2 >Application Binary Interface (ABI)</h2>
                 <br/>
                 <br/>
-                
-                
-                 <div class="heading">
-                <h2 >Who should read this document?</h2>
-                <br/>
-                <br/>
-                <p>The ABI defines the interface between the OS kernel and the application program.  That is, the ABI specifies what format and convensions must be followed by an application (user level) executable program so that the OS can load and execute the application as a process.  It is the responsiblity of the compiler (or application programmer who directly prepare code at the executable level) to adhere to the ABI specification in order for the kernel to be able to execute the program using the Load() system call.  Hence, this document is a must read document for the compiler designer. Since OS implementation must adhere to the ABI specification, the document is also necessary to be understood before implementing the load module 	(Exec() system call) of the Operating System.    </p>
-                
-                </div>
-                
-                <div class="heading">
-                <h2 >Introduction</h2>
-                <br/>
-                <br/>                
-                
-                <p> The ABI defines the interface provided by the OS to the application program:
+                <p> The ABI defines the following:
 <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
 <li> The <b>machine model</b> - that is, the instruction set and the virtual memory address space to which an application/compiler generating executable file must generate target code for.  This is very much architecture specific.  
 </li>
 <li>
- A logical division of the memory address space into <b>regions</b> - <i>text, stack, heap and library </i>.   This part is dependent on both the OS and the architecture.    
+ A logical division of the memory address space into <b>regions</b> - <i>text, stack, heap and library </i>and the low level (assembly/machine level) system call interface.   This part is dependent on both the OS and the architecture.    
 </li>
 <li>
 The <b>file format</b> to be followed for executable files by the compiler (the XEXE executable file format).  This part is generally OS specific and architecture independent. Compilers must generate executable files adhering to this format. 
@@ -526,7 +511,7 @@ Associated with each system call, there is a system call number and interrupt ro
           </div>
         </div>       
       </div>
-                       </div>	
+       	
 		 
     </section>
     
