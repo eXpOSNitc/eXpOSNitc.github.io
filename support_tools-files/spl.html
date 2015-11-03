@@ -166,7 +166,7 @@ eXpOS package is designed to follow the programming conventions specified in thi
 				</table></pre>
 				</p>
                 <h3>Registers and Ports</h3>
-                              <p>	SPL allows the use of 29 registers (<tt>R0-R19, BP, SP, IP, PTBR, PTLR, EIP, EC, EPN, EMA</tt>) and 4 ports (<tt>P0-P3</tt>). P0 and P1 are used for standard input and standard output respectively.</p>                     
+                              <p>	SPL allows the use of 25 registers (<tt>R0-R15, BP, SP, IP, PTBR, PTLR, EIP, EC, EPN, EMA</tt>) and 4 ports (<tt>P0-P3</tt>). P0 and P1 are used for standard input and standard output respectively.</p>                     
                 <h3>Identifiers</h3>
 				<p>	Identifiers are used as symbolic names for constants and aliases for registers.
 				Identifiers should start with an alphabet but may contain alphabets, digits and/or underscore ( _ ). 
@@ -202,7 +202,7 @@ eXpOS package is designed to follow the programming conventions specified in thi
                           </div>
                           <div id="c2" class="panel-collapse collapse">
                             <div class="panel-body">
-                            <p>	SPL doesn’t allow the use of declared variables. Instead a fixed set of registers and ports are provided. 
+                            <p>	SPL provides a fixed set of registers and ports are provided. 
                                 The register set in SPL contains 29 registers. There is a direct mapping between these registers and the machine registers in XSM. There are 4 ports supported.</p>
 			
 			<table class="table table-bordered" style="text-align: center;">
@@ -331,7 +331,18 @@ eXpOS package is designed to follow the programming conventions specified in thi
                           </div>
                           <div id="var" class="panel-collapse collapse">
                             <div class="panel-body">
-                                
+                                <p>Variables are declared within the keywords <b>var</b> and <b>endvar</b>.  A variable declared in a program
+module can be accessed in the module, but will not be visible in other modules. </p>
+                                <p> Declarations must precede
+program statements. Variables follow the same naming convention as that of the identifiers. Format of variable declaration is given below.
+                                </p>
+<pre>
+var
+a,b,c
+endvar
+</pre>
+<p><code>Note: </code>Variables must be allocated only if registers R0 to R15 are exhausted,  because  a register access is faster than memory access.</p>                                
+
                                     
                             </div>
                           </div>
