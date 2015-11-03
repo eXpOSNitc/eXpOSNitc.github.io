@@ -103,7 +103,7 @@
                <br>
               <p>The Inode table is stored in the disk and has an entry for each file present in the disk (A copy of the Inode table is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS</a> permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 60. </p>
               
-             <p> Each Inode table entry stores the name, size, type and data block numbers of a file stored in the disk ( <font color="red">*</font> In <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS, userid and permission are also included in the inode table entry. The current version of eXpOS limits the maximum number of blocks in an eXpFS file to MAX_BLOCK_NUM = 4.   Each Inode table entry consists of 16 words of which the last 7 are unused in the present version of eXpOS. </p> 
+             <p> Each Inode table entry stores the name, size, type and data block numbers of a file stored in the disk ( <font color="red">*</font> In <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS, userid and permission are also included in the inode table entry). The current version of eXpOS limits the maximum number of blocks in an eXpFS file to MAX_BLOCK_NUM = 4.   Each Inode table entry consists of 16 words of which the last 7 are unused in the present version of eXpOS. </p> 
               
               <p>The entry of an Inode table has the following format:</p>
               <table class="table table-bordered" >
@@ -183,9 +183,9 @@
               <h2 class="Big" >Root File</h2>
                <br>
                <br>
-              <p>The Root File is stored in the disk and has an entry for each file present in the disk (A copy of the Root File is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus eXpFS permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 32. </p>
+              <p>The Root File is stored in the disk and has an entry for each file present in the disk (A copy of the Root File is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus eXpFS permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 60. </p>
               
-             <p> The root file has the name root and contains meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - file-name, file-size and file-type. This triple is called the root entry for the file. The first root entry is for the root itself. Each Root File entry consists of 8 words of which the last 5 are unused in the present version of eXpOS. </p> 
+             <p> The root file has the name <b>root</b> and contains meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores five words of information - file-name, file-size, file-type and <font color="red">username</font>, <font color="red">permission</font> in the case of <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS. This triple is called the root entry for the file. The first root entry is for the root itself. Each Root File entry consists of 8 words of which the last 3 are unused in the present version of eXpOS. </p> 
               
               <p>The entry of Root file has the following format:</p>
               <table class="table table-bordered" >
@@ -196,7 +196,7 @@
                       <td style="border: 1px solid black">FILE TYPE</td>
 		      <td style="border: 1px solid black"><font color="red">USER NAME</font></td>
 		      <td style="border: 1px solid black"><font color="red">PERMISSION</font></td>
-                       <td style="border: 1px solid black">Unused</td>
+                      <td style="border: 1px solid black">Unused</td>
                       
                   </tr>
               </table>
