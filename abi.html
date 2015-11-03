@@ -488,7 +488,191 @@ Associated with each system call, there is a system call number and interrupt ro
                                <p>This library routine is linked to <i>virtual address 0</i> of the address space of a process by the OS loader and requires four arguments (system call number and three arguments to the system call) to be passed through the stack. The routine invokes the corresponding low level system call and returns to the user program the return value of the system call through the stack. The following figure shows the contents of the stack immediately after a call to this library routine.</p>
                                
                                <center>                        <img src="img/system_call_interface_stack.png"></center>
-                               
+                               <table class="table table-bordered" style="text-align: center;">
+    <tr class="success">
+        <th style="text-align: center;">System Call</th>
+        <th style="text-align: center;">Number</th>
+        <th style="text-align: center;">Argument 1</th>
+        <th style="text-align: center;">Argument 2</th>
+        <th style="text-align: center;">Argument 3</th>
+    </tr>
+
+<tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>File Name</td>
+    <td>Permission</td>
+    <td>-</td>
+  </tr>
+
+  <tr>
+    <td>Open</td>
+    <td>2</td>		
+    <td>File Name</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+
+
+  <tr>
+	  <td>Close</td>
+	  <td>3</td>
+      <td>File Descriptor</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+                                   
+<tr>
+    <td>Delete</td>
+    <td>4</td>	
+    <td>File Name</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+  <tr>
+	  <td>Write</td>
+	  <td>5</td>
+      <td>File Descriptor</td>
+      <td>Word</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>Seek</td>
+	  <td>6</td>
+      <td>File Descriptor</td>
+      <td>Offset</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>Read</td>
+	  <td>7</td>
+      <td>File Descriptor</td>
+      <td>Buffer</td>
+      <td>-</td>
+  </tr>
+<!--- -->
+
+  <tr>
+    <td>Fork</td>
+    <td>8</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
+  </tr>		
+  <tr>
+    <td>Exec</td>
+    <td>9</td>
+    <td>File Name</td>	
+    <td>-</td>
+    <td>-</td>  
+  </tr>
+
+  <tr>
+    <td>Exit</td>
+    <td>10</td>		
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
+  </tr>
+
+  <tr>
+	  <td>Getpid</td>
+	  <td>11</td>
+    <td>-</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>Getppid</td>
+	  <td>12</td>
+          <td>-</td>
+            <td>-</td>
+      <td>-</td>
+  </tr>
+
+<tr>
+    <td>Wait</td>
+    <td>13</td>	
+    <td>Process Identifier</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+
+  <tr>
+    <td>Signal</td>
+    <td>14</td>	
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
+  </tr>
+
+  
+  <tr>
+    <td>FLock</td>
+    <td>15</td>		
+    <td>File Descriptor</td>
+    <td>-</td>
+    <td>-</td>  
+  </tr>
+
+  <tr>
+	  <td>FUnLock</td>
+	  <td>16</td>
+      <td>File Descriptor</td>	
+      <td>-</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>Semget</td>
+	  <td>17</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>Semrelease</td>
+	  <td>18</td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+
+  <tr>
+	  <td>SemLock</td>
+	  <td>19 </td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+  <tr>
+	  <td>SemUnLock</td>
+	  <td>20</td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
+  </tr>
+  
+  <tr>
+    <td>Shutdown</td>
+    <td>21</td>		
+    <td>-</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+    <tr>
+	  <td>Test</td>
+	  <td>99</td>
+      <td>----</td>
+        <td>----</td>
+        <td>-----</td>
+  </tr>
+
+                                </table>
                                <h3>Dynamic Memory Management Module Interface</h3>
                                
                                 <p>The dynamic memory management module interface takes two inputs - a function code (0 for alloc and 1 for free - see <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface</a> for specification) and one argument passed through the stack. The retrun value is passed back to the application through the stack. The OS loader of the present version of eXpOS for XSM architecture links this routine to <i>virtual address 512</i> of the application process. The following figure shows the contents of the stack just before a call to this library routine.</p>
