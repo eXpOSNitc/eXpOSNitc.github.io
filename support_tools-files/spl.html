@@ -538,21 +538,21 @@ endvar
                   <h3>Goto Statement</h3>
            <p> The <b>goto</b> statement transfers control to the specified labelled statement.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>goto label / constant / memory_address</b>;</tt></p>
+                    <p><tt><b>SYNTAX : </b><b>goto label / INT_n / MOD_n </b>;</tt></p>
                     <pre>
                         goto label1;
-                        goto 5120;
-                        goto INT_7;</pre>    
-           <p><tt>memory_address</tt> will be treated as absolute address and the control will be translated to the specified memory location.</p>
+                        goto INT_7;
+                        goto MOD_2;</pre>    
+           <p><code>Note: </code><tt>label</tt> should be defined within the module.</p>
             <h3>Call Statement</h3>
            <p> The <b>call</b> statement saves procedure linking information on the stack and branches to the procedure specified by the argument.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>call label / constant / memory_address</b>;</tt></p>
+                    <p><tt><b>SYNTAX : </b><b>call label / INT_n / MOD_n </b>;</tt></p>
                     <pre>
                         call swap_func;
-                        call 5120;
-                        call INT_10;</pre>
-           <p><tt>memory_address</tt> will be treated as absolute address and the control will be translated to the specified memory location.</p>
+                        call INT_7;
+                        call MOD_2;</pre>
+           <p><code>Note: </code><tt>label</tt> should be defined within the module.</p>
            <p>Call statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">CALL machine instruction</a>.</p>
             <h3>Return Statement</h3>
            <p> The <b>return</b> statement is used to transfer the control from a subroutine to the calling program in the kernel mode and the return address is popped from the stack.</p>
@@ -578,6 +578,34 @@ endvar
                           </div>
                         </div>
                     <!--end item 5--> 
+
+<!-- START SINGLE FEATURED ITEM #fun -->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#fun">
+                                <span class="fa fa-check-square-o"></span>Functions
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="fun" class="panel-collapse collapse">
+                            <div class="panel-body">
+                             <p> SPL does not provide any explict support for functions.  However, a label can be defined at the beginning of
+the code for a function and the code can be invoked using a CALL to that label.  This allows an implicit 
+                                 way of defining and using functions inside a module. </p><p> If parameters are to be passed to a function, it has to be explictly passed either using agreed upon registers or variables defined in the module.  Arguments can also
+be passed using the stack.  A function loaded at a particular known location in memory can be invoked 
+by a call to the corresponding memory address.</p> 
+
+<pre>call swap;
+
+call 2048;  /* Transfers control to the second page in memory */  </pre>     
+
+                                    
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item fun-->    
+      
                     
                       </div>
                     </div>
