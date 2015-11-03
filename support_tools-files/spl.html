@@ -291,6 +291,14 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr> <td>INT_16</td> 	<td>...</td><td></td> </tr>
                     <tr> <td>INT_17</td> 	<td>...</td><td></td> </tr>
                     <tr> <td>INT_18</td> 	<td>...</td><td>(Test, 99)</td> </tr>
+                    <tr> <td>MOD_0</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_1</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_2</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_3</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_4</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_5</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_6</td> 	<td>...</td><td></td> </tr>
+                    <tr> <td>MOD_7</td> 	<td>...</td><td></td> </tr>                
                     <tr> <td>DISK_SWAP_AREA</td> 	<td>...</td><td></td> </tr>                
 					<!--tr> <td>SCRATCHPAD</td> 	<td>512</td> </tr>
 					<tr> <td>PAGE_TABLE</td> 	<td>1024</td> </tr>
@@ -377,13 +385,15 @@ eXpOS package is designed to follow the programming conventions specified in thi
                                 <p>	The <b>define</b> statement is used to define a symbolic name for a value. Define statements should be used <b>before any other statement</b> in an SPL program. 
 				The keyword <b>define</b> is used to associate a literal to a symbolic name.<br/>		
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX :</b> <b>define</b> constant_name value;</tt></p>
-				<pre>define DISK_BLOCK 437;</pre>
+				<pre>
+                define DISK_BLOCK 437;</pre>
                                 
                 <h3>Alias Statement</h3>
 				<p>	An <b>alias</b> statement is used to associate a register/port with a name. Alias statements can be used anywhere in the program.<br/>
 				
 				<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX :</b> <b>alias</b> alias_name register_name;</tt></p>
-			    <pre>alias counter R0;</pre>
+			    <pre>
+                alias counter R0;</pre>
 				                 
                 <h3>Breakpoint Statement</h3>
                                 <p>	The <b>breakpoint</b> statement is used to debug the program. The program when run in the <a href="xsm-simulator.html" target="_blank" >debug mode</a> pauses the execution at this instruction.<br/>
@@ -500,15 +510,22 @@ eXpOS package is designed to follow the programming conventions specified in thi
                   <h3>Goto Statement</h3>
            <p> The <b>goto</b> statement transfers control to the specified labelled statement.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>goto label</b>;</tt></p>
-                    <p>eg.:  goto label1;</p>
-				
+                    <p><tt><b>SYNTAX : </b><b>goto label / constant / memory_address</b>;</tt></p>
+                    <pre>
+                        goto for_loop;
+                        goto 5120;
+                        goto INT_7;</pre>    
+           <p><tt>memory_address</tt> will be treated as absolute address and the control will be translated to the specified memory location.</p>
             <h3>Call Statement</h3>
            <p> The <b>call</b> statement saves procedure linking information on the stack and branches to the procedure specified by the argument.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>call label</b>;</tt></p>
-                    <p>eg.:  call label1;</p>
-           <p>This statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">CALL machine instruction</a>.</p>
+                    <p><tt><b>SYNTAX : </b><b>call label / constant / memory_address</b>;</tt></p>
+                    <pre>
+                        call for_loop;
+                        call 5120;
+                        call INT_7;</pre>
+          <p><tt>memory_address</tt> will be treated as absolute address and the control will be translated to the specified memory location.</p>
+           <p>Call statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">CALL machine instruction</a>.</p>
             <h3>Return Statement</h3>
            <p> The <b>return</b> statement is used to transfer the control from a subroutine to the calling program in the kernel mode and the return address is popped from the stack.</p>
 				
@@ -527,7 +544,8 @@ eXpOS package is designed to follow the programming conventions specified in thi
 				
 					<tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>inline</b> "<i>MACHINE INSTRUCTION</i>";</tt>
 					<br/>
-            <pre>inline "JMP 11776";</pre>  
+            <pre>
+            inline "JMP 11776";</pre>  
                             </div>
                           </div>
                         </div>
