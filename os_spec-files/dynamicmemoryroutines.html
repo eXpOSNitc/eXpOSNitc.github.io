@@ -105,19 +105,14 @@
              
                 <!-- START HEADING -->
               <div class="heading">
-                <h2>Dynamic Memory Library Interface</h2>
+                <h2>High Level Library Interface</h2>
                 <br/>
                 <br/>
-                              <p>The library functions <b>alloc()</b>, <b>free()</b> and <b>initialize()</b> are used as follows:  </p>
-<pre style = "font-size:16px">
-            t = alloc(); /* Allocates HBSIZE contiguous locations in the heap –
-                            t must be a user defined variable */
-            t = free(t);  /* Free the allocated block – t must be a user defined variable */
-            <span style="color:blue">t = initialise(); /* Initialises the heap area.*/</span>
-</pre>     
-                                <p>A call to alloc() allocates HBSIZE contiguous memory locations in the heap memory (memory reserved for dynamic memory allocation) and returns the address of the starting location. In this version of ExpL, HBSIZE is set to 16 words. This address may be stored in a variable of user defined type .  A call to free() deallocates HBSIZE contiguous memory locations in the heap memory that is referenced by user defined type variable t. The function free()  returns NULL on successful deallocation.  Otherwise, the value of t is unchanged by call to free().    All unallocated user defined variables are set to predefined constant  NULL.  
-
-</p>
+                  <p style="color:blue">..........Not completed........</p>
+                  <p>Syntax of the call to the library function is :</p>
+            <pre>
+            t = exposcall(fun_code, arg1, arg2, arg3);</pre>     
+                  <p>Depending on the <tt>fun_code</tt> the control is transfered to the <a href = "../os_spec-files/systemcallinterface.html" target="_blank">system call routines</a> (if <tt>fun_code</tt> > 0) and the dynamic memory allocation routines (if <tt>fun_code</tt> &lt; 0 ). The description of dynamic routines are given below.</p>
       
      <!-- START SINGLE FEATURED ITEM #1 -->
                         <div class="panel panel-default " id="filesystemcalls">
@@ -140,16 +135,17 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>0</td>
-                                                        <td>Success</td>
+                                                        <td>integer</td>
+                                                        <td>Address in the heap allocated</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>No space for file</td>
+                                                        <td>No allocation</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
-                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
+                                                <p>Description: The Alloc operation takes as input an integer, allocates contiguous words equal to the input specified
+                                                    and returns a pointer (i.e., an integer memory address) to the beginning of the allocated memory in the heap.</p>  
+  
                                             </div>
                                         </div>
                                     </div>
@@ -167,7 +163,7 @@
                                         <div id="collapsefree" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Filename (String)</p>
+                                                <p>Arguments: Pointer (Integer)</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -176,11 +172,10 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>No space for file</td>
+                                                        <td>Failure</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
-                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
+                                                <p>Description: The Free operation takes a pointer (i.e., an integer memory address) of a previously allocated memory block and returns it to the heap memory pool.  If the pointer does not correspond to a valid reference to a previously allocated memory block, the behaviour of Free is not defined. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -197,7 +192,7 @@
                                         <div id="collapseinit" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: NULL </p>
+                                                <p>Arguments: None </p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -206,11 +201,13 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>No space for file</td>
+                                                        <td>Failure</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
-                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
+                                                <p>Description: Intitalizes the heap data structures and sets up the heap area of the process.  
+It is the applications responsibility to invoke Initialize() before the first use of Alloc().  The behaviour of Alloc() and Free() when invoked 
+without an Intialize() operation is undefined.   Any memory allocated before an Intialize() operation will be 
+reclaimed for future allocation. </p>
                                             </div>
                                         </div>
                                     </div>

@@ -252,8 +252,9 @@ eXpOS package is designed to follow the programming conventions specified in thi
                                 <h3>Predefined Constants</h3>
 				<p>	SPL provides a set of predefined constants. 
 				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
-                    These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>. They are specifically tuned for the eXperimental Operating System which runs on the XSM architecture.
-				The predefined set of constants provided in SPL are:</p>
+                    These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>. They are specifically tuned for the eXperimental Operating System which runs on the XSM architecture.</p>
+                                <p><code>Note: </code> Pre-defined constants are actually not part of the language specification, but included in the version of SPL provided here as support for the <a href="../os_implementation.html" target="_blank">implementation</a> of eXpOS operating system in SPL. </p>
+				<p>The predefined set of constants provided in SPL are:</p>
                                 <table class="table table-bordered" style="text-align: center;">
                 <tr class="success">
                                         <th style="text-align: center;">Name</th>
@@ -590,21 +591,61 @@ endvar
                           </div>
                           <div id="fun" class="panel-collapse collapse">
                             <div class="panel-body">
-                             <p> SPL does not provide any explict support for functions.  However, a label can be defined at the beginning of
-the code for a function and the code can be invoked using a CALL to that label.  This allows an implicit 
-                                 way of defining and using functions inside a module. </p><p> If parameters are to be passed to a function, it has to be explictly passed either using agreed upon registers or variables defined in the module.  Arguments can also
-be passed using the stack.  A function loaded at a particular known location in memory can be invoked 
-by a call to the corresponding memory address.</p> 
+                            <p>SPL does not provide explicit support for functions. However, a label can be defined at the beginning of a function and the function can be invoked using the <b>call</b> instruction using the label. This allows use of functions inside a module. Labels defined in one module will not be visible in other modules.</p>
+
+<p>If parameters are to be passed to a function, it has to be explictly passed either using agreed upon registers or variables defined in the module or using a stack.</p>
+
+                                <p>A function loaded at a particular known location in memory (either specified directly by the memory address or using a pre-defined constant) can be invoked by a call to the corresponding memory address. However, it is recommended to follow the conventions discussed below in inter-module calls. Note that in this case, arguments can be only passed through the stack because variables defined in one module will not be visible in other modules.</p> 
+                                
 
 <pre>call swap;
-
-call 2048;  /* Transfers control to the second page in memory */  </pre>     
+call MOD_4;
+call 511;  /* Transfers control to the first page in memory */  </pre>     
 
                                     
                             </div>
                           </div>
                         </div>
-                    <!--end item fun-->    
+                    <!--end item fun-->  
+
+<!-- START SINGLE FEATURED ITEM #con -->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" href="#con">
+                                <span class="fa fa-check-square-o"></span>SPL Module Programming Conventions
+                              </a>
+                            </h4>
+                          </div>
+                          <div id="con" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>Each SPL module is designed to occupy a maximum of two blocks of continuous memory in the XSM machine. A module typically contains protected mode code that carries out certain functions as determined by the programmer. The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
+
+                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in memory. It is not recommended to transfer control directly into a location within a module from other modules.</p>
+
+                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) shall be passed through the stack. The return value may also be passed through the stack. A recommended parameter passing convension is shown in the figure below:</p>
+                                    
+                                <p style="color:blue">FIGURE</p>
+                                <p><code>Note: </code> The SPL compiler given here predefines eXpOS specific constants MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up). In addition to these, all interrupt service routines can be programmed as SPL modules are loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
+ 
+                                <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
+                               <div style="padding-left:70px"> a. Execution of a software interrupt from an application (unprotected mode) program.<br/>
+                                b. Hardware interrupt/exception occurred while an application was executing.<br/>
+                                c. Call from another module.<br/>
+                                </div>
+                                   </p>
+
+                                <p><b>Case a)</b> In this case, the arguments to the module are typically passed through the application stack. The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
+
+                              <p><b>However, in this case, it is strongly recommended that the module allocates its own stack in the memory and not use the application's stack.</b> This is to avoid potential user level “hacks” into protected mode interrupt modules through the stack.</p>
+
+                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from case a) is that the application does not have control over the transfer of control, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
+
+                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. The recommended convention is that the caller must save its register context into the stack before making the call.</p> 
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item con-->    
       
                     
                       </div>
