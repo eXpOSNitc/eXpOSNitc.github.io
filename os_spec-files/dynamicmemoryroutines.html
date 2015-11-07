@@ -108,18 +108,62 @@
                 <h2>High Level Library Interface</h2>
                 <br/>
                 <br/>
-                  <p style="color:blue">..........Not completed........</p>
-                  <p>Syntax of the call to the library function is :</p>
+                  <p>The High Level Library Interface is a unified interface to access system call routines and dynamic memory management functions from within eXpL. The syntax of the call to the library function is :</p>
             <pre>
             t = exposcall(fun_code, arg1, arg2, arg3);</pre>     
-                  <p>Depending on the <tt>fun_code</tt> the control is transfered to the <a href = "../os_spec-files/systemcallinterface.html" target="_blank">system call routines</a> (if <tt>fun_code</tt> > 0) and the dynamic memory allocation routines (if <tt>fun_code</tt> &lt; 0 ). The description of dynamic routines are given below.</p>
+                  <p>Depending on the <tt>fun_code</tt> the control is transferred to the <a href = "../os_spec-files/systemcallinterface.html" target="_blank">system call routines</a> (if <tt>fun_code</tt> > 0) and the dynamic memory management functions (if <tt>fun_code</tt> &lt; 0 ).</p>
+                  <table class="table table-bordered" style="text-align: center;">
+                <tr class="success">
+                                        <th style="text-align: center;">Function Code</th>
+                                        <th style="text-align: center;">Action</th>
+                                    </tr>
+                      <tr> <td>> 0</td> <td><a href = "../os_spec-files/systemcallinterface.html" target="_blank">system call routines</a></td> </tr>
+                    <tr> <td>-1</td> <td>initialize</td> </tr>
+                    <tr> <td>-2</td> <td>alloc</td> </tr>
+                    <tr> <td>-3</td> <td>free</td> </tr>  
+                    
+				</table>   
+                <p>The description of dynamic routines are given below:</p>
       
      <!-- START SINGLE FEATURED ITEM #1 -->
                         <div class="panel panel-default " id="filesystemcalls">
                           
                           <div class="panel-body">
                           
-                         <!--start file system calls --->   
+                         <!--start file system calls --->
+                            <!-- create system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapseinit" id="init">Initialize</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseinit" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p>Arguments: None </p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Failure</td>
+                                                    </tr> 
+                                                </table>
+                                                <p>Description: Intitalizes the heap data structures and sets up the heap area of the process.  
+It is the applications responsibility to invoke Initialize() before the first use of Alloc().  The behaviour of Alloc() and Free() when invoked 
+without an Intialize() operation is undefined.   Any memory allocated before an Intialize() operation will be 
+reclaimed for future allocation. </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end create system call-->
+                           
                          <!-- create system call-->
                                 <div class="panel-group" id="accordion">
                                     <div class="panel panel-default">
@@ -181,39 +225,7 @@
                                     </div>
                                 </div>
                          <!--end create system call-->
-                               <!-- create system call-->
-                                <div class="panel-group" id="accordion">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                 <a data-toggle="collapse"  href="#collapseinit" id="init">Initialize</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseinit" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                
-                                                <p>Arguments: None </p>
-                                                <p>Return Value:</p>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td>0</td>
-                                                        <td>Success</td>
-                                                    </tr> 
-                                                    <tr>
-                                                        <td>-1</td>
-                                                        <td>Failure</td>
-                                                    </tr> 
-                                                </table>
-                                                <p>Description: Intitalizes the heap data structures and sets up the heap area of the process.  
-It is the applications responsibility to invoke Initialize() before the first use of Alloc().  The behaviour of Alloc() and Free() when invoked 
-without an Intialize() operation is undefined.   Any memory allocated before an Intialize() operation will be 
-reclaimed for future allocation. </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                         <!--end create system call-->
-                         
+                               
                            
                           </div>
                         </div>
