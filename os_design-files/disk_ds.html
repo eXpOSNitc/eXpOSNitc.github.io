@@ -101,9 +101,9 @@
               <h2 class="Big" >Inode Table</h2>
                <br>
                <br>
-              <p>The Inode table is stored in the disk and has an entry for each file present in the disk (A copy of the Inode table is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS</a> permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 32. </p>
+              <p>The Inode table is stored in the disk and has an entry for each file present in the disk (A copy of the Inode table is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS</a> permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 60. </p>
               
-             <p> Each Inode table entry stores the name, size, type and data block numbers of a file stored in the disk.  The current version of eXpOS limits the maximum number of blocks in an eXpFS file to MAX_BLOCK_NUM = 4.   Each Inode table entry consists of 16 words of which the last 9 are unused in the present version of eXpOS. </p> 
+             <p> Each Inode table entry stores the name, size, type and data block numbers of a file stored in the disk ( <font color="red">*</font> In <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS, userid and permission are also included in the inode table entry). The current version of eXpOS limits the maximum number of blocks in an eXpFS file to MAX_BLOCK_NUM = 4.   Each Inode table entry consists of 16 words of which the last 7 are unused in the present version of eXpOS. </p> 
               
               <p>The entry of an Inode table has the following format:</p>
               <table class="table table-bordered" >
@@ -113,11 +113,12 @@
                       <td style="border: 1px solid black">FILE SIZE</td>
 		      <td style="border: 1px solid black"><font color="red">USER ID</font></td>
 		      <td style="border: 1px solid black"><font color="red">PERMISSION</font></td>
+		      <td style="border: 1px solid black">Unused (3 words)</td>
                       <td style="border: 1px solid black">DATA BLOCK 1</td>
                       <td style="border: 1px solid black">DATA BLOCK 2</td>
                       <td style="border: 1px solid black">DATA BLOCK 3</td>
                       <td style="border: 1px solid black">DATA BLOCK 4</td>
-                       <td style="border: 1px solid black">Unused        </td>
+                      <td style="border: 1px solid black">Unused (4 words)</td>
                       
                   </tr>
               </table>
@@ -126,9 +127,10 @@
                    <li><b>FILE NAME</b> (1 word) - Name of the file </li>
                    <li><b>FILE SIZE</b> (1 word) - Size of the file. Maximum size for File = MAX_FILE_SIZE = 2048 words </li>
                    <li><b><font color="red">USER ID</b> (1 word) - User Id of the owner of the file.</font> </li>
-                   <li><b><font color="red">PERMISSION</b> (1 word) - Permission of the file; it can be open or exclusive.</font> </li>                  
+                   <li><b><font color="red">PERMISSION</b> (1 word) - Permission of the file; it can be open (1) or exclusive (0).</font> </li>
+                   <li><b>Unused</b> (3 words) </li>                  
                    <li><b>DATA BLOCK 1 to 4</b> (4 words) - each DATA BLOCK column stores the block number of a data block of the file. If a file does not use a particular DATA BLOCK , it is set to -1.</li>
-                   <li><b>Unused</b> (7 words) </li>
+                   <li><b>Unused</b> (4 words) </li>
                   
               </ul>  
               
@@ -181,9 +183,9 @@
               <h2 class="Big" >Root File</h2>
                <br>
                <br>
-              <p>The Root File is stored in the disk and has an entry for each file present in the disk (A copy of the Root File is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus eXpFS permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 32. </p>
+              <p>The Root File is stored in the disk and has an entry for each file present in the disk (A copy of the Root File is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus eXpFS permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 60. </p>
               
-             <p> The root file has the name root and contains meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores three words of information - file-name, file-size and file-type. This triple is called the root entry for the file. The first root entry is for the root itself. Each Root File entry consists of 8 words of which the last 5 are unused in the present version of eXpOS. </p> 
+             <p> The root file has the name <b>root</b> and contains meta-data about the files stored in the file system. For each file stored in eXpFS, the root stores five words of information - file-name, file-size, file-type and <font color="red">username</font>, <font color="red">permission</font> in the case of <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS. This 5-tuple is called the root entry for the file. The first root entry is for the root itself. Each Root File entry consists of 8 words of which the last 3 are unused in the present version of eXpOS. </p> 
               
               <p>The entry of Root file has the following format:</p>
               <table class="table table-bordered" >
@@ -194,7 +196,7 @@
                       <td style="border: 1px solid black">FILE TYPE</td>
 		      <td style="border: 1px solid black"><font color="red">USER NAME</font></td>
 		      <td style="border: 1px solid black"><font color="red">PERMISSION</font></td>
-                       <td style="border: 1px solid black">Unused</td>
+                      <td style="border: 1px solid black">Unused</td>
                       
                   </tr>
               </table>
@@ -228,7 +230,7 @@
               <h2 class="Big" >User Table</h2>
                <br>
                <br>
-              <p>The User table is stores in the disk and has an entry for each user.(A copy of the User table is maintained in the memory when the OS is running). It consists of MAX_USER_NUM entries. This version of eXpOS sets MAX_USER_NUM = 16 including kernel and root. </p>
+              <p>The User table is stored in the disk and has an entry for each user. (A copy of the User table is maintained in the memory when the OS is running). It consists of MAX_USER_NUM entries. This version of eXpOS sets MAX_USER_NUM = 16 including entries for the kernel and the root. </p>
               
              <p> Each User table entry stores the user name and encrypted password of a user. Each User table entry consists of 2 words. </p> 
               
