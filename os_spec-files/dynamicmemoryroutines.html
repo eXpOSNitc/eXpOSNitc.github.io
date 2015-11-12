@@ -112,124 +112,253 @@
             <pre>
             t = exposcall(fun_code, arg1, arg2, arg3);</pre>     
                   <p>Depending on the <tt>fun_code</tt> the control is transferred to the <a href = "../os_spec-files/systemcallinterface.html" target="_blank">system call routines</a> (if <tt>fun_code</tt> > 0) and the dynamic memory management functions (if <tt>fun_code</tt> &lt; 0 ).</p>
-                  <table class="table table-bordered" style="text-align: center;">
-                <tr class="success">
-                                        <th style="text-align: center;">Function Code</th>
-                                        <th style="text-align: center;">Action</th>
-                                    </tr>
-                     </tr>
-                    <tr>
-    <td>1</td>	<td>Create</td>
-    
+                  <table class="table table-bordered" style="text-align: center;" id="syscalltable">
+    <tr class="success">
+        <th style="text-align: center;">System Call</th>
+        <th style="text-align: center;">Function Code / System Call Number</th>
+        <th style="text-align: center;">Argument 1</th>
+        <th style="text-align: center;">Argument 2</th>
+        <th style="text-align: center;">Argument 3</th>
+    </tr>
+
+<tr>
+    <td>Create</td>
+    <td>1</td>	
+    <td>File Name</td>
+    <td>Permission</td>
+    <td>-</td>
   </tr>
 
   <tr>
-    <td>2</td>	<td>Open</td>
-    
+    <td>Open</td>
+    <td>2</td>		
+    <td>File Name</td>
+    <td>-</td>
+      <td>-</td>
   </tr>
 
 
   <tr>
-	  <td>3</td><td>Close</td>
-	  
+	  <td>Close</td>
+	  <td>3</td>
+      <td>File Descriptor</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
                                    
 <tr>
-    <td>4</td>	<td>Delete</td>
-    
+    <td>Delete</td>
+    <td>4</td>	
+    <td>File Name</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
-	  <td>5</td><td>Write</td>
-	  
+	  <td>Write</td>
+	  <td>5</td>
+      <td>File Descriptor</td>
+      <td>Word</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>6</td><td>Seek</td>
-	  
+	  <td>Seek</td>
+	  <td>6</td>
+      <td>File Descriptor</td>
+      <td>Offset</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>7</td><td>Read</td>
-	  
+	  <td>Read</td>
+	  <td>7</td>
+      <td>File Descriptor</td>
+      <td>Buffer</td>
+      <td>-</td>
   </tr>
 <!--- -->
 
   <tr>
-    <td>8</td> <td>Fork</td>
-    
+    <td>Fork</td>
+    <td>8</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
   </tr>		
   <tr>
-    <td>9</td> <td>Exec</td>
-    
+    <td>Exec</td>
+    <td>9</td>
+    <td>File Name</td>	
+    <td>-</td>
+    <td>-</td>  
   </tr>
 
   <tr>
-    <td>10</td>  <td>Exit</td>
-    
+    <td>Exit</td>
+    <td>10</td>		
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
   </tr>
 
   <tr>
-	  <td>11</td><td>Getpid</td>
-	  
+	  <td>Getpid</td>
+	  <td>11</td>
+    <td>-</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>12</td><td>Getppid</td>
-	  
+	  <td>Getppid</td>
+	  <td>12</td>
+          <td>-</td>
+            <td>-</td>
+      <td>-</td>
   </tr>
 
 <tr>
-    <td>13</td>	<td>Wait</td>
-    
+    <td>Wait</td>
+    <td>13</td>	
+    <td>Process Identifier</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
 
   <tr>
-    <td>14</td>	<td>Signal</td>
-    
+    <td>Signal</td>
+    <td>14</td>	
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>  
   </tr>
 
   
   <tr>
-    <td>15</td>	<td>FLock</td>
-    
+    <td>FLock</td>
+    <td>15</td>		
+    <td>File Descriptor</td>
+    <td>-</td>
+    <td>-</td>  
   </tr>
 
   <tr>
-	  <td>16</td><td>FUnLock</td>
-	  
+	  <td>FUnLock</td>
+	  <td>16</td>
+      <td>File Descriptor</td>	
+      <td>-</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>17</td><td>Semget</td>
-	  
+	  <td>Semget</td>
+	  <td>17</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>18</td><td>Semrelease</td>
-	  
+	  <td>Semrelease</td>
+	  <td>18</td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
 
   <tr>
-	  <td>19 </td><td>SemLock</td>
-	  
+	  <td>SemLock</td>
+	  <td>19 </td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
   <tr>
-	  <td>20</td><td>SemUnLock</td>
-	  
+	  <td>SemUnLock</td>
+	  <td>20</td>
+      <td>Semaphore Descriptor</td>
+      <td>-</td>
+      <td>-</td>
   </tr>
   
   <tr>
-    <td>21</td>	<td>Shutdown</td>
-    
+    <td>Shutdown</td>
+    <td>21</td>		
+    <td>-</td>
+    <td>-</td>
+      <td>-</td>
   </tr>
+     <tr class = "danger">
+    <td>Newusr</td>
+    <td>22</td>		
+    <td>User name</td>
+    <td>Password</td>
+      <td>-</td>
+  </tr>
+        <tr class = "danger">
+    <td>Remusr</td>
+    <td>23</td>		
+    <td>User name</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+        <tr class = "danger">
+    <td>Setpwd</td>
+    <td>24</td>		
+    <td>User name</td>
+    <td>Password</td>
+      <td>-</td>
+  </tr>
+        <tr class = "danger">
+    <td>Getuname</td>
+    <td>25</td>		
+    <td>User ID</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+     <tr class = "danger">
+    <td>Getuid</td>
+    <td>26</td>		
+    <td>User name</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+        <tr class = "danger">
+    <td>Login</td>
+    <td>27</td>		
+    <td>-</td>
+    <td>-</td>
+      <td>-</td>
+  </tr>
+                            
     <tr>
-	  <td>99</td><td>Test</td>
-	  
-  </tr>  
-                     <tr class = "warning"> <td>-1</td> <td>initialize</td> </tr>
-                     <tr class = "warning"> <td>-2</td> <td>alloc</td> </tr>
-                     <tr class = "warning"> <td>-3</td> <td>free</td> </tr>  
-                    
+	  <td>Test</td>
+	  <td>99</td>
+      <td>----</td>
+        <td>----</td>
+        <td>-----</td>
+  </tr>
+  <tr class = "active">
+	  <td>initialize</td>
+	  <td>-1</td>
+      <td>----</td>
+        <td>----</td>
+        <td>-----</td>
+  </tr>
+  <tr class = "active">
+	  <td>alloc</td>
+	  <td>-2</td>
+      <td>Size</td>
+        <td>----</td>
+        <td>-----</td>
+  </tr>
+  <tr class = "active">
+	  <td>free</td>
+	  <td>-3</td>
+      <td>Pointer</td>
+        <td>----</td>
+        <td>-----</td>
+  </tr>
 				</table>   
                 <p>The description of dynamic routines are given below:</p>
       
