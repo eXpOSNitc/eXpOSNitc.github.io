@@ -109,7 +109,7 @@
                 <br/>
                 <br/>
                 <!--p> The following is a detailed architecture diagram of XSM.</p-->
-		<center><img src="../img/architecture/machine_organisation.png" width="90%"></center>
+		<center><img src="../img/architecture/machine_organisation_new.png" width="90%"></center>
               </div>
 		        <!--center><img src="../img/hw_model.jpg"></center-->
 
@@ -160,7 +160,7 @@
 <p>The  following table gives an overview of XSM registers/ports according to their category.</p>
 
                                 <table class="table table-bordered" style="text-align: center;">
-                                    <tr>
+                                    <tr class="success">
                                         <th style="text-align: center;">Registers</th>
                                         <th style="text-align: center;">Purpose</th>
                                         <th style="text-align: center;">Access Mode</th>
@@ -358,7 +358,7 @@ Memory refers to the physical memory of the machine and is a volatile storage. T
     <td>40 - 127</td>
     <td>Unreserved Pages</td>	
     <td>20480  - 65535</td>
-    <td>44544</td>
+    <td>45056</td>
   </tr>
   
 </table>
@@ -389,10 +389,199 @@ The disk is block accessible and not word accessible. This means that a word wit
 
 <p>The block 0 of the disk is reserved for <i>boot block</i> and will be loaded into the memory at the time of system startup.</p>
 
-<p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
+                                <p>The machine instruction set includes four special <b>disk access macro routines</b> (load, loada, store and storea - <a href="instruction_set.html#privileged_instruction" target="_blank" > see instruction set </a>) for disk-block to memory-page data transfer and back.  These are actually macros whose internal details are hidden from programs.    These macros are accessible only when the machine is executing in previliged mode.   XSM gives no provision for programs to access the disk directly while executing in unpreviliged mode.</p>  
 <p>
-<b>Note</b>:  The fact that both page-size and block-size are the same makes disk to memory transfer easy in XSM.  In real machines, this is normally not the case and the disk access routines have to do the necessary size mappings.  
+<code>Note</code>:  The fact that both page-size and block-size are the same makes disk to memory transfer easy in XSM.  In real machines, this is normally not the case and the disk access routines have to do the necessary size mappings.  
 </p>
+<p><font color="red">*</font> The Disk layout of the XSM machine is organised as follows : </p>
+<table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Block Number</th>
+                                        <th style="text-align: center;">Contents</th>
+					<th style="text-align: center;">Number of Blocks</th>	
+                                    </tr>
+  <tr>
+    <td>0 - 1</td>
+    <td>Bootstrap</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>2</td>
+    <td>Disk Free List</td>	
+    <td>1</td>
+  </tr>
+  <tr>			
+    <td>3 - 4</td>
+    <td>Inode + User Table</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>5 - 6</td>
+    <td>Init or Login Code</td>	
+    <td>2</td>
+  </tr>
+  <tr>		
+    <td>7 - 8</td>
+    <td>Shell Code</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>9 - 10</td>
+    <td>Idle Code</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>11 - 12</td>
+    <td>Library</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>13 - 14</td>
+    <td>Exception Handler</td>	
+    <td>2</td>
+  </tr>
+  <tr>						
+    <td>15 - 16</td>
+    <td>Timer Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>					
+    <td>17 - 18</td>
+    <td>Disk Controller Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>					
+    <td>19 - 20</td>
+    <td>Console Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>21 - 22</td>
+    <td>Interrupt 4 Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>23 - 24</td>
+    <td>Interrupt 5 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>25 - 26</td>
+    <td>Interrupt 6 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>27 - 28</td>
+    <td>Interrupt 7 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>29 - 30</td>
+    <td>Interrupt 8 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>31 - 32</td>
+    <td>Interrupt 9 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>33 - 34</td>
+    <td>Interrupt 10 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>35 - 36</td>
+    <td>Interrupt 11 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>37 - 38</td>
+    <td>Interrupt 12 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>39 - 40</td>
+    <td>Interrupt 13 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>41 - 42</td>
+    <td>Interrupt 14 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>43 - 44</td>
+    <td>Interrupt 15 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>45 - 46</td>
+    <td>Interrupt 16 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>47 - 48</td>
+    <td>Interrupt 17 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>49 - 50</td>
+    <td>Interrupt 18 Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>51 - 52</td>
+    <td>Module 0</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>53 - 54</td>
+    <td>Module 1</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>55 - 56</td>
+    <td>Module 2</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>57 - 58</td>
+    <td>Module 3</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>59 - 60</td>
+    <td>Module 4</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>61 - 62</td>
+    <td>Module 5</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>63 - 64</td>
+    <td>Module 6</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>65 - 66</td>
+    <td>Module 7</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>67 - 255</td>
+    <td>User Blocks</td>	
+    <td>189</td>
+  </tr>   
+  <tr>							
+    <td>256 - 511</td>
+    <td>Swap Area</td>	
+    <td>256</td>
+  </tr>
+</table>
+
                             </div>
                           </div>
                         </div>
@@ -408,7 +597,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>It is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.) Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="interrupts_exception_handling.html#timer_interrupt" target="_blank" >timer interrupt service routine</a>.</p>
+                                <p>Timer is a device that can be set to interrupt the processor each time after the machine executes XSM_TICKS instructions in <b>unprivileged mode</b> (If the XSM_TICKS numbered instruction changes mode from unprivileged to privileged, then the interrupt occurs before executing the next instruction after the machine is back to unprivileged mode).  The value of XSM_TICKS must be set externally.  (XSM specification leaves how XSM_TICKS is initialized to the implementation.) Upon receipt of the interrupt, the machine switches to the prIvileged mode and  executes the <a href="interrupts_exception_handling.html#timer_interrupt" target="_blank" >timer interrupt service routine</a>.</p>
                             </div>
                           </div>
                         </div>
@@ -441,7 +630,14 @@ The disk is block accessible and not word accessible. This means that a word wit
                           </div>
                           <div id="Threecollapse6" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>This device abstracts the input and output operations and permits transfer of a word stored in a port to the console or from the console to the port. There are two macro instructions associated with I/O, <b>in</b> and <b>out</b>. The <b>in</b> instruction allows data from the console to be read into port <b>P0</b>. The <b>out</b> instruction results in transfer of a word from port <b>P1</b> to the console. When executing the <b>in</b> instruction, the machine continues the execution of the next instruction without waiting for input from console. When the user inputs a word through the console, the console device will send a hardware interrupt. The <a href="interrupts_exception_handling.html" target="_blank" >console interrupt handler routine</a> is executed when the interrupt is raised. The data must be read from port P0 only.  
+                                <p>The console device is a single device that handles the standard input and output. </p>
+                                <p>The OUT instruction displays the contents of port P1 onto the terminal <a href="instruction_set.html#privileged_instruction" target="_blank" >(see instruction set)</a>.</p>
+<p>If the XSM machine executes an INA instruction, the console device waits for the user to enter a word
+into the console.  When a word is entered, the console device transfers the word to the port P0 and raises the console  interrupt <a href="interrupts_exception_handling.html" target="_blank" >(see console interrupt handling)</a>. The console device ignores any further input entered by the user before the execution of another INA/IN instruction. While the console waits for the user input, the XSM machine proceeds the execution of the next instruction.</p>
+                                <p>If the XSM machine executes the IN instruction, the console device as well as the XSM machine waits for the user input and the data entered is immediately transferred to the port P0, only after which the next instruction is executed. No interrupt is generated by the IN instruction.</p>
+<p>The contents of port P0 may be transfered to other registers/memory using the MOV
+instruction inside the console interrupt routine.  Note that P0 may not contain any valid data if its contents
+are read before the interrupt is raised in case of the INA instruction.  
 </p>
                             </div>
                           </div>
@@ -460,7 +656,7 @@ The disk is block accessible and not word accessible. This means that a word wit
                             <div class="panel-body">
                              <p>
 When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the 1<sup>st</sup> disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the 1<sup>st</sup> instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code. 
-                                 <br/><code>Note</code> : Boot ROM contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1 which now contains Boot Block). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1.
+                                 <br/><code>Note</code> : Boot ROM code contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1 which now contains Boot Block). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1.
 </p>
                             </div>
                           </div>
