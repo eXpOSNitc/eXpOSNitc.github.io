@@ -95,10 +95,252 @@
       
     </header>
     <!--=========== End HEADER SECTION ================--> 
+    <!--heading of the page---->
+	     <div class="container" style="margin-top: 80px;">
+
+         <h1>eXpOS Implementation</h1>
     
-    
-				
-    
+     </div>
+
+ <!--=========== BEGIN SECTION================-->
+    <section id="implementation">
+          <div class="container" >
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START HEADING -->
+              <div class="heading">
+                <h2>Introduction</h2>
+                <br/>
+                <br/>
+                <p>This document gives implementation of Data Structures and Algorithms used in eXpOS. It also provides the organizations of disk and memory in eXpOS.
+	</p> 
+    <br>
+    <br>	    
+          
+	 <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse1"><span class="fa fa-check-square-o"></span>Disk Organization</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+	<br>
+<p><font color="red">*</font> The Disk layout of the XSM machine is as follows : </p>
+<table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Block Number</th>
+                                        <th style="text-align: center;">Contents</th>
+					<th style="text-align: center;">Number of Blocks</th>	
+                                    </tr>
+  <tr>
+    <td>0 - 1</td>
+    <td>Bootstrap</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>2</td>
+    <td>Disk Free List</td>	
+    <td>1</td>
+  </tr>
+  <tr>			
+    <td>3 - 4</td>
+    <td>Inode + User Table</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>5 - 6</td>
+    <td>Init or Login Code</td>	
+    <td>2</td>
+  </tr>
+<tr>			
+    <td>7 - 8</td>
+    <td>Shell Code</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>9 - 10</td>
+    <td>Idle Code</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>11 - 12</td>
+    <td>Library</td>	
+    <td>2</td>
+  </tr>
+  <tr>			
+    <td>13 - 14</td>
+    <td>Exception Handler</td>	
+    <td>2</td>
+  </tr>
+  <tr>						
+    <td>15 - 16</td>
+    <td>Timer Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>					
+    <td>17 - 18</td>
+    <td>Disk Controller Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>					
+    <td>19 - 20</td>
+    <td>Console Interrupt Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>21 - 22</td>
+    <td>Interrupt 4 Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>23 - 24</td>
+    <td>Interrupt 5 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>25 - 26</td>
+    <td>Interrupt 6 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>27 - 28</td>
+    <td>Interrupt 7 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>29 - 30</td>
+    <td>Interrupt 8 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>31 - 32</td>
+    <td>Interrupt 9 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>33 - 34</td>
+    <td>Interrupt 10 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>35 - 36</td>
+    <td>Interrupt 11 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>37 - 38</td>
+    <td>Interrupt 12 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>39 - 40</td>
+    <td>Interrupt 13 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>41 - 42</td>
+    <td>Interrupt 14 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>43 - 44</td>
+    <td>Interrupt 15 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>45 - 46</td>
+    <td>Interrupt 16 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>47 - 48</td>
+    <td>Interrupt 17 Routine</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>49 - 50</td>
+    <td>Interrupt 18 Routine</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>51 - 52</td>
+    <td>Module 0</td>	
+    <td>2</td>
+  </tr>
+  <tr>							
+    <td>53 - 54</td>
+    <td>Module 1</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>55 - 56</td>
+    <td>Module 2</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>57 - 58</td>
+    <td>Module 3</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>59 - 60</td>
+    <td>Module 4</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>61 - 62</td>
+    <td>Module 5</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>63 - 64</td>
+    <td>Module 6</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>65 - 66</td>
+    <td>Module 7</td>	
+    <td>2</td>
+  </tr>
+   <tr>							
+    <td>67 - 255</td>
+    <td>User Blocks</td>	
+    <td>189</td>
+  </tr>   
+  <tr>							
+    <td>256 - 511</td>
+    <td>Swap Area</td>	
+    <td>256</td>
+  </tr>
+</table>
+<br>
+</div>
+</div>
+<div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse2"><span class="fa fa-check-square-o"></span>Memory Organization</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+	<br>
+<p><font color="red">*</font> The Memory layout of the XSM machine is as follows : </p>
+<br>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+			
+    </section>
      <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
