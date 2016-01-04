@@ -121,6 +121,7 @@
                       <td style="border: 1px solid black">INODE INDEX</td>
                       <td style="border: 1px solid black">INPUT BUFFER</td>
                       <td style="border: 1px solid black">MODE FLAG</td>
+                      <td style="border: 1px solid black">KERNEL STACK PAGE NUMBER</td>
                       <td style="border: 1px solid black">KERNEL STACK POINTER</td>
                        <td style="border: 1px solid black">PTBR</td>
                       <td style="border: 1px solid black"><font color="red">DISK MAP TABLE POINTER</font></td>
@@ -139,11 +140,11 @@
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
                   <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal. Whenever a word is read from the terminal, Terminal Interrupt Handler will store the word into this buffer. </li>
                   <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode. It is set to 1 when it enters the kernel mode (upon entering a system call) and resets to 0 when it returns  back to the user mode (upon returning from a system call). </li>
-                  
+                  <li><b>KERNEL STACK PAGE NUMBER (KSTPNO)</b> (1 word) - Page number of the process' kernel stack. </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the kernel stack area of the process. </li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
                   <li><b>DISK MAP TABLE POINTER</b> (1 word) - pointer to <a href="#disk_map_table">DISK MAP TABLE</a>.</li>
-				  <li><b>Unused</b> (4 words)</li>
+				  <li><b>Unused</b> (3 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
