@@ -185,7 +185,7 @@
               <p>The Semaphore Table contains details about all the semaphores used by the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
               
               <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore table entry for the semaphore. </p>
-              <p>The Process count field specifies the number of processes which are sharing the semaphore. Semget sets the Process Count to 1. When a process forks, all semaphores acquired by the parent is shared with the child and hence, process count is incremented. Semrelease system call decrements the Process Count. Process Count is also decremented when a process exits.</p>
+              <p>The Process count field specifies the number of processes which are sharing the semaphore. Semget sets the Process Count to 1. When a process forks, all semaphores acquired by the parent is shared with the child and hence, Process Count is incremented. Semrelease system call decrements the Process Count. Process Count is also decremented when a process exits.</p>
               <p>SemLock system call sets the Locking PID field to the PID of the process invoking it. When the semaphore is not locked, Locking PID is -1. </p>        
 
               <p>Each semaphore table entry is of size 4 words of which the last two are unused.</p>
@@ -274,7 +274,7 @@
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies block number of the disk block which is currently stored in the buffer. It is set to -1 if the buffer does not contain any valid disk block.</li>
                    <li><b>DIRTY BIT</b> (1 word) - specifies whether the block stored in the buffer has been modified. It is set to 0 when a disk block is loaded into the buffer and is set to 1 when modified by the Write System Call.</li>
-                   <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer while executing a file system call.</li>
+                   <li><b>LOCKING PID</b> (1 word) - specifies the PID of the process which has currently locked the buffer table while executing a file system call.</li>
                    <li><b>Unused</b> (1 word)</li>
                </ul>
               <p>Free entries are represented by -1 in all the fields.</p>
