@@ -108,23 +108,21 @@
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html" target="_blank">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 16.</p>
-              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 32 words, of which last 3 words are unused. Any entry of PT has the following fields:</p>
+              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 4 words are unused. Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">TICK</td>
                       <td style="border: 1px solid black">PID</td>
                       <td style="border: 1px solid black">PPID</td>
                       <td style="border: 1px solid black"><font color="red">USERID</font></td>
-                      <td style="border: 1px solid black">STATE</td>
-                      
-                      <td style="border: 1px solid black">PER-PROCESS RESOURCE TABLE</td>
+                      <td style="border: 1px solid black">STATE</td>                                            
                       <td style="border: 1px solid black">INODE INDEX</td>
                       <td style="border: 1px solid black">INPUT BUFFER</td>
                       <td style="border: 1px solid black">MODE FLAG</td>
+                      <td style="border: 1px solid black">KERNEL STACK SWAP STATUS</td>
                       <td style="border: 1px solid black">KERNEL STACK PAGE NUMBER</td>
                       <td style="border: 1px solid black">KERNEL STACK POINTER</td>
-                       <td style="border: 1px solid black">PTBR</td>
-                      <td style="border: 1px solid black">DISK MAP TABLE POINTER</td>
+                      <td style="border: 1px solid black">PTBR</td>
                       <td style="border: 1px solid black">Unused</td>
                   </tr>
               </table>
@@ -140,16 +138,16 @@
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
                   <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal. Whenever a word is read from the terminal, Terminal Interrupt Handler will store the word into this buffer. </li>
                   <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode. It is set to 1 when it enters the kernel mode (upon entering a system call) and resets to 0 when it returns  back to the user mode (upon returning from a system call). </li>
+       		  <li><b>KERNEL STACK SWAP STATUS</b> (1 word) -  </li>
                   <li><b>KERNEL STACK PAGE NUMBER (KSTPNO)</b> (1 word) - Page number of the process' kernel stack. </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the kernel stack area of the process. It gives the address as an offset value.</li>
-		  <li><b>KERNEL STACK SWAP STATUS</b> (1 word) -  </li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
-                  <li><b>DISK MAP TABLE POINTER</b> (1 word) - pointer to <a href="#disk_map_table">DISK MAP TABLE</a>.</li>
-		  <li><b>Unused</b> (2 words)</li>
+
+		  <li><b>Unused</b> (4 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
-              <p>Note: In this version of eXpOS, the Per-Process Resource Table is included within the Process Table entry. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
+              <p>Note: In this version of eXpOS, the Per-Process Resource Table and Disk Map Table are stored in the kernel stack area of each process. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
               
               <!-- START ITEM #1 -->
                         <div class="panel panel-default " id="state">
@@ -211,28 +209,7 @@
                               <p>MACHINE STATE is updated when a process is interrupted in user mode or when there is a context switch from process in kernel mode to scheduler.</p>
                           </div>
                         </div>
-              <!-- START ITEM #3 -->
-              <br>
-                        <div class="panel panel-default " id="per_process_table">
-                            <br>
-                            <br>
-                            <br>
-                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
-                          <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore). In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
- 
- 
- <p>The per-process resource table entry has the following format. </p>
-               <table class="table table-bordered" >
-                  <tr>
-                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>
-                      <td style="border: 1px solid black"><font color="red">Unused (1 word)</font></td>
-                      
-                  </tr>
-              </table>
- <p>File descriptor, returned by Open system call, is the index of the per-process resource table entry for that open instance of the file.</p>
-                             </div>
-                        </div>
+              
               
               <!-- START ITEM #4 -->
                         <div class="panel panel-default " id="per_page_table">
@@ -267,7 +244,55 @@
                   <p><b>Note2:</b> In the eXpOS implementation on the XSM architecture, if a page is not loaded to the memory, but is stored in a disk block, the physical page number entry is set to the disk block number by the OS (Otherwise, the physical page number entry is set to -1). If memory access is made to a page whose page table entry is invalid, a <i>page fault</i> occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
                              </div>
                         </div>
-                            
+                        
+              <p> In addition to these, a process maintains the following tables in its kernel stack area.          
+              </p>
+              <!-- START ITEM #3 -->
+              <br>
+                        <div class="panel panel-default " id="disk_map_table">
+                            <br>
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">DISK MAP TABLE</h4>                          
+                          <div class="panel-body">
+                              <p>The Disk Map Table has 10 entries and each entry is of 2 words. It stores the disk block number corresponding to the pages of the process. </p>
+ 
+ 
+ <p>The disk map table entry has the following format. </p>
+               <table class="table table-bordered" >
+                  <tr>
+                      <td style="border: 1px solid black">Page number (1 word)</td>
+                      <td style="border: 1px solid black">Disk block number(1 word)</td>
+                      
+                  </tr>
+              </table>
+                             </div>
+                        </div> 
+                        
+                                      <!-- START ITEM #5 -->
+              <br>
+                        <div class="panel panel-default " id="per_process_table">
+                            <br>
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
+                          <div class="panel-body">
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore). In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
+ 
+ 
+ <p>The per-process resource table entry has the following format. </p>
+               <table class="table table-bordered" >
+                  <tr>
+                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>
+                      <td style="border: 1px solid black"><font color="red">Unused (1 word)</font></td>
+                      
+                  </tr>
+              </table>
+ <p>File descriptor, returned by Open system call, is the index of the per-process resource table entry for that open instance of the file.</p>
+                             </div>
+                        </div>      
+                        
+                                
 </div>
                   
         </div>
