@@ -622,8 +622,8 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                 <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from <i>Case a)</i> is that the application does not have control over the transfer of control, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
                                 <p>In this case also the module allocates its own stack in the memory and not use the application's stack.</p>
 
-                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. In this case, the recommended parameter passing convention is to use R0, R1, R2.. for
-argument_1, argument_2, argument_3.. etc.  The return value of the module may be stored in R0.
+                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R0, R1, R2... for
+argument_1, argument_2, argument_3...  The return value of the module may be stored in R0.
 This convention is recommended instead of using the stack for passing arguments for improving efficiency. 
 As in the previous cases, the caller must save the values of the registers in use into the stack
 before the call. </p>
