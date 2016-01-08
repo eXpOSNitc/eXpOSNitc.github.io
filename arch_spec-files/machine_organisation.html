@@ -362,6 +362,14 @@ Memory refers to the physical memory of the machine and is a volatile storage. T
   </tr>
   
 </table>
+<p><code>Note: </code>The last 19 words of page 0 are reserved for an <b>interrupt vector table</b> with 19 entries.  
+The k<sup>th</sup> entry contains the page number where the handler for the k<sup>th</sup> interrupt service
+routine begins.  Upon encountering the INT <i>k</i> instruction during machine execution, 
+the machine transfers control to the beginning of the page indicated in the corresponding
+vector table entry.  </p>
+
+<p>The version of the XSM machine described here assumes that the vector table entries are 
+hard coded in the ROM code according to the above table.  </p>
 
 
                             </div>
