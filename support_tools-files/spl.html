@@ -321,8 +321,7 @@ for the implementation of eXpOS on the XSM architecture. These constants are mos
 				</table>   
                 <code>*</code>(System Call Name, System Call Number)                
                  <p>In addition to the above, users can define constants which are visible in all 
-SPL modules by including the definition in the constants.spl file. If a constant defined in the constants.spl file is re-defined in a module, the
-local definition will override the global definition. 
+SPL modules by including the definition in the <i>constants.spl</i> file. If a constant defined in the <i>constants.spl</i> file is re-defined in a module, the local definition will override the global definition. 
 
 				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
                     </p>
@@ -601,11 +600,15 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                             <div class="panel-body">
                                 <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. A module typically contains protected mode code that carries out certain functions as determined by the programmer. The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
 
-                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in memory. It is not recommended to transfer control directly into a location within a module from other modules.</p>
+                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in the memory. It is not recommended to transfer control directly into a location within a module from other modules.</p>
 
-                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) shall be passed through the stack. The return value may also be passed through the stack. A recommended parameter passing convention is shown in the figure below:</p>
-                                    
-                                <center>                        <img src="../img/memory_management.png"></center>
+                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) shall be passed through registers R0, R1, R2..  as required. The return value (if any) may be stored in the register R0.   However, in following this convention, it is important to ensure that
+all registers in use in the calling module are pushed to the stack so that they can be restored
+after return from the called module.  Note that the module code might change the values of the
+registers and hence it is the responsibility of the caller to ensure that the values of the registers
+in use are saved.   </p>
+                                   
+
                                 <p><code>Note: </code> The SPL compiler given here predefines eXpOS specific constants MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up). In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
  
                                 <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
@@ -615,13 +618,15 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                 </div>
                                    </p>
 
-                                <p><b>Case a)</b> In this case, the arguments to the module are typically passed through the application stack. The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
+                                <p><b>Case a)</b> In this case, the arguments to the module are passed through stack.  The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
 
                               <p><b>However, in this case, it is strongly recommended that the module allocates its own stack in the memory and not use the application's stack.</b> This is to avoid potential user level “hacks” into protected mode interrupt modules through the stack.</p>
 
                                 <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from case a) is that the application does not have control over the transfer of control, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
 
-                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. The recommended convention is that the caller must save its register context into the stack before making the call.</p> 
+                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. The recommended convention is that the caller must save its register context into the stack before making the call.</p>
+
+
                             </div>
                           </div>
                         </div>
