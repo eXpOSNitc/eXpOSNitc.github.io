@@ -154,7 +154,7 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr><td>backup</td> <td>restore</td> <td>read</td> <td>reada</td> <td>print</td></tr>
                     <tr><td>load</td> <td>loada</td> <td>store</td> <td>storea</td> <td>while</td></tr>
                     <tr><td>do</td> <td>endwhile</td> <td>break</td> <td>continue</td> <td>if</td></tr>
-					<tr><td>then</td> <td>else </td> <td>endif</td> <td>var</td> <td>endvar</td></tr>
+					<tr><td>then</td> <td>else </td> <td>endif</td> </tr>
                     
 				</table></pre>
 				</tt></p>
@@ -250,10 +250,13 @@ eXpOS package is designed to follow the programming conventions specified in thi
 				Unlike aliasing, two or more names can be assigned to the same value. 
 				A constant can only be defined once in a program.</p>
                                 <h3>Predefined Constants</h3>
-				<p>	SPL provides a set of predefined constants. 
-				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
-                    These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>. They are specifically tuned for the eXperimental Operating System which runs on the XSM architecture.</p>
-                                <p><code>Note: </code> Pre-defined constants are actually not part of the language specification, but included in the version of SPL provided here as support for the <a href="../os_implementation.html" target="_blank">implementation</a> of eXpOS operating system in SPL. </p>
+				<p>	SPL provides a set of predefined constants defined in the file <b>constants.spl</b>. A constant defined in an SPL module will be visible only inside the module. </p>
+				<p>
+  The standard SPL implementation comes with a set of pre-defined constants specifically tuned
+for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>.
+				</p>
+ 	
+ 				
 				<p>The predefined set of constants provided in SPL are:</p>
                                 <table class="table table-bordered" style="text-align: center;">
                 <tr class="success">
@@ -317,38 +320,16 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr> <td>DISK_BUFFER</td> 	<td>.... </td> </tr!-->              
 				</table>   
                 <code>*</code>(System Call Name, System Call Number)                
-                 
-                            </div>
-                          </div>
-                        </div>
-                        <!-- START SINGLE FEATURED ITEM #var -->
-                        <div class="panel panel-default ">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" href="#var">
-                                <span class="fa fa-check-square-o"></span>Variables
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="var" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <p>Variables are declared within the keywords <b>var</b> and <b>endvar</b>.  A variable declared in a program
-module can be accessed in the module, but will not be visible in other modules. </p>
-                                <p> Declarations must precede
-program statements. Variables follow the same naming convention as that of the identifiers. Format of variable declaration is given below.
-                                </p>
-<pre>
-var
-a,b,c
-endvar
-</pre>
-<p><code>Note: </code>Variables must be allocated only if registers R0 to R15 are exhausted,  because  a register access is faster than memory access.</p>                                
+                 <p>In addition to the above, users can define constants which are visible in all 
+SPL modules by including the definition in the constants.spl file. If a constant defined in the constants.spl file is re-defined in a module, the
+local definition will override the global definition. 
 
-                                    
+				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
+                    </p>
+                                <p><code>Note: </code> Pre-defined constants are actually not part of the language specification, but included in the version of SPL provided here as support for the <a href="../os_implementation.html" target="_blank">implementation</a> of eXpOS operating system in SPL. </p>
                             </div>
                           </div>
                         </div>
-                    <!--end item var-->    
                         
                         <!-- START SINGLE FEATURED ITEM #4 -->
                         <div class="panel panel-default ">
