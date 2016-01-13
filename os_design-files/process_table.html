@@ -108,7 +108,7 @@
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html" target="_blank">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 16.</p>
-              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 3 words are unused. Any entry of PT has the following fields:</p>
+              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 2 words are unused. Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">TICK</td>
@@ -133,7 +133,7 @@
                   <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call.</li>
                   <li><b>USERID </b>(1 word) - Userid of the currently logged in user. This field is set by Fork System Call.</li>
                   <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. The details of the states are explained below. </li>
-                  <li><b>SWAP FLAG </b>(1 word) - Indicates if the process is swapped (1) or not (0).</li>
+                  <li><b>SWAP FLAG </b>(1 word) - Indicates if the process is swapped (1) or not (0). The process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>
                   
                   <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> (16 words) - Per-Process Resource Table  contains information about the files opened by the process as well as semaphores used by the process. </li>
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
@@ -144,7 +144,7 @@
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the top of the kernel stack of the process. The offset of this address within the kernel stack is stored in this field.</li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
 
-		  <li><b>Unused</b> (3 words)</li>
+		  <li><b>Unused</b> (2 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
