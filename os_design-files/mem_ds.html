@@ -182,11 +182,11 @@
               <h2 >Semaphore Table</h2>
                <br>
                <br>
-              <p>The Semaphore Table contains details about all the semaphores used by the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
+              <p>The Semaphore Table contains details about the semaphores used by all the processes. It consists of MAX_SEM_COUNT (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_SEM_COUNT = 32 semaphores used in the system at any time. For every semaphore entry in the per-process resource table, there is a corresponding entry in the semaphore table. </p>
               
               <p>A process can acquire a semaphore using the Semget system call, which returns a unique semid for the semaphore. Semid is basically the index of the semaphore table entry for the semaphore. </p>
               <p>The Process count field specifies the number of processes which are sharing the semaphore. Semget sets the Process Count to 1. When a process forks, all semaphores acquired by the parent is shared with the child and hence, Process Count is incremented. Semrelease system call decrements the Process Count. Process Count is also decremented when a process exits.</p>
-              <p>SemLock system call sets the Locking PID field to the PID of the process invoking it. When the semaphore is not locked, Locking PID is -1. </p>        
+              <p>SemLock system call sets the Locking PID field to the PID of the process invoking it. When the semaphore is not locked, Locking PID is -1.</p>        
 
               <p>Each semaphore table entry is of size 4 words of which the last two are unused.</p>
               <table class="table table-bordered" >
@@ -221,24 +221,26 @@
                <br>
                <br>
               <p> It is assumed that the machine provides a <i>load</i> instruction to transfer a disk block to a memory page and a <i>store</i> instruction to transfer a memory page to a disk block. The Disk Status Table keeps track of these disk-memory transfers. Every time a disk operation is invoked, the information regarding the operation like the disk block and the memory page involved, the process that invoked the operation and type of disk operation are stored in Disk Status Table by the OS. In the present version of eXpOS, it is assumed that, the disk does not support multiple disk-memory transfers at the same time and is considered busy while a transfer is going on. The state of the disk (busy or free) is also stored in the Disk Status Table. </p>
-              <p> The size of the table is 8 words of which the last 3 are unused.</p>
+              <p> The size of the table is 8 words of which the last 2 are unused.</p>
               <table class="table table-bordered table-responsive" >
                   <tr >
-                       <td style="border: 1px solid black">STATUS</td>  
+                      <td style="border: 1px solid black">STATUS</td>                         
+                      <td style="border: 1px solid black">SCHEDULER FLAG</td>                         
                       <td style="border: 1px solid black">LOAD/STORE BIT</td>
                       <td style="border: 1px solid black">PAGE NUMBER</td>
                       <td style="border: 1px solid black">BLOCK NUMBER</td>
-                       <td style="border: 1px solid black">PID</td>   
+                      <td style="border: 1px solid black">PID</td>   
                       <td style="border: 1px solid black">Unused</td>  
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>STATUS </b>(1 word) - specifies whether the disk is free (indicated by 0) or busy (indicated by 1) handling a memory-disk transfer.</li>
+                   <li><b>SCHEDULER FLAG</b> (1 word) - this field is set to 1 if the disk transfer is intitated by the scheduler, else is set to 0.</li>                   
                    <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load (indicated by 0) or store (indicated by 1).</li>
-                   <li><b>PAGE NUMBER</b> (1 word) - specifies the memory page number involved in the disk transfer</li>
+                   <li><b>PAGE NUMBER</b> (1 word) - specifies the memory page number involved in the disk transfer.</li>
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies the disk block number involved in the disk transfer.</li>
-                  <li><b>PID</b> (1 word) - specifies the PID of the process which invoked the disk transfer. It is set to -PID if the disk transfer was initiated by the scheduler, to load/store a page of the process with identifier PID.</li>
-                  <li><b>Unused</b> (3 words) </li>
+                  <li><b>PID</b> (1 word) - specifies the PID of the process which invoked the disk transfer. If the disk transfer was initiated by the scheduler, to load/store a page of the process with identifier PID, then also the pid field is set.</li>
+                  <li><b>Unused</b> (2 words) </li>
               </ul>    
 </div>
                   
@@ -256,7 +258,7 @@
               <h2 >Buffer Table</h2>
                <br>
                <br>
-               <p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER = 4. Each buffer is identified by its index in the buffer table. </p> 
+               		<p>When a process reads/writes into a file, the relevant disk block is first brought into a memory buffer by the OS and the read/write operation is performed on the buffer. The OS reserves MAX_BUFFER number of memory pages as buffers.  The buffer table is a data structure that stores the information regarding the disk block stored in each buffer.  The present version of eXpOS sets MAX_BUFFER = 4. Each buffer is identified by its index in the buffer table. </p> 
 
 			<p>Since all the 4 buffer pages are shared by all the files in the file system, a buffer page may be required to be replaced by another disk block.  In this case, write-back is performed only if the page is modified. The <b> dirty bit </b>indicates whether the page has been modified.</p> 
 
