@@ -162,13 +162,10 @@
                           <li>(RUNNING,___) – The process is in execution.  This field is set by Scheduler when a process is scheduled.</li>
                           <li>(READY,___) – The process is ready to be scheduled.</li>
                           <li>(WAIT_PROCESS,WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID. This field is set by WAIT system call. </li>
-                          <li>(WAIT_FILE, FTENTRY) - The process is blocked for a file whose file table entry index is FTENTRY. </li>
+                          <li>(WAIT_FILE, FTENTRY) - The process is blocked for a file whose file status table entry index is FTENTRY. </li>
                           <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process.  </li>
                           <li>(WAIT_SEMAPHORE,SEMID) - The process is waiting for a semaphore (whose descriptor is SEMID) that was locked by some other process. </li>
-                          <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>
-                          <li>(SWAPPED,___) – The stack page of the process has been swapped out into disk.</li>
-<li>(SWAPPED_WAIT, WAIT_PID) – The stack page of a process which was in (WAIT_PROCESS,WAIT_PID) state has been swapped out into disk</li>
-
+                          <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>                          
                           <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for disk buffer of index BUFFERID to be unlocked. </li>
                           <li>(WAIT_TERMINAL,___) – The process is waiting for Read from Terminal to be completed.  </li>
                       </ul>
