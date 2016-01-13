@@ -295,7 +295,7 @@
               <h2 >System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable and, the number of processes in swapped state. The size of the table is 8 words out of which 3 words are unused.</p>
+              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable, the number of processes in swapped state and, the pid of the process to be scheduled next. The size of the table is 8 words out of which 3 words are unused.</p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -311,7 +311,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>CURRENT_USER_ID</b> (1 word) - specifies the userid of the currently logged in user.</li>
-                   <li><b>NEXT_PID</b> (1 word) - </li>
+                   <li><b>NEXT_PID</b> (1 word) - specifies the pid of the process to be scheduled next. </li>
                    <li><b>MEM_FREE_COUNT</b> (1 word) - specifies the number of free pages available in memory.</li>
                    <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting for memory. </li>
                    <li><b>SWAPPED_COUNT</b> (1 word) - specifies the number of processes in (SWAPPED, _ ) or (SWAPPED_WAIT, _ ) state.</li>
