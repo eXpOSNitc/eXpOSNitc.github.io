@@ -129,11 +129,11 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory. It has an initial value of 0 and is updated whenever the scheduler is called. TICK is reset to 0 when a process is swapped out or in.</li>
-                   <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call.</li>
+                   <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call. In the present version of eXpOS, the pid is set to the index of the entry in process table.</li>
                   <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call.</li>
                   <li><b>USERID </b>(1 word) - Userid of the currently logged in user. This field is set by Fork System Call.</li>
-                  <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. </li>
-                  <li><b>SWAP FLAG </b>(1 word) - Indicates if the state of the process is swapped (1) or not (0).</li>
+                  <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. The details of the states are explained below. </li>
+                  <li><b>SWAP FLAG </b>(1 word) - Indicates if the process is swapped (1) or not (0).</li>
                   
                   <li><a href="#per_process_table"><b>PER-PROCESS RESOURCE TABLE</b></a> (16 words) - Per-Process Resource Table  contains information about the files opened by the process as well as semaphores used by the process. </li>
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
@@ -141,7 +141,7 @@
                   <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode. It is set to 1 when it enters the kernel mode (upon entering a system call) and resets to 0 when it returns  back to the user mode (upon returning from a system call). </li>
        		  <li><b>KERNEL STACK SWAP STATUS</b> (1 word) - Indicates whether the kernel stack has been swapped (1) or not (0).</li>
                   <li><b>KERNEL STACK PAGE NUMBER (KSTPNO)</b> (1 word) - Page number of the process' kernel stack. </li>
-                  <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the kernel stack area of the process. It gives the address as an offset value.</li>
+                  <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the top of the kernel stack of the process. The offset of this address within the kernel stack is stored in this field.</li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
 
 		  <li><b>Unused</b> (3 words)</li>
