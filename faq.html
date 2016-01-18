@@ -225,20 +225,32 @@ from the OS” to satisfy the calling application program invoking the system ca
 
                      </div> 
                      
-                     <p><a data-toggle="collapse" href="#collapse11">11. How do I write OS code and load the OS in the eXpOS system? </a></p>
+                     <p><a data-toggle="collapse" href="#collapse11">11. What is the difference between eXpOS and XOS? </a></p>
                      <div id="collapse11" class="panel-collapse collapse">
+						 <p><a href="http://xosnitc.github.io/" target="_blank">XOS</a> is an earlier version of this project.  XOS did not support blocking system calls.
+						 <p> This means that a process will never do a context switch while it is running in the kernel mode. However eXpOS, system calls may block in the kernel mode and other processes could be scheduled.  The version of XSM provided with eXpOS has the necessary hardware support for doing this. 
+						 </p>
+						 <p> The addition of this single feature makes the eXpOS substantially more complex that XOS.
+This is because a blocked process might have made partial updates to some OS data structures before blocking and a newly scheduled process, while executing in the kernel mode, must be careful not to modify these data structures and leave the OS in an inconsistent state. 
+						</p>
+						<p> Apart from the above feature, eXpOS adds support for semaphores, shared memory, file locking etc. There is also limited multiuser support.  However, the additional complexity introduced by these features is minor. </p> 
+
+                     </div> 
+                     
+                     <p><a data-toggle="collapse" href="#collapse12">12. How do I write OS code and load the OS in the eXpOS system? </a></p>
+                     <div id="collapse12" class="panel-collapse collapse">
 						 <p>You have to write your OS code from your Linux/Unix system in a custom programming language called SPL that comes with the eXpOS package, compile the code and install the target code into the hard disk of the XSM machine.  The xfs-interface tool allows you to do this pre-loading.   Your OS code must include set up code that will be executed when the system is started.  This code must load the rest of the OS into memory during bootstrap. </p> 
 
                      </div> 
                      
-                     <p><a data-toggle="collapse" href="#collapse12">12. How do I write application programs that run on eXpOS?</a></p>
-                     <div id="collapse12" class="panel-collapse collapse">
+                     <p><a data-toggle="collapse" href="#collapse13">13. How do I write application programs that run on eXpOS?</a></p>
+                     <div id="collapse13" class="panel-collapse collapse">
 						 <p>Application programs must be  compiled in the Linux/Unix environment outside and pre-loaded into the XSM machine's disk.  The ExpL language allows applications to be written and compiled into the eXpOS executable format called the XEXE format.   eXpOS does provide system calls that can be invoked from application programs to create and manipulate data files.  </p> 
 
                      </div> 
                      
-                     <p><a data-toggle="collapse" href="#collapse13">13. What is meant by user mode and kernel mode?  </a></p>
-                     <div id="collapse13" class="panel-collapse collapse">
+                     <p><a data-toggle="collapse" href="#collapse14">14. What is meant by user mode and kernel mode?  </a></p>
+                     <div id="collapse14" class="panel-collapse collapse">
 						 <p>In a multitasking OS like Linux, there are two types of programs running.  One set are application programs that users write called "user mode programs".  The other are "kernel mode" programs.  This is actually the OS code itself.    These routines implement the system call interface for application programs and other OS functions like process, memory, file and device management etc. </p> 
 <p>User mode programs can execute only a restricted instruction set and has access only to a limited memory (called the virtual address space).  These programs must invoke OS system calls to do tasks which involve capacity beyond their limited instruction set.   Kernel mode programs on the other hand have full access to the machine instruction set. </p>
 <p>Any machine supporting eXpOS needs to recognize and support two modes of program execution.  The OS must be designed such that the machine switches to kernel mode when a user mode program invokes a system call and goes back to user mode when the system call returns.  This requires architecture support.  XSM machine is equipped with the necessary hardware support. </p> 
@@ -246,22 +258,22 @@ from the OS” to satisfy the calling application program invoking the system ca
  
                      </div> 
                      
-                     <p><a data-toggle="collapse" href="#collapse14">14. Why do you need two programming languages in the eXpOS package – the SPL and ExpL?  </a></p>
-                     <div id="collapse14" class="panel-collapse collapse">
+                     <p><a data-toggle="collapse" href="#collapse15">15. Why do you need two programming languages in the eXpOS package – the SPL and ExpL?  </a></p>
+                     <div id="collapse15" class="panel-collapse collapse">
 						 <p>We need seperate programming systems for writing user mode programs and kernel mode programs because the machine model (instruction set, accessible memory etc.) are different for both the modes.  (See previous FAQ).   ExpL language is designed for writing user mode programs and SPL is designed for writing kernel mode programs for eXpOS.  
 
  </p> 
 
                      </div> 
                      
-                     <p><a data-toggle="collapse" href="#collapse15">15. My friend has implemented eXpOS after  downloading the package and following the roadmap.  I want to write a program and test his implementation.  How to do it? </a></p>
-                     <div id="collapse15" class="panel-collapse collapse">
+                     <p><a data-toggle="collapse" href="#collapse16">16. My friend has implemented eXpOS after  downloading the package and following the roadmap.  I want to write a program and test his implementation.  How to do it? </a></p>
+                     <div id="collapse16" class="panel-collapse collapse">
 						 <p>You must write your code in ExpL language in your Unix/Linux machine, compile it using the ExpL compiler that comes with the eXpOS package and load the target executable file into the XSM machine's disk using the xfs-interface tool.  Now start the machine (assuming that your friend has already written his OS routines in SPL, compiled it using the SPL compiler and loaded it into the disk) so that her OS boots up and runs the shell program.  From the shell, you will be able to type in the name of your executable program and execute it, just like in bash.  </p> 
 
                      </div> 
                      
-                      <p><a data-toggle="collapse" href="#collapse16">16. Are there any user groups for the project?</a></p>
-                     <div id="collapse16" class="panel-collapse collapse">
+                      <p><a data-toggle="collapse" href="#collapse17">17. Are there any user groups for the project?</a></p>
+                     <div id="collapse17" class="panel-collapse collapse">
 						 <p>Yes.  You can subscribe to the group <a href="https://groups.google.com/forum/?hl=en#!members/xos-users" target="_blank">here</a>.</p> 
 
                      </div> 
