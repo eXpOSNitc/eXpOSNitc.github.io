@@ -138,17 +138,35 @@
                <p style="text-indent: 6em;">WAIT_FILE -> READY : The file for which the process was waiting, is now unlocked.</p>
                <p style="text-indent: 6em;">WAIT_BUFFER -> READY : The buffer for which the process was waiting, is now unlocked.</p>
                <p style="text-indent: 6em;">WAIT_MEM -> READY : There are free pages in memory.</p>
-                                                          
+               
+               <p style="text-indent: 4em;"><b>G</b></p>
+              <p style="text-indent: 6em;">WAIT_SEMAPHORE / WAIT_FILE / WAIT_BUFFER / WAIT_MEM -> SWAPPED : The current stack page of the process has been swapped out.</p>
+               
+              
                <p style="text-indent: 4em;"><b>H</b></p>
               <p style="text-indent: 6em;">WAIT_TERMINAL -> READY : The input data has been read from terminal and terminal is free to be used by any process.</p>
                <p style="text-indent: 6em;">WAIT_DISK -> READY : The disk operation is complete.</p>
-                             
+              
+               <p style="text-indent: 4em;"><b>I</b></p>
+              <p style="text-indent: 6em;">WAIT_TERMINAL / WAIT_DISK  -> SWAPPED : The current stack page of the process has been swapped out.</p>
+               
                <p style="text-indent: 4em;"><b>J</b></p>
-              <p style="text-indent: 6em;">WAIT_PROCESS -> READY : The process has either received a signal from the process it was waiting for or the latter has exited the system.</p>                                                        
+              <p style="text-indent: 6em;">WAIT_PROCESS -> READY : The process has either received a signal from the process it was waiting for or the latter has exited the system.</p>
+              
+                            
+                <p style="text-indent: 4em;"><b>K</b></p>
+               <p style="text-indent: 6em;">READY -> SWAPPED : The current stack page of the process has been swapped out.</p>
+               
+                <p style="text-indent: 4em;"><b>L</b></p>
+               <p style="text-indent: 6em;">SWAPPED -> READY : The stack page required by the process to continue execution was swapped in.</p>
                
                <p style="text-indent: 4em;"><b>M</b></p>
                <p style="text-indent: 6em;">RUNNING -> READY : Context switch caused by the timer interrupt routine.<p>
-				   				   				   				   			   
+				   
+				   
+				   
+				   <p style="text-indent: 4em;"><b>N</b></p>
+               <p style="text-indent: 6em;">WAIT_PROCESS -> SWAPPED_WAIT : The current stack page of the process was swapped out while waiting for another process.<p>				   
                
          </div>
 		</div>
