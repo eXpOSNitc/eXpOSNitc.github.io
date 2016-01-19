@@ -337,6 +337,347 @@
 	<br>
 <p><font color="red">*</font> The Memory layout of the XSM machine is as follows : </p>
 <br>
+<table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Page Number</th>
+                                        <th style="text-align: center;">Contents</th>
+                                        <th style="text-align: center;">Word Address</th>                                        
+					<th style="text-align: center;">Number of Words</th>	
+                                    </tr>
+  <tr>
+    <td>0</td>
+    <td>ROM Code</td>	
+    <td>0 - 511</td>
+    <td>512</td>
+  </tr>
+  
+  <tr>
+    <td>1</td>
+    <td>Interrupt Vector Table</td>	
+    <td>512 - 1023</td>
+    <td>512</td>
+  </tr>
+  
+  <tr>
+    <td>2 -3</td>
+    <td>OS Startup Code*/Scratchpad</td>	
+    <td>1024 - 2047</td>
+    <td>1024</td>
+  </tr>
+
+  <tr>
+    <td rowspan="3" style="vertical-align:middle">4</td>
+    <td>Process Table</td>	
+    <td>2048 - 2303</td>
+    <td>256</td>
+  </tr>
+  <tr>  
+    <td>Per process page tables</td>	
+    <td>2304 - 2463</td>
+    <td>160</td>
+  </tr>
+  <tr>  
+    <td>Unallocated</td>	
+    <td>2464 - 2559</td>
+    <td>96</td>
+  </tr>
+
+  <tr>
+    <td rowspan="6" style="vertical-align:middle">5</td>
+    <td>Memory Free List</td>	
+    <td>2560- 2687</td>
+    <td>128</td>
+  </tr>
+  <tr>  
+    <td>File Status Table</td>	
+    <td>2688 - 2927</td>
+    <td>240</td>
+  </tr>
+  <tr>  
+    <td>Disk Status Table</td>	
+    <td>2928 - 2935</td>
+    <td>8</td>
+  </tr>
+  <tr>  
+    <td>System Status Table</td>	
+    <td>2936 - 2943</td>
+    <td>8</td>
+  </tr>
+  <tr>  
+    <td>Terminal Status Table</td>	
+    <td>2944 - 2951</td>
+    <td>8</td>
+  </tr>
+  <tr>  
+    <td>Unallocated</td>	
+    <td>2952 - 3071</td>
+    <td>120</td>
+  </tr>      
+  
+  <tr>
+    <td rowspan="4" style="vertical-align:middle">6</td>
+    <td>File Table</td>	
+    <td>3072- 3199</td>
+    <td>128</td>
+  </tr>
+  <tr>  
+    <td>Semaphore Table</td>	
+    <td>3200 - 3327</td>
+    <td>128</td>
+  </tr>
+  <tr>  
+    <td>Buffer Table</td>	
+    <td>3328 - 3343</td>
+    <td>16</td>
+  </tr>
+  <tr>  
+    <td>Unallocated</td>	
+    <td>3344 - 3583</td>
+    <td>240</td>
+  </tr>
+
+  <tr>
+    <td rowspan="2" style="vertical-align:middle">7 - 8</td>
+    <td>Inode Table</td>	
+    <td>3584 - 4543</td>
+    <td>960</td>
+  </tr>
+  <tr>
+    <td>Unallocated</td>	
+    <td>4544 - 4607</td>
+    <td>64</td>
+  </tr>  
+  <tr>
+    <td>9</td>
+    <td>Disk Free List</td>	
+    <td>4608 - 5119</td>
+    <td>512</td>
+  </tr>
+  
+  <tr>
+    <td rowspan="2" style="vertical-align:middle">10</td>
+    <td>Root File</td>	
+    <td>5120 - 5599</td>
+    <td>480</td>
+  </tr>
+  <tr>
+    <td>User Table</td>	
+    <td>5600 - 5631</td>
+    <td>32</td>
+  </tr>
+  
+  <tr>			
+    <td>11 - 12</td>
+    <td>Reserved for future use</td>	
+    <td>5632 - 6655</td>
+    <td>1024</td>
+  </tr>
+  
+    <tr>			
+    <td>13 - 14</td>
+    <td>Library</td>	
+    <td>6656 - 7679</td>
+    <td>1024</td>    
+  </tr>
+  <tr>			
+    <td>15 - 16</td>
+    <td>Exception Handler</td>	
+    <td>7680 - 8703</td>
+    <td>1024</td>    
+  </tr>
+  <tr>						
+    <td>17 - 18</td>
+    <td>Timer Interrupt Routine</td>	
+    <td>8704 - 9727</td>
+    <td>1024</td>
+  </tr>
+  <tr>					
+    <td>19 - 20</td>
+    <td>Disk Controller Interrupt Routine</td>	
+    <td>9728 - 10751</td>
+    <td>1024</td>
+  </tr>
+  <tr>					
+    <td>21 - 22</td>
+    <td>Console Interrupt Routine</td>	
+    <td>10752 - 11775</td>
+    <td>1024</td>
+  </tr>
+  <tr>							
+    <td>23 - 24</td>
+    <td>Interrupt 4 Routine</td>	
+    <td>11776 - 12799</td>
+    <td>1024</td>
+  </tr>
+  <tr>							
+    <td>25 - 26</td>
+    <td>Interrupt 5 Routine</td>	
+    <td>12800 - 13823</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>27 - 28</td>
+    <td>Interrupt 6 Routine</td>	
+    <td>13824 - 14847</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>29 - 30</td>
+    <td>Interrupt 7 Routine</td>	
+    <td>14848 - 15871</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>31 - 32</td>
+    <td>Interrupt 8 Routine</td>	
+    <td>15872 - 16895</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>33 - 34</td>
+    <td>Interrupt 9 Routine</td>	
+    <td>16896 - 17919</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>35 - 36</td>
+    <td>Interrupt 10 Routine</td>	
+    <td>17920 - 18943</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>37 - 38</td>
+    <td>Interrupt 11 Routine</td>	
+    <td>18944 - 19967</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>39 - 40</td>
+    <td>Interrupt 12 Routine</td>	
+    <td>19968 - 20993</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>41 - 42</td>
+    <td>Interrupt 13 Routine</td>	
+    <td>20992 - 22015</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>43 - 44</td>
+    <td>Interrupt 14 Routine</td>	
+    <td>22016 - 23039</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>45 - 46</td>
+    <td>Interrupt 15 Routine</td>	
+    <td>23040 - 24063</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>47 - 48</td>
+    <td>Interrupt 16 Routine</td>	
+    <td>24064 - 25087</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>49 - 50</td>
+    <td>Interrupt 17 Routine</td>	
+    <td>25088 - 26111</td>
+    <td>1024</td>
+  </tr>
+   <tr>							
+    <td>51 - 52</td>
+    <td>Interrupt 18 Routine</td>	
+    <td>26112 - 27135</td>
+    <td>1024</td>
+  </tr>
+  <tr>							
+    <td>53 - 54</td>
+    <td>Module 0</td>	
+    <td>27136 - 28159</td>
+    <td>1024</td>
+  </tr>
+  <tr>							
+    <td>55 - 56</td>
+    <td>Module 1</td>	
+    <td>28160 - 29183</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>57 - 58</td>
+    <td>Module 2</td>	
+    <td>29184 - 30207</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>59 - 60</td>
+    <td>Module 3</td>	
+    <td>30208 - 31231</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>61 - 62</td>
+    <td>Module 4</td>	
+    <td>31232 - 32255</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>63 - 64</td>
+    <td>Module 5</td>	
+    <td>32256 - 33279</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>65 - 66</td>
+    <td>Module 6</td>	
+    <td>33280 - 34303</td>
+    <td>1024</td>    
+  </tr>
+   <tr>							
+    <td>67 - 68</td>
+    <td>Module 7</td>	
+    <td>34304 - 35327</td>
+    <td>1024</td>
+  </tr>
+  
+  <tr>
+    <td>69 - 70</td>
+    <td>INIT Program</td>	
+    <td>35328 - 36351</td>
+    <td>1024</td>
+  </tr>
+  
+  <tr>
+    <td>71 - 72</td>
+    <td>Shell Program</td>	
+    <td>36352 - 37375</td>
+    <td>1024</td>
+  </tr>
+  
+  <tr>
+    <td>73 - 74</td>
+    <td>Idle Program</td>	
+    <td>37376 - 38399</td>
+    <td>1024</td>
+  </tr>
+    
+  <tr>
+    <td>75 - 127</td>
+    <td>User Programs</td>	
+    <td>38400 - 65535</td>
+    <td></td>
+  </tr>
+  
+  <tr>
+    <td></td>
+    <td></td>	
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+<br>
 </div>
 </div>
 </div>
