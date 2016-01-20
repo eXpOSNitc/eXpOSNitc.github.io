@@ -128,8 +128,8 @@
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory. It has an initial value of 0 and is updated whenever the scheduler is called. TICK is reset to 0 when a process is swapped out or in.</li>
-                   <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call. In the present version of eXpOS, the pid is set to the index of the entry in process table.</li>
+                   <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory/ swapped state. It has an initial value of 0 and is updated whenever the scheduler is called. TICK is reset to 0 when a process is swapped out or in.</li>
+                   <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call. In the present version of eXpOS, the pid is set to the index of the entry in the process table.</li>
                   <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call.</li>
                   <li><b>USERID </b>(1 word) - Userid of the currently logged in user. This field is set by Fork System Call.</li>
                   <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. The details of the states are explained below. </li>
@@ -161,11 +161,11 @@
                           <li>(READY,___) – The process is ready to be scheduled.</li>
                           <li>(WAIT_PROCESS,WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID. This field is set by WAIT system call. </li>
                           <li>(WAIT_FILE, FTENTRY) - The process is blocked for a file whose file status table entry index is FTENTRY. </li>
-                          <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process.  </li>
+                          <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process. The disk interrupt handler changes the state from (WAIT_DISK,___) to (READY,___), after it has completed the disk transfer. </li>
                           <li>(WAIT_SEMAPHORE,SEMID) - The process is waiting for a semaphore (whose descriptor is SEMID) that was locked by some other process. </li>
                           <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>                          
                           <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for disk buffer of index BUFFERID to be unlocked. </li>
-                          <li>(WAIT_TERMINAL,___) – The process is waiting for either a Read from Terminal, which it has issued, to be completed or if the terminal is blocked by some other process.  </li>
+                          <li>(WAIT_TERMINAL,___) – The process is waiting for one of the following: a) a Read from Terminal, which it has issued OR b)to be completed or if the terminal is blocked by some other process.  The terminal interrupt handler changes the state from (WAIT_TERMINAL,___) to (READY,___), after it has completed the terminal read/write.</li>
                       </ul>
                               <p>Process states and transitions can be viewed <a href="state_diag.html">here</a>.</p>
                           </div>
@@ -274,15 +274,14 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore). In case of a file, the  second word stores the LSEEK position of the open instance of that file. The LSEEK position indicates the location in the file where a word is read from or written to corresponding to the open instance of the file. In case of a semaphore, the second word is unused.</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore).</p>
  
  
  <p>The per-process resource table entry has the following format. </p>
                <table class="table table-bordered" >
                   <tr>
-                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>
-                      <td style="border: 1px solid black"><font color="red">Unused (1 word)</font></td>
-                      
+                      <td style="border: 1px solid black">Resource Identifier (1 word)</td>                  
+                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>                      
                   </tr>
               </table>
  <p>File descriptor, returned by Open system call, is the index of the per-process resource table entry for that open instance of the file.</p>

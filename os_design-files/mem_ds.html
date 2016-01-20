@@ -97,22 +97,22 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
  
- <!--=========== BEGIN file Table SECTION ================-->
+ <!--=========== BEGIN open file Table SECTION ================-->
     <section id="file_table">
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 >File Table</h2>
+              <h2 >Open File Table</h2>
                <br>
                <br>
-              <p>The File Table stores the information about all the files that are open while the OS is running.  It consists of MAX_OPENFILE_NUM (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_OPENFILE_NUM = 32 open files in the system at any time. </p>
+              <p>The Open File Table stores the information about all the files that are open while the OS is running.  It consists of MAX_OPENFILE_NUM (= 32 in the present eXpOS version) entries. Thus, there can be at most MAX_OPENFILE_NUM = 32 open files in the system at any time. </p>
               <p>
-              The Open system call creates an entry in the File table when a process opens a file.  If the file is opened again by some other process (or the same process), the Open system call a new entry is created in the file table.  The first field (Inode Index) of the File table entry for a file is set to the index of the Inode Table entry for the file. 
+              The Open system call creates an entry in the Open file table when a process opens a file.  If the file is opened again by some other process (or the same process), the Open system call a new entry is created in the open file table.  The first field (Inode Index) of the Open file table entry for a file is set to the index of the Inode Table entry for the file. 
                             
               <p>Each entry is of size 4 words of which last word is left unused.</p>
-              <p>Every entry of the File Table has the following format :</p>
+              <p>Every entry of the Open File Table has the following format :</p>
               <table class="table table-bordered  table-responsive" >
                   <tr >
                       <td style="border: 1px solid black">INODE INDEX</td>
@@ -124,7 +124,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>INODE INDEX </b> (1 word) - specifies the index of the entry for the file in the Inode table.</li>
-                   <li><b>OPEN INSTANCE COUNT </b> (1 word) - specifies the number of processes sharing the open instance of the file represented by this file table entry.</li>
+                   <li><b>OPEN INSTANCE COUNT </b> (1 word) - specifies the number of processes sharing the open instance of the file represented by this open file table entry.</li>
                    <li><b>LSEEK</b> (1 word) - specifies the position from which the next word is read from or written into in the file.</li>
                                       
                   <li><b>Unused</b> (1 word)</li>
