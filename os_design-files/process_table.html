@@ -108,7 +108,7 @@
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html" target="_blank">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 16.</p>
-              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 3 words are unused. Any entry of PT has the following fields:</p>
+              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 2 words are unused. Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">TICK</td>
@@ -123,6 +123,7 @@
                       <td style="border: 1px solid black">USER AREA SWAP STATUS</td>
                       <td style="border: 1px solid black">USER AREA PAGE NUMBER</td>
                       <td style="border: 1px solid black">KERNEL STACK POINTER</td>
+                      <td style="border: 1px solid black">USER STACK POINTER</td>                      
                       <td style="border: 1px solid black">PTBR</td>
                       <td style="border: 1px solid black">Unused</td>
                   </tr>
@@ -140,9 +141,10 @@
        		  <li><b>USER AREA SWAP STATUS</b> (1 word) - Indicates whether the user area of the process has been swapped (1) or not (0).</li>
                   <li><b>USER AREA PAGE NUMBER</b> (1 word) - Page number allocated for the user area of the process. </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the top of the kernel stack of the process. The <b>offset of this address within the user area</b> is stored in this field.</li>
+                  <li><b>USER STACK POINTER</b> (1 word) - Offset to the top of the user stack of the process when the process runs in kernel mode and the stack pointer is pointing to the kernel stack.</li>
                   <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
 
-		  <li><b>Unused</b> (3 words)</li>
+		  <li><b>Unused</b> (2 words)</li>
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
