@@ -232,9 +232,9 @@
  
  
         <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>Reference bit </b>- The reference bit for a page table entry is set to 0 by the OS when the page is loaded to memory and the page table initialized. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine. This bit is used by the page replacement algorithm of the OS.  </li>
+                   <li><b>Reference bit </b>- The reference bit for a page table entry is set to 0 by the OS when the page is loaded to memory and the page table initialized. When a page is accessed by a running process, the corresponding reference bit is set to 1 by the machine hardware. This bit is used by the page replacement algorithm of the OS.  </li>
                    <li><b>Valid bit </b> - This bit is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. The OS expects the architecture to generate a page fault if any process attempts to access an invalid page.  </li>
-                 <li><b>Write bit </b> - This bit is set to 1 by the OS if the page can be written and is set to 0 otherwise. The OS expects the architecture to generate an exception if any process attempts to modify a page whose write bit is not set. </li>
+                 <li><b>Write bit </b> - This bit is set to 1 by the OS if the page can be written and is set to 0 otherwise. The OS expects the architecture to generate an exception if any process, while running in the user mode, attempts to modify a page whose write bit is not set. </li>
                   
                   </ul>
                   <br>
@@ -287,14 +287,14 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the File Table (or Semaphore Table) entry for the file (or semaphore) and the resource identifier. The resource identifier indicates whether the resource opened by the process is a file (0) or a semaphore (1).</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the Open File Table (or Semaphore Table) entry for the file (or semaphore) and the resource identifier. The resource identifier indicates whether the resource opened by the process is a file (0) or a semaphore (1). Open system call sets the values of entries in this table for a file, and the Semget system call stores the .</p>
  
  
  <p>The per-process resource table entry has the following format. </p>
                <table class="table table-bordered" >
                   <tr>
                       <td style="border: 1px solid black">Resource Identifier (1 word)</td>                  
-                      <td style="border: 1px solid black">Index of File Table/ Semaphore Table entry (1 word)</td>                      
+                      <td style="border: 1px solid black">Index of Open File Table/ Semaphore Table entry (1 word)</td>                      
                   </tr>
               </table>
  <p>File descriptor, returned by Open system call, is the index of the per-process resource table entry for that open instance of the file.</p>
@@ -311,10 +311,9 @@
                           <div class="panel-body">
                               <p>The OS maintains a kernel stack for each process, which is used by the process when it enters kernel mode. When user process executing in user mode, upon encountering an exception or an interrupt, enters into kernel mode, a stack switch occurs from user to kernel.  The machine state is stored in the kernel stack. The machine state consists of the following : </p><br>
                               <table width="10%" >
-                  	      <tr>
-                      	      <tr><td align="center" style="border: 1px solid black">SP</td></tr>
-                              <tr><td align="center" style="border: 1px solid black">BP</td></tr>
-                              <tr><td align="center" style="border: 1px solid black">IP</td></tr>
+                  	      <tr>                      	      
+                  	      <tr><td align="center" style="border: 1px solid black">IP</td></tr>
+                              <tr><td align="center" style="border: 1px solid black">BP</td></tr>                              
                               <tr><td align="center" style="border: 1px solid black">PTBR</td></tr>
                               <tr><td align="center" style="border: 1px solid black">PTLR</td></tr>
                               <tr><td align="center" style="border: 1px solid black">REGISTERS</td></tr>
