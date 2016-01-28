@@ -459,23 +459,24 @@ SPL modules by including the definition in the <i>constants.spl</i> file. If a c
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>ireturn</b>;</tt><br/></p>
                     <p>The <b>ireturn</b> is generally used at the end of an interrupt code. This statement translates to <a href="../arch_spec-files/instruction_set.html" target="_blank">IRET machine instruction</a>.</p>
                 
-                <h3>Readi/Print Statements</h3>
-				<p>	The <b>readi</b> and <b>print</b> statements are used as standard input and output statements. The <b>readi</b> statement reads a value from the standard input device and stores it in a register. 
+                <h3>Read/Print Statements</h3>
+				<p>	The <b>read</b> and <b>print</b> statements are used as standard input and output statements.  The <b>read</b> statement initiates the transfer of a string from the console to the standard input port P0 using the IN machine instruction. The machine proceeds to execute the next instruction without waiting for the completion of the string transfer.</p>
 					<p><code>Note :</code> String read or printed must not exceed 10 characters.</p>
 					The <b>print</b> statement outputs value of a register or an integer/string literal or value of a memory location.<br/>
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>
-				    <p><b>readi</b> Register;<br/>
+				    <p><b>read</b>;<br/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;<b>print</b> Register / Number / String / Expression / [Address];</tt></p>   
 
                 
-                <h3>Read Statement</h3>
-				<p>	The <b>read</b> statement initiates the transfer of a string from the console to the standard input port P0 using the IN machine instruction. The machine proceeds to execute the next instruction without waiting for the completion of the string transfer.</p>
+                <h3>Readi Statement</h3>
+				<p>	The <b>readi</b> statement reads a value from the standard input device and stores it in a register using the INI machine instruction (which can be used only in debug mode).</p>
 					<p><code>Note :</code> String read must not exceed 10 characters.</p>
 					
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b>
-				    <b>read</b>;<br/></tt>  
+                      <b>readi</b> Register;<br/>
+                    </tt>  
                                 
                     <h3>Load/Store Statements</h3>
 				<p>	Loading and storing between the disk and the memory of the XSM machine can be accomplished using <b>load</b> and <b>store</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
