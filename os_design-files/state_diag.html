@@ -120,37 +120,39 @@
               <p style="text-indent: 6em;">RUNNING -> WAIT_TERMINAL : The process is either waiting for access to the terminal or for data to be inputted through terminal.</p>
               <p style="text-indent: 6em;">RUNNING -> WAIT_DISK : The process is either waiting for access to the disk or for the disk operation to finish.</p>
                
-               <p style="text-indent: 4em;"><b>C</b></p>
+               <p style="text-indent: 4em;"><b>C</b> :</p>
               <p style="text-indent: 6em;">RUNNING -> WAIT_SEMAPHORE : The semaphore which the process is trying to use, is found to be locked.</p>
                <p style="text-indent: 6em;">RUNNING -> WAIT_FILE : The file which the process is trying to read/write, is found to be locked.</p>
                <p style="text-indent: 6em;">RUNNING -> WAIT_BUFFER : The buffer which the process is trying to use, is found to be locked.</p>
                <p style="text-indent: 6em;">RUNNING -> WAIT_MEM : The process requires a free memory page but there are none in the memory.</p>
               
-               <p style="text-indent: 4em;"><b>D</b></p>
+               <p style="text-indent: 4em;"><b>D</b> :</p>
               <p style="text-indent: 6em;">RUNNING -> WAIT_PROCESS : The process is waiting for another process to either exit or to signal it.</p>
                
                
-                <p style="text-indent: 4em;"><b>E</b></p>
+                <p style="text-indent: 4em;"><b>E</b> :</p>
               <p style="text-indent: 6em;">RUNNING -> Exit from system : The process has either completed execution or has invoked an Exit System Call.</p>
               
-              <p style="text-indent: 4em;"><b>F</b></p>
+              <p style="text-indent: 4em;"><b>F</b> :</p>
               <p style="text-indent: 6em;">WAIT_SEMAPHORE -> READY : The semaphore for which the process was waiting, is now unlocked.</p>
                <p style="text-indent: 6em;">WAIT_FILE -> READY : The file for which the process was waiting, is now unlocked.</p>
                <p style="text-indent: 6em;">WAIT_BUFFER -> READY : The buffer for which the process was waiting, is now unlocked.</p>
                <p style="text-indent: 6em;">WAIT_MEM -> READY : There are free pages in memory.</p>
                                                           
-               <p style="text-indent: 4em;"><b>G</b></p>
+               <p style="text-indent: 4em;"><b>G</b> :</p>
               <p style="text-indent: 6em;">WAIT_TERMINAL -> READY : The input data has been read from terminal and terminal is free to be used by any process.</p>
                <p style="text-indent: 6em;">WAIT_DISK -> READY : The disk operation is complete.</p>
                              
-               <p style="text-indent: 4em;"><b>H</b></p>
+               <p style="text-indent: 4em;"><b>H</b> :</p>
               <p style="text-indent: 6em;">WAIT_PROCESS -> READY : The process has either received a signal from the process it was waiting for or the latter has exited the system.</p>                                                        
                
-               <p style="text-indent: 4em;"><b>I</b></p>
+               <p style="text-indent: 4em;"><b>I</b> :</p>
                <p style="text-indent: 6em;">RUNNING -> READY : Context switch caused by the timer interrupt routine.<p>
-				   				   				   				   			   
+				   				   				   				   			    
                
          </div>
+         
+         <p>Note: The process can go from any state (blocked or ready) to the swapped state. But any process in swapped state will be scheduled only if it has brought to the ready state.</p>
 		</div>
 		</div>
 	</section>
