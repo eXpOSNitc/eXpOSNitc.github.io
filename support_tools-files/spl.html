@@ -151,10 +151,10 @@ eXpOS package is designed to follow the programming conventions specified in thi
 				<pre><table style="text-align:center; width:50%;">
 					<tr><td>alias </td> <td>define</td> <td>encrypt</td> <td>breakpoint</td> <td>inline</td></tr>
                     <tr><td>halt</td> <td>goto</td> <td>call</td> <td>return</td> <td>ireturn</td></tr>
-                    <tr><td>backup</td> <td>restore</td> <td>read</td> <td>reada</td> <td>print</td></tr>
-                    <tr><td>load</td> <td>loada</td> <td>store</td> <td>storea</td> <td>while</td></tr>
-                    <tr><td>do</td> <td>endwhile</td> <td>break</td> <td>continue</td> <td>if</td></tr>
-					<tr><td>then</td> <td>else </td> <td>endif</td> </tr>
+                    <tr><td>backup</td> <td>restore</td> <td>readi</td> <td>read</td> <td>print</td></tr>
+                    <tr><td>loadi</td> <td>load</td> <td>store</td> <td>do</td><td>while</td></tr>
+                    <tr><td>endwhile</td> <td>break</td> <td>continue</td> <td>if</td><td>then</td> </tr>
+					<tr><td>else </td> <td>endif</td> </tr>
                     
 				</table></pre>
 				</tt></p>
@@ -459,44 +459,42 @@ SPL modules by including the definition in the <i>constants.spl</i> file. If a c
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>ireturn</b>;</tt><br/></p>
                     <p>The <b>ireturn</b> is generally used at the end of an interrupt code. This statement translates to <a href="../arch_spec-files/instruction_set.html" target="_blank">IRET machine instruction</a>.</p>
                 
-                <h3>Read/Print Statements</h3>
-				<p>	The <b>read</b> and <b>print</b> statements are used as standard input and output statements. The <b>read</b> statement reads a value from the standard input device and stores it in a register. 
+                <h3>Readi/Print Statements</h3>
+				<p>	The <b>readi</b> and <b>print</b> statements are used as standard input and output statements. The <b>readi</b> statement reads a value from the standard input device and stores it in a register. 
 					<p><code>Note :</code> String read or printed must not exceed 10 characters.</p>
 					The <b>print</b> statement outputs value of a register or an integer/string literal or value of a memory location.<br/>
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>
-				    <p><b>read</b> Register;<br/>
+				    <p><b>readi</b> Register;<br/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;<b>print</b> Register / Number / String / Expression / [Address];</tt></p>   
 
                 
-                <h3>Reada Statement</h3>
-				<p>	The <b>reada</b> statement initiates the transfer of a string from the console to the standard input port P0 using the IN machine instruction. The machine proceeds to execute the next instruction without waiting for the completion of the string transfer.</p>
+                <h3>Read Statement</h3>
+				<p>	The <b>read</b> statement initiates the transfer of a string from the console to the standard input port P0 using the IN machine instruction. The machine proceeds to execute the next instruction without waiting for the completion of the string transfer.</p>
 					<p><code>Note :</code> String read must not exceed 10 characters.</p>
 					
                      
                     <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b>
-				    <b>reada</b>;<br/></tt>  
+				    <b>read</b>;<br/></tt>  
                                 
-                    <h3>Loada/Storea Statements</h3>
-				<p>	Loading and storing between the disk and the memory of the XSM machine can be accomplished using <b>loada</b> and <b>storea</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
-				<p><b>loada</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
-				<b>storea</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
-				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
-				
-                <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
-				<p><b>loada</b> (page_number, block_number);<br/>
-					&nbsp;&nbsp;&nbsp;&nbsp;<b>storea</b> (page_number, block_number);</tt></p>
-                
-                
-                <h3>Load/Store Statement</h3>
-				<p>	Loading and storing between the disk and the memory of the XSM machine can also be accomplished using <b>load</b> and <b>store</b> statements in SPL. But here, the machine will continue execution of the next instruction only after the block transfer is completed.
-                    <p><b>load</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
+                    <h3>Load/Store Statements</h3>
+				<p>	Loading and storing between the disk and the memory of the XSM machine can be accomplished using <b>load</b> and <b>store</b> statements in SPL. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. 
+				<p><b>load</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory. 
 				<b>store</b> statement stores the page specified by <i>page_number</i> in the memory to the the block specified by the <i>block_number</i> in the disk.
 				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
 				
                 <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
 				<p><b>load</b> (page_number, block_number);<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;<b>store</b> (page_number, block_number);</tt></p>
+                
+                
+                <h3>Loadi Statement</h3>
+				<p>	Loading from the disk to the memory of the XSM machine can also be accomplished using <b>loadi</b> statement in SPL. But here, the machine will continue execution of the next instruction only after the block transfer is completed.
+                    <p><b>loadi</b> statement loads the block specified by <i>block_number</i> from the disk to the the page specified by the <i>page_number</i> in the memory.
+				The <i>page_number</i> and <i>block_number</i> can be specified using arithmetic expressions.</p>
+				
+                <tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b></p>     
+				<p><b>loadi</b> (page_number, block_number);<br/></tt></p>
           
                  <h3>Backup Statement</h3>
            <p>The <b>backup</b> statement is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed to by SP in the order : BP, PTBR, PTLR, R0 - R19. The value of SP gets incremented accordingly.</p>
