@@ -210,29 +210,29 @@ call does not fail. The only data structure updated is <a href="process_table.ht
              <p><i>Description</i>: To lock a file so that other applications running concurrently are not
 permitted to access the file till the calling process unlocks it. If the file is
 already locked by some other process, the system call waits for the file to
-be unlocked, locks it, and returns to the calling process. Root and Executable files cannot be locked. The data structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#file_table" target="_blank">File Table</a>.
+be unlocked, locks it, and returns to the calling process. Root and Executable files cannot be locked. The data structures updated are <a href="process_table.html" target="_blank">Process Table</a> and <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.
 </p>
 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
-             <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
+             <p>Find the <a href="mem_ds.html#file_table">Open File Table</a> index from the Per-Process Resource Table entry.</p>
 <p><a data-toggle="collapse"   href="#collapse100">If the file descriptor corresponds to Root file, return -2.</a></p>
 <div id="collapse100" class="panel-collapse collapse">
   
 
 
- <p style=" text-indent: 4em;">Using File table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry and check the file type. </p>
+ <p style=" text-indent: 4em;">Using Open File Table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry and check the file type. </p>
 <br>
 </div>
             
               
-              <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table">File Table</a>*/</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table">File Table</a> index of the locked file. </p>
+              <p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table">Open File Table</a>*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table">Open File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Call the Scheduler.</p>
 
              <p> <b>endwhile</b></p>
-             <p> Change the ULock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>
+             <p> Change the ULock field of the Open File Table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>
             
              <p>Return 0. &nbsp;&nbsp;/* Success */</p>
 
@@ -274,11 +274,11 @@ be unlocked, locks it, and returns to the calling process. Root and Executable f
              <div><h4>Algorithm:</h4></div>
              <p><b>If</b> file descriptor does not correspond to a valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
 
-            <p>Find the <a href="mem_ds.html#file_table">File Table</a> index from the Per-Process Resource Table entry.</p>
-              <p><b>If</b> file is locked. /* check the KLock and ULock fields in the <a href="mem_ds.html#file_table">File Table</a>*/</p>
+            <p>Find the <a href="mem_ds.html#file_table">Open File Table</a> index from the Per-Process Resource Table entry.</p>
+              <p><b>If</b> file is locked. /* check the KLock and ULock fields in the <a href="mem_ds.html#file_table">Open File Table</a>*/</p>
               <p style=" text-indent: 4em;"><b>If</b> current process has not  locked the file, return -2. &nbsp;&nbsp;/* The file is locked by some other process.*/</p>
               <p style=" text-indent: 4em;">Set the ULock to -1. &nbsp;&nbsp;/* Unlock the file. */</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (<a href="constants.html" target="_blank">WAIT_FILE</a>, file table index of the locked file). </p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state">state</a> to (READY, _ ) for the processes in the state (<a href="constants.html" target="_blank">WAIT_FILE</a>, Open File Table index of the locked file). </p>
               
 			
              <p>Return 0.&nbsp;&nbsp;/* Success */</p>

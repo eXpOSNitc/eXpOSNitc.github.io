@@ -131,7 +131,7 @@
                                                     
                                                 </table>
                                                 <p><i>Description</i> :  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file. Root and Executable files cannot be written.</p>  
-                                                <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>, <a href="mem_ds.html#file_table" target="_blank">File Table</a> and <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
+                                                <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> and <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
 
                                                 <br>
@@ -146,18 +146,18 @@
 <div id="collapse100" class="panel-collapse collapse">
   
 
-<p style=" text-indent: 4em;">Using the file descriptor, get the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry. </p>
- <p style=" text-indent: 4em;">Using File table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry. Check for the file type. </p>
+<p style=" text-indent: 4em;">Using the file descriptor, get the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry. </p>
+ <p style=" text-indent: 4em;">Using Open File Table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry. Check for the file type. </p>
 <br>
 </div>
-<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
+<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
  <p> <b>If</b> lseek is equal to <a href="constants.html" target="_blank">MAX_FILE_SIZE</a> - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded; Don't forget to change mode flag */</p>
  <p><a data-toggle="collapse"   href="#collapse8">Find the block and position in the block to which data has to be written.</a></p>
 <div id="collapse8" class="panel-collapse collapse">
   
 
 <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the index of the block to be read*/</p>
- <p style=" text-indent: 4em;">Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the File Table entry.</p>
+ <p style=" text-indent: 4em;">Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry.</p>
 <p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
 <p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the position to be read from.*/</p>
 
@@ -168,11 +168,11 @@
 <br>
 </div>
 
-<p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">File Table</a>*/</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">File Table</a> index of the locked file. </p>
+<p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>*/</p>
+              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> index of the locked file. </p>
               <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
              <p> <b>endwhile</b>&nbsp;&nbsp;/* Waiting for the file to be unlocked */</p>
-<p> Change the KLock field of the file table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
+<p> Change the KLock field of the Open File Table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
 
  <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % <a href="constants.html" target="_blank">MAX_BUFFER </a>gives the index of the buffer to which the block is mapped.*/ </p>
 <p><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
@@ -223,9 +223,9 @@
 </div>
 <p><a data-toggle="collapse"   href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
 <div id="collapse6" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">File Table</a> entry to -1.</p>
+<p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry to -1.</p>
 <p style=" text-indent: 4em;">2. <b>If</b> the ULock is not acquired by the current PID &nbsp;&nbsp;/* Do not wake up the processes if the current process has locked the file. */</p> 
-<p style=" text-indent: 8em;">Change the state to (<a href="constants.html" target="_blank">READY</a>, __ ) for the processes in the state (WAIT_FILE, index of the File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
+<p style=" text-indent: 8em;">Change the state to (<a href="constants.html" target="_blank">READY</a>, __ ) for the processes in the state (WAIT_FILE, index of the Open File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
 </div>
 <p>Return 0. &nbsp;&nbsp;/* success */</p>
  
