@@ -199,7 +199,7 @@
                                         <div id="collapse3" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                              <p>Logical instructions are used for comparing values in registers. Strings can also be compared according to the lexicographic ordering of ASCII. The logical instructions are LT, GT, EQ, NE, GE and LE.</p>
+                                              <p>Logical instructions are used for comparing values in registers. Strings can also be compared according to the lexicographic ordering of ASCII. If one of the operands is a string, the other operand will also be considered as a string. The logical instructions are LT, GT, EQ, NE, GE and LE.</p>
 <br>
 <b>LT, GT, EQ, NE, GE, LE</b><br>
 <i>Syntax</i> : OP Ri, Rj<br>
@@ -349,20 +349,42 @@
                             <div class="panel-body">
                                 <p>Privileged instructions can be executed only in the kernel mode (both priviliged instructions and unpriviliged instructions can be executed in the kernel mode). It should be noted that all the addresses in the kernel mode should be <b>physical addresses</b>, whereas the user mode uses <b>logical addresses</b>, with address translation done using the <a href="paging_hardware.html" target="_blank" >Paging hardware</a>. Privileged Instructions are:</p>
                          <!--start privileged instructions --->   
-                              <br>                             
-                           <!-- load-->
+                              <br>     
+
+                           <!-- loadi-->
                                 <div class="panel-group" >
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                 <a data-toggle="collapse"  href="#collapse13">LOAD</a>
+                                                 <a data-toggle="collapse"  href="#collapse13">LOADI</a>
                                             </h4>
                                         </div>
                                         <div id="collapse13" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
+                                                <p> <i>Syntax</i> : LOADI pagenum blocknum</p>
+                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. <b>The machine will wait for the disk transfer to complete and continue execution of the next instruction only after the block transfer is completed by the disk controller.</b></p>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end loadi-->
+     
+                           
+                         <!-- load-->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse16">LOAD</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse16" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
                                                 <p> <i>Syntax</i> : LOAD pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction loads the disk block specified by blocknum to the memory page  specified by pagenum. Blocknum and pagenum should be numbers or registers containing numbers. <b>The machine will continue execution of the next instruction only after the block transfer is completed by the disk controller.</b></p>
+                                                <p><i>Semantics</i> : This instruction initiates the transfer of the disk block specified by blocknum to the memory page specified by pagenum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html" target="_blank" > disk interrupt</a> when the transfer is completed. </p>
 
                                             </div>
                                         </div>
@@ -375,61 +397,40 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                 <a data-toggle="collapse"  href="#collapse14">STORE</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapse14" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                
-                                                <p> <i>Syntax</i> : STORE blocknum pagenum</p>
-                                                
-                                                <p><i>Semantics</i> : This instruction stores the memory page specified by pagenum to the disk block specified by blocknum. Blocknum and pagenum should be numbers or registers containing numbers. The machine will continue execution of the next instruction only after the block transfer is completed by the disk controller.</p>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                         <!--end store-->
-     
-                         <!-- loada-->
-                                <div class="panel-group" >
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                 <a data-toggle="collapse"  href="#collapse16">LOADA</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapse16" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                
-                                                <p> <i>Syntax</i> : LOADA pagenum blocknum</p>
-                                                <p><i>Semantics</i> : This instruction initiates the transfer of the disk block specified by blocknum to the memory page specified by pagenum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers. The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html" target="_blank" > disk interrupt</a> when the transfer is completed. </p>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                         <!--end loada-->
-     
-                         <!-- storea-->
-                                <div class="panel-group" >
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                 <a data-toggle="collapse"  href="#collapse15">STOREA</a>
+                                                 <a data-toggle="collapse"  href="#collapse15">STORE</a>
                                             </h4>
                                         </div>
                                         <div id="collapse15" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p> <i>Syntax</i> : STOREA blocknum pagenum</p>
+                                                <p> <i>Syntax</i> : STORE blocknum pagenum</p>
                                                 <p><i>Semantics</i> : This instruction initiates the transfer of the memory page specified by pagenum to the disk block specified by blocknum, using the disk controller. Blocknum and pagenum should be numbers or registers containing numbers.  The machine proceeds to execute the next instruction without waiting for the completion of the block transfer. The disk controller raises the <a href="interrupts_exception_handling.html" target="_blank" >disk interrupt</a> when the transfer is completed. </p>
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                         <!--end storea-->
+                         <!--end store-->
+
+                        <!-- encrypt-->
+                                <div class="panel-group">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse22">ENCRYPT</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse22" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <p> <i>Syntax</i> : ENCRYPT Ri</p>
+                                                <p><i>Semantics</i> : This instruction replaces the value in the register Ri with its encrypted value. The details of the encryption scheme used is left unspecified.</p>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end encrypt-->        
                          
                          <!-- backup-->
                                 <div class="panel-group">
@@ -465,14 +466,15 @@
                                                 
                                                 <p> <i>Syntax</i> : RESTORE</p>
                                                 <p><i>Semantics</i> : This instruction is used to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, PTLR, PTBR, BP. The value of SP gets decremented accordingly.  
-</p>
+                                                </p>
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                          <!--end restore-->
-<!-- backup-->
+                          
+                        <!-- backup-->
                                 <div class="panel-group">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -484,18 +486,17 @@
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : PORT Ri, Pj<br></p>
-<p><i>Semantics</i> : Transfers the contents of port Pj to register Ri. </p>
-						<p> <i>Syntax</i> : PORT Pi, Rj<br></p>
-<p><i>Semantics</i> : Transfers the contents of register Rj to port Pi. </p>
+                                                <p><i>Semantics</i> : Transfers the contents of port Pj to register Ri. </p>
+						                                    <p> <i>Syntax</i> : PORT Pi, Rj<br></p>
+                                                <p><i>Semantics</i> : Transfers the contents of register Rj to port Pi. </p>
                                               
-
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                          <!--end backup-->
 
-                          <!-- input-->
+                          <!-- input asynchronous-->
                                 <div class="panel-group" >
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -506,16 +507,35 @@
                                         <div id="collapse7" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-
-<p><i>Syntax</i> : IN<br></p>
-<p><i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the port P0 (which is reserved for the console input) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.</p>
+                                              <p><i>Syntax</i> : IN<br></p>
+                                              <p><i>Semantics</i> : IN initiates reading a word from the standard console. The machine proceeds to the execution of the next instruction without waiting for the console read to complete. When a word is read from the console, the console controller stores the word to the port P0 (which is reserved for the console input) and raises the <a href="interrupts_exception_handling.html" target="_blank" >console interrupt</a>.</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                         <!--end input-->
+                         <!--end input asynchronous-->
 
-                          <!-- output-->
+                        <!-- input immediate-->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapseIN">INI</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseIN" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                              <p><i>Syntax</i> : INI <br></p>
+                                              <p><i>Semantics</i> : INI initiates reading a word from the standard console. <b>This instruction gets enabled in the debug mode only.</b> The machine waits for the console read to complete before proceeding to the execution of the next instruction. When a word is read from the console, the console controller stores the word to the port P0. Console interrupt is not raised here.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end input immediate-->
+                                
+
+                          <!-- output -->
                                 <div class="panel-group">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -526,14 +546,15 @@
                                         <div id="collapse11" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-<p><i>Syntax</i> : OUT<br></p>
-<p><i>Semantics</i> : Transfers the contents of P1 to the standard output immediately.</p>
-<br>
+                                                <p><i>Syntax</i> : OUT<br></p>
+                                                <p><i>Semantics</i> : Transfers the contents of P1 to the standard output immediately.
+                                                </p>
+                                                <br>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                         <!--end input/output-->
+                         <!--end output-->
 
                          <!-- iret-->
                                 <div class="panel-group" >
