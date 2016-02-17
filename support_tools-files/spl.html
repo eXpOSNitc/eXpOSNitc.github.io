@@ -252,75 +252,12 @@ eXpOS package is designed to follow the programming conventions specified in thi
                                 <h3>Predefined Constants</h3>
 				<p>	SPL provides a set of predefined constants defined in the file <b>constants.spl</b>. A constant defined in an SPL module will be visible only inside the module. </p>
 				<p>
-  The standard SPL implementation comes with a set of pre-defined constants specifically tuned
-for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html">here</a>.
+The standard SPL implementation comes with a set of pre-defined constants <a href="./constants.html" target="_blank">(see here)</a> specifically tuned for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html" target="_blank">here</a>.
 				</p>
  	
- 				
-				<p>The predefined set of constants provided in SPL are:</p>
-                                <table class="table table-bordered" style="text-align: center;">
-                <tr class="success">
-                                        <th style="text-align: center;">Name</th>
-                                        <th style="text-align: center;">Default Value</th>
-                                        <th style="text-align: center;">Comments</th>
-                                    </tr>
-                    <tr> <td>INODE_TABLE</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>DISK_FREE_LIST</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>ROOT_FILE</td> 	<td>...</td><td></td> </tr> 
-                    <tr> <td>USER_TABLE</td> 	<td>...</td><td></td> </tr>  
-                    <tr> <td>PROCESS_TABLE</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>FILE_TABLE</td> 	<td>...</td><td></td></tr>  
-                    <tr> <td>SEMAPHORE_TABLE</td> 	<td>...</td><td></td> </tr> 
-                    <tr> <td>DISK_STATUS_TABLE</td> 	<td>...</td><td></td> </tr>  
-                    <tr> <td>BUFFER_TABLE</td> 	<td>...</td><td></td> </tr> 
-                    <tr> <td>SYSTEM_STATUS_TABLE</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>TERMINAL_STATUS_TABLE</td> 	<td>...</td><td></td> </tr> 
-                    <tr> <td>MEMORY_FREE_LIST</td> 	<td>...</td><td></td> </tr>   
-                    <tr> <td>EXCEPTION</td> 	<td>...</td><td></td> </tr>
-					<tr> <td>TIMER</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>DISK</td> 	<td>...</td><td></td> </tr>  
-                    <tr> <td>CONSOLE</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>INT_4</td> 	<td>...</td><td>(Create, 1)<code><sup>*</sup></code>, (Delete, 4), (Seek, 6)</td> </tr>
-                    <tr> <td>INT_5</td> 	<td>...</td><td>(Open, 2), (Close,3)</td> </tr>
-                    <tr> <td>INT_6</td> 	<td>...</td><td>(Read, 7)</td> </tr>
-                    <tr> <td>INT_7</td> 	<td>...</td><td>(Write, 5)</td> </tr>
-                    <tr> <td>INT_8</td> 	<td>...</td><td>(Fork, 8)</td> </tr>
-                    <tr> <td>INT_9</td> 	<td>...</td><td>(Exec, 9)</td> </tr>
-                    <tr> <td>INT_10</td> 	<td>...</td><td>(Exit, 10)</td> </tr>
-                    <tr> <td>INT_11</td> 	<td>...</td><td>(Getpid, 11), (Getppid, 12), (Wait, 13), (Signal, 14)</td> </tr>
-                    <tr> <td>INT_12</td> 	<td>...</td><td>(FLock, 15), (FUnLock, 16)</td> </tr>
-                    <tr> <td>INT_13</td> 	<td>...</td><td>(Semget, 17), (Semrelease, 18)</td> </tr>
-                    <tr> <td>INT_14</td> 	<td>...</td><td>(SemLock, 19), (SemUnLock, 20)</td> </tr>
-                    <tr> <td>INT_15</td> 	<td>...</td><td>(Shutdown, 21)</td> </tr>
-                    <tr> <td>INT_16</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>INT_17</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>INT_18</td> 	<td>...</td><td>(Test, 99)</td> </tr>
-                    <tr> <td>MOD_0</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_1</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_2</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_3</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_4</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_5</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_6</td> 	<td>...</td><td></td> </tr>
-                    <tr> <td>MOD_7</td> 	<td>...</td><td></td> </tr>                
-                    <tr> <td>DISK_SWAP_AREA</td> 	<td>...</td><td></td> </tr>                
-					<!--tr> <td>SCRATCHPAD</td> 	<td>512</td> </tr>
-					<tr> <td>PAGE_TABLE</td> 	<td>1024</td> </tr>
-					<tr> <td>MEM_LIST</td> 		<td>1280</td> </tr>
-					<tr> <td>FILE_TABLE</td> 	<td>1344 </td> </tr>
-					<tr> <td>PROCESS_TABLE</td> 	<td>1536</td> </tr>
-					<tr> <td>INODE_TABLE</td>  <td>2560 </td> </tr>
-					<tr> <td>DISK_LIST</td> 	<td>3072 </td> </tr>
-					<tr> <td>EXCEPTION</td> 	<td>3584 </td> </tr>
-					<tr> <td>TIMER</td> 	<td>4608 </td> </tr>
-                    <tr> <td>DISK</td> 	<td>4608 </td> </tr>
-                    <tr> <td>CONSOLE</td> 	<td>4608 </td> </tr>
-					<tr> <td>INTERRUPT</td> 	<td>5632 </td> </tr>
-					<tr> <td>USER_PROG</td> 	<td>12800 </td> </tr>
-                    <tr> <td>DISK_BUFFER</td> 	<td>.... </td> </tr!-->              
-				</table>   
-                <code>*</code>(System Call Name, System Call Number)                
-                 <p>In addition to the above, users can define constants which are visible in all 
+ 			
+              
+                 <p>In addition, users can define constants which are visible in all 
 SPL modules by including the definition in the <i>constants.spl</i> file. If a constant defined in the <i>constants.spl</i> file is re-defined in a module, the local definition will override the global definition. 
 
 				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
