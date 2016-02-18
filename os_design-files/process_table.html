@@ -253,7 +253,10 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">USER AREA</h4>                          
                           <div class="panel-body">
-                              <p>The User Area of a process consists of the kernel stack, disk map table and per process resource table.</p>
+                              <p>Corresponding to each user process, the kernel maintains a seperate memory region (called the user area) for its own purposes.  
+The present version of eXpOS allocates one memory page per process as the user area.   A part of this space is 
+used to store the disk map table and the per process resource table of the process.  The rest of the memory allocated
+is used as a stack called the kernel stack of the process.  </p>
  
                              </div>
                         </div> 
@@ -287,7 +290,7 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of file opened (or a semaphore acquired) by the process, it stores the index of the Open File Table (or Semaphore Table) entry for the file (or semaphore) and the resource identifier. The resource identifier indicates whether the resource opened by the process is a file (0) or a semaphore (1). Open system call sets the values of entries in this table for a file, and the Semget system call stores the .</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of a file opened (or a semaphore acquired) by the process, it stores the index of the Open File Table (or Semaphore Table) entry for the file (or semaphore) is stored in this table. One word is used to store the resource identifier which indicates whether the resource opened by the process is a file (0) or a semaphore (1). Open system call sets the values of entries in this table for a file.</p>
  
  
  <p>The per-process resource table entry has the following format. </p>
@@ -309,7 +312,26 @@
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER PROCESS KERNEL STACK</h4>                          
                           <div class="panel-body">
-                              <p>The OS maintains a kernel stack for each process, which is used by the process when it enters kernel mode. When a user process executing in user mode encounters an exception or an interrupt, it enters into kernel mode and a stack switch occurs from user to kernel.  A part of the machine state is stored in the kernel stack as given below : </p><br>
+                              <p>A kernel module is executed in the execution context of a (user) process when either the user program executes a system 
+call or wnhen an interrupt/exeception occurs.  The kernel allocates a separate stack for each process 
+(called the kernel stack of the process) which is different from the stack used by the process while executing in the
+user mode (called the user stack).  Kernel modules use the space in the kernel stack for storing local data and do not
+use the user stack.  This is to avoid user "hacks" into the kernel using the application stack.</p>
+			      <p>In the case of a system call, the parameters to the system call will be stored in the application's stack by the application.
+Upon entering the kernel module (system call), the kernel will extract these parameters from the application's stack and then changes the 
+stack pointer to its own stack before further execution.   If a kernel module invokes other kernel modules while executing the 
+system call of the application, the same kernel stack will be used.   Since the application invokes the kernel module 
+voluntarily,it is the responsibility of the application to save the contents of its registers (except the 
+stack pointer and base pointer registers in the case of the XSM machine) before invoking the system call.</p>
+			      <p>In the case of an interrupt/exeception, the user process does not have control over the transfer to the kernel module 
+(interrupt/exception handler).  Hence the execution context of the user process (that is, values of the registers)
+must be saved by the kernel module before the kernel module uses the machine registers for other purposes so that the 
+machine state can be restored after completion of the interrupt/exception handler.  The kernel stack is used to store
+the execution context of the user process.  This context is restored before the return from the kernel module.  
+(For the implementation of eXpOS on the XSM architecture, the backup[LINK] and restore[LINK] instructions facilitate this).</p>
+			      <p>In addition to the above, if a kernel module invokes another kernel module, the parameters to the called module and the return
+values from the module are passed through the kernel stack.</p>
+                              <p>A part of the machine state is stored in the kernel stack as given below : </p><br>
                               <table style="margin-right:auto; margin-left:auto;" width="12%" >
                   	      <tr>                      	      
                   	      <tr><td align="center" style="border: 1px solid black">IP</td></tr>
