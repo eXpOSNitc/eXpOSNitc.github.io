@@ -120,18 +120,19 @@
                 <li> 
                     <b style="font-size:16px;color:#009100">(ii) </b><b><i>Syntax</i></b> : <tt>--disk=value</tt>
 				</br>
-              <b><i>Semantics</i></b> : This flag sets the number of instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+              <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024. Note that count begins only after a LOAD or STORE machine instruction gets executed.
 				</li>
                     <br/>
                   <li> 
                       <b style="font-size:16px;color:#009100">(iii) </b><b><i>Syntax</i></b> : <tt>--console=value</tt>
 				    </br>
-          <b><i>Semantics</i></b> : This flag sets the number of instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024.
+          <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024. Note that count begins only after a IN machine instruction gets executed.
 				</li>
                 <br/>
                 <li>
                     <b style="font-size:16px;color:#009100">(iv) </b><b><i>Syntax</i></b> : <tt>--debug</tt><br/>
-                    <b><i>Semantics</i></b> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Any BRKP instruction in the program will be ignored by the machine if this flag is not set. Further details are given in the section below.
+                    <b><i>Semantics</i></b> : This flag sets the machine into DEBUG mode when it encounters a BRKP machine instruction. Any BRKP instruction in the program will be ignored by the machine if this flag is not set. Further details are given in the section below. The machine instruction INI gets enabled only in DEBUG mode.
+
                 </li>
 				
     </ul>
