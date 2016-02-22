@@ -156,8 +156,153 @@
 
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
-                          <br>
+                          <p>
+                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated file system. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building XOS begins with understanding the underlying Filesystem (XFS) and its interface. In this stage, you will create an UNIX file and load it to the XFS disk using the XFS-Interface
+                          </p>
+                          <ol style="list-style-type:decimal;font-size:14px">
+                            <li>
+                              Run the XFS Interface 
+                              <br><br>
+                              <div>
+                                <pre>cd $HOME/myxos/xfs-interface
+./xfs-interface</pre>
+                              </div>
+                              This will take you to the <a href="support_tools-files/xfs-interface.html" target="_blank">xfs-interface prompt</a>. 
+                            </li>
+                            
+                            <br><br>
+                            <li>
+                              Start by formatting the disk in the XFS interface using <b>fdisk</b> command. Type the following commands in the xfs-interface prompt.
+                              <br><br>
+                              <div> 
+                                <pre># fdisk 
+# exit</pre>
+                              </div>
+                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myxos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System. See <a href="os_spec-files/eXpFS.html" target="_blank"> XFS Specification </a>
+                            </li>
 
+                            <br><br>
+                            <li>
+                              The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (Disk Free List is stored in disk block number 20). The output will be as follows: 
+                              <br><br>
+                              <div>   
+                                <pre>
+0    -   1  
+1    -   1  
+2    -   1  
+3    -   1  
+4    -   1  
+5    -   1  
+6    -   1  
+7    -   1  
+8    -   1  
+9    -   1  
+10   -   1  
+11   -   1  
+12   -   1  
+13   -   1  
+14   -   1  
+15   -   1  
+16   -   1  
+17   -   1  
+18   -   1  
+19   -   1
+20   -   1
+21   -   1
+22   -   1
+23   -   1
+24   -   1
+25   -   1
+.
+.
+No of Free Blocks = 443
+Total No of Blocks = 512</pre>
+                              </div>
+                              The first 69 blocks (blocks 0 to 68) are reserved for disk structures, OS routines and INIT program. See <a href="os_implementation.html" target="_blank">Disk Organization</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                            </li>
+
+                            <br><br>
+                            <li>Create a file in your UNIX machine with sample data.A sample data file is given below
+                              <br><br>
+                              <div>
+                                <pre>There is a place where the sidewalk ends
+And before the street begins,
+And there the grass grows soft and white,
+And there the sun burns crimson bright,
+And there the moon-bird rests from his flight
+To cool in the peppermint wind.</pre>
+                              </div>
+                              Save the file as <b>$HOME/myxos/sample.dat</b>
+                            </li>
+
+                            <br><br>
+                            <li> Load this data file ($HOME/myxos/sample.dat) to the XFS disk from your UNIX machine.  This can be done by the following commands
+                              <br><br>
+                              <div> 
+                                <pre>cd $HOME/myxos/xfs-interface
+  ./xfs-interface</pre>
+                              </div>
+                              This will take you to the xfs-interface prompt. Type the following commands in the xfs-interface prompt.
+                              <br><br>
+                              <div> 
+                                <pre># load --data $HOME/myxos/sample.dat</pre>
+                              </div>
+                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the 4 data blocks. An entry in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> will also be created for the file. Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding in the roadmap.
+                            </li> 
+
+                            <br><br>
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to 1 UNIX file (say <i>$HOME/myxos/inode_table.txt</i>).
+                            <br><br>
+                            <div>
+                              <pre># copy 3 4 $HOME/myxos/fat_block.txt
+  # exit</pre>
+                            </div>
+                            </li> 
+
+                            <br><br>
+                            <li> Now check thhe inode table entry for the file <tt>sample.dat</tt> and find the block numbers of Data Blocks.
+                            </li>
+
+                            <br><br>
+                            <li> Now check the contents of the disk free list. 1 more entry will be marked as used and this corresponds to the Data Block 1 of <tt>sample.dat</tt> .
+                            </li>
+                            
+                            <br><br>
+                            <li>
+                              Copy the data blocks from the XFS disk and display it as a UNIX file <tt>$HOME/myxos/data.txt</tt>. 
+                              <br><br>
+                              <div>
+                                <pre> # copy 69 69 $HOME/myxos/data.txt</pre>
+                              </div>    
+                              You will get back the contents of the file <tt>$HOME/myxos/sample.dat</tt> in <tt>$HOME/myxos/data.txt</tt>. However in <tt>$HOME/myxos/data.txt</tt>, each word is displayed in a line. A  word in XFS is 16 characters long. Sample <tt>data.txt</tt> file is shown below.
+                              <br><br>
+                              <div>
+                                <pre>There is a plac
+  e where the sid
+  ewalk ends
+
+  And before the 
+  street begins,
+
+  And there the g
+  rass grows soft
+   and white,
+
+  And there the s
+  un burns crimso
+  n bright,
+
+  And there the m
+  oon-bird rests 
+  from his flight
+
+
+  To cool in the 
+  peppermint wind</pre></div>
+                            </li> 
+                          </ol>
+
+                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a></p>
                         </div>
                       </div>
 
@@ -171,11 +316,162 @@
 
                       <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
-                          <br>
+                          <p>
+                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code </a> is executed. ROM Code resides in page 0 of the memory. It is hard coded into the machine i.e the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "bootstrap" loader in OS literature. <!--ROM code does the following operations :
+                            <ol style="list-style-type:decimal;font-size:14px">
+                              <li>Loads block 0 of disk to page 1 of memory (physical address 512).</li>
+                              <li>After loading the block to memory, it sets IP (Instruction Pointer) to 512 so that the next instruction to be executed is fetched from location 512 (page 1 in memory starts from location 512).</li>
+                            </ol>-->
+                          </p> 
 
+                          <p>So if you write a program in SPL, compile it using SPL compiler and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. This program which is loaded to block 0 of disk is supposed to be the OS Startup Code. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup.  (<b>WARNING</b>:The following links are for more information. Don't get lost in these links. If you don't understand, come back and proceed with the roadmap, <a href="os_implementation.html">Memory Organization, Disk Organization</a>).</p>
+
+                          <p/>The OS designer must design and program  the "OS Startup Code", compile it using the SPL compiler to generate executable program and copy this program to block 0 of the disk (using xfs interface). Once that is done, this code is loaded into page 1 of memory during boot up by the ROM code. Now this OS Startup code will start executing.</p>
+                        
+                          <p>In this stage, we will write a system program to<b> print odd numbers from 1 to n</b> and run it as the OS Startup Code in the machine. The steps to do this are explained in detail below. </p>
+                          
+                          <ol style="list-style-type:decimal;font-size:14px">
+                            <li>
+                              Create the program to print odd numbers from 1 to 20 using SPL. (SPL Specification need not be read now. It is given  in <a href="support_tools-files/spl.html" target="_blank"> SPL Documentation </a>) See examples of SPL programs in <tt>$HOME/myxos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
+                              <br><br>
+                              <div> 
+                                <pre>
+alias counter R0;
+counter = 0;
+while(counter <= 20) do
+  if(counter%2 != 0) then
+    print counter;
+  endif;
+  counter = counter + 1;
+endwhile; </pre>
+                              </div>
+                              An SPL program uses the system registers directly instead of variables. For convenience, you can alias the registers with appropriate identifiers. See <a href="support_tools-files/spl.html" target="_blank">aliasing</a> in SPL. In the above program R0 is aliased as <i>counter</i>.
+                            </li>
+                            
+                            <br><br>
+                            <li>Save this file as <tt>$HOME/myxos/spl/spl_progs/oddnos.spl</tt>. Compile this SPL program using the commands
+                              <br><br>
+                              <div>
+                                <pre>cd $HOME/myxos/spl
+./spl $HOME/myxos/spl/spl_progs/oddnos.spl</pre>
+                            </li> 
+
+                            <br><br>
+                            <li> 
+                              Load the file generated by the SPL compiler ( <tt>$HOME/myxos/spl/spl_progs/os_startup.xsm</tt> ) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
+                              <br><br>
+                              <div>
+                                <pre># load --os $HOME/myxos/spl/spl_progs/os_startup.xsm
+# exit</pre>
+                              </div>
+                            </li>
+                            Note that the <tt>--os</tt> option loads the file to Block 0 of the XFS disk.
+
+                            <br><br>
+                            <li> Run the machine using the command 
+                              <br><br>
+                              <div>
+                                <pre>cd $HOME/myxos/xsm
+./xsm</pre>
+                              </div>
+                            </li>
+                          </ol>
+
+                          <br>
+                          The machine will halt after printing all odd numbers from 1 to 20
+                          <br><br>
+                          <div>
+                            <pre>
+1
+3
+5
+7
+9
+11
+13
+15
+17
+19
+Machine is halting</pre></div>
+
+                          <p> You may also write a few SPL programs on your own and run it on the machine to get familiarized with SPL syntax. Try using the instructions like <a href="support_tools-files/spl.html" target="_blank"><i>breakpoint</i></a> which translates to <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction. This instruction is useful for debugging. Refer <a href="support_tools-files/xsm-simulator.html" target="_blank">XSM Debugger</a></p>
+
+                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Runtime envoronment</a>.</p>
                         </div>
                       </div>
 
+                      <!-- Satge 4 -->
+
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse4"><span class="fa fa-check-square-o"></span>Stage 4 : Introduction to Terminal Interrupt Handler </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse4" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <p>
+                            Here an introduction to <a href="arch_spec-files/interrupts_exception_handling.html" target="_blank">Terminal/Console Interrupt Handler</a> is given. Terminal Interrupt occurs after <a href="arch_spec-files/instruction_set.html" target="_blank"><b>IN</b></a> machine instruction gets executed by the machine. To get a brief idea of Console Interrupt Handler the program from Stage 3 is used with some modifications.
+                          </p>
+                          <ol style="list-style-type:decimal;font-size:14px">
+                            <li>
+                              Instead of printing the odd numbers between 1 and 20, here the odd numbers between 1 and n (which need to be enterd by the user) are printed. SPL Code to print odd numbers from 1 to n :
+                              <br><br>
+                              <div> 
+                                <pre>
+alias counter R1;
+alias n R0;
+print "Enter n:";
+read;
+counter = 0;
+while(counter <= n) do
+  if(counter%2 != 0) then
+    print counter;
+  endif;
+  counter = counter + 1;
+endwhile; </pre>              </div>
+                            </li>
+
+                            <li>
+                              Now repeat the steps 2 and 3 of Stage 3.
+                            </li>
+
+                            <li>
+                              Now the Concole Interrupt Handler needs to be coded. 
+                              <ul style="list-style-type:disc;font-size:14px">
+                                <li><span style="color:red">Initial steps of System Call handling here</span></li>
+                                <li>
+                                  Initially the terminal status was 1 (1 for busy, 0 for free). It needs to changed to 0. (See <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>. <b>[29568+0]=0</b>.
+                                </li>
+                                <li>
+                                  Using the PID field of the Terminal Status Table, locate the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry of the process that read the data.
+                                </li>
+                                <li>
+                                  Copy the word read from standard input to the Input Buffer field in the Process Table entry.
+                                </li>
+                                <li>
+                                  Set the PID field of Terminal Status Table to -1.
+                                </li>
+                                <li>
+                                  Wake up all processes waiting for terminal
+                                </li>
+                                <li>
+                                  After the interrupt occurs a valid input string gets stored in the port P0. We need to move the contents of P0 to some register(for eg: R0) as after next <b>read;</b> instruction the contents of P0 gets changed.<br><br>
+                                  <div>
+                                    <pre>MOV R0,P0</pre>
+                                  </div>  
+                                </li>
+
+                                <li>
+                                  Return from the Console Interrupt Handler.
+                                </li>
+                              </ul>
+                            </li>
+                          </ol>
+
+                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification.</a></p>
+                        </div>
+                      </div>
 
 
 
