@@ -316,8 +316,7 @@ is used as a stack called the kernel stack of the process.  </p>
 			      <p>In the case of a system call, the parameters to the system call will be stored in the application's stack by the application. Upon entering the kernel module (system call), the kernel will extract these parameters from the application's stack and then change the stack pointer to its own stack before further execution.   If a kernel module invokes other kernel modules while executing the system call of the application, the same kernel stack will be used.   Since the application invokes the kernel module 
 voluntarily, it is the responsibility of the application to save the contents of its registers (except the stack pointer and base pointer registers in the case of the XSM machine) before invoking the system call.</p>
 			      <p>In the case of an interrupt/exeception, the user process does not have control over the transfer to the kernel module (interrupt/exception handler).  Hence the execution context of the user process (that is, values of the registers) must be saved by the kernel module before the kernel module uses the machine registers for other purposes so that the machine state can be restored after completion of the interrupt/exception handler.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this).</p>
-			      <p>In addition to the above, if a kernel module invokes another kernel module, the parameters to the called module and the return
-values from the module are passed through the kernel stack.</p>
+			      <p>In addition to the above, if a kernel module invokes another kernel module, the parameters to the called module and the return values from the module are passed through the kernel stack.</p>
                               <p>A part of the machine state is stored in the kernel stack as given below : </p><br>
                               <table style="margin-right:auto; margin-left:auto;" width="12%" >
                   	      <tr>                      	      
@@ -327,7 +326,9 @@ values from the module are passed through the kernel stack.</p>
                               <tr><td align="center" style="border: 1px solid black">PTLR</td></tr>
                               <tr><td align="center" style="border: 1px solid black">REGISTERS</td></tr>
                   	      </tr>
-              		      </table>	
+              		      </table>
+              		      
+              		      <p>	
               		      
                             </div>
                         </div>                                                                              
