@@ -74,8 +74,8 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
-              <li><a href="../index.html" target="_blank">Documentation</a></li> 
-              <li><a href="../home.html" target="_blank">Home</a></li>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
               <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
                <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
                <li><a href="../faq.html" target="_blank">FAQ</a></li>
@@ -246,21 +246,21 @@ eXpOS package is designed to follow the programming conventions specified in thi
                           </div>
                           <div id="c3" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>	Symbolic names can be assigned to values using the <b>define</b> keyword. 
+                                <p>	Symbolic names for values can be defined in an SPL module using the <b>define</b> keyword. They will be visible only inside the module. 
 				Unlike aliasing, two or more names can be assigned to the same value. 
 				A constant can only be defined once in a program.</p>
                                 <h3>Predefined Constants</h3>
-				<p>	SPL provides a set of predefined constants defined in the file <b>constants.spl</b>. A constant defined in an SPL module will be visible only inside the module. </p>
+				<p>	SPL provides a set of predefined constants defined in the file <b>constants.spl</b>.  </p>
 				<p>
-The standard SPL implementation comes with a set of pre-defined constants <a href="./constants.html" target="_blank">(see here)</a> specifically tuned for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified <a href="../os_implementation.html" target="_blank">here</a>.
+The standard SPL implementation comes with a set of <a href="./constants.html" target="_blank">pre-defined constants</a> included in the <i>constants.spl</i> file specifically tuned for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified in the <a href="../os_implementation.html" target="_blank">implementation</a> of the eXpOS. Additionally, there are <a href="../os_design-files/constants.html" target="_blank">eXpOS constants</a> which are also defined in <i>constants.spl</i>. 
 				</p>
  	
  			
               
-                 <p>In addition, users can define constants which are visible in all 
+                 <p>Users can also define constants which are visible in all 
 SPL modules by including the definition in the <i>constants.spl</i> file. If a constant defined in the <i>constants.spl</i> file is re-defined in a module, the local definition will override the global definition. 
 
-				These predefined constants can be assigned to different values explicitly by the user using <b>define</b> keyword.
+				These predefined constants' definitions can be over-ruled by assigning different values explicitly by the user using the <b>define</b> keyword.
                     </p>
                                 <p><code>Note: </code> Pre-defined constants are actually not part of the language specification, but included in the version of SPL provided here as support for the <a href="../os_implementation.html" target="_blank">implementation</a> of eXpOS operating system in SPL. </p>
                             </div>
@@ -534,28 +534,28 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                           </div>
                           <div id="con" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. A module typically contains protected mode code that carries out certain functions as determined by the programmer. The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
+                                <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. A module typically contains protected mode code that carries out certain functions as determined by the OS programmer. The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
 
                                 <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in the memory. It is not recommended to transfer control directly into a location within a module from other modules.</p>
 
                                 <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) and return values shall be passed either through registers R0, R1, R2.. or through stack as required. </p>
                                    
 
-                                <p><code>Note: </code> The SPL compiler given here predefines eXpOS specific constants MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up. In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
+                                <p><code>Note: </code>The SPL compiler given here uses the constants (given in <i>constants.spl</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up. In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
  
                                 <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
-                               <div style="padding-left:70px"> a. Execution of a software interrupt from an application (unprotected mode) program.<br/>
-                                b. Hardware interrupt/exception occurred while an application was executing.<br/>
+                               <div style="padding-left:70px"> a. Execution of a software interrupt from an application (user mode) program.<br/>
+                                b. Occurence of a hardware interrupt/exception while an application was executing.<br/>
                                 c. Call from another module.<br/>
                                 </div>
                                    </p>
 
-                                <p><b>Case a)</b> In this case, the arguments to the module are passed through stack.  The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
+                                <p><b>Case a)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack. The return values are also passed through the same stack. The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
 
-                              <p><b>However, in this case, it is strongly recommended that the module allocates its own stack in the memory and not use the application's stack.</b> This is to avoid potential user level “hacks” into protected mode interrupt modules through the stack.</p>
+                              <p><b>However, in this case, it is strongly recommended that the module allocates its own stack for local memory allocation and not use the application's stack.</b> This is to avoid potential user level “hacks” into kernel mode interrupt modules through the stack.</p>
                                 <center>                        <img src="../img/memory_management.png"></center>
 
-                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from <i>Case a)</i> is that the application does not have control over the transfer of control, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
+                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from <i>Case a)</i> is that the application does not have control over the transfer to the interrupt module, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
                                 <p>In this case also the module is expected to allocate its own stack in the memory and not use the application's stack.</p>
 
                                 <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R0, R1, R2... for
