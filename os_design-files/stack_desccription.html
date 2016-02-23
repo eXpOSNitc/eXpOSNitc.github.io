@@ -162,6 +162,8 @@ POP R0			// Pop and save the return value
               <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are three steps in handling exception/interrupt.</p>
               <p>1. before the interrupt/exception occurs:</p>
               <p>2. after the interrupt/exception is executed:</p>
+              <p>3. before the return:</p>
+              <p>4. after the return:</p>                            
               
          </div>
 </div>              
