@@ -216,7 +216,10 @@
 					<p>The methodology we suggest for you is to follow the roadmap.  The <b>roadmap</b> takes you through a step by step journey towards the complete implementation of the eXpOS operating system.  At each step, you will be asked to read  concepts, specifications and interfaces which you must learn to complete that step.  In fact, you will be asked to read <b>only</b> what is necessary for doing that step. The links to the reading material will be given at appropriate places in the roadmap. <a href="Roadmap.html"  target="_blank">Proceed to the roadmap <em class="fa fa-external-link"></em></a></p>
 					
 					<p>However, if you are curious about what the "final system" you are going to build looks like, we give a brief overview here. You are warned not to get lost in the links. The roadmap will ask you to read the appropriate parts of the documentation as and when required. </p>
-				
+					
+				<p>The conceptual view of the operating system (from the stand point of OS developer) you have to implement is illustrated in the following figure.</p>	
+				<img src="" alt="Conceptual view of the operating system">
+				<br><br><br>
 				<p><b style="font-size:18px">An Overview of the eXpOS package.</b></p>
 				<br>
 				
@@ -228,11 +231,11 @@
 				
 				<p>Given all the above, one must still have some mechanism to:  
 				</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp; 1. Write the OS modules and application programs and get them in executable format.</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp; 2. Load these executable programs into the machine's disk so that these programs can be executed when the machine is run.  </p>
+				<p>&nbsp;&nbsp;&nbsp;&nbsp; 1. Write the OS modules and get them in executable format.</p>
+				<p>&nbsp;&nbsp;&nbsp;&nbsp; 2. Load these executable programs into the machine's disk so that the OS executes when the machine is run. </p>
 			
 			
-				<p>The following support tools come along with the eXpOS package to help you achieve the above objectives. </p>
+				<p>The following support tools come along with the eXpOS package to help you achieve the above objectives. </p>				 
 				<p>For the first task, it is convenient to write  the OS modules and application programs in some high level language like C from your host unix environment and (cross) compile it into the executable format defined by the ABI.     However, we do not provide you with a C cross compiler.  Instead, we provide you two cross compilers, one for the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">System Programming Language</a> (SPL - which is essentially an assembler for the XSM machine) and one for a high level language  called  the <a href="http://exposnitc.github.io/support_tools-files/expl.html" target="_blank">Experimental Programming Language</a> (ExpL).    While application programs can be written in ExpL, kernel modules will have to be written in the SPL language as ExpL does not support "low level programming" necessary to implement the OS. </p>
 				<p>For the second task, we provide you with an interface software called the <a href="http://exposnitc.github.io/support_tools-files/xfs-interface.html" target="_blank">XFS interface</a>.  This tool allows you to load executable kernel modules as well as application programs from your host unix environment to the eXpOS disk.  The tool recognizes the file system format of eXpOS (called the experimental file system or <a href = "http://exposnitc.github.io/os_spec-files/eXpFS.html" target="_blank">eXpFS</a>) and allows you to transfer data files as well between the host Unix sytem and the disk.</p>
 				<p>The following figure illustrates how the various support tools interact.   </p>
