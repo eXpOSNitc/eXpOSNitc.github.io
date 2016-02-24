@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Stack Management</title>
+     <title>Kernel Stack Management</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -85,7 +85,7 @@
               <li><a href="../index.html">Home</a></li>
               <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
               <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> 
                <li><a href="../faq.html" target="_blank">FAQ</a></li>
               <li><a href="../About_us.html" target="_blank">About Us</a></li>                                    
             </ul>           
@@ -113,7 +113,7 @@
 <br>
 <h4>Invoking a system call</h4>
 <br>
-<p>A user process invokes a system call by first pushing the arguments and function code into the stack and then invoking the INT machine instruction corresponding to the system call. A system call in APL compiles to the a set of machine instructions like the one shown below.</p>
+<p>A user process before invoking a system call does the following actions : </p><ol><li>Push the registers in use to the stack</li> <li>Push the function code into the stack </li> <li>Push the arguments</li><li>Push one space for the return value </li> <li>Invoke the INT machine instruction corresponding to the system call</li><ol> <p><br>A system call in APL compiles to the a set of machine instructions like the one shown below.</p>
 <p>
 1. The stack operations performed by the user program before INT instruction 
 	The function code corresponding to the system call is pushed onto the stack. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The interrupt routine needs this value to identify the system call. </p>
@@ -123,6 +123,7 @@
 <br><br>
 <pre>
 <code>
+.... 			// Code to push registers
 PUSH Function_Code	// Push function code
 PUSH Argument_1		// Push the arguments to the stack
 PUSH Argument_2
