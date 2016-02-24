@@ -118,13 +118,13 @@
 		<div class="panel-body">
 				<p><a data-toggle="collapse" href="#collapse1">1. What is eXpOS? What is its purpose?</a></p>
                      <div id="collapse1" class="panel-collapse collapse">
-						 <p>eXpOS stands for experimental operating system.    The <a href="os_spec.html" target="_blank">eXpOS specification</a> describes a very simple single user multi-tasking operating system. </p> 
+						 <p>eXpOS stands for experimental operating system.    The <a href="os_spec.html" target="_blank">eXpOS specification</a> describes a very simple multi-user multi-tasking operating system. </p> 
 
 <p>eXpOS is not intented to be used as a practical operating system.  It is designed with the following intentions:</p>
 
 <ol style="margin-left: 90px;">
 	<li>To have a multi-tasking OS specification that can be comprehended by a junior undergraduate student in computer science who is undergoing a first course in Operating System such that she/he will be able to implement the OS in two or three months.    This educational package comes with enough guidance and support tools as well as documentation to allow the student to achieve this goal without the supervision of a specialist teacher.  </li>
-	<li>The student will write the complete code for the OS from scratch.  She/he will not be building the OS on top of a given code base.  The only programming support provided will be a compiler for a high level programming language in which the OS kernel will be written (called SPL).  </li>
+	<li>The student will write the complete code for the OS from scratch.  She/he will not be building the OS on top of a given code base.  The only programming support provided will be a compiler for a programming language in which the OS kernel will be written (called SPL).  </li>
 	
 </ol>
 
@@ -136,11 +136,12 @@
 						
 						<ol style="margin-left: 90px;">
 	<li>Initally load the operating system from secondary storage to memory – Bootstrapping.   </li>
-	<li>Manage several processess in memory simultaniously – process management.  </li>
+	<li>Manage several processess in memory simultaneously – process management.  </li>
 		<li>Handle allocation and de-allocation of memory to processes – memory management.  The memory managament includes a virtual memory implementation.  </li>
 		<li>Manage organization of data and program files in secondary storage – file management.</li>
 		<li>Implement a mechanism to allow multiple processes to share files/memory – resource sharing.</li>
 		<li>Realize primitives that help application programs to avoid inconsitency when resources are shared by several processes executing concurrently – process sychronization.</li>
+		<li>Handling multiple users with different priviliges over resources shared among them- Multiuser capability</li>
 	
 </ol>
 <p>The experiment is akin to guiding a third year aerospace engineering student to build a small unmanned flight in two months.   (The flight will not be usable outside the laboratory!)</p>
@@ -182,7 +183,7 @@ So, listing out everything is impossible.  But here are some important misses: <
 No real machine architecture permits you to do such stuff.  This is made possible just because XSM is a software simulated.   However,  XSM makes your data manipulation job much simpler without getting bogged down by details of data formatting.    
       It is in principle possible to implement eXpOS on “more real” machines like <a href="http://en.wikipedia.org/wiki/MIPS_instruction_set" target="_blank">MIPS</a>.  However, this would involve considerably more time and effort.  </li>
 	<li>The project involves very little work involving input-ouput, device interfacing, security or networking.  Moreover the file system is a very primitive one.  </li>
-		<li> The methods studied won't scale up to multi-core machines or when there is pre-emptive multitasking.   These topics are beyond the scope of the project. The multiuser support provided by eXpOS is also very primitive.  </li>
+		<li> The methods studied won't scale up to multi-core machines or when there is <a href="https://en.wikipedia.org/wiki/Computer_multitasking#Preemptive_multitasking" target="_blank" > pre-emptive multitasking </a>.   These topics are beyond the scope of the project. The multiuser support provided by eXpOS is also very primitive.  </li>
 		
 </ol>
                      </div>
@@ -197,8 +198,8 @@ No real machine architecture permits you to do such stuff.  This is made possibl
 						 <p>The eXpOS package available at [LINK****] comes with the following:  </p> 
 <ol style="margin-left: 90px;">
 	<li>A simulator for the Experimental String Machine (XSM)  on which you implement eXpOS.  (The XSM machine specification can be found <a href="arch_spec.html" target="_blank">here</a>).  The machine consists of a CPU, Memory and a disk (called xfs-disk) and a small Input-Ouput subsystem. </li>
-	<li>A compiler (into the XSM machine) for the System Programmer's Language (SPL) using which you will be writing all your code for implementing eXpOS.   SPL is a very simple language, specifically designed for the eXpOS package.     You can see SPL specification <a href="support_tools-files/spl.html" target="_blank">here</a></li>
-		<li>A compiler (into the XSM machine) for the <a href="support_tools-files/expl.html" target="_blank">Experimental String Language (ExpL)</a>.  This language is used for writing application programs that can run on top of eXpOS.  You will be using this language primarily for running test programs on your operating system.</li>
+	<li>A compiler (into the XSM machine) for the System Programmer's Language (SPL) using which you will be writing all your code for implementing eXpOS.   SPL is a simple programming language which essentially is an extended assembler for the XSM machine, specifically designed for the eXpOS package.     You can see SPL specification <a href="support_tools-files/spl.html" target="_blank">here</a></li>
+		<li>A compiler (into the XSM machine) for the <a href="support_tools-files/expl.html" target="_blank">Experimental String Language (ExpL)</a>.  This language is used for writing application programs that can run on top of eXpOS.  You will be using this language for writing some of the user level programs of the OS including the shell. Test programs that are used to test your OS will also be written in ExpL.</li>
 		<li>An interface tool called xfs-interface that allows you to transfer data files and executable programs from your Unix/Linux system into the hard disk of the XSM machine (called xfs-disk).  Details of xfs-interface can be found <a href="support_tools-files/xfs-interface.html" target="_blank">here</a>.  </li>
 		<li>You also download the source code of all the above, sample test programs testing your your OS, the formal specification documents of all the above downloads, some help etc.  </li>
 		
@@ -243,7 +244,7 @@ This is because a blocked process might have made partial updates to some OS dat
                      
                      <p><a data-toggle="collapse" href="#collapse13">13. How do I write application programs that run on eXpOS?</a></p>
                      <div id="collapse13" class="panel-collapse collapse">
-						 <p>Application programs must be  compiled in the Linux/Unix environment outside and pre-loaded into the XSM machine's disk.  The ExpL language allows applications to be written and compiled into the eXpOS executable format called the XEXE format.   eXpOS does provide system calls that can be invoked from application programs to create and manipulate data files.  </p> 
+						 <p>Application programs must be  compiled in the Linux/Unix environment outside and pre-loaded into the XSM machine's disk.  The ExpL language allows applications to be written and compiled into the eXpOS executable format called the <a href="abi.html#xexe" target="_blank"> XEXE </a> format.   eXpOS does provide system calls that can be invoked from application programs to create and manipulate data files.  </p> 
 
                      </div> 
                      

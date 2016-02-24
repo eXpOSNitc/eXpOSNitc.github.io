@@ -101,6 +101,17 @@
 
 	 <!--=========== BEGIN  ================-->
 	
+     <div class="container">
+         <div class="row">
+         <br><br><br><br><br>
+	There are three different situations of context switch where careful stack management is necessary:
+	<br><br>
+	<p>&nbsp;&nbsp;&nbsp;a. Invoking a system call
+	<p>&nbsp;&nbsp;&nbsp;b. Exception / Interrupt
+	<p>&nbsp;&nbsp;&nbsp;c. Invoking a kernel module from another kernel module
+	
+	</div>
+     </div>
 
       <div class="container">
          <div class="row">
@@ -151,17 +162,17 @@ INT number		// Invoke the corresponding INT instruction
 <br><br>
 <hr>
 <br>	
-<p>after return: 
+<p>After return: 
 	The interrupt routine instruction transfers control back to the user program to the instruction following the INT instruction. The following machine instructions are present after the INT instruction in the APL compiled machine code given in the previous step.</p>
 <img src="../img/sys_call_aftr_ret.png">	
 <br><br>
 <pre>
 <code>
-POP Function_Code	// Pop and discard the function code
+POP R0			// Pop and save the return value
 POP Argument_3		
 POP Argument_2
-POP Argument_1		// Pop and discard the arguments 
-POP R0			// Pop and save the return value
+POP Argument_1		// Pop and discard the arguments
+POP Function_Code	// Pop and discard the function code 
 </code>
 </pre>	
 	<p> The machine code above pops the values from the stack. The function code and arguments were inputs to the system call and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program.</p>
@@ -174,18 +185,42 @@ POP R0			// Pop and save the return value
          <div class="row">
               <br><br><br>	
               <h3>Interrupts or Exceptions</h3>
-              <p> a small para about interrupts</p>
-              <br>
-              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are three steps in handling exception/interrupt.</p>
-              <p>1. before the interrupt/exception occurs:</p>
-              <p><img src="../img/sys_call_b4_ex.png"><br><br></p>
-              <p>2. after the interrupt/exception is executed:</p>
-              <p><img src="../img/sys_call_aftr_int.png"><br><br></p>
-              <p>3. before the return:</p>
-              <p>4. after the return:</p>                            
               
+              <br>
+              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are four steps in handling exception/interrupt.</p>
+              <p>1. Before the interrupt/exception occurs: The application process cannot store its context in the user stack as it doesn't have any control when an exception/interrupt occurs.</p>
+              <p><img src="../img/sys_call_b4_ex.png"><br><br></p>
+              <hr>
+              <p>2. After the interrupt/exception is executed: As soon as the control shifts to kernel, the current value of SP is stored in the User Stack Pointer entry of the process table and SP is set to the value in Kernel Stack Pointer. Once the execution mode is changed into kernel mode, it's the responibility of the kernel to backup the necessary data of the process. Thus, the context of the process is stored in the kernel stack. This changes the SP value (Note that the Kerenel Stack Pointer value remains the same resulting in an inconsistency). Now the corresponding exception/interrupt handler may be executed.</p>
+              <p><img src="../img/sys_call_aftr_ex.png"><br><br></p>
+              <hr>
+              <p>3. Before the return: After the execution of the execution/interrupt handler, the context of the process is restored from the kernel stack. SP is set to the value of User Stack Pointer in the process table. The address of the next instruction to be executed is be obtained using the EIP register.</p>
+              <p><img src="../img/ex_b4_ret.png"><br><br></p>
+              <hr>
+              <p>4. After the return: The execution of the process continues with the next instruction after the one that resulted in the exception/interrupt.</p>                            
+              <hr>
          </div>
-</div>              
+</div>     
+
+<div class="container">
+         <div class="row">
+              <br><br><br>	
+              <h3>Kernel Module to Kernel Module Context Switch</h3>
+              <br>
+              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling a kernel module to kernel module context switch.</p>
+              <p>1. Before switching execution to the next kernel module: The current context is saved in the kernel stack.</p>
+              <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
+              <hr>
+              <p>2. While executing the latter kernel module: </p>
+              <p><img src="../img/in_kernel_to_kernel.png"><br><br></p>   
+              <hr>                       
+              <p>3. Before returning to the previously executed module: The previous execution context is restored and popped out of the kernel stack. Since there is no switch from one execution mode to another, the SP value need not be set manually.</p>
+              <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
+              <hr>
+         </div>
+</div>
+
+         
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
