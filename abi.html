@@ -300,7 +300,7 @@ is done by the allocator routines in the shared library (for example, memory all
 
    A system call invocation using the high level application programmer's interface of a programming language like ExpL compiles to a set of machine instructions (see the instructions to the left). They are the stack operations that must be performed by the user program before the INT instruction is executed.  </p>
 </div>
-<br/> <br/> <br/>
+<br/>
 <div>
   <p style="clear:left">
   <img src="img/system_call_stack1.png" width="350px" height="350px" style="float:left;margin-right:5px">
@@ -308,14 +308,13 @@ is done by the allocator routines in the shared library (for example, memory all
   The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0') is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. The figure to the left shows the data stored in process stack just before an INT instruction. </p>                           
  </div>
 
-<br/>
 
 <div style="clear:left">
     <p>
     <img src="img/system_call_stack2.png" width="350px" height="350px" style="float:right;margin-left:5px">
-    <br/><br/>The INT instruction in XSM will push the value of IP + 2 on to the stack. This is the address of the instruction immediately following the INT instruction in the user program. Each instruction is 2 words, hence IP is incremented by 2. Upon execution of the IRET instruction from the system call, execution resumes from this value of IP. The INT instruction changes mode from <b>User</b> mode to <b>Kernel</b> mode and passes control to the Interrupt Routine corresponding to the system call. The figure to the right shows the contents of the stack immediately after the execution of the INT instruction. </p>
-</div>
-
+    <br/>The INT instruction in XSM will push the value of IP + 2 on to the stack. This is the address of the instruction immediately following the INT instruction in the user program. Each instruction is 2 words, hence IP is incremented by 2. Upon execution of the IRET instruction from the system call, execution resumes from this value of IP. The INT instruction changes mode from <b>User</b> mode to <b>Kernel</b> mode and passes control to the Interrupt Routine corresponding to the system call. The figure to the right shows the contents of the stack immediately after the execution of the INT instruction. </p>
+</div>  
+<br/>
                                 <h3 style="clear:right">After return from the system call</h3>
                                 <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the INT instruction in the ExpL compiled machine code given in the previous step. </p>
 <div>
@@ -330,7 +329,7 @@ is done by the allocator routines in the shared library (for example, memory all
 </pre>
 
 The machine code to the left pops the values from the stack. The system call number and arguments were inputs to the system call and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program by popping out to some register.   </p>
-</div>
+</div><br/>
 
                                 <h3 style="clear:left">System calls and their translation</h3>
 <p>
