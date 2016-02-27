@@ -538,7 +538,7 @@ Associated with each system call, there is a system call number and interrupt ro
                                 <p>The invocation details for the system calls and the dynamic memory management routines using the library interface can be seen <a href = "../os_spec-files/dynamicmemoryroutines.html" target="_blank">here.</a></p></p>
                             </div>
 
-                            <h3 style="clear:right">Invoking a library interface module</h3>
+                            <h3 style="clear:right">Invoking a library module</h3>
                                  
                                 
 <div >
@@ -552,11 +552,11 @@ Associated with each system call, there is a system call number and interrupt ro
     CALL 0                  	// Pass the control to virtual address 0. 
     		                // (because if flag is set, library will be loaded there)
 	</pre>    		                  
-	  A library interface module invocation using the high level application programmer's interface of a programming language like ExpL compiles to a set of machine instructions (see the instructions to the left). They are the stack operations that must be performed by the user program before the CALL instruction is executed.
+	  A library module invocation using the high level application programmer's interface of a programming language like ExpL compiles to a set of machine instructions (see the instructions to the left). They are the stack operations that must be performed by the user program before the CALL instruction is executed.
 
 </div>
 
-<h3 style="clear:left">After return from the library interface module </h3>
+<h3 style="clear:left">After return from the library module </h3>
                                 <p>The IRET instruction transfers control back to the user program to the instruction immediately following the INT instruction. The following machine instructions are present after the CALL instruction in the ExpL compiled machine code given in the previous step. </p>
 <div>
 <p>
@@ -569,7 +569,7 @@ Associated with each system call, there is a system call number and interrupt ro
                      // Now the stack is popped back to the state before call 	
 </pre>
 
-The machine code to the left pops the values from the stack. The function code and arguments were inputs to the library interface module and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program by popping out to some register.   </p>
+The machine code to the left pops the values from the stack. The function code and arguments were inputs to the library module and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program by popping out to some register.   </p>
 </div>
 
 
