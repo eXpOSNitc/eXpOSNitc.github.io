@@ -142,10 +142,12 @@
                 <div class="container-fluid">
   <div class="row-fluid">
                 <div class="col-sm-3 well">
-                <div class="text-center custom-panel">
+                <div class="custom-panel">
                 <span class="label custom-badge">1</span>
-                <h4>Setting up the System</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
+                <h4 class="text-center">Setting up the System</h4>
+                <ul list-style-type="circle">
+                <li>Set up the environment to build the eXpOS.</li>
+                </ul>
                 </div>
                 </div>
 
@@ -153,7 +155,7 @@
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">2</span>
                 <h4>Understanding the File System</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
+                <p>Disk Organisation, eXpFS File System, Disk Data Structures (Inode table, Root File, Disk Free List) </p>
                 </div>
                 </div>
                 
@@ -232,15 +234,15 @@
                         <div class="panel-body">
                           
                           <p>
-                            Follow the instructions in the <a href="support_tools-files/setting-up.html" target="_blank"><b>setting up</b></a> section of the usage documentation to setup the system. This roadmap assumes that the entire package is extracted to <code>$HOME/myxos</code>. If the setting up of the system is done correctly the following directories will be created. 
+                            Follow the instructions in the <a href="support_tools-files/setting-up.html" target="_blank"><b>setting up</b></a> section of the usage documentation to setup the system. This roadmap assumes that the entire package is extracted to <code>$HOME/myexpos</code>. If the setting up of the system is done correctly the following directories will be created. 
                           </p> 
                           
                             <ul class="list-group" style="list-style-type:disc;font-size:14px;white-space:nowrap" >
-                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myxos/eXpl</li>
-                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myxos/spl</li>
-                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myxos/xfs-interface</li>
-                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myxos/xsm</li>
-                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myxos/doc</li>
+                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/eXpl</li>
+                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/spl</li>
+                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/xfs-interface</li>
+                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/xsm</li>
+                               <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/doc</li>
                             </ul>
                           
                           <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification.</a></p>
@@ -258,14 +260,14 @@
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated file system. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building XOS begins with understanding the underlying Filesystem (XFS) and its interface. In this stage, you will create an UNIX file and load it to the XFS disk using the XFS-Interface
+                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated file system. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying Filesystem (eXpFS) and its interface (xfs-interface). In this stage, you will create an UNIX file and load it to the XFS disk using the xfs-interface
                           </p>
                           <ol style="list-style-type:decimal;font-size:14px">
                             <li>
                               Run the XFS Interface 
                               <br><br>
                               <div>
-                                <pre>cd $HOME/myxos/xfs-interface
+                                <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
                               This will take you to the <a href="support_tools-files/xfs-interface.html" target="_blank">xfs-interface prompt</a>. 
@@ -279,12 +281,12 @@
                                 <pre># fdisk 
 # exit</pre>
                               </div>
-                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myxos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System. See <a href="os_spec-files/eXpFS.html" target="_blank"> XFS Specification </a>
+                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System. See <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification </a>
                             </li>
 
                             <br><br>
                             <li>
-                              The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (Disk Free List is stored in disk block number 20). The output will be as follows: 
+                              The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (Disk Free List is stored in disk block number 2). The output will be as follows: 
                               <br><br>
                               <div>   
                                 <pre>
@@ -319,11 +321,11 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for disk structures, OS routines and INIT program. See <a href="os_implementation.html" target="_blank">Disk Organization</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                              The first 69 blocks (blocks 0 to 68) are reserved for disk structures, OS routines, Shell code, Idle code and INIT program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
                             <br><br>
-                            <li>Create a file in your UNIX machine with sample data.A sample data file is given below
+                            <li>Create a file in your UNIX machine with sample data. A sample data file is given below
                               <br><br>
                               <div>
                                 <pre>There is a place where the sidewalk ends
@@ -333,35 +335,35 @@ And there the sun burns crimson bright,
 And there the moon-bird rests from his flight
 To cool in the peppermint wind.</pre>
                               </div>
-                              Save the file as <b>$HOME/myxos/sample.dat</b>
+                              Save the file as <b>$HOME/myexpos/sample.dat</b>
                             </li>
 
                             <br><br>
-                            <li> Load this data file ($HOME/myxos/sample.dat) to the XFS disk from your UNIX machine.  This can be done by the following commands
+                            <li> Load this data file ($HOME/myexpos/sample.dat) to the XFS disk from your UNIX machine.  This can be done by the following commands
                               <br><br>
                               <div> 
-                                <pre>cd $HOME/myxos/xfs-interface
-  ./xfs-interface</pre>
+                                <pre>cd $HOME/myexpos/xfs-interface
+./xfs-interface</pre>
                               </div>
                               This will take you to the xfs-interface prompt. Type the following commands in the xfs-interface prompt.
                               <br><br>
                               <div> 
-                                <pre># load --data $HOME/myxos/sample.dat</pre>
+                                <pre># load --data $HOME/myexpos/sample.dat</pre>
                               </div>
-                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the 4 data blocks. An entry in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> will also be created for the file. Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding in the roadmap.
+                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of four  data blocks. An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also. Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding with the roadmap.
                             </li> 
 
                             <br><br>
-                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to 1 UNIX file (say <i>$HOME/myxos/inode_table.txt</i>).
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to 1 UNIX file (say <i>$HOME/myexpos/inode_table.txt</i>).
                             <br><br>
                             <div>
-                              <pre># copy 3 4 $HOME/myxos/fat_block.txt
-  # exit</pre>
+                              <pre># copy 3 4 $HOME/myexpos/fat_block.txt
+# exit</pre>
                             </div>
                             </li> 
 
                             <br><br>
-                            <li> Now check thhe inode table entry for the file <tt>sample.dat</tt> and find the block numbers of Data Blocks.
+                            <li> Now check the Inode table entry for the file <tt>sample.dat</tt> and find the block numbers of Data Blocks.
                             </li>
 
                             <br><br>
@@ -370,36 +372,36 @@ To cool in the peppermint wind.</pre>
                             
                             <br><br>
                             <li>
-                              Copy the data blocks from the XFS disk and display it as a UNIX file <tt>$HOME/myxos/data.txt</tt>. 
+                              Copy the data blocks from the XFS disk and display it as a UNIX file <tt>$HOME/myexpos/data.txt</tt>. 
                               <br><br>
                               <div>
-                                <pre> # copy 69 69 $HOME/myxos/data.txt</pre>
+                                <pre># copy 69 69 $HOME/myexpos/data.txt</pre>
                               </div>    
-                              You will get back the contents of the file <tt>$HOME/myxos/sample.dat</tt> in <tt>$HOME/myxos/data.txt</tt>. However in <tt>$HOME/myxos/data.txt</tt>, each word is displayed in a line. A  word in XFS is 16 characters long. Sample <tt>data.txt</tt> file is shown below.
+                              You will get back the contents of the file <tt>$HOME/myexpos/sample.dat</tt> in <tt>$HOME/myexpos/data.txt</tt>. However in <tt>$HOME/myexpos/data.txt</tt>, each word is displayed in a line. A  word in XFS is 16 characters long. Sample <tt>data.txt</tt> file is shown below.
                               <br><br>
                               <div>
                                 <pre>There is a plac
-  e where the sid
-  ewalk ends
+e where the sid
+ewalk ends
 
-  And before the 
-  street begins,
+And before the 
+street begins,
 
-  And there the g
-  rass grows soft
-   and white,
+And there the g
+rass grows soft
+ and white,
 
-  And there the s
-  un burns crimso
-  n bright,
+And there the s
+un burns crimso
+n bright,
 
-  And there the m
-  oon-bird rests 
-  from his flight
+And there the m
+oon-bird rests 
+from his flight
 
 
-  To cool in the 
-  peppermint wind</pre></div>
+To cool in the 
+peppermint wind</pre></div>
                             </li> 
                           </ol>
 
@@ -433,7 +435,7 @@ To cool in the peppermint wind.</pre>
                           
                           <ol style="list-style-type:decimal;font-size:14px">
                             <li>
-                              Create the program to print odd numbers from 1 to 20 using SPL. (SPL Specification need not be read now. It is given  in <a href="support_tools-files/spl.html" target="_blank"> SPL Documentation </a>) See examples of SPL programs in <tt>$HOME/myxos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
+                              Create the program to print odd numbers from 1 to 20 using SPL. (SPL Specification need not be read now. It is given  in <a href="support_tools-files/spl.html" target="_blank"> SPL Documentation </a>) See examples of SPL programs in <tt>$HOME/myexpos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
                               <br><br>
                               <div> 
                                 <pre>
@@ -450,19 +452,19 @@ endwhile; </pre>
                             </li>
                             
                             <br><br>
-                            <li>Save this file as <tt>$HOME/myxos/spl/spl_progs/oddnos.spl</tt>. Compile this SPL program using the commands
+                            <li>Save this file as <tt>$HOME/myexpos/spl/spl_progs/oddnos.spl</tt>. Compile this SPL program using the commands
                               <br><br>
                               <div>
-                                <pre>cd $HOME/myxos/spl
-./spl $HOME/myxos/spl/spl_progs/oddnos.spl</pre>
+                                <pre>cd $HOME/myexpos/spl
+./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
 
                             <br><br>
                             <li> 
-                              Load the file generated by the SPL compiler ( <tt>$HOME/myxos/spl/spl_progs/os_startup.xsm</tt> ) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
+                              Load the file generated by the SPL compiler ( <tt>$HOME/myexpos/spl/spl_progs/os_startup.xsm</tt> ) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
                               <br><br>
                               <div>
-                                <pre># load --os $HOME/myxos/spl/spl_progs/os_startup.xsm
+                                <pre># load --os $HOME/myexpos/spl/spl_progs/os_startup.xsm
 # exit</pre>
                               </div>
                             </li>
@@ -472,7 +474,7 @@ endwhile; </pre>
                             <li> Run the machine using the command 
                               <br><br>
                               <div>
-                                <pre>cd $HOME/myxos/xsm
+                                <pre>cd $HOME/myexpos/xsm
 ./xsm</pre>
                               </div>
                             </li>
