@@ -287,7 +287,7 @@ is done by the allocator routines in the shared library (for example, memory all
                                 
 <div>
   <p>
-    <pre style = "float:left;margin-right:10px">
+    <pre style = "float:right;margin-left:10px;width:700px">
     PUSH System_Call_Number     // Push system call number 
     PUSH Argument_1             // Push argument 1 to the stack
     PUSH Argument_2             // Push argument 2 to the stack
@@ -301,7 +301,7 @@ is done by the allocator routines in the shared library (for example, memory all
 </div>
 <br/>
 <div>
-  <p style="clear:left">
+  <p style="clear:right">
   <img src="img/system_call_stack1.png" width="350px" height="350px" style="float:left;margin-right:5px">
   <br/><br/>
   The arguments must be pushed into the stack in  such a way that the last argument comes on the top. An additional push instruction ('PUSH R0') is inserted to have an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The system call number is also pushed to the stack. The interrupt routine needs this value to identify the system call. The figure to the left shows the data stored in process stack just before an INT instruction. </p>                           
@@ -533,7 +533,7 @@ Associated with each system call, there is a system call number and interrupt ro
 								  <p>
 								  <img src="./img/memory_management.png" width="350px" height="300px" style="float:right;margin-left:5px">
 								  <br/>
-								  <p>The library routine is linked to <b>virtual address 0</b> of the address space of a process by the OS loader and requires four arguments (function code and three arguments to the system call / memory management routine) to be passed through the stack. The routine invokes the corresponding low level system call / memory management routine and returns to the user program the return value of the system call / memory management routine through the stack. The figure to the side shows the contents of the stack immediately after a call to this library routine.</p>                           
+								  <p>The library routine is linked to <b>virtual address 0</b> of the address space of a process by the OS loader and requires four arguments (function code and three arguments to the system call / memory management routine) to be passed through the stack. The routine invokes the corresponding low level system call / memory management routine and returns to the user program the return value of the system call / memory management routine through the stack. The figure to the side shows the contents of the stack immediately before a call to this library routine.</p>                           
 								
                                 <p>The invocation details for the system calls and the dynamic memory management routines using the library interface can be seen <a href = "../os_spec-files/dynamicmemoryroutines.html" target="_blank">here.</a></p></p>
                             </div>
