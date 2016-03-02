@@ -126,21 +126,22 @@ specific to the implementation of eXpOS on the XSM machine.
 <br>
 <p>An application program must push the input parameters to a system call through the user stack.  The return value of the system
 call is also passed back to the application through the user stack.  </p>
-<p>If the application program is written in ExpL, then the eXpL compiler will generate code for pushing arguments into the user
+<p>If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
 stack.  The system call module must be designed so as to access these arguments from the stack of the process, do the processing
 required and store the return value into the appropriate place in the user stack before returning to the user mode.  
 The system call module must also change the stack to its own (kernel) stack upon entry and switch back to the user stack at the time
 of return.</p>
 <br>
-<p>A user process before invoking a system call does the following actions : </p>
-&nbsp;&nbsp;&nbsp;<p>Push the registers in use to the stack</p> 
-&nbsp;&nbsp;&nbsp;<p>Push the system call number into the stack </p> 
-&nbsp;&nbsp;&nbsp;<p>Push the arguments</li><li>Push one space for the return value </p>
-&nbsp;&nbsp;&nbsp;<p>Invoke the INT machine instruction corresponding to the system call</p>
-
+<p style="margin:0">A user process before invoking a system call does the following actions : </p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">1.Push the registers in use to the stack</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">2.Push the system call number into the stack </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">3.Push the arguments</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">4.Push one space for the return value </p>
+&nbsp;&nbsp;&nbsp;<p >5.Invoke the INT machine instruction corresponding to the system call</p>
+<br>
 <p>
-1. The stack operations performed by the user program before INT instruction :
-	The system call number corresponding to the system call is pushed onto the stack. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. The interrupt routine needs this value to identify the system call. </p>
+1. The stack operations performed by the user program before INT instruction :</p>
+<p>	All the registers currently used by the process is pushed onto the user stack followed by the system call number corresponding to the system call.The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. </p>
 <br>
 <img src="../img/sys_call_b4_int.png">
 <span style="float:right;">
@@ -148,7 +149,7 @@ of return.</p>
 <pre>
 <code>
 .... 			// Code to push registers
-PUSH Function_Code	// Push system call number
+PUSH System_Call_Number	// Push system call number
 PUSH Argument_1		// Push the arguments to the stack
 PUSH Argument_2
 PUSH Argument_3
@@ -207,7 +208,7 @@ POP Function_Code	// Pop and discard the system call number
               <p>2. After the interrupt/exception is executed: As soon as the control shifts to kernel, the current value of SP is stored in the User Stack Pointer entry of the process table and SP is set to the value in Kernel Stack Pointer. Once the execution mode is changed into kernel mode, it's the responibility of the kernel to backup the necessary data of the process. Thus, the context of the process is stored in the kernel stack. This changes the SP value (Note that the Kerenel Stack Pointer value remains the same resulting in an inconsistency). Now the corresponding exception/interrupt handler may be executed.</p>
               <p><img src="../img/sys_call_aftr_ex.png"><br><br></p>
               <hr>
-              <p>3. Before the return: After the execution of the execution/interrupt handler, the context of the process is restored from the kernel stack. SP is set to the value of User Stack Pointer in the process table. The address of the next instruction to be executed is be obtained using the EIP register.</p>
+              <p>3. Before the return: After the execution of the exception/interrupt handler, the context of the process is restored from the kernel stack. SP is set to the value of User Stack Pointer in the process table. The address of the next instruction to be executed is be obtained using the EIP register.</p>
               <p><img src="../img/ex_b4_ret.png"><br><br></p>
               <hr>
               <p>4. After the return: The execution of the process continues with the next instruction after the one that resulted in the exception/interrupt.</p>                            
@@ -218,9 +219,9 @@ POP Function_Code	// Pop and discard the system call number
 <div class="container">
          <div class="row">
               <br><br><br>	
-              <h3>Kernel Module to Kernel Module Context Switch</h3>
+              <h3>Invokation of kernel module from another kernel module</h3>
               <br>
-              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling a kernel module to kernel module context switch.</p>
+              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling an invokation of a kernel module from a kernel module.</p>
               <p>1. Before switching execution to the next kernel module: The current context is saved in the kernel stack.</p>
               <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
               <hr>
