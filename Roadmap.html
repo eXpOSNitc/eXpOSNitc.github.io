@@ -254,7 +254,7 @@
                                <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/doc</li>
                             </ul>
                           
-                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification.</a></p>
+                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification</a> and <a href="./support_tools-files/xfs-interface.html" target="_blank">XFS-Interface</a> (interface between the UNIX System and eXpFS)</p>
                         </div>
                       </div>
 
@@ -269,7 +269,7 @@
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface).
+                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a <a href="os_implementation.html" target="_blank">hard disk</a> for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface).
                             </p>
                             <i> In this stage, you will create a UNIX file and load it to the XFS disk using the xfs-interface.</i>
                             <br/><br/>
@@ -292,7 +292,10 @@
                                 <pre># fdisk 
 # exit</pre>
                               </div>
-                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>).
+                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted to eXperimental File System (eXpFS) (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>). <br/> <br/>
+
+                              The XSM machine's disk is a sequence of 512 blocks, each block capable of holding
+                              512 words (see <a href="os_implementation.html" target="_blank">Disk Organization</a>).  The second block of the formatted disk contains a disk free list which is explained below.
                             </li>
                             <br/>
                             <li>
