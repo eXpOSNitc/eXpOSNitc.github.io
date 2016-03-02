@@ -160,6 +160,7 @@ PUSH Argument_2
 PUSH Argument_3
 PUSH R0			// Push an empty space for return value
 INT number		// Invoke the corresponding INT instruction
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -189,6 +190,7 @@ INT number		// Invoke the corresponding INT instruction
 ...
 MOV R0, [SP - 4]      // Extracting the system call number from the user stack to R0
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -220,6 +222,7 @@ MOV R1, [SP - 3]    // Extracting the values of the arguments
 MOV R2, [SP - 2]
 MOV R3, [SP - 1]
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -249,6 +252,7 @@ MOV R3, [SP - 1]
 ...
 PUSH BP    // Pushing BP onto the user stack
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -285,6 +289,7 @@ ADD R4, processtable[KERNEL STACK POINTER]
 MOV SP, R4	
 // store the physical address of the kernel stack pointer in SP 
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -295,9 +300,9 @@ MOV SP, R4
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.2.4. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
 <p>2.4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-<p>&nbsp;2.4.2.  Compute the physical address of the kernel stack pointer </p>
-<p>&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.4.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
 <p>2.4.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 
 </figcaption>
@@ -320,13 +325,9 @@ MOV SP, R4
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -337,8 +338,8 @@ INT number		// Invoke the corresponding INT instruction
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from a system call : </b>
 	<p>3.1. Compute the physical address corresponding to the top of the user stack:</p>
-	<p>3.1.1. Find the physical address of the stack page</p> 
-	<p>3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.1. Find the physical address of the stack page</p> 
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
 	<p>3.2. Store the return value in the space alloted in user stack.</p>
 	<p>3.3 Restore the value of BP from the stack top.</p>
 	<p>3.4. Store the value of User Stack Pointer in the process table to SP.</p>
@@ -360,13 +361,14 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+POP R0			// Pop and save the return value
+POP Argument_3		
+POP Argument_2
+POP Argument_1		// Pop and discard the arguments
+POP System_Call_Number	// Pop and discard the system call number 
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
