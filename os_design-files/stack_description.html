@@ -302,46 +302,88 @@ INT number		// Invoke the corresponding INT instruction
 </figure>
 </div>
 <br><br><br><br>
-<!--
-2. Actions done by the kernel module on entry into a system call :
-<br> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">1. Transfer the system call number from the user stack to register R0.</p>
-<img src="../img/actions_of_kernel_upon_entering_sys_call_step1.png" ></img> 
+
+&nbsp;&nbsp;&nbsp;<p style="margin:0">2.5. Identify the system call using the value in register R0.</p>
+&nbsp;&nbsp;&nbsp;<p>2.6. Transfer control to the system call code.  </p>
+
+<!-- action 3 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from a system call : </b>
+	<p>3.1. Compute the physical address corresponding to the top of the user stack:</p>
+	<p>3.1.1. Find the physical address of the stack page</p> 
+	<p>3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
+	<p>3.2. Store the return value in the space alloted in user stack.</p>
+	<p>3.3 Restore the value of BP from the stack top.</p>
+	<p>3.4. Store the value of User Stack Pointer in the process table to SP.</p>
+
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
 <br><br><br><br>
 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">2. Transfer the arguments from the user stack to R1, R2, R3.</p>
-<img src="../img/actions_of_kernel_upon_entering_sys_call_step2.png"></img> 
+<!-- action 4 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/actions_of_process_aftr_return_sys_call.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.4. -  Actions done by the process after returning from a system call : </b>
+	<p>4.1. Pop off the return value from the stack top and store in a register, say R0.</p>
+	<p>4.2. Pop off the arguments and system call number from the user stack.</p><br>
+
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
 <br><br><br><br>
 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">3. Push the base pointer (BP) of the user process into the user stack. </p>
-<img src="../img/actions_of_kernel_upon_entering_sys_call_step3.png"></img> 
-<br><br><br><br>
---> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">4. Switch from the user stack to the kernel stack</p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2  Compute the physical address of the kernel stack pointer </p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2.1  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2.2  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p >4.3  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-<img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png"></img> 
-<br><br><br><br>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">5. Identify the system call using the value in register R0.</p>
-&nbsp;&nbsp;&nbsp;<p>6. Transfer control to the system call code.  </p>
 
-2. Actions done by the kernel module before returning from a system call :
-<br> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">1. Compute the physical address corresponding to the top of the user stack:</p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">1.1. Find the physical address of the stack page</p> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">1.1. Add the offset value from the User Stack Pointer field in the process table</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">2. Store the return value in the space alloted in user stack.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">3. Restore the value of BP from the stack top.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">4. Store the value of User Stack Pointer in the process table to SP.</p>
 
-3. Actions done by the process after returning from a system call :
-<br>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">1. Pop off the return value from the stack top and store in a register, say R0.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">2. Pop off the arguments and system call number from the user stack.</p><br>
-<img src="../img/actions_of_process_aftr_return_sys_call.png">
 
 <!--
 <p>
