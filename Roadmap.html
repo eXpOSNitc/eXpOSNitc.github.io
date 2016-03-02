@@ -363,18 +363,18 @@ To cool in the peppermint wind.</pre>
                               <div> 
                                 <pre># load --data $HOME/myexpos/sample.dat</pre>
                               </div>
-                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of four  data blocks. An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?). Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding with the roadmap.
+                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file (maximum 4). An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?). You must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding further.
                             </li> 
 
                             <br>
-                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk blocks 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
                             <br><br>
                             <div>
                               <pre># copy 3 4 $HOME/myexpos/inode_table.txt
 # exit</pre>
                             </div>
 
-                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. User table occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use.
+                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. User table occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use. (You will learn about User Table later on).
                             
                             <br/>
 
@@ -426,6 +426,9 @@ from his flight
 To cool in the 
 peppermint wind</pre></div>
                             </li> 
+                            <br/>
+                            <li style="color:blue"> Teach about exporting a file from XSM Machine to UNIX system.  
+                            </li>
                           </ol>
 
                           <p>
