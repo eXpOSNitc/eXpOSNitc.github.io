@@ -295,9 +295,9 @@ MOV SP, R4
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.2.4. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
 <p>2.4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-<p>&nbsp;2.4.2.  Compute the physical address of the kernel stack pointer </p>
-<p>&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.4.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
 <p>2.4.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 
 </figcaption>
@@ -337,8 +337,8 @@ INT number		// Invoke the corresponding INT instruction
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from a system call : </b>
 	<p>3.1. Compute the physical address corresponding to the top of the user stack:</p>
-	<p>3.1.1. Find the physical address of the stack page</p> 
-	<p>3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.1. Find the physical address of the stack page</p> 
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
 	<p>3.2. Store the return value in the space alloted in user stack.</p>
 	<p>3.3 Restore the value of BP from the stack top.</p>
 	<p>3.4. Store the value of User Stack Pointer in the process table to SP.</p>
