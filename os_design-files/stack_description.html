@@ -160,6 +160,7 @@ PUSH Argument_2
 PUSH Argument_3
 PUSH R0			// Push an empty space for return value
 INT number		// Invoke the corresponding INT instruction
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -189,6 +190,7 @@ INT number		// Invoke the corresponding INT instruction
 ...
 MOV R0, [SP - 4]      // Extracting the system call number from the user stack to R0
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -220,6 +222,7 @@ MOV R1, [SP - 3]    // Extracting the values of the arguments
 MOV R2, [SP - 2]
 MOV R3, [SP - 1]
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -249,6 +252,7 @@ MOV R3, [SP - 1]
 ...
 PUSH BP    // Pushing BP onto the user stack
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -285,6 +289,7 @@ ADD R4, processtable[KERNEL STACK POINTER]
 MOV SP, R4	
 // store the physical address of the kernel stack pointer in SP 
 ...
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -320,13 +325,9 @@ MOV SP, R4
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -360,13 +361,14 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+POP R0			// Pop and save the return value
+POP Argument_3		
+POP Argument_2
+POP Argument_1		// Pop and discard the arguments
+POP System_Call_Number	// Pop and discard the system call number 
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
