@@ -139,7 +139,7 @@
                 <h2>Using the Roadmap</h2>
                 <br>
                 <br>
-                <p>This roadmap is divided into stages. Each stage is to be done in the sequential order. Incrementally, you will build eXpOS according to its specification. Links are provided throughout the document for further reference. There are two kinds of links. The <b style="color:#26A65B">important links</b> which you must visit and read the immediate section to which the link points to, in order to proceed with the roadmap. The <span style="color:#26A65B">informative links</span> which may be clicked if you want more information at a particular point. However this information may not be necessary at that point. You can proceed with the roadmap without visiting these links.</p>
+                <p>This roadmap is divided into stages. Each stage is to be done in sequential order. You will build eXpOS incrementally. Links are provided throughout the document for further reference. There are two kinds of links. The contents of the <b style="color:#26A65B">important links</b> must be read immediately before proceeding with the roadmap. The <span style="color:#26A65B">informative links</span> may be clicked for more information about a particular concept. However this information may not be necessary at that point and you may proceed with the roadmap without visiting these links.</p>
               
                 <div class="container-fluid">
                 <div class="row-fluid">
@@ -254,7 +254,7 @@
                                <li class="list-group-item list-group-item-success" style="display: inline-block">$HOME/myexpos/doc</li>
                             </ul>
                           
-                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification.</a></p>
+                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification</a> and <a href="./support_tools-files/xfs-interface.html" target="_blank">XFS-Interface Specification</a> (interface between the UNIX System and eXpFS)</p>
                         </div>
                       </div>
 
@@ -269,9 +269,9 @@
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface).
+                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a>.
                             </p>
-                            <i> In this stage, you will create a UNIX file and load it to the XFS disk using the xfs-interface.</i>
+                            <i> In this stage, you will create a text file and load it to the XFS disk using the xfs-interface.</i>
                             <br/><br/>
 
                           <ol style="list-style-type:decimal;margin-left:2px">
@@ -281,7 +281,7 @@
                                 <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
-                              This will take you to the <a href="support_tools-files/xfs-interface.html" target="_blank">xfs-interface prompt</a>. 
+                              This will take you to the xfs-interface prompt. 
                             </li>
                             <br/>
                       
@@ -292,7 +292,10 @@
                                 <pre># fdisk 
 # exit</pre>
                               </div>
-                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>).
+                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk of the XSM machine. The disk is formatted to eXperimental File System (eXpFS) (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>). <br/> <br/>
+
+                              The XSM machine's disk is a sequence of 512 blocks, each block capable of holding
+                              512 words (see <a href="os_implementation.html" target="_blank">Disk Organization</a>).  The second block of the formatted disk contains a disk free list which is explained below.
                             </li>
                             <br/>
                             <li>
@@ -355,7 +358,7 @@ To cool in the peppermint wind.</pre>
                                 <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
-                              This will take you to the xfs-interface prompt. Type the following commands in the xfs-interface prompt.
+                              This will take you to the xfs-interface prompt. Type the following commands.
                               <br><br>
                               <div> 
                                 <pre># load --data $HOME/myexpos/sample.dat</pre>
