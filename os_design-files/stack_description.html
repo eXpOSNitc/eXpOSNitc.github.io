@@ -274,13 +274,17 @@ PUSH BP    // Pushing BP onto the user stack
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+...
+MOV processtable[USER STACK POINTER], SP    
+// Save SP in the user stack pointer field of the process table
+MOV R4, processtable[USER AREA PAGE NUMBER]
+MUL R4, 512	
+// find the physical address of the user area page 
+ADD R4, processtable[KERNEL STACK POINTER]	 
+// find the value of the kernel stack pointer
+MOV SP, R4	
+// store the physical address of the kernel stack pointer in SP 
+...
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
