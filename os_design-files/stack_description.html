@@ -144,7 +144,7 @@ of return.</p>
 <br>
 
 <!--action 1-->
- <div class="container-fluid fig_code">
+ <div class="container-fluid .2.1_code">
  <figure>
   <div class="row">
     <div class="col-sm-6">
@@ -186,13 +186,9 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-6">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+...
+MOV R0, [SP - 4]	// Extracting the system call number from the user stack to R0
+...
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -219,13 +215,11 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-6">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+...
+MOV R1, [SP - 3]	// Extracting the values of the arguments
+MOV R2, [SP - 2]
+MOV R3, [SP - 1]
+...
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -252,13 +246,9 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-6">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+...
+PUSH BP			// Pushing BP onto the user stack
+...
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
