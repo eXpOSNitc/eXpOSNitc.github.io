@@ -53,6 +53,7 @@
     .custom-badge {
         background:#26A65B;
         font-size:20px;
+        overflow: scroll;
     }
 
     .custom-panel{
@@ -60,6 +61,7 @@
       border-radius:4px;
       padding:2px;
       height:210px;
+        overflow: scroll;
     }
     .well{
       height:250px;
@@ -140,11 +142,11 @@
                 <p>This roadmap is divided into stages. Each stage is to be done in the sequential order. Incrementally, you will build eXpOS according to its specification. Links are provided throughout the document for further reference. There are two kinds of links. The <b style="color:#26A65B">important links</b> which you must visit and read the immediate section to which the link points to, in order to proceed with the roadmap. The <span style="color:#26A65B">informative links</span> which may be clicked if you want more information at a particular point. However this information may not be necessary at that point. You can proceed with the roadmap without visiting these links.</p>
               
                 <div class="container-fluid">
-  <div class="row-fluid">
+                <div class="row-fluid">
                 <div class="col-sm-3 well">
-                <div class="custom-panel">
+                <div class="text-center custom-panel">
                 <span class="label custom-badge">1</span>
-                <h4 class="text-center">Setting up the System</h4>
+                <h4>Setting up the System</h4>
                 <ul list-style-type="circle">
                 <li>Set up the environment to build the eXpOS.</li>
                 </ul>
@@ -155,7 +157,7 @@
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">2</span>
                 <h4>Understanding the File System</h4>
-                <p>Disk Organisation, eXpFS File System, Disk Data Structures (Inode table, Root File, Disk Free List) </p>
+                <p>Familiarising with Disk Organisation, understanding eXpFS File System and XFS-interface, introduction to Disk Data Structures (Inode table, Root File, Disk Free List) </p>
                 </div>
                 </div>
                 
@@ -163,7 +165,7 @@
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">3</span>
                 <h4>Bootstrapping</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
+                <p>Understanding the bootstrap process, Introducing protected (kernel) mode </p>
                 </div>
                 </div>
 
@@ -354,16 +356,26 @@ To cool in the peppermint wind.</pre>
                             </li> 
 
                             <br><br>
-                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to 1 UNIX file (say <i>$HOME/myexpos/inode_table.txt</i>).
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to a UNIX file (say <i>$HOME/myexpos/inode_table.txt</i>).
                             <br><br>
                             <div>
-                              <pre># copy 3 4 $HOME/myexpos/fat_block.txt
+                              <pre># copy 3 4 $HOME/myexpos/inode_table.txt
 # exit</pre>
                             </div>
+
+                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. User table occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use.
+                            
                             </li> 
 
                             <br><br>
-                            <li> Now check the Inode table entry for the file <tt>sample.dat</tt> and find the block numbers of Data Blocks.
+                            <li> Now check the Inode table entry for the file <tt>sample.dat</tt> in the UNIX file <tt>inode_table.txt</tt> and find the block numbers of its Data Blocks. The contents of the file <tt>inode_table.txt</tt> will be as follows: <br><br>
+                            <div>
+                              <pre>
+                                !!!!!!!! Contents of inode_table.txt !!!!!!!
+                              </pre>
+                            </div>
+                            
+
                             </li>
 
                             <br><br>
@@ -405,7 +417,13 @@ peppermint wind</pre></div>
                             </li> 
                           </ol>
 
-                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a></p>
+                          <p>
+                          <b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a></p>
+
+                          <p> Q1 : When a file is created entries are made in Inode table as well as in Root file. What is the need for this duplication?<br/>
+                          A : Inode table is a data structure which is accessible only in Kernel mode, whereas Root file is accessible both in Kernel and User mode. This enables the user to search for a file from the application program itself.
+                          </p>
                         </div>
                       </div>
 
@@ -513,66 +531,7 @@ Machine is halting</pre></div>
 
                       <div id="collapse4" class="panel-collapse collapse">
                         <div class="panel-body">
-                          <p>
-                            Here an introduction to <a href="arch_spec-files/interrupts_exception_handling.html" target="_blank">Terminal/Console Interrupt Handler</a> is given. Terminal Interrupt occurs after <a href="arch_spec-files/instruction_set.html" target="_blank"><b>IN</b></a> machine instruction gets executed by the machine. To get a brief idea of Console Interrupt Handler the program from Stage 3 is used with some modifications.
-                          </p>
-                          <ol style="list-style-type:decimal;font-size:14px">
-                            <li>
-                              Instead of printing the odd numbers between 1 and 20, here the odd numbers between 1 and n (which need to be enterd by the user) are printed. SPL Code to print odd numbers from 1 to n :
-                              <br><br>
-                              <div> 
-                                <pre>
-alias counter R1;
-alias n R0;
-print "Enter n:";
-read;
-counter = 0;
-while(counter <= n) do
-  if(counter%2 != 0) then
-    print counter;
-  endif;
-  counter = counter + 1;
-endwhile; </pre>              </div>
-                            </li>
-
-                            <li>
-                              Now repeat the steps 2 and 3 of Stage 3.
-                            </li>
-
-                            <li>
-                              Now the Concole Interrupt Handler needs to be coded. 
-                              <ul style="list-style-type:disc;font-size:14px">
-                                <li><span style="color:red">Initial steps of System Call handling here</span></li>
-                                <li>
-                                  Initially the terminal status was 1 (1 for busy, 0 for free). It needs to changed to 0. (See <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>. <b>[29568+0]=0</b>.
-                                </li>
-                                <li>
-                                  Using the PID field of the Terminal Status Table, locate the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry of the process that read the data.
-                                </li>
-                                <li>
-                                  Copy the word read from standard input to the Input Buffer field in the Process Table entry.
-                                </li>
-                                <li>
-                                  Set the PID field of Terminal Status Table to -1.
-                                </li>
-                                <li>
-                                  Wake up all processes waiting for terminal
-                                </li>
-                                <li>
-                                  After the interrupt occurs a valid input string gets stored in the port P0. We need to move the contents of P0 to some register(for eg: R0) as after next <b>read;</b> instruction the contents of P0 gets changed.<br><br>
-                                  <div>
-                                    <pre>MOV R0,P0</pre>
-                                  </div>  
-                                </li>
-
-                                <li>
-                                  Return from the Console Interrupt Handler.
-                                </li>
-                              </ul>
-                            </li>
-                          </ol>
-
-                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="os_spec-files/eXpFS.html" target="_blank">Filesystem (eXpFS) Specification.</a></p>
+                          
                         </div>
                       </div>
 
