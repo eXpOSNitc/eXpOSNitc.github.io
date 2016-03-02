@@ -269,8 +269,11 @@
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface). In this stage, you will create a UNIX file and load it to the XFS disk using the xfs-interface.
-                          </p>
+                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface).
+                            </p>
+                            <i> In this stage, you will create a UNIX file and load it to the XFS disk using the xfs-interface.</i>
+                            <br/><br/>
+
                           <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
                               Run the XFS Interface<br><br>
@@ -455,22 +458,23 @@ peppermint wind</pre></div>
                       <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code </a> is executed. ROM Code resides in page 0 of the memory. It is hard coded into the machine i.e the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "bootstrap" loader in OS literature. <!--ROM code does the following operations :
-                            <ol style="list-style-type:decimal;font-size:14px">
+                            When the XSM machine is started up the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine i.e the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "bootstrap" loader in OS literature. ROM code does the following operations :
+                            <ol style="list-style-type:decimal;margin-left:10vw">
                               <li>Loads block 0 of disk to page 1 of memory (physical address 512).</li>
                               <li>After loading the block to memory, it sets IP (Instruction Pointer) to 512 so that the next instruction to be executed is fetched from location 512 (page 1 in memory starts from location 512).</li>
-                            </ol>-->
+                            </ol>
                           </p> 
 
-                          <p>So if you write a program in SPL, compile it using SPL compiler and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. This program which is loaded to block 0 of disk is supposed to be the OS Startup Code. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup.  (<b>WARNING</b>:The following links are for more information. Don't get lost in these links. If you don't understand, come back and proceed with the roadmap, <a href="os_implementation.html">Memory Organization, Disk Organization</a>).</p>
+                          <p>So if you write a program in SPL, compile it using SPL compiler and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. This program which is loaded to block 0 of disk is supposed to be the OS Startup Code. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup.  (<b>WARNING</b> : The following links are for more information. Don't get lost in these links. If you don't understand, come back and proceed with the roadmap, <a href="os_implementation.html">Memory Organization, Disk Organization</a>).</p>
 
                           <p/>The OS designer must design and program  the "OS Startup Code", compile it using the SPL compiler to generate executable program and copy this program to block 0 of the disk (using xfs interface). Once that is done, this code is loaded into page 1 of memory during boot up by the ROM code. Now this OS Startup code will start executing.</p>
                         
-                          <p>In this stage, we will write a system program to<b> print odd numbers from 1 to n</b> and run it as the OS Startup Code in the machine. The steps to do this are explained in detail below. </p>
+                          <i>In this stage, we will write a system program to<b> print odd numbers from 1 to 20</b> and run it as the OS Startup Code in the machine. The steps to do this are explained in detail below. </i>
+                          <br/><br/>
                           
-                          <ol style="list-style-type:decimal;font-size:14px">
+                          <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
-                              Create the program to print odd numbers from 1 to 20 using SPL. (SPL Specification need not be read now. It is given  in <a href="support_tools-files/spl.html" target="_blank"> SPL Documentation </a>) See examples of SPL programs in <tt>$HOME/myexpos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
+                              Create the program to print odd numbers from 1 to 20 using SPL. (<a href="support_tools-files/spl.html" target="_blank">SPL Specification</a> need not be read now). See examples of SPL programs in <tt>$HOME/myexpos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
                               <br><br>
                               <div> 
                                 <pre>
@@ -483,10 +487,10 @@ while(counter <= 20) do
   counter = counter + 1;
 endwhile; </pre>
                               </div>
-                              An SPL program uses the system registers directly instead of variables. For convenience, you can alias the registers with appropriate identifiers. See <a href="support_tools-files/spl.html" target="_blank">aliasing</a> in SPL. In the above program R0 is aliased as <i>counter</i>.
+                              An SPL program uses the system registers directly instead of variables. For convenience, you can <a href="support_tools-files/spl.html" target="_blank">alias</a> the registers with appropriate identifiers. In the above program R0 is aliased as <var>counter</var>.
                             </li>
                             
-                            <br><br>
+                            <br>
                             <li>Save this file as <tt>$HOME/myexpos/spl/spl_progs/oddnos.spl</tt>. Compile this SPL program using the commands
                               <br><br>
                               <div>
@@ -494,9 +498,9 @@ endwhile; </pre>
 ./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
 
-                            <br><br>
+                            <br/>
                             <li> 
-                              Load the file generated by the SPL compiler ( <tt>$HOME/myexpos/spl/spl_progs/os_startup.xsm</tt> ) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
+                              Load the file generated by the SPL compiler (<tt>$HOME/myexpos/spl/spl_progs/os_startup.xsm</tt>) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
                               <br><br>
                               <div>
                                 <pre># load --os $HOME/myexpos/spl/spl_progs/os_startup.xsm
@@ -505,7 +509,7 @@ endwhile; </pre>
                             </li>
                             Note that the <tt>--os</tt> option loads the file to Block 0 of the XFS disk.
 
-                            <br><br>
+                            <br/><br>
                             <li> Run the machine using the command 
                               <br><br>
                               <div>
@@ -535,6 +539,21 @@ Machine is halting</pre></div>
                           <p> You may also write a few SPL programs on your own and run it on the machine to get familiarized with SPL syntax. Try using the instructions like <a href="support_tools-files/spl.html" target="_blank"><i>breakpoint</i></a> which translates to <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction. This instruction is useful for debugging. Refer <a href="support_tools-files/xsm-simulator.html" target="_blank">XSM Debugger</a></p>
 
                           <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Runtime envoronment</a>.</p>
+
+                          <!--=========== BEGIN contents SECTION ================-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+                            <a data-toggle="collapse"  href="#collapseq2"><b>Q1.</b> Immediately after the execution of the ROM Code, IP will be pointing to which instruction?</a>
+                            <div id="collapseq2" class="panel-collapse collapse"> 1<sup>st</sup> instruction in page 1 of the memory. This is because Boot ROM code contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1 .                                                      
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                          </div>
+                          </div>
+
                         </div>
                       </div>
 
