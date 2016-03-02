@@ -50,7 +50,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body> 
+  <body id="stack_desc"> 
      <!-- BEGAIN PRELOADER -->
     <div id="preloader">
       <div id="status">&nbsp;</div>
@@ -104,16 +104,19 @@
      <div class="container">
          
          	
-         <br><br><br><br><br>
-         <h3>Kernel Stack Management</h3>
+         <br><br><br><br>
+		<div class="heading">
+         <h2 style="font-size:36px">Kernel Stack Management</h2>
+		 <br><br>
+		</div>
          <br>
          <p>This document is a tutorial explaining how the eXpOS kernel must manage the kernel stack.  The document is
 specific to the implementation of eXpOS on the XSM machine. 
 	There are three different situations where the eXpOS kernel needs to do careful stack management:</p>
 	<br>
-	<p>&nbsp;&nbsp;&nbsp;a. A user program invokes a system call
-	<p>&nbsp;&nbsp;&nbsp;b. An Exception / Interrupt occurs when a user process is executing
-	<p>&nbsp;&nbsp;&nbsp;c. A kernel module invokes another kernel module
+	<p>&nbsp;&nbsp;&nbsp;a. A user program invokes a system call</p>
+	<p>&nbsp;&nbsp;&nbsp;b. An Exception / Interrupt occurs when a user process is executing</p>
+	<p>&nbsp;&nbsp;&nbsp;c. A kernel module invokes another kernel module</p>
 	</p>
 	
      
@@ -139,17 +142,16 @@ of return.</p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">4.Push one space for the return value </p>
 &nbsp;&nbsp;&nbsp;<p >5.Invoke the INT machine instruction corresponding to the system call</p>
 <br>
-<!--
 
-1. Actions done by the user process upon encountering an INT instruction :
-<br>
-<p>	All the registers currently used by the process is pushed onto the user stack followed by the system call number corresponding to the system call.The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. </p>
-<br>
-
-<img src="../img/actions_of_process_upon_encountering_sys_call.png" style="width:40%">
-<span style="float:right;">
-<br><br>
-<pre>
+<!--action 1-->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/actions_of_process_upon_encountering_sys_call.png" width="95%">
+    </div>
+    <div class="col-sm-6">
+    <pre>
 <code>
 .... 			// Code to push registers
 PUSH System_Call_Number	// Push system call number
@@ -158,35 +160,15 @@ PUSH Argument_2
 PUSH Argument_3
 PUSH R0			// Push an empty space for return value
 INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
 </code>
-</pre>
-<p>(NOTE: The machine code above is in the form of pseudo code.)</p>	
-</span>
-<br><br><br><br>
--->
- <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-6">
-     <img src="../img/actions_of_process_upon_encountering_sys_call.png" width="85%">
-    </div>
-    <div class="col-sm-6">
-    <pre>
-	<code>
-	.... 			// Code to push registers
-	PUSH System_Call_Number	// Push system call number
-	PUSH Argument_1		// Push the arguments to the stack
-	PUSH Argument_2
-	PUSH Argument_3
-	PUSH R0			// Push an empty space for return value
-	INT number		// Invoke the corresponding INT instruction
-	</code>
+	
 	</pre>
     </div>
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br>Fig.1 - <b>Actions done by the user process upon encountering an INT instruction :</b>All the registers currently used by the process is pushed onto the user stack followed by the system call number corresponding to the system call.The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space.
+		<figcaption><br><b>Fig.1 - Actions done by the user process upon encountering an INT instruction : </b>All the registers currently used by the process are pushed onto the user stack followed by the system call number corresponding to the system call. The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space.
 </figcaption>
 </div>
 </div>
@@ -194,26 +176,164 @@ INT number		// Invoke the corresponding INT instruction
 </div>
 <br><br><br><br>
   
+<!-- action 2.1 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/actions_of_kernel_upon_entering_sys_call_step1.png" width="95%"></img>
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.1. - Actions done by the kernel module on entry into a system call : </b>Transfer the system call number from the user stack to register R0.
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+  
+<!-- action 2.2 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/actions_of_kernel_upon_entering_sys_call_step2.png" width="95%"></img>
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.2. - Actions done by the kernel module on entry into a system call : </b>Transfer the arguments from the user stack to R1, R2, R3.
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
 
+<!-- action 2.3 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/actions_of_kernel_upon_entering_sys_call_step3.png" width="95%"></img>
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.3. - Actions done by the kernel module on entry into a system call : </b>Push the base pointer (BP) of the user process into the user stack.
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+<!-- action 2.4 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT instruction
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.4. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
+<p>2.4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
+<p>&nbsp;2.4.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.4.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+<!--
 2. Actions done by the kernel module on entry into a system call :
 <br> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">1. Transfer the system call number from the user stack to register R0.</p>
-<img src="/home/kunju/Videos/eXpOS/img/actions_of_kernel_upon_entering_sys_call_step1.png" ></img> 
+<img src="../img/actions_of_kernel_upon_entering_sys_call_step1.png" ></img> 
 <br><br><br><br>
+
 &nbsp;&nbsp;&nbsp;<p style="margin:0">2. Transfer the arguments from the user stack to R1, R2, R3.</p>
-<img src="/home/kunju/Videos/eXpOS/img/actions_of_kernel_upon_entering_sys_call_step2.png"></img> 
+<img src="../img/actions_of_kernel_upon_entering_sys_call_step2.png"></img> 
 <br><br><br><br>
+
 &nbsp;&nbsp;&nbsp;<p style="margin:0">3. Push the base pointer (BP) of the user process into the user stack. </p>
-<img src="/home/kunju/Videos/eXpOS/img/actions_of_kernel_upon_entering_sys_call_step3.png"></img> 
-<br><br><br><br> 
+<img src="../img/actions_of_kernel_upon_entering_sys_call_step3.png"></img> 
+<br><br><br><br>
+--> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">4. Switch from the user stack to the kernel stack</p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2  Compute the physical address of the kernel stack pointer </p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2.1  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0">4.2.2  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p >4.3  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-<img src="/home/kunju/Videos/eXpOS/img/actions_of_kernel_upon_entering_sys_call_step4.png"></img> 
+<img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png"></img> 
 <br><br><br><br>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">5. Identify the system call using the value in register R0.</p>
 &nbsp;&nbsp;&nbsp;<p>6. Transfer control to the system call code.  </p>
