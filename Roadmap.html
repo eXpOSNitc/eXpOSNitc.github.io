@@ -143,13 +143,12 @@
               
                 <div class="container-fluid">
                 <div class="row-fluid">
+                
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">1</span>
                 <h4>Setting up the System</h4>
-                <ul list-style-type="circle">
-                <li>Set up the environment to build the eXpOS.</li>
-                </ul>
+                Set up the environment to build the eXpOS
                 </div>
                 </div>
 
@@ -157,15 +156,23 @@
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">2</span>
                 <h4>Understanding the File System</h4>
-                <p>Familiarising with Disk Organisation, understanding eXpFS File System and XFS-interface, introduction to Disk Data Structures (Inode table, Root File, Disk Free List) </p>
+                <ul style="text-align:left;font-size:12px">
+                <li>* Familiarising with Disk Organisation</li>
+                <li>* Understanding eXpFS File System</li>
+                <li>* Using the XFS-interface</li>
+                <li>* Introduction to Disk Data Structures (Inode table, Root File, Disk Free List)</li>
+                </ul>
                 </div>
                 </div>
                 
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel">
                 <span class="label custom-badge">3</span>
-                <h4>Bootstrapping</h4>                
-                <p>Understanding the bootstrap process, Introducing protected (kernel) mode </p>
+                <h4>Bootstrapping</h4>    
+                <ul style="text-align:left;font-size:12px">
+                <li>* Understanding the bootstrap process</li>
+                <li>* Introducing protected (kernel) mode</li>
+                </ul>
                 </div>
                 </div>
 
@@ -262,20 +269,19 @@
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated file system. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying Filesystem (eXpFS) and its interface (xfs-interface). In this stage, you will create an UNIX file and load it to the XFS disk using the xfs-interface
+                            <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a hard disk for the machine simulator (XSM). Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface (xfs-interface). In this stage, you will create a UNIX file and load it to the XFS disk using the xfs-interface.
                           </p>
-                          <ol style="list-style-type:decimal;font-size:14px">
+                          <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
-                              Run the XFS Interface 
-                              <br><br>
+                              Run the XFS Interface<br><br>
                               <div>
                                 <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
                               This will take you to the <a href="support_tools-files/xfs-interface.html" target="_blank">xfs-interface prompt</a>. 
                             </li>
-                            
-                            <br><br>
+                            <br/>
+                      
                             <li>
                               Start by formatting the disk in the XFS interface using <b>fdisk</b> command. Type the following commands in the xfs-interface prompt.
                               <br><br>
@@ -283,12 +289,11 @@
                                 <pre># fdisk 
 # exit</pre>
                               </div>
-                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System. See <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification </a>
+                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk for the machine simulator. The disk is formatted as eXpFS or eXperimental File System (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>).
                             </li>
-
-                            <br><br>
+                            <br/>
                             <li>
-                              The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (Disk Free List is stored in disk block number 2). The output will be as follows: 
+                              The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (stored in disk block number 2). The output will be as follows: 
                               <br><br>
                               <div>   
                                 <pre>
@@ -326,8 +331,8 @@ Total No of Blocks = 512</pre>
                               The first 69 blocks (blocks 0 to 68) are reserved for disk structures, OS routines, Shell code, Idle code and INIT program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
-                            <br><br>
-                            <li>Create a file in your UNIX machine with sample data. A sample data file is given below
+                            <br>
+                            <li>Create a file in your UNIX machine with sample data. A sample data file is given below:
                               <br><br>
                               <div>
                                 <pre>There is a place where the sidewalk ends
@@ -340,8 +345,8 @@ To cool in the peppermint wind.</pre>
                               Save the file as <b>$HOME/myexpos/sample.dat</b>
                             </li>
 
-                            <br><br>
-                            <li> Load this data file ($HOME/myexpos/sample.dat) to the XFS disk from your UNIX machine.  This can be done by the following commands
+                            <br>
+                            <li> Load this data file <tt>($HOME/myexpos/sample.dat)</tt> to the XFS disk from your UNIX machine.  This can be done by the following commands:
                               <br><br>
                               <div> 
                                 <pre>cd $HOME/myexpos/xfs-interface
@@ -352,11 +357,11 @@ To cool in the peppermint wind.</pre>
                               <div> 
                                 <pre># load --data $HOME/myexpos/sample.dat</pre>
                               </div>
-                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of four  data blocks. An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also. Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding with the roadmap.
+                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of four  data blocks. An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?). Read about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding with the roadmap.
                             </li> 
 
-                            <br><br>
-                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to a UNIX file (say <i>$HOME/myexpos/inode_table.txt</i>).
+                            <br>
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk block number 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
                             <br><br>
                             <div>
                               <pre># copy 3 4 $HOME/myexpos/inode_table.txt
@@ -365,10 +370,10 @@ To cool in the peppermint wind.</pre>
 
                             <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. User table occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use.
                             
-                            </li> 
+                            <br/>
 
-                            <br><br>
-                            <li> Now check the Inode table entry for the file <tt>sample.dat</tt> in the UNIX file <tt>inode_table.txt</tt> and find the block numbers of its Data Blocks. The contents of the file <tt>inode_table.txt</tt> will be as follows: <br><br>
+                            <br>
+                            Now check the Inode table entry for the file <tt>sample.dat</tt> in the UNIX file <tt>inode_table.txt</tt> and find the block numbers of its data blocks. The contents of the file <tt>inode_table.txt</tt> will be as follows: <br><br>
                             <div>
                               <pre>
                                 !!!!!!!! Contents of inode_table.txt !!!!!!!
@@ -378,18 +383,18 @@ To cool in the peppermint wind.</pre>
 
                             </li>
 
-                            <br><br>
-                            <li> Now check the contents of the disk free list. 1 more entry will be marked as used and this corresponds to the Data Block 1 of <tt>sample.dat</tt> .
+                            <br>
+                            <li> Now check the contents of the disk free list. One more entry will be marked as used and this corresponds to the Data Block 1 of <tt>sample.dat</tt> .
                             </li>
                             
-                            <br><br>
+                            <br>
                             <li>
                               Copy the data blocks from the XFS disk and display it as a UNIX file <tt>$HOME/myexpos/data.txt</tt>. 
                               <br><br>
                               <div>
                                 <pre># copy 69 69 $HOME/myexpos/data.txt</pre>
                               </div>    
-                              You will get back the contents of the file <tt>$HOME/myexpos/sample.dat</tt> in <tt>$HOME/myexpos/data.txt</tt>. However in <tt>$HOME/myexpos/data.txt</tt>, each word is displayed in a line. A  word in XFS is 16 characters long. Sample <tt>data.txt</tt> file is shown below.
+                              You will get back the contents of the file <tt>$HOME/myexpos/sample.dat</tt> in <tt>$HOME/myexpos/data.txt</tt>. However in <tt>$HOME/myexpos/data.txt</tt>, each word is displayed in a line because a word in XFS is 16 characters long. Sample <tt>data.txt</tt> file is shown below.
                               <br><br>
                               <div>
                                 <pre>There is a plac
@@ -419,11 +424,23 @@ peppermint wind</pre></div>
 
                           <p>
                           <b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a></p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a>.</p>
 
-                          <p> Q1 : When a file is created entries are made in Inode table as well as in Root file. What is the need for this duplication?<br/>
-                          A : Inode table is a data structure which is accessible only in Kernel mode, whereas Root file is accessible both in Kernel and User mode. This enables the user to search for a file from the application program itself.
-                          </p>
+                          <!--=========== BEGIN contents SECTION ================-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+                            <a data-toggle="collapse"  href="#collapseq1"><b>Q1.</b> When a file is created entries are made in Inode table as well as in Root file. What is the need for this duplication?</a>
+                            <div id="collapseq1" class="panel-collapse collapse">
+                                          Inode table is a data structure which is accessible only in Kernel mode, whereas Root file is accessible both in Kernel and User mode. This enables the user to search for a file from the application program itself using the Root file.                                             
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                          </div>
+                          </div>
+                         
                         </div>
                       </div>
 
@@ -431,7 +448,7 @@ peppermint wind</pre></div>
 
                       <div class="panel-heading">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse3"><span class="fa fa-check-square-o"></span>Stage 3 : Starting the machine</a>
+                          <a data-toggle="collapse"  href="#collapse3"><span class="fa fa-check-square-o"></span>Stage 3 : Bootstrapping</a>
                         </h4>
                       </div>
 
@@ -525,7 +542,7 @@ Machine is halting</pre></div>
 
                       <div class="panel-heading">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse4"><span class="fa fa-check-square-o"></span>Stage 4 : Introduction to Terminal Interrupt Handler </a>
+                          <a data-toggle="collapse"  href="#collapse4"><span class="fa fa-check-square-o"></span>Stage 4 : Running User Mode Programs </a>
                         </h4>
                       </div>
 
