@@ -268,7 +268,7 @@ PUSH BP    // Pushing BP onto the user stack
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.3. - Actions done by the kernel module on entry into a system call : </b>Push the base pointer (BP) of the user process into the user stack.
+		<figcaption><br><b>Fig.2.b. - Actions done by the kernel module on entry into a system call : </b>Push the base pointer (BP) of the user process into the user stack.
 </figcaption>
 </div>
 </div>
@@ -305,12 +305,12 @@ MOV SP, R4
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.4. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
-<p>2.4.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-<p>2.4.2.  Compute the physical address of the kernel stack pointer </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-<p>2.4.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+		<figcaption><br><b>Fig.2.c. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
+<p>2.c.1. Transfer the current SP register to User stack pointer field of the process table.</p>
+<p>2.c.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.c.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 
 </figcaption>
 </div>
@@ -326,7 +326,6 @@ MOV SP, R4
 <br><br>
 <p><h4><b>3. Actions done by the kernel module before returning from the system call</b></h4></p>  
 <br><br>
-<br>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Restore the BP</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Point the stack pointer (SP) to top of the user stack </p>
@@ -352,12 +351,12 @@ MOV SP, R4
 	<div class="row">
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from a system call : </b>
-	<p>3.1. Compute the physical address corresponding to the top of the user stack:</p>
-	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.1. Find the physical address of the stack page</p> 
-	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.2. Add the offset value from the User Stack Pointer field in the process table</p>
-	<p>3.2. Store the return value in the space alloted in user stack.</p>
-	<p>3.3  Restore the value of BP from the stack top.</p>
-	<p>3.4. Store the value of User Stack Pointer in the process table to SP.</p>
+	<p>3.a. Compute the physical address corresponding to the top of the user stack:</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.1. Find the physical address of the stack page</p> 
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.2. Add the offset value from the User Stack Pointer field in the process table</p>
+	<p>3.a. Store the return value in the space alloted in user stack.</p>
+	<p>3.b  Restore the value of BP from the stack top.</p>
+	<p>3.c. Store the value of User Stack Pointer in the process table to SP.</p>
 
 </figcaption>
 </div>
@@ -400,8 +399,8 @@ POP System_Call_Number	// Pop and discard the system call number
 	<div class="row">
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.4. -  Actions done by the process after returning from a system call : </b>
-	<p>4.1. Pop off the return value from the stack top and store in a register, say R0.</p>
-	<p>4.2. Pop off the arguments and system call number from the user stack.</p><br>
+	<p>4.a. Pop off the return value from the stack top and store in a register, say R0.</p>
+	<p>4.b. Pop off the arguments and system call number from the user stack.</p><br>
 
 </figcaption>
 </div>
@@ -519,7 +518,7 @@ INT number		// Invoke the corresponding INT instruction
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.1 - Actions done by the kernel module before returning from the interrupt routine:</b> Use the RESTORE machine instruction to restore the values of the machine registers. 
+		<figcaption><br><b>Fig.2.a - Actions done by the kernel module before returning from the interrupt routine:</b> Use the RESTORE machine instruction to restore the values of the machine registers. 
 	
 </figcaption>
 </div>
@@ -551,7 +550,7 @@ INT number		// Invoke the corresponding INT instruction
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.2 - Actions done by the kernel module before returning from the interrupt routine:</b> Set the value of SP to the top of the user stack
+		<figcaption><br><b>Fig.2.a - Actions done by the kernel module before returning from the interrupt routine:</b> Set the value of SP to the top of the user stack
 <p>2.1  find the process table entry for the currently running user process</p>
 <p>2.1.1  find the pid of the currently running process from the system status table</p>
 <p>2.1.2  find the starting address of the process table entry of the currently running process, by adding the offset, pid*16 to the starting address of the process tables in memory</p>
