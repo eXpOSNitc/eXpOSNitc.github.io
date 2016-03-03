@@ -195,35 +195,38 @@
 	              <p>Any pedagogical operating system project offered as part of an undergraduate junior level operating system course needs to satisfy two requirements:</p>
 	              <ol>
 		              <li>The student must be given as much depth and detail as possible about the central operating system concepts.</li>
-		              <li>The quantity of work involved must not exceed what a student is able to do in a typically four month semester.</li>
+		              <li>The quantity of work involved must not exceed what a student is able to do in a four month semester.</li>
 				  </ol>	
 				  <p>The problem before the teacher is to decide on how much compromise on (1) must be done in favour of (2). eXpOS is our stance in this matter.</p> 
 				  <br/>
 				  <p>There are three central principles that have been kept in mind in designing the eXpOS educational tool:</p>
 				  <ol type="a">
-					  <li>“Separation of concerns” - <a href="https://en.wikipedia.org/wiki/Edsger_W._Dijkstra" target="_blank">Edsger W. Dijkstra</a></li>
-					  <li>“Things shall be made as simple as possible, but no simpler” - <a href="https://en.wikipedia.org/wiki/Albert_Einstein" target="_blank">Albert Einstein</a></li>
+					  <li>“Separation of concerns” </li>
+					  <li>“Things shall be made as simple as possible, but no simpler” </li>
 					  <li>“Build to learn” rather than “learn to build"</li>
 				  </ol>
 				  <p>These thoughts have translated into the following decisions:</p>
 				  <ol>
 					  <li>Keep the upward and downward interfaces of the OS kernel idealistically simple – This means:
 					  	<ol type="a">
-						  	<li>The architecture platform on which the OS is implemented is kept easy to understand and program, yet capable of supporting virtual memory, interrupt driven disk/IO, timesharing, exception handling, demand paging etc.</li>
-							<li>The application programming interface (<a href="http://exposnitc.github.io/os_spec.html#collapse1" target="_blank">API</a>) (and the application binary interface <a href="http://exposnitc.github.io/abi.html" target="_blank"> ­(ABI) </a>)  provided by the OS is simple to comprehend and easy to implement. Yet any interesting application is “in principle” programmable.</li>
+						  	<li>The architecture platform on which the OS is implemented is kept simple to understand and program, yet capable of supporting virtual memory, interrupt driven disk/IO, timesharing, exception handling, demand paging etc.</li>
+							<li>The application programming interface (<a href="http://exposnitc.github.io/os_spec.html#collapse1" target="_blank">API</a>) (and the application binary interface <a href="http://exposnitc.github.io/abi.html" target="_blank"> ­(ABI) </a>)  provided by the OS are kept simple and minimal. </li>
 						</ol>
-						The resultant system may not be appreciated either by a serious architecutre designer or an application programmer. Our concern here is different.</li>
-					  <li>The OS specification has been kept as simple as possible from the view point of the OS programmer. Yet it is powerful enough to be interesting. For instance, the system supports multi-tasking; there is a functional file system and processes can create, write, read and delete data files; processes can share files and memory; there is support for interprocess communication and process sychronization; the system permits mulitple users; there is support for shared library; the OS supports virtual memory and so on.</li>
-					  <li>The OS code has to be completely written by the student with no built-in code given, except a bootstrap ROM code. The programming support has been kept deliberately minimal to avoid high level programming tools hiding too many low level issues from the OS programmer. Essentially, the project requires the student to do “low level programming” on a “high level hardware", which we believe will be instructionally useful for the student to do once.</li>
-					  <li>The goal of the system is to help the student appreciate the functioning of a “sufficiently complex” operating system and not to help him/her gain experience with “real” operating systems programming. The architecture, the OS, the API, ABI etc. are all different from any of the existing “real” systems in use, but designed to make the task of programming the OS as simple as possible.</li>
+					  </li>
+					  <li>The OS specification has been kept as simple as possible from the view point of the OS programmer. The OS features are minimal:  <a href="https://en.wikipedia.org/wiki/Cooperative_multitasking" target="_blank">co-operative multi-tasking</a>,  a simple single-directory file system  where processes can create, write, read and delete data files,  provision for processess to share files and memory,  primitives for interprocess communication (binary semaphores) and process sychronization (signal-wait) and  support for mulitple users and demand-paged memory management.</li>
+
+					  <li>The OS code has to be completely written by the student with no built-in code given, except for a bootstrap ROM code. The programming support has been kept minimal to avoid high level programming tools hiding too many low level issues from the OS programmer. Essentially, the student has to do “low level programming” on a “high level hardware".</li>
+
+					  <li>The goal of the system is to help the student appreciate the functioning of a “sufficiently complex” operating system and <b>not</b> to help him/her gain experience with “real” operating systems programming. The architecture, the OS, the API, ABI etc. are all different from any of the existing “real” systems or standards in use, but designed to make the task of programming the OS as simple as possible.</li>
 				  </ol>	  
-				  <br/>
+				  
+              <hr style="border-color:black;border-width:1px">
 					
-					<p>Since the operating system kernel is a software that forms a layer between the hardware and the application program, the first major hurdle that a student faces while trying to write an OS is in understanding the complexities of the underlying hardware.</p>
+					<p>Since the operating system kernel is a software that forms a layer between the hardware and the application program, the first major hurdle that a student faces while writing an OS is in understanding the complexities of the underlying hardware.</p>
 					
-					<p>The eXpOS package simplifies this by providing an extremely simple­-to-­program hardware simulation – the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">XSM</a> machine. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines ­ is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple-to-learn <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL</a> language (which is just an extended assembler for the XSM hardware).</p>
+               <p>The eXpOS package simplifies this by providing a hypothetical simple-to-program hardware abstraction – the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">XSM Machine</a>. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines - is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple to learn <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL language</a> (which is just an enriched assembler for the XSM hardware).  </p>
 					
-					<p>The second interface an OS has is its upward interface – the interface to application programs. This interface, called the application binary interface (<a href="http://exposnitc.github.io/abi.html" target="_blank"> ­ABI </a>), defines the low level system call interface between the application and the OS as well as the format of executable files. We keep the ABI also very simple. It is easy to load executable files into the memory, though only small programs are permitted. Parameter passing between applications and the system calls is also made extremely simple. The resultant system calls are functionally adequate, but not extensive.</p>
+					<p>The second interface of the OS has is its upward interface – the interface to application programs. This interface, called the application binary interface (<a href="http://exposnitc.github.io/abi.html" target="_blank"> ­ABI </a>), defines the low level system call interface between the application and the OS, the virtual address space model for an application, the format of executable files etc. The ABI too is kept  minimal. It is easy load executables into the memory. Only small programs are permitted. Parameter passing between applications and the system calls is extremely simple. The resultant system functionally adequate, but not extensive.</p>
 
 					<p>The eXpOS ABI is too primitive to support application programs in the C programming language. Hence we provide a separate language (called <a href="http://exposnitc.github.io/support_tools-files/expl.html" target="_blank">ExpL</a>) using which applications can be created and compiled. The ExpL compiler given to the student supports the eXpOS high level application program interface (<a href="http://exposnitc.github.io/os_spec.html#collapse1" target="_blank">API</a>). We note here that, implementing an ExpL compiler for the eXpOS ABI on the XSM machine would be an instructive exercise for an undergraduate compiler design laboratory.</p>
 
