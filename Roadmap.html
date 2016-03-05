@@ -328,7 +328,7 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for disk structures, OS routines, Shell code, Idle code and INIT program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and INIT program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
                             <br>
@@ -357,7 +357,20 @@ To cool in the peppermint wind.</pre>
                               <div> 
                                 <pre># load --data $HOME/myexpos/sample.dat</pre>
                               </div>
-                              This will load the file to the XFS disk. An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file (maximum 4). An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?). You must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding further.
+                              This will load the file to the XFS disk and the following updations happen in disk data structures :
+                              <ol style="list-style-type:lower-roman;margin-left:60px">
+                                <li>
+                                  A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block(here block 69), an entry will be marked as 1(Used) in <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
+                                </li>
+                                <li>
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains informations such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file (maximum 4).
+                                </li>
+                                <li>
+                                  An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
+                                </li>
+                              </ol>
+                              <br>
+                              You must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding further. In the following steps we will see the above mentioned updations.
                             </li> 
 
                             <br>
@@ -368,7 +381,7 @@ To cool in the peppermint wind.</pre>
 # exit</pre>
                             </div>
 
-                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. User table occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use. (You will learn about User Table later on).
+                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. <a href="./os_design-files/disk_ds.html#user_table" target="_blank">User table </a>occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use. (You will learn about User Table later on).
                             
                             <br/>
 
@@ -378,13 +391,16 @@ To cool in the peppermint wind.</pre>
                               <pre>
                                 !!!!!!!! Contents of inode_table.txt !!!!!!!
                               </pre>
+
+
+                              <span style="color:blue">Directly dumping disk data structures</span>
                             </div>
                             
 
                             </li>
 
                             <br>
-                            <li> Now check the contents of the disk free list. One more entry will be marked as used and this corresponds to the Data Block 1 of <tt>sample.dat</tt> .
+                            <li> Now check the contents of the disk free list and verify that one more entry is marked as used. This corresponds to the Data Block 1 of <tt>sample.dat</tt> .
                             </li>
                             
                             <br>
@@ -421,7 +437,12 @@ To cool in the
 peppermint wind</pre></div>
                             </li> 
                             <br/>
-                            <li style="color:blue"> Teach about exporting a file from XSM Machine to UNIX system.  
+                            <li> 
+                              The fles from XSM machine can be easily exported to the UNIX machine without going through all these troubles. For this purpose xfs-interface provides the <b>export</b> command. Export the file <tt>sample.dat</tt> to the UNIX file <tt>exported_sample.txt</tt> using the xfs-inteface as shown below and verify that the contents are same as that in step 8.
+                              <br><br>
+                              <div>
+                                <pre># export sample.dat exported_sample.txt</pre>
+                              </div>
                             </li>
                           </ol>
 
@@ -458,7 +479,7 @@ peppermint wind</pre></div>
                       <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
                           <p>
-                            When the XSM machine is started up the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine i.e the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "bootstrap" loader in OS literature. ROM code does the following operations :
+                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine i.e the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "bootstrap" loader in OS literature. ROM code does the following operations :
                             <ol style="list-style-type:decimal;margin-left:10vw">
                               <li>Loads block 0 of disk to page 1 of memory (physical address 512).</li>
                               <li>After loading the block to memory, it sets IP (Instruction Pointer) to 512 so that the next instruction to be executed is fetched from location 512 (page 1 in memory starts from location 512).</li>
