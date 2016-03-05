@@ -561,7 +561,7 @@ endwhile; </pre>
 19
 Machine is halting</pre></div>
 
-                          <p> You may also write a few SPL programs on your own and run it on the machine to get familiarized with SPL syntax. Try using the instructions like <a href="support_tools-files/spl.html" target="_blank"><i>breakpoint</i></a> which translates to <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction. This instruction is useful for debugging. Refer <a href="support_tools-files/xsm-simulator.html" target="_blank">XSM Debugger</a></p>
+                          <p> You may also write a few SPL programs on your own and run it on the machine to get familiarized with SPL syntax. Try using the instructions like <a href="support_tools-files/spl.html" target="_blank"><i>breakpoint</i></a> which translates to <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction. This instruction is useful for debugging. Refer <a href="support_tools-files/xsm-simulator.html" target="_blank">XSM Debugger</a>.</p>
 
                           <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Runtime envoronment</a>.</p>
 
@@ -570,10 +570,8 @@ Machine is halting</pre></div>
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item">
-                            <a data-toggle="collapse"  href="#collapseq2"><b>Q1.</b> Immediately after the execution of the ROM Code, IP will be pointing to which instruction?</a>
-                            <div id="collapseq2" class="panel-collapse collapse"> 1<sup>st</sup> instruction in page 1 of the memory. This is because Boot ROM code contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1 .                                                      
-                                     
-                            </div>
+                            <a data-toggle="collapse"  href="#collapseq2"><b>Q1.</b> If the OS Startup Code is loaded to some other page other than Page 1, will XSM work fine?</a>
+                            <div id="collapseq2" class="panel-collapse collapse"> No. This is because after the execution of the ROM Code, IP points to <b>512</b> which is the 1<sup>st</sup> instruction of Page 1. So if the OS Startup Code is not loaded to Page 1, it results in <a href="./arch_spec-files/interrupts_exception_handling.html" target="_blank">exception</a> and leads to system crash.</div>
                           </li>
                           </ul>
                           </div>
