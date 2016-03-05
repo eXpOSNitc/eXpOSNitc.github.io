@@ -360,10 +360,10 @@ To cool in the peppermint wind.</pre>
                               This will load the file to the XFS disk and the following updations happen in disk data structures :
                               <ol style="list-style-type:lower-roman;margin-left:60px">
                                 <li>
-                                  A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block(here block 69), an entry will be marked as 1(Used) in <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
+                                  A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1(Used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains informations such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file (maximum 4).
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains informations such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. Note that eXpFS file is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
@@ -381,7 +381,7 @@ To cool in the peppermint wind.</pre>
 # exit</pre>
                             </div>
 
-                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries each of size 16 words) in the disk blocks 3 and 4. <a href="./os_design-files/disk_ds.html#user_table" target="_blank">User table </a>occupies the next 32 words (16 entries each of size 2 words) and the last 32 words are reserved for future use. (You will learn about User Table later on).
+                            <code>Note: </code> The Inode table occupies only the first 960 words (60 entries, each of size 16 words) in the disk blocks 3 and 4. <a href="./os_design-files/disk_ds.html#user_table" target="_blank">User table </a>occupies the next 32 words (16 entries, each of size 2 words) and the last 32 words are reserved for future use. (You will learn about User Table later on).
                             
                             <br/>
 
