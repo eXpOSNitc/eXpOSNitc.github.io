@@ -486,13 +486,9 @@ MOV SP, R4
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+BACKUP		// machine instruction to save the 
+		   register context
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -527,13 +523,10 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+...
+RESTORE		// machine instruction to restore
+ 		   the register context
+...
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -559,13 +552,9 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+MOV [user stack pointer], SP
+....
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
