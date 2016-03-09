@@ -210,7 +210,7 @@ MOV R3, [SP - 1]
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.1. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
+		<figcaption><br><b>Fig.2.a. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
 </figcaption>
 </div>
 </div>
@@ -244,7 +244,7 @@ MOV R3, [SP - 1]
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.2. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
+		<figcaption><br><b>Fig.2.a. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
 </figcaption>
 </div>
 </div>
@@ -293,18 +293,18 @@ PUSH BP    // Pushing BP onto the user stack
 <code>
 ...
 MOV UPTR, SP    
-	// Save SP in the user stack pointer field of 
-	   the process table
+	// Save SP in the user stack pointer field 
+	   of the process table
 MOV R4, User Area Page Number*512
-	// find the physical address of the user area
-	   page 
+	// find the physical address of the user
+	   area page 
 ADD R4, KPTR
-	// find the value of the kernel stack pointer
-	   using the formula 512*user area page 
-	   number + KERNEL STACK POINTER
+	// find the value of the kernel stack 
+	   pointer using the formula 512*user 
+	   area page number + KERNEL STACK POINTER
 MOV SP, R4	
 	// store the physical address of the kernel 
-	stack pointer in SP 
+	   stack pointer in SP 
 ...
 
 (NOTE: The machine code above is in the form of pseudo code.)
@@ -349,6 +349,17 @@ MOV SP, R4
     <pre>
 <code>
 ....
+MOV R4, User Area Page Number*512  
+		// memory address of the user area		   
+ADD R4, UPTR	// physical address of the top of 
+		   the user stack by adding USER 
+		   STACK POINTER to the starting 
+		   address of the user area 
+MOV [R4 - 1], return value 	    
+		// store the return value in the 
+		   space alloted in the user stack	
+MOV SP, UPTR	// move the value of USER STACK 
+		   POINTER TO SP
 ....
 
 (NOTE: The machine code above is in the form of pseudo code.)
@@ -388,11 +399,14 @@ MOV SP, R4
     <pre>
 <code>
 ....
-POP R0			// Pop and save the return value
+POP R0			// Pop and save the return 
+		           value
 POP Argument_3		
 POP Argument_2
-POP Argument_1		// Pop and discard the arguments
-POP System_Call_Number	// Pop and discard the system call number 
+POP Argument_1		// Pop and discard the 
+			   arguments
+POP System_Call_Number	// Pop and discard the 
+			   system call number 
 ....
 
 (NOTE: The machine code above is in the form of pseudo code.)
@@ -453,7 +467,8 @@ ADD R4, KPTR
 MOV SP, R4	
 	// store the physical address of the kernel 
 	stack pointer in SP 
-....			   
+....	
+		   
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 </pre>
@@ -489,6 +504,8 @@ MOV SP, R4
 ....
 BACKUP		// machine instruction to save the 
 		   register context
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -523,10 +540,11 @@ BACKUP		// machine instruction to save the
     <div class="col-sm-5">
     <pre>
 <code>
-...
+....
 RESTORE		// machine instruction to restore
  		   the register context
-...
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -555,6 +573,7 @@ RESTORE		// machine instruction to restore
 ....
 MOV [user stack pointer], SP
 ....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -610,6 +629,7 @@ BACKUP		// machine instruction to save the
 		   register context
 CALL MODULE_N	// invoke the other kernel module
 ....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 </pre>
@@ -649,6 +669,8 @@ POP R0	// pop off the space used during
 ...	   its execution
 RESTORE	// machine instruction to restore 
 	   the register context
+....
+
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
