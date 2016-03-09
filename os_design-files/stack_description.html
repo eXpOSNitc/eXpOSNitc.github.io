@@ -148,7 +148,7 @@ of return.</p>
  <figure>
   <div class="row">
     <div class="col-sm-6">
-     <img src="../img/actions_of_process_upon_encountering_sys_call.png" width="95%">
+     <img src="../img/Stack_Management/actions_of_process_upon_encountering_sys_call.png" width="95%">
     </div>
     <div class="col-sm-6">
     <pre>
@@ -189,7 +189,7 @@ INT number		// Invoke the corresponding INT
  <figure>
   <div class="row">
     <div class="col-sm-6">
-     <img src="../img/actions_of_kernel_upon_entering_sys_call_step1.png" width="95%"></img>
+     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2a.png" width="95%"></img>
     </div>
     <div class="col-sm-6">
     <pre>
@@ -218,46 +218,13 @@ MOV R3, [SP - 1]
 </div>
 <br><br><br><br>
   
-<!-- action 2.2 -->
- <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-6">
-     <img src="../img/actions_of_kernel_upon_entering_sys_call_step2.png" width="95%"></img>
-    </div>
-    <div class="col-sm-6">
-    <pre>
-<code>
-...
-MOV R0, [SP - 4]      // Extracting the system call number from 
-			 the user stack to R0
-MOV R1, [SP - 3]      // Extracting the values of the arguments
-MOV R2, [SP - 2]
-MOV R3, [SP - 1]
-...
-
-(NOTE: The machine code above is in the form of pseudo code.)
-</code>
-	
-	</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.a. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br><br><br><br>
 
 <!-- action 2.3 -->
  <div class="container-fluid fig_code">
  <figure>
   <div class="row">
     <div class="col-sm-6">
-     <img src="../img/actions_of_kernel_upon_entering_sys_call_step3.png" width="95%"></img>
+     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2b.png" width="95%"></img>
     </div>
     <div class="col-sm-6">
     <pre>
@@ -286,7 +253,7 @@ PUSH BP    // Pushing BP onto the user stack
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png" width="95%"></img>
+     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2c.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -344,7 +311,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/actions_of_kernel_upon_entering_sys_call_step4.png" width="95%"></img>
+     <img src="../img/Stack_Management/actions_of_kernel_returning_from_sys_call_step3.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -395,7 +362,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/actions_of_process_aftr_return_sys_call.png" width="95%"></img>
+     <img src="../img/Stack_Management/actions_of_process_aftr_return_sys_call.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -445,13 +412,13 @@ pseudo code.)
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the interrupt routine code</p>
 		
               <br><p><b>Execution context before an interrupt/exception:</b></p><br>
-              <img src="../img/execn_context_b4_interrupt.png" width="80%">
+              <img src="../img/Stack_Management/execn_context_b4_interrupt.png" width="60%">
 <br><br><br><br>
  <div class="container-fluid fig_code">
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img  src="../img/aftr_interrupt_step1.png" width="95%"></img>
+     <img  src="../img/Stack_Management/aftr_interrupt_step1a.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
 <pre>
@@ -500,7 +467,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/aftr_interrupt_step2.png" width="95%"></img>
+     <img src="../img/Stack_Management/aftr_interrupt_step1b.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -540,7 +507,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/aftr_interrupt_b4_ret_step1.png" width="95%"></img>
+     <img src="../img/Stack_Management/aftr_interrupt_step2a.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -571,7 +538,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/aftr_interrupt_b4_ret_step2.png" width="95%"></img>
+     <img src="../img/Stack_Management/aftr_interrupt_step2b.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
@@ -626,7 +593,7 @@ pseudo code.)
  	      <figure>
   		<div class="row">
     		<div class="col-sm-7">
-     		<img src="../img/kernel_to_kernel_step1.png" width="95%"></img>
+     		<img src="../img/Stack_Management/kernel_to_kernel_step1a.png" width="95%"></img>
     		</div>
     			<div class="col-sm-5">
 <pre>
@@ -667,7 +634,7 @@ pseudo code.)
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/kernel_to_kernel_step3.png" width="95%"></img>
+     <img src="../img/Stack_Management/kernel_to_kernel_step2.png" width="95%"></img>
     </div>
     <div class="col-sm-5">
     <pre>
