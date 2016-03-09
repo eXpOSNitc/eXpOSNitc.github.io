@@ -210,7 +210,7 @@ MOV R3, [SP - 1]
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.1. - Actions done by the kernel module on entry into a system call : </b>Transfer the system call number from the user stack to register R0.
+		<figcaption><br><b>Fig.2.1. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
 </figcaption>
 </div>
 </div>
@@ -231,7 +231,7 @@ MOV R3, [SP - 1]
 ...
 MOV R0, [SP - 4]      // Extracting the system call number from 
 			 the user stack to R0
-MOV R1, [SP - 3]    // Extracting the values of the arguments
+MOV R1, [SP - 3]      // Extracting the values of the arguments
 MOV R2, [SP - 2]
 MOV R3, [SP - 1]
 ...
@@ -244,7 +244,7 @@ MOV R3, [SP - 1]
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.2. - Actions done by the kernel module on entry into a system call : </b>Transfer the arguments from the user stack to R1, R2, R3.
+		<figcaption><br><b>Fig.2.2. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
 </figcaption>
 </div>
 </div>
@@ -274,7 +274,7 @@ PUSH BP    // Pushing BP onto the user stack
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.b. - Actions done by the kernel module on entry into a system call : </b>Push the base pointer (BP) of the user process into the user stack.
+		<figcaption><br><b>Fig.2.b. - Push the base pointer (BP) of the user process into the user stack</b>
 </figcaption>
 </div>
 </div>
@@ -315,7 +315,7 @@ MOV SP, R4
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.c. - Actions done by the kernel module on entry into a system call : </b>Switch from the user stack to the kernel stack.
+		<figcaption><br><b>Fig.2.c. - Switch from the user stack to the kernel stack</b>
 <p>2.c.1. Transfer the current SP register to User stack pointer field of the process table.</p>
 <p>2.c.2.  Compute the physical address of the kernel stack pointer </p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
@@ -359,7 +359,7 @@ MOV SP, R4
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from a system call : </b>
+		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from the system call :</b>
 	<p>3.a. Compute the physical address corresponding to the top of the user stack:</p>
 	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.1. Find the physical address of the stack page</p> 
 	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.2. Add the offset value from the User Stack Pointer field in the process table</p>
@@ -403,7 +403,7 @@ POP System_Call_Number	// Pop and discard the system call number
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.4. -  Actions done by the process after returning from a system call : </b>
+		<figcaption><br><b>Fig.4. - Actions done by the process after returning from a system call</b>
 	<p>4.a. Pop off the return value from the stack top and store in a register, say R0.</p>
 	<p>4.b. Pop off the arguments and system call number from the user stack.</p><br>
 
@@ -461,7 +461,7 @@ MOV SP, R4
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1.a. - Actions done by the kernel module upon entering the interrupt routine : </b>Switch from the user stack to the kernel stack.
+		<figcaption><br><b>Fig.1.a. - Switch from the user stack to the kernel stack</b>
 		<p>1.a.1. Transfer the current SP register to User stack pointer field of the process table.</p>
 		<p>1.a.2.  Compute the physical address of the kernel stack pointer </p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
@@ -501,7 +501,7 @@ INT number		// Invoke the corresponding INT instruction
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1.b - Actions done by the kernel module upon entering the interrupt routine: </b> Use the BACKUP machine instruction to save the values of the machine registers in the kernel stack. 
+		<figcaption><br><b>Fig.1.b - Use the BACKUP machine instruction to save the values of the machine registers in the kernel stack</b>  
 	
 </figcaption>
 </div>
@@ -542,7 +542,7 @@ INT number		// Invoke the corresponding INT instruction
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.a - Actions done by the kernel module before returning from the interrupt routine:</b> Use the RESTORE machine instruction to restore the values of the machine registers. 
+		<figcaption><br><b>Fig.2.a - Use the RESTORE machine instruction to restore the values of the machine registers</b>  
 	
 </figcaption>
 </div>
@@ -574,7 +574,7 @@ INT number		// Invoke the corresponding INT instruction
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.b - Actions done by the kernel module before returning from the interrupt routine:</b> Set the value of SP to the top of the user stack
+		<figcaption><br><b>Fig.2.b - Set the value of SP to the top of the user stack</b>
 <p>2.b.1  Find the process table entry for the currently running user process</p>
 <p>&nbsp;&nbsp;&nbsp;2.b.1.1  Find the pid of the currently running process from the system status table</p>
 <p>&nbsp;&nbsp;&nbsp;2.b.1.2  Find the starting address of the process table entry of the currently running process, by adding the offset, pid*16 to the starting address of the process tables in memory</p>
@@ -599,7 +599,9 @@ INT number		// Invoke the corresponding INT instruction
          <div class="row">
               	
               <h3>Invocation of kernel module from another kernel module</h3>
-              <br><br>
+              <br>	      
+              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The invoked kernel module also uses the same kernel stack. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack and restores the register context. (The <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions of the XSM machine facilitate this).</p>
+              <br>
               <br>
               <p style="margin:0"><h4><b> 1. Actions done by the kernel module before executing the call to another kernel module </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the current execution context in the kernel stack using BACKUP machine 	instruction</p> 
@@ -614,13 +616,11 @@ INT number		// Invoke the corresponding INT instruction
     			<div class="col-sm-5">
 <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+.... 			
+BACKUP		// machine instruction to save the 
+		   register context
+CALL MODULE_N	// invoke the other kernel module
+....
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 </pre>
@@ -630,7 +630,7 @@ INT number		// Invoke the corresponding INT instruction
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.1. -  Use BACKUP instruction to save the current execution context in the kernel stack.</b> 
 <p>
-    	      		1.a.   This pushes the following registers in the order: BP, PTBR, PTLR, R0 - R19 (Note here that, unlike how a process saves its context, all the registers are backed up and not just the registers in use).</p>
+    	      		1.a.  This instruction pushes the following registers in the order: BP, PTBR, PTLR, R0 - R19 (Note here that, unlike how a process saves its context, all the registers are backed up and not just the registers in use).</p>
 
 	
 </figcaption>
@@ -639,7 +639,7 @@ INT number		// Invoke the corresponding INT instruction
 </figure>
 </div>
 <br>
-	<p>1.b  Transfer control to the kernel module to be executed</p>
+	<p>1.b.  Transfer control to the kernel module to be executed</p>
 <br><br>         
 <br>
               <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
@@ -655,13 +655,11 @@ INT number		// Invoke the corresponding INT instruction
     <div class="col-sm-5">
     <pre>
 <code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
+....
+POP R0	// pop off the space used during 
+...	   its execution
+RESTORE	// machine instruction to restore 
+	   the register context
 (NOTE: The machine code above is in the form of pseudo code.)
 </code>
 	
@@ -670,8 +668,9 @@ INT number		// Invoke the corresponding INT instruction
   	</div>  	  	        	
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2. - After the execution is complete and any space used by this module is the kernel stack is popped off, use RESTORE instruction to pop off and restore the previous execution context from the kernel stack.</b> 
-<p>2.b.  Store the popped off values to registers in the order R19-R0, PTLR, PTBR, BP.</p>
+		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
+<p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</b> 
+<p>2.b. Use RESTORE instruction to pop off and restore the previous execution context from the kernel stack.The popped off values are stored  to registers in the order R19-R0, PTLR, PTBR, BP.</p>
     	      	</figcaption>
 </div>
 </div>
