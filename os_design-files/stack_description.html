@@ -195,12 +195,13 @@ INT number		// Invoke the corresponding INT
     <div class="col-sm-6">
     <pre>
 <code>
-... 			      
-MOV R0, [physicalSP - 4]      // Extracting the system call number from 
+... 
+MOV R4,	physicalSP    // compute physicalSP (figure out how!)		      
+MOV R0, [R4 - 4]      // Extracting the system call number from 
 			         the user stack to R0
-MOV R1, [physicalSP - 3]      // Extracting the values of the arguments
-MOV R2, [physicalSP - 2]
-MOV R3, [physicalSP - 1]			 
+MOV R1, [R4 - 3]      // Extracting the values of the arguments
+MOV R2, [R4 - 2]
+MOV R3, [R4 - 1]			 
 ...
 
 (NOTE: The machine code above is in the form of pseudo code.)
@@ -211,7 +212,7 @@ MOV R3, [physicalSP - 1]
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.a. - Transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
+		<figcaption><br><b>Fig.2.{a,b}. - Compute the physical address of top of the user stack and transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
 </figcaption>
 </div>
 </div>
@@ -219,36 +220,6 @@ MOV R3, [physicalSP - 1]
 </div>
 <br><br><br><br>
   
-
-<!-- action 2.3 -->
- <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-6">
-     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2b.png" width="95%"></img>
-    </div>
-    <div class="col-sm-6">
-    <pre>
-<code>
-...
-PUSH BP    // Pushing BP onto the user stack
-...
-
-(NOTE: The machine code above is in the form of pseudo code.)
-</code>
-	
-	</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.b. - Push the base pointer (BP) of the user process into the user stack</b>
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br><br><br><br>
 <!-- action 2.4 -->
  <div class="container-fluid fig_code">
  <figure>
