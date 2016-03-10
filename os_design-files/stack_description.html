@@ -549,12 +549,13 @@ pseudo code.)
               <h3>Invocation of a kernel module from another kernel module</h3>
               <br>	      
               <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The invoked kernel module also uses the same kernel stack. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context before resuming its execution.</p>
-	      <p> Note : Return instruction is used instead of IRET to return back to the kernel module.</p>
+	      <p> Note : RET instruction is used instead of IRET to return back to the kernel module.</p>
               <br>
               <br>
               <p style="margin:0"><h4><b> 1. Actions done by the kernel module before executing the call to another kernel module </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack/p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Transfer control to the kernel module to be executed </p> 
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack</p> 
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the arguments argument_1, argument_2, argument_3,... to R0, R1, R2, ... respectively </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the kernel module to be executed </p> 
 		<br>
 	      <div class="container-fluid fig_code">
  	      <figure>
@@ -566,7 +567,8 @@ pseudo code.)
 <pre>
 <code>			
 ....		// save the registers in use
-CALL MODULE_N	// invoke the other kernel module
+CALL MODULE_N / INT_N	
+		// invoke the other kernel module
 ....
 
 (NOTE: The machine code above is in the form of 
@@ -591,7 +593,7 @@ pseudo code.)
 <br>
               <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pop off the space used during its execution from the kernel stack </p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use return instruction to transfer control back to the kernel module which invoked it </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use RET instruction to transfer control back to the kernel module which invoked it </p> 
 		<br>
 <div class="container-fluid fig_code">
  <figure>
@@ -606,6 +608,9 @@ pseudo code.)
 POP R0	// pop off the space used during 
 ...	   its execution
 
+RET	// return control to the module 
+	   which invoked it
+
 
 (NOTE: The machine code above is in the form of 
 pseudo code.)
@@ -617,8 +622,9 @@ pseudo code.)
 	<div class="row">
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
-<p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</b> 
-<p>2.b. Use RESTORE instruction to pop off and restore the previous execution context from the kernel stack.The popped off values are stored  to registers in the order R19-R0, PTLR, PTBR, BP.</p>
+<p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
+<p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
+<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers before resuming its execution.</p>
     	      	</figcaption>
 </div>
 </div>
