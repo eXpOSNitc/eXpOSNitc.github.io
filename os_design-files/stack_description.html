@@ -321,6 +321,7 @@ pseudo code.)
 <p><h4><b>4. Actions done by the process after returning from a system call</b></h4></p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the return value</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Pop off the arguments and the system call number from the stack</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Restore the register context and resume execution.</p>
 <br>
  <div class="container-fluid fig_code">
  <figure>
@@ -340,7 +341,9 @@ POP Argument_1		// Pop and discard the
 			   arguments
 POP System_Call_Number	// Pop and discard the 
 			   system call number 
-....
+....			// Code to restore the 
+			   register context and 
+			   resume execution
 
 (NOTE: The machine code above is in the form of 
 pseudo code.)
@@ -354,6 +357,8 @@ pseudo code.)
 		<figcaption><br><b>Fig.4. - Actions done by the process after returning from a system call</b>
 	<p>4.a. Pop off the return value from the stack top and store in a register, say R0.</p>
 	<p>4.b. Pop off the arguments and system call number from the user stack.</p><br>
+	<p>4.c. Restore the registers and resume execution.</p>
+<p>Note: After the above steps are executed, SP will have a value different from the value in UPTR.</p>
 
 </figcaption>
 </div>
