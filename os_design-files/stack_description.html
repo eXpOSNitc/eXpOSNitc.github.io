@@ -118,6 +118,7 @@ specific to the implementation of eXpOS on the XSM machine.
 	<p>&nbsp;&nbsp;&nbsp;b. An Exception / Interrupt occurs when a user process is executing</p>
 	<p>&nbsp;&nbsp;&nbsp;c. A kernel module invokes another kernel module</p>
 	</p>
+	<p> The calling conventions followed in this tutorial can be found <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
 	
      
      </div>
@@ -548,7 +549,7 @@ pseudo code.)
               	
               <h3>Invocation of a kernel module from another kernel module</h3>
               <br>	      
-              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The invoked kernel module also uses the same kernel stack. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context before resuming its execution.</p>
+              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The arguments to the kernel module are passed through the registers R0, R1, R2. The invoked kernel module also uses the same kernel stack. The return value will be stored in register  R0. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context upon return before resuming its execution.</p>
 	      <p> Note : RET instruction is used instead of IRET to return back to the kernel module.</p>
               <br>
               <br>
@@ -573,7 +574,8 @@ MOV R2, argument_3
 ...
 		// store the arguments
 CALL MODULE_N / INT_N	
-		// invoke the other kernel module
+		// invoke the other kernel 
+		   module/interrupt routine
 ....
 
 (NOTE: The machine code above is in the form of 
@@ -628,7 +630,7 @@ pseudo code.)
 		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
 <p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
 <p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
-<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution.</p>
+<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution. The return value will be stored in the register R0, according to the calling conventions given <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
     	      	</figcaption>
 </div>
 </div>
