@@ -567,6 +567,11 @@ pseudo code.)
 <pre>
 <code>			
 ....		// save the registers in use
+MOV R0, argument_1
+MOV R1, argument_2
+MOV R2, argument_3
+...
+		// store the arguments
 CALL MODULE_N / INT_N	
 		// invoke the other kernel module
 ....
@@ -579,7 +584,7 @@ pseudo code.)
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1. -  Save the registers in use to the kernel stack.</b>
+		<figcaption><br><b>Fig.1. -  Save the registers in use to the kernel stack, store the values of arguments to registers R0, R1, R2,.. in that order and transfer control to the kernel module to be executed</p></b>
 
 	
 </figcaption>
@@ -587,8 +592,7 @@ pseudo code.)
 </div>
 </figure>
 </div>
-<br>
-	<p>1.b.  Transfer control to the kernel module to be executed</p>
+<br>	
 <br><br>         
 <br>
               <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
@@ -624,7 +628,7 @@ pseudo code.)
 		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
 <p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
 <p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
-<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers before resuming its execution.</p>
+<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution.</p>
     	      	</figcaption>
 </div>
 </div>
