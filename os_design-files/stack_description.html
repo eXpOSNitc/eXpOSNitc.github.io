@@ -128,7 +128,7 @@ specific to the implementation of eXpOS on the XSM machine.
               <h3>System Call Invocation</h3>
 <br>
 <p>An application program must push the input parameters to a system call through the user stack.  The return value of the system
-call is also passed back to the application through the user stack.  </p>
+call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.</p>
 <p>If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
 stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  The system call module must be designed so as to access these arguments from the user stack of the process, do the processing
 required and store the return value into the appropriate place in the user stack before returning to the user mode.  
