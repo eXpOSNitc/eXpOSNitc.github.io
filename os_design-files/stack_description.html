@@ -284,13 +284,11 @@ pseudo code.)
     <div class="col-sm-5">
     <pre>
 <code>
-....
-MOV R4, User Area Page Number*512  
-		// memory address of the user area		   
-ADD R4, UPTR	// physical address of the top of 
-		   the user stack by adding USER 
-		   STACK POINTER to the starting 
-		   address of the user area 
+....		   
+MOV R4, physicalSP
+		// compute the physicalSP using
+ 		   USER STACK POINTER (figure out
+		   how!) 
 MOV [R4 - 1], return value 	    
 		// store the return value in the 
 		   space alloted in the user stack	
@@ -310,8 +308,6 @@ pseudo code.)
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from the system call :</b>
 	<p>3.a. Compute the physical address corresponding to the top of the user stack:</p>
-	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.1. Find the physical address of the stack page</p> 
-	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.2. Add the offset value from the User Stack Pointer field in the process table</p>
 	<p>3.a. Store the return value in the space alloted in user stack</p>	
 	<p>3.b. Store the value of User Stack Pointer in the process table to SP</p>
 	<p>3.c. Return to the user program using IRET machine instruction</p>
