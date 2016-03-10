@@ -374,7 +374,7 @@ pseudo code.)
               <h3>Exception/Interrupt Handler</h3>
               <br>
               <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine or the console interrupt routine. The actions done inside the timer interrupt routine (scheduler) are discussed elsewhere (LINK). Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (The <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions of the XSM machine facilitate this).</p>
-	      <p> NOTE: If the exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
+	      <p> NOTE: If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
               <br>
               <p style="margin:0"><h4><b> 1. Actions done by the kernel module upon entering the interrupt routine </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
@@ -630,7 +630,7 @@ pseudo code.)
 		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
 <p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
 <p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
-<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution. The return value will be stored in the register R0, according to the calling conventions given <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
+<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution. The return value will be stored in the register R0, according to the SPL calling conventions given <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
     	      	</figcaption>
 </div>
 </div>
