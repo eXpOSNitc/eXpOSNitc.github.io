@@ -181,7 +181,7 @@ INT number		// Invoke the corresponding INT
   
 <p><h4><b>2. Actions done by the kernel module upon entry</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Compute the physical address of the top of the user stack.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments. (Note : The convention is to save the system call number to register R0, and arguments to R1, R2, and R3 in that order)</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments. (Note : The convention is to save the system call number to register R0, and arguments to R1,R2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and R3 in that order)</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Switch the stack from user to kernel</p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">d. Identify the system call using the system call number and invoke the system call code</p>
 <br>
@@ -196,7 +196,7 @@ INT number		// Invoke the corresponding INT
     <pre>
 <code>
 ... 
-MOV R4,	physicalSP    // compute physicalSP (figure out how!)		      
+MOV R4,	physicalSP    // Compute physicalSP (figure out how!)		      
 MOV R0, [R4 - 4]      // Extracting the system call number from 
 			 the user stack to R0
 MOV R1, [R4 - 3]      // Extracting the values of the arguments
@@ -255,23 +255,19 @@ pseudo code.)
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.c. - Switch from the user stack to the kernel stack</b>
+		<figcaption><br><b>Fig.2.{c,d}. - Switch from the user stack to the kernel stack</b>
 <p>2.c.1. Transfer the current SP register to User stack pointer field of the process table.</p>
 <p>2.c.2.  Compute the physical address of the kernel stack pointer </p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
 <p>2.c.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+<p>2.d. Identify the system call using the system call number and invoke the system call code.</p>
 
 </figcaption>
 </div>
 </div>
 </figure>
 </div>
-<br>
-
-&nbsp;&nbsp;&nbsp;<p style="margin:0">2.d. Identify the system call using the value in register R0.</p>
-&nbsp;&nbsp;&nbsp;<p>2.e. Transfer control to the system call code.  </p>
-
 <!-- action 3 -->
 <br><br>
 <p><h4><b>3. Actions done by the kernel module before returning from the system call</b></h4></p>  
@@ -295,7 +291,7 @@ ADD R4, UPTR	// physical address of the top of
 		   the user stack by adding USER 
 		   STACK POINTER to the starting 
 		   address of the user area 
-MOV [R4 - 2], return value 	    
+MOV [R4 - 1], return value 	    
 		// store the return value in the 
 		   space alloted in the user stack	
 MOV SP, UPTR	// move the value of USER STACK 
