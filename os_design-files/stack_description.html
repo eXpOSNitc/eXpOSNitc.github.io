@@ -512,7 +512,8 @@ pseudo code.)
     <pre>
 <code>
 ....
-MOV [user stack pointer], SP
+MOV SP, UPTR	// point SP to the user stack
+IRET		// return to the user process
 ....
 
 (NOTE: The machine code above is in the form of 
@@ -524,12 +525,9 @@ pseudo code.)
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.b - Set the value of SP to the top of the user stack</b>
-<p>2.b.1  Find the process table entry for the currently running user process</p>
-<p>&nbsp;&nbsp;&nbsp;2.b.1.1  Find the pid of the currently running process from the system status table</p>
-<p>&nbsp;&nbsp;&nbsp;2.b.1.2  Find the starting address of the process table entry of the currently running process, by adding the offset, pid*16 to the starting address of the process tables in memory</p>
-<p>2.b.2  Transfer the value stored in user stack pointer field to the SP register </p>
-	
+		<figcaption><br><b>Fig.2.{b,c} - Set the value of SP to the top of the user stack</b>
+	<p>2.b.  Transfer the value stored in user stack pointer field to the SP register </p>
+	<p>2.c.  Transfer the control back to the user process</p>
 </figcaption>
 </div>
 </div>
@@ -537,8 +535,8 @@ pseudo code.)
 </div>
 <br>
 	     
-<p>2.c.  Transfer the control back to the user process</p>
-<br><br><br>	      
+
+<br><br>	      
 	      
 	      
 	      
@@ -548,13 +546,14 @@ pseudo code.)
 <div class="container">
          <div class="row">
               	
-              <h3>Invocation of kernel module from another kernel module</h3>
+              <h3>Invocation of a kernel module from another kernel module</h3>
               <br>	      
-              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The invoked kernel module also uses the same kernel stack. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack and restores the register context. (The <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions of the XSM machine facilitate this).</p>
+              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The invoked kernel module also uses the same kernel stack. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context before resuming its execution.</p>
+	      <p> Note : Return instruction is used instead of IRET to return back to the kernel module.</p>
               <br>
               <br>
               <p style="margin:0"><h4><b> 1. Actions done by the kernel module before executing the call to another kernel module </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the current execution context in the kernel stack using BACKUP machine 	instruction</p> 
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack/p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Transfer control to the kernel module to be executed </p> 
 		<br>
 	      <div class="container-fluid fig_code">
@@ -565,10 +564,8 @@ pseudo code.)
     		</div>
     			<div class="col-sm-5">
 <pre>
-<code>
-.... 			
-BACKUP		// machine instruction to save the 
-		   register context
+<code>			
+....		// save the registers in use
 CALL MODULE_N	// invoke the other kernel module
 ....
 
@@ -580,9 +577,7 @@ pseudo code.)
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1. -  Use BACKUP instruction to save the current execution context in the kernel stack.</b> 
-<p>
-    	      		1.a.  This instruction pushes the following registers in the order: BP, PTBR, PTLR, R0 - R19 (Note here that, unlike how a process saves its context, all the registers are backed up and not just the registers in use).</p>
+		<figcaption><br><b>Fig.1. -  Save the registers in use to the kernel stack.</b>
 
 	
 </figcaption>
@@ -596,7 +591,7 @@ pseudo code.)
 <br>
               <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pop off the space used during its execution from the kernel stack </p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Restore the previous execution context from the kernel stack using RESTORE machine instruction</p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use return instruction to transfer control back to the kernel module which invoked it </p> 
 		<br>
 <div class="container-fluid fig_code">
  <figure>
@@ -610,9 +605,7 @@ pseudo code.)
 ....
 POP R0	// pop off the space used during 
 ...	   its execution
-RESTORE	// machine instruction to restore 
-	   the register context
-....
+
 
 (NOTE: The machine code above is in the form of 
 pseudo code.)
