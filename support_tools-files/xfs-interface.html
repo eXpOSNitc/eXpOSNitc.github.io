@@ -107,7 +107,7 @@
                 <h2 >XFS Interface Usage Specification</h2>
                 <br/>
                 <br/>
-                <p><b>XFS Interface</b> (eXperimental File System Interface) is an external interface to access the <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS filesystem</a> of the eXpOS "from the host (UNIX) system". The filesystem is simulated on a binary file called <b>disk.xfs</b>. The interface can format the disk, dump the disk data structures, load/remove files, list files, copy files to and from the eXpFS filesystem to the UNIX file system and copy specified blocks of XFS disk to a UNIX file.</p>
+                <p><b>XFS Interface</b> (eXperimental File System Interface) is an external interface to access the <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS filesystem</a> of the eXpOS "from the host (UNIX) system". The filesystem is simulated on a binary file called <b>disk.xfs</b>. The interface can format the disk, dump the disk data structures, load/remove files, list files, transfer data and executable files between eXpFS filesystem and the host (UNIX) file system and copy specified blocks of the XFS disk to a UNIX file.</p>
 
                 <p> Within your xfs-interface directory, use the following command to run the interface </p>
 				<ul>
@@ -173,7 +173,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  
                  <li class="list-group-item list-group-item-success"><b>Exporting Files</b> <br/>
                      <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;unix_filename&gt;</b> specifies the UNIX file to which it is to be exported.</p>
-				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. </p>    
+				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;unix_filename&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;xfs_filename&gt;</b>.</p>    
                         <ul class="list-group"><ol>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;unix_filename&gt; </tt>
 					    </br><i>Semantics</i> : Exports a data file from XFS disk to UNIX file system.</li>
@@ -185,17 +185,13 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  
                  
                 <li class="list-group-item list-group-item-success"><b>Removing Files</b> <br/>
-                     <p style="color:black">The command <b>rm</b> is used to remove files from the filesystem. The first argument specifies the type of file to be removed. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
+                     <p style="color:black">The command <b>rm</b> is used to remove files from the filesystem. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
 				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the file (executable/data file) and clears the blocks corresponding to the file, updates the <a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> and  removes root file and inode table entries. Only data and executable files can be removed. </p>    
 				
-                <p style="color:black">The various <b>rm</b> commands are listed below :     
-				<br/>
+                
                 <ul class="list-group"><ol>
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --exec &lt;xfs_filename&gt; </tt>
-					    </br><i>Semantics</i> : Removes an executable file from XFS disk.</li>
-					
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> --data &lt;xfs_filename&gt; </tt>
-					    </br><i>Semantics</i> : Removes a data file from XFS disk.</li>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>rm</b> &lt;xfs_filename&gt; </tt>
+					    </br><i>Semantics</i> : Removes an executable/data file from XFS disk.</li>
 					</ol>
                 </ul>
                  </li>
@@ -223,12 +219,12 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                 <ul class="list-group">
                     <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>copy</b> &lt;start_block&gt; &lt;end_block&gt; &lt;unix_filename&gt;</tt></li>
                     <li class="list-group-item" style="color:black"><i>Semantics</i> : It copies the contents of specified block(s) in the filesystem to an 
-				                  external UNIX file. The arguments &lt;start_block&gt; and &lt;end_block&gt; denotes the range of blocks to be copied 
+				                  external UNIX file and the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> directory. The arguments &lt;start_block&gt; and &lt;end_block&gt; denotes the range of blocks to be copied 
 				                  (including both). &lt;unix_filename&gt; specifes the destination UNIX file to which the contents are copied.</li></ul>
                  </li> 
 
                 <li class="list-group-item list-group-item-success"><b>Dumping Disk Data Structures to a UNIX File</b> <br/><br/>
-                <p style="color:black">The command <b>dump</b> is used to dump/export the <a href="../os_design-files/disk_ds.html" target="_blank">disk data structures</a> (inode table and root file) to the predefined UNIX files as follows.</p>
+                <p style="color:black">The command <b>dump</b> is used to dump/export the <a href="../os_design-files/disk_ds.html" target="_blank">disk data structures</a> (inode table and root file) to the predefined UNIX files as follows. The files are dumped to <b>$HOME/myexpos/xfs-interface/</b> directory.</p>
                 <ul class="list-group">
                     <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>dump</b> --inodetable</tt></li>
                     <li class="list-group-item" style="color:black"><i>Semantics</i> : It copies the contents of inode table to an 
