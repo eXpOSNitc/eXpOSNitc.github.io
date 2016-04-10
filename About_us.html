@@ -217,14 +217,14 @@
 
 					  <li>The OS code has to be completely written by the student with no built-in code given, except for a bootstrap ROM code. The programming support has been kept minimal to avoid high level programming tools hiding too many low level issues from the OS programmer. Essentially, the student has to do “low level programming” on a “high level hardware".</li>
 
-					  <li>The goal of the system is to help the student appreciate the functioning of a “sufficiently complex” operating system and <b>not</b> to help him/her gain experience with “real” operating systems programming. The architecture, the OS, the API, ABI etc. are all different from any of the existing “real” systems or standards in use, but designed to make the task of programming the OS as simple as possible.</li>
+					  <li>The system is designed to help the student appreciate the functioning of a “sufficiently complex” operating system and <b>not</b> to help him/her gain experience with real operating systems programming. The architecture, the OS, the API, ABI etc. are all different from any of the existing real systems or standards in use, but designed to make the task of programming the OS as simple as possible.</li>
 				  </ol>	  
 				  
               <hr style="border-color:black;border-width:1px">
 					
 					<p>Since the operating system kernel is a software that forms a layer between the hardware and the application program, the first major hurdle that a student faces while writing an OS is in understanding the complexities of the underlying hardware.</p>
 					
-               <p>The eXpOS package simplifies this by providing a hypothetical simple-to-program hardware abstraction – the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">XSM Machine</a>. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines - is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple to learn <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL language</a> (which is just an enriched assembler for the XSM hardware).  </p>
+               <p>The eXpOS package simplifies this by providing a hypothetical simple-to-program hardware abstraction – the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">XSM Machine</a>. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines - is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple to learn <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL language</a> (which is just an enriched XSM assembler).  </p>
 					
 					<p>The second interface of the OS is its upward interface – the interface to application programs. This interface, called the application binary interface (<a href="http://exposnitc.github.io/abi.html" target="_blank"> ­ABI </a>), defines the low level system call interface between the application and the OS, the virtual address space model for an application, the format of executable files etc. The ABI too is kept  minimal. It is easy to load executables into the memory. Only small programs are permitted. Parameter passing between applications and the system calls is also extremely simple.</p>
 
@@ -234,7 +234,7 @@
 		
 					<p>We had tried our best to ensure that the spirit of the subject matter is not lost. However there have been compromises. The multi-user support, the file system and device handling are very primitive. Address space of a process is small and cannot expand at run time. Going further in these directions would make it difficult for the project to be completed in a semester. Some of these extensions are not “in principle” hard, once the basic OS is built. However topics such as pre-emptive multitasking, fault tolerence, system security etc. are beyond the scope of this project.</p>
 
-               <p>The development methodology suggested is to start from scratch with a simple bootstrap loader. Next routines for handling timer, disk and I/O devices shall be added. A file system can now be built on top of this basic structure.   Single process operation will be possible at this stage. Following this, modules to support mult-tasking, Interprocess communication and process synchronization shall be added. Muli-user support may be added next and finally demand paging shall be implemented. The <a href="Roadmap.html"target="_blank">roadmap</a> guides the student systematically through these stages, asking him/her to follow the links and learn the concepts relevant to the OS modules developed in each stage.</p>
+               <p>The development methodology suggested is to start from scratch with a simple bootstrap loader. Routines for handling the timer, disk and I/O devices shall be added next. A file system can now be built on top of this basic structure.   Single process operation will be possible at this stage. Following this, modules to support mult-tasking, Interprocess communication and process synchronization shall be added. Muli-user support may be added next and finally demand paging shall be implemented. The <a href="Roadmap.html"target="_blank">roadmap</a> guides the student systematically through these stages, asking him/her to follow the links and learn the concepts relevant to the OS modules developed in each stage.</p>
 					
 					<p>It is our belief that the experiment will provide the student with a feel for how the OS modules for process management, memory management, file management, device management, inter-process communication, process sychronization, demand paging and user management can be glued together to form a functional operating system. An appreciation for the Operating System's hardware interface, application interface and run time library linkage is also intended.</p>
 		
@@ -262,7 +262,7 @@
 	                            </div>
 	                            <div >
 	                                <div class="panel-body">
-	                                	<p>Aleena Thomas</p>
+	                                    <p>Aleena Thomas</p>
 	                                    <p>Anjana Babu</p>
 	                                    <p>Christin V Jose</p>
 	                                    <p>Kurian Jacob</p>
