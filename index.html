@@ -220,51 +220,40 @@
 					<br/>
 					<p>However, if you are curious about what the "final system" you are going to build looks like, we give a brief overview here. You are warned not to get lost in the links. The roadmap will ask you to read the appropriate parts of the documentation as and when required. </p>
 					<br/>
+					
+				<p><img src="img/User_View.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
 				
-				<p><b style="font-size:18px">The Conceptual View of the eXpOS</b><br/>
-				(from the stand point of OS user)</p>	
-				<img src="img/User_View.png" style="display:block;margin-left:auto;margin-right:auto">
-				<br><br><br>
-				<p><b style="font-size:18px">An Overview of the eXpOS package as seen by a developer</b></p>
-				<br>
+				<p>In the above figure, an architecture simulator for the eXperimental String Machine (XSM) is given to you. Your primary job is to implement the eXpOS kernel for this machine in such a way that application programs can be executed by your kernel. You will also be asked to write a few application programs by yourself,­ like the shell (for providing a user interface).</p>
+				<p>Clearly, in order to write the OS, one must be told its two interfaces – the interface to the architecture below and the interface to the executable application programs above. The former is given to you in the <a href="arch_spec.html" target="_blank"> XSM architecture </a> specification. The latter which specifies the interface between executable applications and the OS, called the <a href="abi.html" target="_blank"> Application Binary Interface</a> specification is also given to you. There are also two additional interfaces (not shown in the figure) described below:</p>
 				
-				<p><img src="img/eXpOS_Package_Fig1.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
+				<p>1. The format in which data and executable files are stored in the disk is standardized and given in the <a href="support_tools-files/xfs-interface.html" target="_blank">eXpFS file system specification</a>. This standardization allows portablity of files between eXpOS and other systems. You must implement the OS file system satisfying this interface specification.</p>
+				<p>2. Specification for a small application layer software called the <a href="os_spec-files/misc.html#SixcollapseFive" target="_blank"> eXpOS Library </a> is given to you. The library is a special application program that stands between the OS kernel and other application programs. The library provides a generic interface through which other applications can access the OS system calls. Dynamic memory management services of the OS are also implemented by the library. You will be provided with the source code to implement the library. Your OS kernel will require to load the library into memory and link it to the application programs at run time.</p>
 				
-				<p>In the above figure, your job is to implement the OS. An architecture simulator for the <a href ="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank"><b>XSM</b></a> (eXperimental String Machine)  is given to you.  Your primary job is to write the eXpOS kernel on top of this machine so that application programs can run on top of the operating system.   You will also be required to implement some application programs like the <b>shell</b> that provides a user interface for the OS. </p>
-				
-				<p>Clearly, in order to write the OS, one must be told its two interfaces – the interface to the architecture below and the interface to the executable application programs above.   The former is given to you in the <a href="http://exposnitc.github.io/arch_spec.html" target="_blank">architecture specification</a>. The latter which specifies the interface between executable applications and the OS is called  the <a href="http://exposnitc.github.io/abi.html" target="_blank"><b>ABI</b></a> (Application Binary Interface). </p>
-				
-				<p>Given all the above, one must still have some mechanism to:  
-				</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp; 1. Write the OS modules and get them in executable format.</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp; 2. Load these executable programs into the machine's disk so that the OS executes when the machine is run. </p>
-			
-			
-				<p>The following support tools come along with the eXpOS package to help you achieve the above objectives. </p>				 
-				<p>For the first task, it is convenient to write  the OS modules and application programs in some high level language like C from your host unix environment and (cross) compile it into the executable format defined by the ABI.     However, we do not provide you with a C cross compiler.  Instead, we provide you two cross compilers, one for the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">System Programming Language</a> (SPL - which is essentially an assembler for the XSM machine) and one for a high level language  called  the <a href="http://exposnitc.github.io/support_tools-files/expl.html" target="_blank">Experimental Programming Language</a> (ExpL).    While application programs can be written in ExpL, kernel modules will have to be written in the SPL language as ExpL does not support "low level programming" necessary to implement the OS. </p>
-				<p>For the second task, we provide you with an interface software called the <a href="http://exposnitc.github.io/support_tools-files/xfs-interface.html" target="_blank">XFS interface</a>.  This tool allows you to load executable kernel modules as well as application programs from your host unix environment to the eXpOS disk.  The tool recognizes the file system format of eXpOS (called the experimental file system or <a href = "http://exposnitc.github.io/os_spec-files/eXpFS.html" target="_blank">eXpFS</a>) and allows you to transfer data files as well between the host Unix sytem and the disk.</p>
-				<p>The following figure illustrates how the various support tools interact.   </p>
+				<p>Since you start with a bare machine with no software on it, you need some external mechanism to:</p>
+				<p>1. Write the kernel modules and get them as XSM executable programs.</p>
+				<p>2. Store these modules into the machine's disk so that they can be loaded to the memory and executed when the machine is powered on.</p>
+				<p>We provide you with support tools for achieving the above objectives.</p>
+				<p>For the first task, a cross compiler for an enriched XSM assembly language called the <a href="support_tools-files/spl.html" target="_blank"> System Programming Language (SPL) </a> is given to you. You can write the OS modules in the SPL language from your host (UNIX) environment and generate XSM target programs using the SPL compiler.</p>
+				<p>For the second task, we provide you with an interface software called the <a href="support_tools-files/xfs-interface.html" target="_blank"> XFS interface</a>. This tool allows you to transfer executable kernel modules from your host (UNIX) system to specified blocks of the XSM disk. Thus you can load the XSM target modules into the appropriate areas of the XSM disk.</p>
+				<p>The following figure illustrates the OS development environment from an OS programmer's view point.</p>
 				
 				<p><img src="img/Kernel_Module.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
 				
-				<p> Application programs written by a user include the shell and other test programs. These programs have to be loaded into the file system, eXpFS , using the XFS interface.This also requires mecanisms to:</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp;1. Write the application program and make them executable</p>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp;2. Load the executable programs into the file system.</p>
+				<p>A similar mechanism is provided for preparing application programs and loading them to the machine's disk. A cross compiler for a tiny high level programming language called the <a href="support_tools-files/expl.html" target="_blank"> Experimental Language (ExpL) </a> is supplied to you. The ExpL compiler translates your program into the target executable format recognized by eXpOS. These programs can be stored in the XSM  machine's disk using the XFS interface tool.</p>
 				
-				<p>This is facilitated by the support tools described before and is depicted in the following figure:</p>
+				
+				<p>The following figure illustrates the development environment from an application programmer's perspective.</p>
 				<p><img src="img/Applicn_Pgm.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
 				
+				<p>Once the OS modules and application programs are loaded into the XSM machine's disk, the <a href="support_tools-files/xsm-simulator.html" target="_blank"> XSM simulator </a> can be be used to bootstrap the OS into the machine memory and start execution.</p>
 				
-				<p>As a technical point, when application programs are written in a high level language like ExpL, there needs to be an interface specification to define how OS routines can be invoked from a high level application program (ABI only specifies the low level interface, which defines the way the target low level code, typically generated by a ExpL compiler must invoke the OS routines).  The high level interface to OS routines is called the <a href="http://exposnitc.github.io/os_spec.html" target="_blank"><b>API</b></a> (Application Programmer's Interface).</p>
+				<p>The collection of development tools given to you including the XSM simulator, compilers for ExpL and SPL and XFS Interface will be referred to as the "eXpOS package” in the eXpOS documentation.</p>
 				
-				<p> The figure below describes the functionality as a whole:</p>
-				<p><img src="img/eXpOS_Overview_Fig2.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
+				<p>The <a href="os_spec.html" target="_blank"> eXpOS specification</a> provides an informal description of OS from the view point of the user/application programmer.</p>
+				<p>The <a href="faq.html" target="_blank">eXpOS FAQ</a> provides some more information.</p>
+				<p>We wish you enjoy doing the project following the <a href="Roadmap.html" target="_blank">Roadmap</a>.</p>
 				
-				
-				<p>The <a href="http://exposnitc.github.io/os_spec.html" target="_blank">eXpOS specification</a> provides an informal description of OS from the view point of the user/application programmer. </p>
-				<p>The <a href="http://exposnitc.github.io/faq.html" target="_blank">eXpOS FAQ</a>  provides some more information.  </p>
-				<p>We wish you enjoy doing the project following the <a href ="http://exposnitc.github.io/Roadmap.html" target="_blank">Roadmap</a>.</p>  
-                  
+						
             </div>
                      
                   
