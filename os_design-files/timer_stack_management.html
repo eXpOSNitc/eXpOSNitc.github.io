@@ -1,0 +1,758 @@
+<!--This document consists of header and footer only -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Kernel Stack Management</title>
+
+ <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body id="stack_desc"> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                    
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+
+	 <!--=========== BEGIN  ================-->
+	
+     <div class="container">
+         
+         	
+         <br><br><br><br>
+		<div class="heading">
+         <h2 style="font-size:36px">Kernel Stack Management In Timer Routine</h2>
+		 <br><br>
+		</div>
+         <br>
+         <p>Context switching is the process of switching a process from working on one task to working on another even before the former task is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") to persistent storage and, then loading up the context of a new process or starting up a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes without the necessity of requiring one to run to completion.</p>
+         <p>This document handles stack management in timer routine(context switch) , specific to eXpOS implementation in XSM machine. There are four situations that should be carefully handled in the case of a context switch:</p>
+	<br>
+	<p>&nbsp;&nbsp;&nbsp;a. A timer interrupt occurs in kernel mode.</p>
+	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode is being scheduled for execution.</p>
+	<p>&nbsp;&nbsp;&nbsp;c. A timer interrupt occurs in user mode.</p>
+	<p>&nbsp;&nbsp;&nbsp;d. A process in user mode is being scheduled for execution.</p>
+	</p>
+	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
+	
+     
+     </div>
+
+      <div class="container">
+    
+              	
+              <h3>Context Switch In Kernel Mode</h3>
+<br>
+<!--
+<p>A process executing in kernel mode can be scheduled out or scheduled in, upon which a context switch is necessary. Thus, there are 2 cases to be considered:</p>
+	<p>&nbsp;&nbsp;&nbsp;1. Context switch from a process in kernel mode</p>
+	<p>&nbsp;&nbsp;&nbsp;2. Context switch to a process in kernel mode</p>
+<br>
+-->
+<p> A context switch in kernel mode can occur in the following two cases:</p>
+	<br>
+	<p>&nbsp;&nbsp;&nbsp;<b>1. On a timer interrupt </b></p>
+	<p>&nbsp;&nbsp;&nbsp;The following actions are done when a process in execution gets interrupted by the timer:
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a Save the context in the kernel stack </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.b Store the logical kernel stack pointer in the KPTR field of the process table</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.c Call the scheduler to schedule another process </p>
+	<br>
+	<p>&nbsp;&nbsp;&nbsp;<b>2. On being scheduled back by the scheduler</b></p>
+	<p>&nbsp;&nbsp;&nbsp;The following actions are done when a process executing in kernel mode gets scheduled by the scheduler:
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a Use RESTORE instruction to load the context of the process </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b Resume the execution of the process</p>	
+      </div>
+      
+      <div class="container">
+    
+              	
+              <h3>Context Switch In User Mode</h3>
+<br>
+
+<p> A context switch in user mode can occur in the following two cases:</p>
+	<br>
+	<p>&nbsp;&nbsp;&nbsp;<b>1. On a timer interrupt </b></p>
+	<p>&nbsp;&nbsp;&nbsp;The following actions are done when a process in execution gets interrupted by the timer:
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a Save the current SP to UPTR</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.b Find the physical address of kernel stack pointer using KPTR and store it in SP</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.c Use BACKUP instruction to save the context of the currently executing process</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.d Store the logical kernel stack pointer in the KPTR field of the process table</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.e Call the scheduler to schedule another process </p>	
+	<br>
+	<p>&nbsp;&nbsp;&nbsp;<b>2. On being scheduled back by the scheduler</b></p>
+	<p>&nbsp;&nbsp;&nbsp;The following actions are done when a process executing in user mode gets scheduled by the scheduler:
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a Set the value of SP to the  physical address of kernel stack pointer using KPTR </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b Use RESTORE instruction to load the context of the process</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c Set the value of SP to the one stored in the UPTR field</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.d Resume execution of the process</p>		
+      </div>	
+      <br>
+
+ <div class="container-fluid .2.1_code fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/Stack_Management/actions_of_process_upon_encountering_sys_call.png" width="95%">
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT 
+			   instruction
+
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1 - Actions done by the user process before executing an INT instruction : </b>All the registers currently used by the process are pushed onto the user stack followed by the system call number corresponding to the system call. The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space.
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+
+
+<!-------------->
+
+<br>
+<p style="margin:0"><h4><b> 1. Actions done by the user process before executing an INT instruction </b></h4></p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Push the registers in use to the stack</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Push the system call number into the stack </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Push the arguments</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Push one space for the return value </p>
+&nbsp;&nbsp;&nbsp;<p >e. Invoke the INT machine instruction corresponding to the system call</p>
+<br>
+
+<!--action 1-->
+ <div class="container-fluid .2.1_code fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/Stack_Management/actions_of_process_upon_encountering_sys_call.png" width="95%">
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+.... 			// Code to push registers
+PUSH System_Call_Number	// Push system call number
+PUSH Argument_1		// Push the arguments to the stack
+PUSH Argument_2
+PUSH Argument_3
+PUSH R0			// Push an empty space for return value
+INT number		// Invoke the corresponding INT 
+			   instruction
+
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1 - Actions done by the user process before executing an INT instruction : </b>All the registers currently used by the process are pushed onto the user stack followed by the system call number corresponding to the system call. The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space.
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+  
+<p><h4><b>2. Actions done by the kernel module upon entry</b></h4></p>  
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Compute the physical address of the top of the user stack.</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments. (Note : The convention is to extract the system call number to register R0, and arguments to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R1,R2, and R3 in that order from the caller's stack)</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Switch the stack from user to kernel</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Identify the system call using the system call number and transfer control to the system call code</p>
+<br>
+
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2a.png" width="95%"></img>
+    </div>
+    <div class="col-sm-6">
+    <pre>
+<code>
+... 
+MOV R4,	physicalSP    // Compute physicalSP (figure out how!)		      
+MOV R0, [R4 - 4]      // Extracting the system call number from 
+			 the user stack to R0
+MOV R1, [R4 - 3]      // Extracting the values of the arguments
+MOV R2, [R4 - 2]
+MOV R3, [R4 - 1]			 
+...
+
+(NOTE: The machine code above is in the form of pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.{a,b}. - Compute the physical address of top of the user stack and transfer the system call number and arguments from the user stack to registers R0, R1, R2, R3 respectively</b>
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+  
+<!-- action 2.4 -->
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2c.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+...
+MOV UPTR, SP    
+	// Save SP in the user stack pointer field 
+	   of the process table
+MOV R4, User Area Page Number*512
+	// find the physical address of the user
+	   area page 
+ADD R4, KPTR
+	// find the value of the kernel stack 
+	   pointer using the formula 512*user 
+	   area page number + KERNEL STACK POINTER
+MOV SP, R4	
+	// store the physical address of the kernel 
+	   stack pointer in SP 
+...
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.{c,d}. - Switch from the user stack to the kernel stack</b>
+<p>2.c.1. Transfer the current SP register to User stack pointer field of the process table.</p>
+<p>2.c.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.c.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+<p>2.d. Identify the system call using the system call number and transfer control to the system call code.</p>
+
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<!-- action 3 -->
+<br><br>
+<p><h4><b>3. Actions done by the kernel module before returning from the system call</b></h4></p>  
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Point the stack pointer (SP) to top of the user stack </p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Return to the user program using the IRET machine instruction</p>
+<br>
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/actions_of_kernel_returning_from_sys_call_step3.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....		   
+MOV R4, physicalSP
+		// compute the physicalSP using
+ 		   USER STACK POINTER (figure out
+		   how!) 
+MOV [R4 - 1], return value 	    
+		// store the return value in the 
+		   space alloted in the user stack	
+MOV SP, UPTR	// move the value of USER STACK 
+		   POINTER TO SP
+IRET		// return to the user program
+....
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from the system call :</b>
+	<p>3.a. Compute the physical address corresponding to the top of the user stack and store the return value in the space alloted</p>
+	<p>3.b. Store the value of User Stack Pointer in the process table to SP</p>
+	<p>3.c. Return to the user program using IRET machine instruction</p>
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br>
+<!-- action 4 -->
+<p><h4><b>4. Actions done by the process after returning from a system call</b></h4></p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the return value</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Pop off the arguments and the system call number from the stack</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Restore the register context and resume execution.</p>
+<br>
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/actions_of_process_aftr_return_sys_call.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....
+POP R0			// Pop and save the return 
+		           value
+POP Argument_3		
+POP Argument_2
+POP Argument_1		// Pop and discard the 
+			   arguments
+POP System_Call_Number	// Pop and discard the 
+			   system call number 
+....			// Code to restore the 
+			   register context and 
+			   resume execution
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.4. - Actions done by the process after returning from a system call</b>
+	<p>4.a. Pop off the return value from the stack top and store in a register, say R0.</p>
+	<p>4.b. Pop off the arguments and system call number from the user stack.</p>
+	<p>4.c. Restore the registers and resume execution.</p>
+<p>Note: After the above steps are executed, SP will have a value different from the value in UPTR.</p>
+
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+</div>
+<!--Exception/Interrupt Handler-->
+<div class="container">
+         <div class="row">
+              	
+              <h3>Exception/Interrupt Handler</h3>
+              <br>
+              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine or the console interrupt routine. The actions done inside the timer interrupt routine (scheduler) are discussed elsewhere (LINK). Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (The <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions of the XSM machine facilitate this).</p>
+	      <p> NOTE: If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
+              <br>
+              <p style="margin:0"><h4><b> 1. Actions done by the kernel module upon entering the interrupt routine </b></h4></p>
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Save the values of the machine registers in the kernel stack using BACKUP machine instruction.  </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the interrupt routine code</p>
+		
+              <br><p><b>Execution context before an interrupt/exception:</b></p><br>
+              <img src="../img/Stack_Management/execn_context_b4_interrupt.png" width="60%">
+<br><br><br><br>
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img  src="../img/Stack_Management/aftr_interrupt_step1a.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+<pre>
+<code>
+....
+MOV UPTR, SP	// Save the current SP register to 
+		   User stack pointer field of the 
+		   process table.
+MOV R4, User Area Page Number*512
+	// find the physical address of the user 
+	   area page 
+ADD R4, KPTR
+	// find the value of the kernel stack 
+	   pointer using the formula 512*user 
+	   area page number + KERNEL STACK POINTER
+MOV SP, R4	
+	// store the physical address of the kernel 
+	   stack pointer in SP 
+....	
+		   
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1.a. - Switch from the user stack to the kernel stack</b>
+		<p>1.a.1. Transfer the current SP register to User stack pointer field of the process table.</p>
+		<p>1.a.2.  Compute the physical address of the kernel stack pointer </p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+		<p>1.a.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+
+
+
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/aftr_interrupt_step1b.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....
+BACKUP		// machine instruction to save the 
+		   register context
+....
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1.{b,c} - Use the BACKUP machine instruction to save the values of the machine registers in the kernel stack and transfer control to the interrupt routine code</b>  
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+
+
+<br>
+      <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning from the interrupt routine </b></h4></p>
+        &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Restore the values of the machine registers using RESTORE machine instruction</p> 
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Set the value of SP to the top of the user stack  </p> 
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control back to the user process</p>
+
+<br><br>
+	   <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/aftr_interrupt_step2a.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....
+RESTORE		// machine instruction to restore
+ 		   the register context
+....
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.a - Use the RESTORE machine instruction to restore the values of the machine registers</b>  
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+<div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/aftr_interrupt_step2b.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....
+MOV SP, UPTR	// point SP to the user stack
+IRET		// return to the user process
+....
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.{b,c} - Set the value of SP to the top of the user stack</b>
+	<p>2.b.  Transfer the value stored in user stack pointer field to the SP register </p>
+	<p>2.c.  Transfer the control back to the user process</p>
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br>
+	     
+
+<br><br>	      
+	      
+	      
+	      
+	     </div>
+</div>
+
+<div class="container">
+         <div class="row">
+              	
+              <h3>Invocation of a kernel module from another kernel module</h3>
+              <br>	      
+              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The arguments to the kernel module are passed through the registers R0, R1, R2. The invoked kernel module also uses the same kernel stack. The return value will be stored in register  R0. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context upon return before resuming its execution.</p>
+	      <p> Note : RET instruction is used instead of IRET to return back to the kernel module.</p>
+              <br>
+              <br>
+              <p style="margin:0"><h4><b> 1. Actions done by the kernel module before executing the call to another kernel module </b></h4></p>
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack</p> 
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the arguments argument_1, argument_2, argument_3,... to R0, R1, R2, ... respectively </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the kernel module to be executed </p> 
+		<br>
+	      <div class="container-fluid fig_code">
+ 	      <figure>
+  		<div class="row">
+    		<div class="col-sm-7">
+     		<img src="../img/Stack_Management/kernel_to_kernel_step1a.png" width="95%"></img>
+    		</div>
+    			<div class="col-sm-5">
+<pre>
+<code>			
+....		// save the registers in use
+MOV R0, argument_1
+MOV R1, argument_2
+MOV R2, argument_3
+...
+		// store the arguments
+CALL MODULE_N / INT_N	
+		// invoke the other kernel 
+		   module/interrupt routine
+....
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1. -  Save the registers in use to the kernel stack, store the values of arguments to registers R0, R1, R2,.. in that order and transfer control to the kernel module to be executed</p></b>
+
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br>	
+<br><br>         
+<br>
+              <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pop off the space used during its execution from the kernel stack </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use RET instruction to transfer control back to the kernel module which invoked it </p> 
+		<br>
+<div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/kernel_to_kernel_step2.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<code>
+....
+POP R0	// pop off the space used during 
+...	   its execution
+
+RET	// return control to the module 
+	   which invoked it
+
+
+(NOTE: The machine code above is in the form of 
+pseudo code.)
+</code>
+	
+	</pre>
+    </div>
+  	</div>  	  	        	
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
+<p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
+<p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
+<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution. The return value will be stored in the register R0, according to the SPL calling conventions given <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
+    	      	</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br>
+              
+    	</div>
+</div>
+         
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
