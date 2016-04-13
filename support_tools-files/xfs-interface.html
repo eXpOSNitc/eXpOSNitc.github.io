@@ -173,7 +173,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  </li>
                  
                  <li class="list-group-item list-group-item-success" id="export"><b>Exporting Files</b> <br/>
-                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;unix_filename&gt;</b> specifies the UNIX file to which it is to be exported.</p>
+                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from the XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;unix_filename&gt;</b> specifies the UNIX file to which it is to be exported.</p>
 				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;unix_filename&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;xfs_filename&gt;</b>.</p>    
                         <ul class="list-group"><ol>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;unix_filename&gt; </tt>
@@ -186,7 +186,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  
                  
                 <li class="list-group-item list-group-item-success"><b>Removing Files</b> <br/>
-                     <p style="color:black">The command <b>rm</b> is used to remove files from the filesystem. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
+                     <p style="color:black">The command <b>rm</b> is used to remove files from the XFS disk. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
 				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the file (executable/data file) and clears the blocks corresponding to the file, updates the <a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> and  removes root file and inode table entries. Only data and executable files can be removed. </p>    
 				
                 
