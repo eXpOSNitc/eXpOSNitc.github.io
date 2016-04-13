@@ -167,16 +167,16 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
 					    </br><i>Semantics</i> : Loads the specified Interrupt routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --exhandler &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads exception handler routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
-                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --module [0-7] &lt;filename.xsm&gt; </tt>
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --module [0-7] &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads a module to the the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
 				</ol></ul>
                  </li>
                  
                  <li class="list-group-item list-group-item-success" id="export"><b>Exporting Files</b> <br/>
-                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from the XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;unix_filename&gt;</b> specifies the UNIX file to which it is to be exported.</p>
-				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;unix_filename&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;xfs_filename&gt;</b>.</p>    
+                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from the XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;pathname&gt;</b> specifies the UNIX file to which it is to be exported.</p>
+				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;unix_filename&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;pathname&gt;</b>.</p>    
                         <ul class="list-group"><ol>
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;unix_filename&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Exports a data file from XFS disk to UNIX file system.</li>
 					
 					
@@ -218,7 +218,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  </li> 
 <li class="list-group-item list-group-item-success"><b>Copying Disk Blocks to a UNIX File</b> <br/><br/>
                 <ul class="list-group">
-                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>copy</b> &lt;start_block&gt; &lt;end_block&gt; &lt;unix_filename&gt;</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>copy</b> &lt;start_block&gt; &lt;end_block&gt; &lt;pathname&gt;</tt></li>
                     <li class="list-group-item" style="color:black"><i>Semantics</i> : It copies the contents of specified block(s) in the filesystem to an 
 				                  external UNIX file and the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> directory. The arguments &lt;start_block&gt; and &lt;end_block&gt; denotes the range of blocks to be copied 
 				                  (including both). &lt;unix_filename&gt; specifes the destination UNIX file to which the contents are copied.</li></ul>
