@@ -53,7 +53,6 @@
     .custom-badge {
         background:#26A65B;
         font-size:20px;
-        overflow: scroll;
     }
     .custom-badge:hover{
         background:#000000;
@@ -63,11 +62,15 @@
       background:#dff0d8;
       border-radius:4px;
       padding:2px;
-      height:210px;
-      overflow: scroll;
+      height:90px;
+    }
+    .custom-panel2{
+      background:#dff0d8;
+      border-radius:4px;
+      padding:2px;
     }
     .well{
-      height:250px;
+      height:130px;
 
     }
   
@@ -149,7 +152,6 @@
                 <div class="text-center custom-panel" id="stage1">
                 <span class="label custom-badge blink"  id="stage1">1</span>
                 <h4>Setting up the System</h4>
-                Set up the environment to build the eXpOS
                 </div>
                 </div>
 
@@ -157,12 +159,6 @@
                 <div class="text-center custom-panel" id="stage2">
                 <span class="label custom-badge" id="stage2">2</span>
                 <h4>Understanding the File System</h4>
-                <ul style="text-align:left;font-size:12px">
-                <li>* Familiarising with Disk Organisation</li>
-                <li>* Understanding eXpFS File System</li>
-                <li>* Using the XFS-interface</li>
-                <li>* Introduction to Disk Data Structures (Inode table, Root File, Disk Free List)</li>
-                </ul>
                 </div>
                 </div>
                 
@@ -170,10 +166,6 @@
                 <div class="text-center custom-panel" id="stage3">
                 <span class="label custom-badge" id="stage3">3</span>
                 <h4>Bootstrapping</h4>    
-                <ul style="text-align:left;font-size:12px">
-                <li>* Understanding the bootstrap process</li>
-                <li>* Introducing protected (kernel) mode</li>
-                </ul>
                 </div>
                 </div>
 
@@ -181,7 +173,6 @@
                 <div class="text-center custom-panel" id="stage4">
                 <span class="label custom-badge" id="stage4">4</span>
                 <h4>Running User Mode Programs</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
 
@@ -189,7 +180,6 @@
                 <div class="text-center custom-panel" id="stage5">
                 <span class="label custom-badge" id="stage5">5</span>
                 <h4>Scheduling</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
 
@@ -197,28 +187,24 @@
                 <div class="text-center custom-panel" id="stage6">
                 <span class="label custom-badge" id="stage6">6</span>
                 <h4>Console Interrupt Handling</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage7">
                 <span class="label custom-badge" id="stage7">7</span>
                 <h4>Exception &amp; Demand Paging</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage8">
                 <span class="label custom-badge" id="stage8">8</span>
                 <h4>Creating a data file</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage9">
                 <span class="label custom-badge" id="stage9">9</span>
                 <h4>Opening and Reading a data file</h4>                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus augue nunc, at rhoncus odio volutpat eget.</p>
                 </div>
                 </div>
 
@@ -242,7 +228,11 @@
 
                       <div id="collapse1" class="panel-collapse collapse">
                         <div class="panel-body">
-                          
+                          <div class="custom-panel2">
+                            <div style="padding:10px">Learning Objectives <br/>
+                            Set up the environment to build the eXpOS
+                            </div>
+                          </div>
                           <p>
                             Follow the instructions in the <a href="support_tools-files/setting-up.html" target="_blank"><b>setting up</b></a> section of the usage documentation to setup the system. This roadmap assumes that the entire package is extracted to <code>$HOME/myexpos</code>. If the setting up of the system is done correctly the following directories will be created. 
                           </p> 
@@ -263,6 +253,17 @@
 
                       <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body">
+                        <div class="custom-panel2">
+                          <div style="padding:10px">Learning Objectives <br/>
+                             <ul style="text-align:left;font-size:12px">
+                <li>* Familiarising with Disk Organisation</li>
+                <li>* Understanding eXpFS File System</li>
+                <li>* Using the XFS-interface</li>
+                <li>* Introduction to Disk Data Structures (Inode table, Root File, Disk Free List)</li>
+                </ul>
+                </div>
+
+                            </div>
                           <p>
                             The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment.
                             </p>
@@ -480,6 +481,14 @@ peppermint wind</pre></div>
 
                       <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body">
+                        <div class="custom-panel2">
+                          <div style="padding:10px">Learning Objectives <br/>
+                            <ul style="text-align:left;font-size:12px">
+                <li>* Understanding the bootstrap process</li>
+                <li>* Introducing protected (kernel) mode</li>
+                </ul>
+                            </div>
+                            </div>
                           <p>
                             When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine, that is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. ROM code does the following operations :
                             <ol style="list-style-type:decimal;margin-left:10vw">
