@@ -135,7 +135,7 @@ file, entry for the special users "root" and "system" in the user table etc.    
 				
 				
 				is the path to the UNIX file which is to be loaded to the filesystem. </p>
-				<p style="color:black">The command checks the size of the file <a href="../os_spec-files/eXpFS.html" target="_blank">(executable/data file)</a>, allocates the required number of blocks for the file, updates the <a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> and  creates the corresponding <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and <a href="../os_design-files/disk_ds.html#root_file" target="_blank">root file</a> entries for the file. xfs-interface recognizes the disk blocks designated for the timer, console and disk
+				<p style="color:black">The command checks the size of the <a href="../os_spec-files/eXpFS.html" target="_blank">executable/data file</a>, allocates the required number of blocks for the file, updates the <a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> and  creates the corresponding <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and <a href="../os_design-files/disk_ds.html#root_file" target="_blank">root file</a> entries for the file. xfs-interface recognizes the disk blocks designated for the timer, console and disk
 interrupt handlers, the exception handler, idle process, the shell code, OS modules  and the OS startup code by the <a href="../os_implementation.html" target="_blank">eXpOS implementation</a> on the XSM machine and loads these modules to the appropriate places. 
 				</p>
                 <p style="color:black">The various <b>load</b> commands are listed below :     
@@ -147,7 +147,8 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --data &lt;pathname&gt; </tt><br/>
 					    <i>Semantics</i> :  Loads a data file to XFS disk after allocating sufficient disk blocks and creating <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and root file entries.</li>
 					    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --init &lt;pathname&gt; </tt>
-					    </br><i>Semantics</i> : Loads INIT code to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
+					    </br><i>Semantics</i> : Loads INIT/Login code to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. <br/>
+              <code>Note:</code> Login code will be the INIT code in Multi User mode implementation of eXpOS.</li>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --os &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads OS startup code to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --idle &lt;pathname&gt; </tt>
@@ -156,26 +157,26 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
 					    </br><i>Semantics</i> : Loads Shell code to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --library &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads Library to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a> . </li>        
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=timer &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int timer &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads Timer Interrupt routine to  the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
-					    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=disk &lt;pathname&gt; </tt>
+					    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int disk &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads Disk Interrupt routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
-					    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=console &lt;pathname&gt; </tt>
+					    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int console &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads Console Interrupt routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>. </li>
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int=[4-18] &lt;pathname&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --int [4-18] &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads the specified Interrupt routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
 					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --exhandler &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads exception handler routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
-                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --module=[0-7] &lt;filename.xsm&gt; </tt>
+                    <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>load</b> --module [0-7] &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Loads a module to the the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.</li>
 				</ol></ul>
                  </li>
                  
-                 <li class="list-group-item list-group-item-success"><b>Exporting Files</b> <br/>
-                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;unix_filename&gt;</b> specifies the UNIX file to which it is to be exported.</p>
-				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;unix_filename&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;xfs_filename&gt;</b>.</p>    
+                 <li class="list-group-item list-group-item-success" id="export"><b>Exporting Files</b> <br/>
+                     <p style="color:black">The command <b>export</b> is used to export <i>data files</i> from the XFS disk to the UNIX filesystem.  The argument <b>&lt;xfs_filename&gt;</b> specifies the file which is to be exported and the argument <b>&lt;pathname&gt;</b> specifies the UNIX file to which it is to be exported.</p>
+				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the data file and copies all the blocks corresponding to the file to the UNIX file specified. Note that if the argument <b>&lt;pathname&gt;</b> is not given the file will be stored at <b>$HOME/myexpos/xfs-interface/</b> and named as <b>&lt;xfs_filename&gt;</b>.</p>    
                         <ul class="list-group"><ol>
-					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;unix_filename&gt; </tt>
+					<li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>export</b> &lt;xfs_filename&gt; &lt;pathname&gt; </tt>
 					    </br><i>Semantics</i> : Exports a data file from XFS disk to UNIX file system.</li>
 					
 					
@@ -185,7 +186,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  
                  
                 <li class="list-group-item list-group-item-success"><b>Removing Files</b> <br/>
-                     <p style="color:black">The command <b>rm</b> is used to remove files from the filesystem. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
+                     <p style="color:black">The command <b>rm</b> is used to remove files from the XFS disk. The argument &lt;xfs_filename&gt; specifies the file which is to be removed.</p>
 				<p style="color:black">The command searches the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries for the file (executable/data file) and clears the blocks corresponding to the file, updates the <a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> and  removes root file and inode table entries. Only data and executable files can be removed. </p>    
 				
                 
@@ -223,7 +224,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
 				                  (including both). &lt;unix_filename&gt; specifes the destination UNIX file to which the contents are copied.</li></ul>
                  </li> 
 
-                <li class="list-group-item list-group-item-success"><b>Dumping Disk Data Structures to a UNIX File</b> <br/><br/>
+                <li class="list-group-item list-group-item-success" id="dump"><b>Dumping Disk Data Structures to a UNIX File</b> <br/><br/>
                 <p style="color:black">The command <b>dump</b> is used to dump/export the <a href="../os_design-files/disk_ds.html" target="_blank">disk data structures</a> (inode table and root file) to the predefined UNIX files as follows. The files are dumped to <b>$HOME/myexpos/xfs-interface/</b> directory.</p>
                 <ul class="list-group">
                     <li class="list-group-item" style="color:black"><i>Syntax</i> : <tt><b>dump</b> --inodetable</tt></li>
@@ -234,6 +235,16 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                           external UNIX file named <tt>rootfile.txt</tt>.</li></ul>
                 </li> 
 
+                <li class="list-group-item list-group-item-success"><b>Batch Mode Execution of Instructions</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b>run</b> &lt;pathname&gt;</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It executes the set of xfs-interface commands specified in the <b>&lt;pathname&gt;</b>, sequentially. Note that, the set of commands in the file should be separated by a new line. A sample batch file content is shown below:<br/><br/>
+                    <pre>load --int timer $HOME/myexpos/spl/spl_programs/timer.xsm
+load --int disk $HOME/myexpos/spl/spl_programs/disk.xsm
+load --int console $HOME/myexpos/spl/spl_programs/console.xsm</pre>
+                    </li></ul>
+                 </li>
+
                 <li class="list-group-item list-group-item-success"><b>Exit Interface</b> <br/><br/>
                 <ul class="list-group">
                     <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b>exit</b></tt></li>
@@ -241,12 +252,7 @@ interrupt handlers, the exception handler, idle process, the shell code, OS modu
                  </li>    
             </ul>      
               </div>
-<div style="color:blue">
-    <p>...To be done..</p>
-<p>Batch command mechanism needs to be documented.</p>
-  
-    </div>
-            </div>
+          </div>
           </div>
         </div>       
       </div>

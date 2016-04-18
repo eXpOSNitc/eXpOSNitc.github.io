@@ -8,7 +8,11 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<<<<<<< HEAD
      <title>Kernel Stack Management During Context switch</title>
+=======
+     <title>Kernel Stack Management during Context Switch</title>
+>>>>>>> 09f91897ff9438a232316fb8388869c7588ae2ac
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -105,6 +109,7 @@
          
          	
          <br><br><br><br>
+<<<<<<< HEAD
 	 <div class="heading">
          <h2 style="font-size:36px">Kernel Stack Management During Context Switch</h2>
 	 <br><br>
@@ -112,6 +117,15 @@
          <br>
          <p>Context switching is the process of switching a process from working on one task to working on another even before the former task is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") to persistent storage and, then loading up the context of a new process or starting up a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes without the necessity of requiring one to run to completion.</p>
          <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are four situations that can result in a context switch:</p>
+=======
+		<div class="heading">
+         <h2 style="font-size:36px">Kernel Stack Management During Context Switch</h2>
+		 <br><br>
+		</div>
+         <br>
+         <p>The eXpOS timer routine implememts the OS scheduler. The scheduler is responsible for Context switching is the process of switching a process from working on one task to working on another even before the former task is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") to persistent storage and, then loading up the context of a new process or starting up a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes without the necessity of requiring one to run to completion.</p>
+         <p>This document handles stack management in timer routine(context switch) , specific to eXpOS implementation in XSM machine. There are four situations that should be carefully handled in the case of a context switch:</p>
+>>>>>>> 09f91897ff9438a232316fb8388869c7588ae2ac
 	<br>
 	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling).</p>
 	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode gets scheduled for execution.</p>
