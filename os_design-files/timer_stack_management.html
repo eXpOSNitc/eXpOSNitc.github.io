@@ -152,7 +152,7 @@
 	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done in the case of a blocking system call can be divided into two:<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.i)  Actions done by the leaving process (system call routine/ exception handler) :</b></p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.i.a) Save the registers in use and the BP in the kernel stack </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.i.b) Invoke the timer interrupt routine </p>	
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.i.b) Invoke the INT 1 routine (scheduler) </p>	
 	<br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -184,10 +184,10 @@ INT 1			// Invoke the corresponding INT
 			</div>
 		</figure>
 	</div>
-<br><br><br><br>
+<br><br><br>
 &nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.ii) Actions done by the scheduler (INT 1 routine) :</b></p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.ii.a) Save the current kernel stack pointer in the KPTR field of the process table </p>
-<br><br><br><br>
+<br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
   			<div class="row">
@@ -227,7 +227,7 @@ MOV KPTR,R5	// logicalSP =
 
 	
 <p style="margin:0"><h4><b>2. Entering process resumes execution in the kernel mode </b></h4></p>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done on being scheduled back can be divided into two:<br><br>
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done for scheduling back a process in kernel mode can be divided into two:<br><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.i) Actions done by the scheduler (INT 1 routine) :</b></p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.a) Set SP to the value stored in the KPTR field of the process table of the process being scheduled </p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.b) Transfer control back to the system call using <b>RET</b> instruction </p>
@@ -273,10 +273,10 @@ RET
 			</div>
 		</figure>
 	</div>
-<br><br><br><br>
+<br><br><br>
 	&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.ii) Actions done by the entering process (system call routine/exception handler) :</b></p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.a) Restore the values of BP and registers in use from the kernel stack </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.b) Resume the execution of the system call routine </p><br><br><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.b) Resume the execution of the system call routine </p><br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
   			<div class="row">
