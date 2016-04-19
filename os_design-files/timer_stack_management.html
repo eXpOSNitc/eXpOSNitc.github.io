@@ -274,7 +274,7 @@ RET
 		</figure>
 	</div>
 <br><br><br>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.ii) Actions done by the entering process (system call routine/exception handler) :</b></p><br>
+	&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.ii) Actions done by the entering process (system call/exception routine) :</b></p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.a) Restore the values of BP and registers in use from the kernel stack </p><br>
 	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.b) Resume the execution of the system call routine </p><br><br>
 	<div class="container-fluid .2.1_code fig_code">
@@ -313,12 +313,8 @@ POP BP		//Pop and Save BP
 <div class="container">
       	<div class="row">
              	
-              <h3>Context Switch In User Mode</h3>
-              <br>
-              <p> A context switch in user mode occurs in the following two cases:</p>
-	        <br>
-		<p style="margin:0"><h4><b>1. Timer Interrupt </b></h4></p>
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the timer interrupt routine :<br><br>
+		<p style="margin:0"><h4><b>3. When the leaving processs is in user mode </b></h4></p>
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the scheduler (INT 1 routine) :<br><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a) Switch from the user stack to the kernel stack </p><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.b) Use BACKUP instruction to save the context of the currently executing process </p><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.c) Store the logical kernel stack pointer in the KPTR field of the process table </p><br>
@@ -419,8 +415,8 @@ INT 1		// Invoke the scheduler
 <br><br><br><br>
 
 
-<p style="margin:0"><h4><b>2. User Process gets scheduled back for execution </b></h4></p>
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the scheduler :<br><br>
+<p style="margin:0"><h4><b>4. When the entering process is in user mode </b></h4></p>
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the scheduler (INT 1 routine) :<br><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a) Set the value of SP to the  physical address of kernel stack pointer using KPTR </p><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b) Use RESTORE instruction to load the context of the process </p><br>
 		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.c) Set the logical address of current SP to the KPTR field in the process table  </p><br>
