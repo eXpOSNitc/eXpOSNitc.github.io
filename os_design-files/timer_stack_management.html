@@ -109,13 +109,19 @@
          <br><br><br><br>
 
 	 <div class="heading">
-         <h2 style="font-size:36px">Kernel Stack Management During Context Switch</h2>
+         <h2 style="font-size:30px">Kernel Stack Management During Context Switch</h2>
 	 <br><br>
     	 </div>
          <br>
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
-         <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are four situations that can result in a context switch:</p>
+         <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
 	<br>
+	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the INT 1 routine that implements the scheduler to perform a context switch. </p>
+	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer
+interrupt (INT 1) is raised.  In this case, the interrupt routine saves the
+context of the current process and schedules a new process for execution.  </p>
+
+	<br><br>
 	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling). In this case, the process preempts itself and invok</p>
 	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode gets scheduled for execution.</p>
 	<p>&nbsp;&nbsp;&nbsp;c. A timer interrupt occurs in user mode.</p>
