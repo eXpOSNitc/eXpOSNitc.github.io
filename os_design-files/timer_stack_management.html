@@ -116,32 +116,29 @@
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
          <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
 	<br>
-	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the INT 1 routine that implements the scheduler to perform a context switch. </p>
-	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer
-interrupt (INT 1) is raised.  In this case, the interrupt routine saves the
-context of the current process and schedules a new process for execution.  </p>
+	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the INT 1 routine (that implements the scheduler) to perform a context switch. </p>
+	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the interrupt routine saves the context of the current process and schedules a new process for execution.  </p>
 
-	<br><br>
+	<br>
 
 	<p>In the following, we will use the term "leaving process" to indicate the process that gets scheduled out and "entering process" to indicate the new process that gets scheduled in.</p>
-	<p>The actions done on the kernel stack of the leaving and entering processes in effecting a context switch may be classified as:</p>
+	<p>The actions done on the kernel stacks of the leaving and the entering processes in effecting a context switch may be classified as:</p>
 	<p>&nbsp;&nbsp;&nbsp;Step 1:  Operations performed by the leaving process on its own kernel stack before invoking the scheduler (INT 1 routine)</p>
 	<p>&nbsp;&nbsp;&nbsp;Step 2:  Operations performed by the scheduler (INT 1 routine) on the kernel stack of the leaving process.  </p>
 	<p>&nbsp;&nbsp;&nbsp;Step 3.  Operations  performed by the scheduler (INT 1 routine) on the kernel stack of the entering process. </p>
-	<p>&nbsp;&nbsp;&nbsp;Step 4.  Operations performed by the entering process on its of kernel stack before resuming execution.</p>
+	<p>&nbsp;&nbsp;&nbsp;Step 4.  Operations performed by the entering process on its kernel stack before resuming execution.</p>
 	<br>
-	<p>If the leaving process was executing in the user mode, the then step 1 is empty.  This is because the
-scheduler is invoked through a hardware interrupt and thus the context switch is not in the control of the leaving process. Thus if the entering proceess is resuming execution in the user mode, Step 4 will be empty. </p>  
-	<p>On the other hand, if the leaving process initiates INT 1 routine while executing in the
-kernel mode as the result of a blocking operation, it saves its own context into its kernel stack before invoking the INT 1 routine. Consequently, if the entering process has to resume execution in the kernel mode, both Step 3 and Step 4 actions will be required. </p> 
+	<p>If the leaving process was executing in the user mode, then step 1 is empty.  This is because the scheduler is invoked through a hardware interrupt and thus the context switch is not in the control of the leaving process. Consequently if the entering procees is resuming execution in the user mode, Step 4 will be empty. </p>  
+	<p>On the other hand, if the leaving process initiates INT 1 routine while executing in the kernel mode as the result of a blocking operation, it saves its own context into its kernel stack before invoking the INT 1 routine. Consequently, if the entering process has to resume execution in the kernel mode, both Step 3 and Step 4 actions will be required. </p> 
 	<p> In the following, we describe each of these steps in detail.</p>
-<br><br>
 
+	<!--
 	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling). In this case, the process preempts itself and invok</p>
 	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode gets scheduled for execution.</p>
 	<p>&nbsp;&nbsp;&nbsp;c. A timer interrupt occurs in user mode.</p>
 	<p>&nbsp;&nbsp;&nbsp;d. A process in user mode gets scheduled for execution.</p>
 	</p>
+-->
 	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
 	
      
@@ -151,12 +148,6 @@ kernel mode as the result of a blocking operation, it saves its own context into
 
       <div class="container">
       	<div class="row">
-             	
-              <h3>Context Switch In Kernel Mode</h3>
-              
-<br>
-<p> A context switch in kernel mode can occur in the following two cases:</p>
-	<br>
 	<p style="margin:0"><h4><b>1. When the leaving process is in kernel mode  </b></h4></p>
 	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done in the case of a blocking system call can be divided into two:<br><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.i)  Actions done by the leaving process (system call routine/ exception handler) :</b></p><br>
