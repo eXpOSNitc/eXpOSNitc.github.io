@@ -113,10 +113,10 @@
 	 <br><br>
     	 </div>
          <br>
-         <p>Context switching is the process of switching a process from working on one task to working on another even before the former task is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") to persistent storage and, then loading up the context of a new process or starting up a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes without the necessity of requiring one to run to completion.</p>
+         <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
          <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are four situations that can result in a context switch:</p>
 	<br>
-	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling).</p>
+	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling). In this case, the process preempts itself and invok</p>
 	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode gets scheduled for execution.</p>
 	<p>&nbsp;&nbsp;&nbsp;c. A timer interrupt occurs in user mode.</p>
 	<p>&nbsp;&nbsp;&nbsp;d. A process in user mode gets scheduled for execution.</p>
