@@ -317,8 +317,9 @@ pseudo code.)
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from the system call :</b>
 	<p>3.a. Compute the physical address corresponding to the top of the user stack and store the return value in the space alloted</p>
-	<p>3.b. Store the value of User Stack Pointer in the process table to SP</p>
-	<p>3.c. Return to the user program using IRET machine instruction</p>
+	<p>3.b. Save the logical address of kernel stack pointer (SP) to the KPTR field</p>
+	<p>3.c. Store the value of User Stack Pointer in the process table to SP</p>
+	<p>3.d. Return to the user program using IRET machine instruction</p>
 </figcaption>
 </div>
 </div>
