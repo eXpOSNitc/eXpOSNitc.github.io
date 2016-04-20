@@ -283,10 +283,9 @@
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo2">Learning Objectives</a>
                             <div id="lo2" class="panel-collapse collapse">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the disk organisation by having a basic understanding about the disk layout.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the eXpFS File System Organistion and types of eXpFS files (root file, data file, executable file). </li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; How to use the XFS-interface by trying out various commands related to disk data structures and eXpFS files.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the disk data structures (Inode table, Root File, Disk Free List).</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load/retrieve data and executable files from/to your host (Unix) system into the XSM disk./li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Explain the disk data structures of the XFS file system - INODE table, disk free list and root file.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Find out the data blocks into which a data/executable file is stored in the XSM disk by examining  the INODE table and root file.</li>
                             </ul>                                  
                                      
                             </div>
@@ -400,7 +399,7 @@ To cool in the peppermint wind.</pre>
                                   A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1 (used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains informations such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. Note that eXpFS file is permitted to have a maximum of four data blocks.
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. Note that eXpFS file is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
@@ -484,10 +483,7 @@ peppermint wind</pre></div>
                             </li>
                           </ol>
 
-                          <p><b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and observe that the corresponding entries for this file gets removed from the disk data structures.</p>
-                          <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a>.</p>
-
+                          
                           <!--=========== BEGIN contents SECTION ================-->
                           <div class="container col-md-12">
                           <div class="section_area">
@@ -502,6 +498,9 @@ peppermint wind</pre></div>
                           </ul>
                           </div>
                           </div>
+
+                          <p><b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and observe that the corresponding entries for this file gets removed from the disk data structures.</p>
                          
                        </div>
                       </div>
@@ -524,9 +523,8 @@ peppermint wind</pre></div>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo3">Learning Objectives</a>
                             <div id="lo3" class="panel-collapse collapse">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the bootstrap process.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Work with protected (kernel) mode. </li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Learn to write SPL programs. </li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small OS startup code and generate target using the SPL compiler.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your OS startup code into the boot block of the disk and this code executed on bootstrap.</li>
                             </ul>                                  
                                      
                             </div>
@@ -537,14 +535,14 @@ peppermint wind</pre></div>
                           <!-- End Learning Objectives-->
 
                           <p>
-                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine, that is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. ROM code does the following operations :
+                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine. That is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. ROM code does the following operations :
                             <ol style="list-style-type:decimal;margin-left:10vw">
                               <li>Loads block 0 of disk to page 1 of memory (physical address 512).</li>
                               <li>After loading the block to memory, it sets IP (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
                             </ol>
                           </p> 
 
-                          <p>Thus, if you write a program in SPL, compile it using <a href="support_tools-files/spl.html" target="_blank">SPL compiler</a> and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. This program which is loaded to block 0 of disk is supposed to be the OS Startup Code. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup. </p>
+                          <p>Thus, if you write a program in SPL, compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL compiler</a> and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. This program which is loaded to block 0 of disk is supposed to be the OS Startup Code. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup. </p>
                           
                           <p>Since your goal is to create an OS that runs on the XSM machine, as the first step, you need to create
                           a boot up code and store it in block 0 of the XSM disk so that this code gets loaded and executed upon 
@@ -622,7 +620,7 @@ Machine is halting</pre></div>
 
                           <p> You may also write a few SPL programs on your own and run it on the machine to get familiarized with SPL syntax. Try using the instructions like <a href="support_tools-files/spl.html" target="_blank"><i>breakpoint</i></a> which translates to <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction. This instruction is useful for debugging. Refer <a href="support_tools-files/xsm-simulator.html" target="_blank">XSM Debugger</a>.</p>
 
-                          <p><b style="color:#26A65B">Assignment : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Runtime envoronment</a>.</p>
+                          
 
                           <!--=========== BEGIN contents SECTION ================-->
                           <div class="container col-md-12">
@@ -631,12 +629,15 @@ Machine is halting</pre></div>
                            <li class="list-group-item">
                             <a data-toggle="collapse"  href="#collapseq2"><b>Q1.</b> If the OS Startup Code is loaded to some other page other than Page 1, will XSM work fine?</a>
                             <div id="collapseq2" class="panel-collapse collapse"> No. This is because after the execution of the ROM Code, IP points to <b>512</b> which is the 1<sup>st</sup> instruction of Page 1. So if the OS Startup Code is not loaded to Page 1, it results in <a href="./arch_spec-files/interrupts_exception_handling.html" target="_blank">exception</a> and leads to system crash.</div>
+
+                            
+
                           </li>
                           </ul>
                           </div>
                           </div>
-
-                          
+                          <p><b style="color:#26A65B">Assignment 1 : </b> Read and understand the <a href="arch_spec.html" target="_blank">XSM Architecture Specification</a>.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Runtime envoronment</a>.</p>
 
                         </div>
                       </div>
