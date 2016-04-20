@@ -215,8 +215,8 @@
               <br>
                         <div class="panel panel-default " id="user_area">
                             <br>
-                            <br>
-                            <br>
+
+
                             <h4 class="panel-title" style="padding-top: 20px">USER AREA</h4>                          
                           <div class="panel-body">
                               <p>Corresponding to each user process, the kernel maintains a seperate memory region (called the user area) for its own purposes.  The present version of eXpOS allocates one memory page per process as the user area.   A part of this space is 
@@ -281,7 +281,7 @@ is used as a stack called the kernel stack of the process.  </p><br>
                           <div class="panel-body">
                               <p>Control is tranferred from a user program to a kernel module on the occurence of one of the following events : <ol>
          <li> The user program executes a system call </li>
-         <li> When an interrupt/exception occurs.</li>. 
+         <li> When an interrupt/exception occurs.</li>
          </ol>
          In either case, the kernel allocates a separate stack <b>for each process </b>(called the kernel stack of the process) which is different from the stack used by the process while executing in the user mode (called the user stack).  Kernel modules use the space in the kernel stack for storing local data and do not use the user stack.  This is to avoid user "hacks" into the kernel using the application's stack.</p>
 			      <p>In the case of a system call, the application will store the parameters for the system call in its user stack. Upon entering the kernel module (system call), the kernel will extract these parameters from the application's stack and then change the stack pointer to its own stack before further execution.   Since the application invokes the kernel module 
@@ -292,7 +292,7 @@ voluntarily, it is the responsibility of the application to save the contents of
               		      
                             </div>
                         </div>                                                                              
-   <p>Here is a detailed tutorial on <a href="stack_description.html" target="_blank"> kernel stack management</a>.</p>          
+   <p>Here is a detailed tutorial on <a href="http://exposnitc.github.io/os_implementation.html" target="_blank"> kernel stack management in system calls, interrupts and exceptions</a>. A separate tutorial is provided for <a href="http://exposnitc.github.io/os_design-files/timer_stack_management.html" target="_blank" >kernel stack managament during context switch</a>.</p>          
    <br><br>           
                                 
 </div>
