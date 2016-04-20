@@ -273,8 +273,9 @@ pseudo code.)
 <br><br>
 <p><h4><b>3. Actions done by the kernel module before returning from the system call</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Point the stack pointer (SP) to top of the user stack </p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Return to the user program using the IRET machine instruction</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Pop off all the contents from the kernel stack and store the logical address of the top of kernel stack to the KPTR field of the process table </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Point the stack pointer (SP) to top of the user stack </p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Return to the user program using the IRET machine instruction</p>
 <br>
  <div class="container-fluid fig_code">
  <figure>
@@ -292,7 +293,14 @@ MOV R4, physicalSP
 		   how!) 
 MOV [R4 - 1], return value 	    
 		// store the return value in the 
-		   space alloted in the user stack	
+		   space alloted in the user stack
+MOV R4, User Area Page Number*512 
+		// find the physical address 
+        	   of the user area page
+MOV R5, SP
+SUB R5,R4
+MOV KPTR,R5	// logicalSP = 
+		   SP - (UAreaPgNo * 512)	
 MOV SP, UPTR	// move the value of USER STACK 
 		   POINTER TO SP
 IRET		// return to the user program
@@ -309,8 +317,9 @@ pseudo code.)
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.3. - Actions done by the kernel module before returning from the system call :</b>
 	<p>3.a. Compute the physical address corresponding to the top of the user stack and store the return value in the space alloted</p>
-	<p>3.b. Store the value of User Stack Pointer in the process table to SP</p>
-	<p>3.c. Return to the user program using IRET machine instruction</p>
+	<p>3.b. Save the logical address of kernel stack pointer (SP) to the KPTR field</p>
+	<p>3.c. Store the value of User Stack Pointer in the process table to SP</p>
+	<p>3.d. Return to the user program using IRET machine instruction</p>
 </figcaption>
 </div>
 </div>
@@ -468,8 +477,9 @@ pseudo code.)
 <br>
       <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning from the interrupt routine </b></h4></p>
         &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Restore the values of the machine registers using RESTORE machine instruction</p> 
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Set the value of SP to the top of the user stack  </p> 
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control back to the user process</p>
+        &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the logical address of the current kernel stack top to the KPTR field </p>
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Set the value of SP to the top of the user stack  </p> 
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Transfer control back to the user process</p>
 
 <br><br>
 	   <div class="container-fluid fig_code">
@@ -513,6 +523,13 @@ pseudo code.)
     <pre>
 <code>
 ....
+MOV R4, User Area Page Number*512 
+		// find the physical address 
+        	   of the user area page
+MOV R5, SP
+SUB R5,R4
+MOV KPTR,R5	// logicalSP = 
+		   SP - (UAreaPgNo * 512)
 MOV SP, UPTR	// point SP to the user stack
 IRET		// return to the user process
 ....
@@ -526,9 +543,10 @@ pseudo code.)
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.{b,c} - Set the value of SP to the top of the user stack</b>
-	<p>2.b.  Transfer the value stored in user stack pointer field to the SP register </p>
-	<p>2.c.  Transfer the control back to the user process</p>
+		<figcaption><br><b>Fig.2.{b,c,d} - </b>
+	<p>2.b.  Store the logical address of the current kernel stack top (SP) to the KPTR field </p>
+	<p>2.c.  Transfer the value stored in user stack pointer field to the SP register </p>
+	<p>2.d.  Transfer the control back to the user process</p>
 </figcaption>
 </div>
 </div>
