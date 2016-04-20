@@ -115,7 +115,7 @@
          <br>
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
          <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
-	<br>
+	
 	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the INT 1 routine (that implements the scheduler) to perform a context switch. </p>
 	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the interrupt routine saves the context of the current process and schedules a new process for execution.  </p>
 
@@ -140,7 +140,8 @@
 	</p>
 -->
 	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
-	
+	<p>Important Note: Whenever the kernel stack pointer of a process is saved in the KPTR field of the process table, the offset of SP register within the user area page will be stored (and not physical address of the kernel stack pointer). The page number of the user area page is stored in the USER AREA PAGE NUMBER field in the process table. Thus, the value of the offset can be calculated by the fomula offset = SP – (512 * USER AREA PAGE NUMBER).</p>
+	<p>The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. Thus, if the user area page is swapped out, it can be swapped back later to a different physical memory page.</p>
      
      </div>
 	<br>
@@ -150,9 +151,9 @@
       	<div class="row">
 	<p style="margin:0"><h4><b>1. When the leaving process is in kernel mode  </b></h4></p>
 	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done in the case of a blocking system call can be divided into two:<br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.i)  Actions done by the leaving process (system call routine/ exception handler) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.i.a) Save the registers in use and the BP in the kernel stack </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.i.b) Invoke the INT 1 routine (scheduler) </p>	
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.a.  Actions done by the leaving process (system call routine/ exception handler) :</b></p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.1. Save the registers in use and the BP in the kernel stack </p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2. Invoke the INT 1 routine (scheduler) </p>	
 	<br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -178,15 +179,15 @@ INT 1			// Invoke the corresponding INT
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.1.i - Actions done by the leaving process (system call routine/ exception handler): </b>All the registers currently used by the process are pushed onto the kernel stack followed by the BP. The system routine needs these values to resume its execution when scheduled back at a later point of time.
+					<figcaption><br><b>Fig.1.a - Actions done by the leaving process (system call routine/ exception handler): </b>All the registers currently used by the process are pushed onto the kernel stack followed by the BP. The system routine needs these values to resume its execution when scheduled back at a later point of time.
 					</figcaption>
 				</div>
 			</div>
 		</figure>
 	</div>
 <br><br><br>
-&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.ii) Actions done by the scheduler (INT 1 routine) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.ii.a) Save the current kernel stack pointer in the KPTR field of the process table </p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.b. Actions done by the scheduler (INT 1 routine) :</b></p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.b.1. Save the current kernel stack pointer in the KPTR field of the process table </p>
 <br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -217,7 +218,7 @@ MOV KPTR,R5	// logicalSP =
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.1.ii - Actions done by the scheduler (INT 1 routine) : </b> Find the logical address of the current SP and store it in the KPTR field of the process table
+					<figcaption><br><b>Fig.1.b - Actions done by the scheduler (INT 1 routine) : </b> Find the logical address of the current SP and store it in the KPTR field of the process table
 					</figcaption>
 				</div>
 			</div>
@@ -228,9 +229,9 @@ MOV KPTR,R5	// logicalSP =
 	
 <p style="margin:0"><h4><b>2. Entering process resumes execution in the kernel mode </b></h4></p>
 	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done for scheduling back a process in kernel mode can be divided into two:<br><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.i) Actions done by the scheduler (INT 1 routine) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.a) Set SP to the value stored in the KPTR field of the process table of the process being scheduled </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.b) Transfer control back to the system call using <b>RET</b> instruction </p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.a. Actions done by the scheduler (INT 1 routine) :</b></p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1. Compute the physical address corresponding to the logical kernel stack pointer stored in the KPTR field of the process table, and store this to SP.</p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.2. Transfer control back to the system call using <b>RET</b> instruction (The RET instruction is used because after scheduling the process must continue in kernel mode) </p>
 
 	<br><br>
 	<div class="container-fluid .2.1_code fig_code">
@@ -267,21 +268,21 @@ RET
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.2.i - Actions done by the scheduler (INT 1 routine) : </b>
-					<p>2.i.a  Find the physical address of SP using the KPTR value in the process table and user area page number </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.a.1  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.i.a.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-<p>2.i.b.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-<p>2.i.c.  Transfer control back to the system call routine.</p>
+					<figcaption><br><b>Fig.2.a - Actions done by the scheduler (INT 1 routine) : </b>
+					<p>2.a.1  Find the physical address of SP using the KPTR value in the process table and user area page number </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1.1  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>2.a.2.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+<p>2.a.3.  Transfer control back to the system call routine.</p>
 					</figcaption>
 				</div>
 			</div>
 		</figure>
 	</div>
 <br><br><br>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.ii) Actions done by the entering process (system call/exception routine) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.a) Restore the values of BP and registers in use from the kernel stack </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.ii.b) Resume the execution of the system call routine </p><br><br>
+	&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.b. Actions done by the entering process (system call/exception routine) :</b></p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b.1. Restore the values of BP and registers in use from the kernel stack </p><br>
+	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b.2. Resume the execution of the system call routine </p><br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
   			<div class="row">
@@ -305,14 +306,14 @@ POP BP		//Pop and Save BP
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.2.ii - Actions done by the entering process (system call routine/exception handler): </b> Resume execution of the system call routine after restoring the BP and register values from the kernel stack.
+					<figcaption><br><b>Fig.2.b - Actions done by the entering process (system call routine/exception handler): </b> Resume execution of the system call routine after restoring the BP and register values from the kernel stack.
 					
 					</figcaption>
 				</div>
 			</div>
 		</figure>
 	</div>
-<br><br><br><br>
+<br><br><br>
 
 <!--User Mode begins-->
 
@@ -321,10 +322,10 @@ POP BP		//Pop and Save BP
              	
 		<p style="margin:0"><h4><b>3. When the leaving processs is in user mode </b></h4></p>
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the scheduler (INT 1 routine) :<br><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a) Switch from the user stack to the kernel stack </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.b) Use BACKUP instruction to save the context of the currently executing process </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.c) Store the logical kernel stack pointer in the KPTR field of the process table </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.d) Call the scheduler to schedule another process  </p><br><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a. Switch from the user stack to the kernel stack </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.b. Use BACKUP instruction to save the context of the currently executing process </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.c. Store the logical kernel stack pointer in the KPTR field of the process table </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.d. Proceed to select the next process to run. </p><br><br>
 		
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -362,11 +363,11 @@ MOV SP, R4
 	 			<div class="col-sm-12">
 	 				
 					<figcaption><br><b>Fig.3.a - Switch from the user stack to the kernel stack</b>
-<p>3.a.i. Transfer the current SP register to User stack pointer field of the process table.</p>
-<p>3.a.ii.  Compute the physical address of the kernel stack pointer </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.ii.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.ii.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-<p>3.a.iii.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+<p>3.a.1. Transfer the current SP register to User stack pointer field of the process table.</p>
+<p>3.a.2.  Compute the physical address of the kernel stack pointer </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.a.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>3.a.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 					</figcaption>
 				</div>
 			</div>
@@ -394,8 +395,8 @@ MOV R5, SP
 SUB R5,R4
 MOV KPTR,R5	// logicalSP = 
 		   SP - (UAreaPgNo * 512)	 
-INT 1		// Invoke the scheduler	
-
+		// Proceed with the scheduling 
+		   code	
 ...
 						
 
@@ -411,24 +412,25 @@ INT 1		// Invoke the scheduler
 					<figcaption><br><b>Fig.3.{b,c,d} :</b>
 					<p> 3.b. Save the context of the currently executing process using BACKUP instruction</p>
 					<p> 3.c. Calculate the logical value of current SP pointing to kernel stack and store this in KPTR field in the process table</p>
-					<p> 3.d. Call the scheduler to schedule another process</p>
+					<p> 3.d. Proceed to select the next process to run</p>
 
 					</figcaption>
 				</div>
 			</div>
 		</figure>
 	</div>
-<br><br><br><br>
+<br><br><br>
 
 
 <p style="margin:0"><h4><b>4. When the entering process is in user mode </b></h4></p>
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">The following actions are performed by the scheduler (INT 1 routine) :<br><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a) Set the value of SP to the  physical address of kernel stack pointer using KPTR </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.b) Use RESTORE instruction to load the context of the process </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c) Set the logical address of current SP to the KPTR field in the process table  </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.d) Set the value of SP to the one stored in the UPTR field  </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.e) Transfer control to user process using <b>IRET</b> instruction  </p><br>
-		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.f) Resume execution of the process </p><br><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a. Set the value of SP to the  physical address of kernel stack pointer using KPTR </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.b. Use RESTORE instruction to load the context of the process </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c. Save the logical address of current SP in the KPTR field of the process table  </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.d. Set the value of SP to the one stored in the UPTR field  </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.e. Transfer control to user process using <b>IRET</b> instruction (After the execution of the IRET instruction, the entering process will be executed in user mode) </p><br>
+		<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.f. Resume execution of the process </p><br><br>
+
 		
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -466,9 +468,9 @@ MOV SP, R4
 					<figcaption><br><b>Fig.4.a - Compute the physical address of the kernel stack pointer </b>
 
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.i.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.ii.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.iii.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.a.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
 					</figcaption>
 				</div>
 			</div>
@@ -540,8 +542,8 @@ IRET
 	 				
 					<figcaption><br><b>Fig.4.{c,d,e,f} : </b>
 					<p>4.c. Switch from kernel stack to user stack</p>
-					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c.1.Set the logical address of current SP to the KPTR field in the process table </p>
-					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c.2.Set the value of SP to the one stored in the UPTR field </p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c.1. Set the logical address of current SP to the KPTR field in the process table </p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.c.2. Set the value of SP to the one stored in the UPTR field </p>
 					<p>4.d. Transfer control to user process using IRET instruction</p>
 					<p>4.e. Resume execution of the process</p>
 					</figcaption>
