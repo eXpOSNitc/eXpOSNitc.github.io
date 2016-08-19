@@ -250,15 +250,15 @@ eXpOS package is designed to follow the programming conventions specified in thi
 				Unlike aliasing, two or more names can be assigned to the same value. 
 				A constant can only be defined once in a program.</p>
                                 <h3>Predefined Constants</h3>
-				<p>	SPL provides a set of predefined constants defined in the file <b>constants.spl</b>.  </p>
+				<p>	SPL provides a set of predefined constants defined in the file <b>splconstants.cfg</b>.  </p>
 				<p>
-The standard SPL implementation comes with a set of <a href="./constants.html" target="_blank">pre-defined constants</a> included in the <i>constants.spl</i> file specifically tuned for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified in the <a href="../os_implementation.html" target="_blank">implementation</a> of the eXpOS. Additionally, there are <a href="../os_design-files/constants.html" target="_blank">eXpOS constants</a> which are also defined in <i>constants.spl</i>. 
+The standard SPL implementation comes with a set of <a href="./constants.html" target="_blank">pre-defined constants</a> included in the <i>splconstants.cfg</i> file specifically tuned for the implementation of eXpOS on the XSM architecture. These constants are mostly the starting addresses of various OS data structures/handlers in the memory which are specified in the <a href="../os_implementation.html" target="_blank">implementation</a> of the eXpOS. Additionally, there are <a href="../os_design-files/constants.html" target="_blank">eXpOS constants</a> which are also defined in <i>splconstants.cfg</i>. 
 				</p>
  	
  			
               
                  <p>Users can also define constants which are visible in all 
-SPL modules by including the definition in the <i>constants.spl</i> file. If a constant defined in the <i>constants.spl</i> file is re-defined in a module, the local definition will override the global definition. 
+SPL modules by including the definition in the <i>splconstants.cfg</i> file. If a constant defined in the <i>splconstants.cfg</i> file is re-defined in a module, the local definition will override the global definition. 
 
 				These predefined constants' definitions can be over-ruled by assigning different values explicitly by the user using the <b>define</b> keyword.
                     </p>
@@ -541,7 +541,7 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                 <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) and return values shall be passed either through registers R0, R1, R2.. or through stack as required. </p>
                                    
 
-                                <p><code>Note: </code>The SPL compiler given here uses the constants (given in <i>constants.spl</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up. In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
+                                <p><code>Note: </code>The SPL compiler given here uses the constants (given in <i>splconstants.cfg</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up. In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
  
                                 <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
                                <div style="padding-left:70px"> a. Execution of a software interrupt from an application (user mode) program.<br/>
