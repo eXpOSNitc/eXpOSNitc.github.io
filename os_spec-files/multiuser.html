@@ -122,6 +122,7 @@
           <br/>
 	      <p>When a file is created by a process using the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">Create</a> system call, the process can set its permission to exclusive, to restrict access permissions. When a file is created with the exclusive flag set, write and delete system calls to that file will fail if executed by any user  other than the owner of the file or the root. The root can modify/delete any file (except the root file) irrespective of the permissions. Kernel processes have unrestricted access to all <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">system calls</a>. A process may invoke any file system call on a file which does not have the exclusive flag set. The root file has default userid as 0 and exclusive flag set.</p>
 <p><font color="red">*</font>By default, the owner of all executable files is set to kernel. File access permissions are not used for executable files.</p>
+<p><font color="red">*</font>The owner of any data file preloaded into the system through xfs-interface is set to root and the file access permission is set to open.</p>
               </div>
 
             
