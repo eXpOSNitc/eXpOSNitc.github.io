@@ -231,8 +231,10 @@
               <h2 class="Big" >User Table</h2>
                <br>
                <br>
+              
               <p>The User table is stored in the disk and has an entry for each user. (A copy of the User table is maintained in the memory when the OS is running). It consists of MAX_USER_NUM entries. This version of eXpOS sets MAX_USER_NUM = 16 including entries for the kernel and the root. </p>
               
+          
              <p> Each User table entry stores the user name and encrypted password of a user. Each User table entry consists of 2 words. </p> 
               
               <p>The entry of an User table has the following format:</p>
@@ -246,7 +248,12 @@
                    <li><b>USER NAME</b> (1 word) - Name of the user </li>                                                      
                    <li><b>ENCRYPTED PASSWORD</b> (1 word) - Password of the user in an encrypted form.</li>                  
               </ul>  
-              
+          
+           <p> The User table entry for two special users - the kernel and root are set at the time of formatting. 
+           The userid field in inode corresponds to index in the user table. The userid of kernel is 0 and the root is 1.
+            
+              </p>
+                 
               <p>All unused entries are set to -1.</p>  
 </div>
                   
