@@ -317,14 +317,18 @@
                             <br/>
                       
                             <li>
-                              Start by formatting the disk in the XFS interface using <b>fdisk</b> command. Type the following commands in the xfs-interface prompt.
+                              Start by formatting the disk in the XFS interface using <b>fdisk</b> command. fdisk command converts the raw disk to filesystem recognised by the operating system. It initialises the disk data structures such as disk free list, inode table , user table and root file.<br/>
+                              Type the following commands in the xfs-interface prompt.
                               <br><br>
                               <div> 
                                 <pre># fdisk 
 # exit</pre>
                               </div>
+<<<<<<< HEAD
                               fdisk command converts the raw disk to filesystem recognised by the operating system. It initialises the disk data structures such as disk free list, inode table , user table and root file.<br/> <br/>
                               
+=======
+>>>>>>> 3439e997f6362c3b7762f3650f3f288453f194fb
                               You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk of the XSM machine. The disk is formatted to eXperimental File System (eXpFS) (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>). <br/> <br/>
 
                               The XSM machine's disk is a sequence of 512 blocks, each block capable of holding
@@ -402,7 +406,7 @@ To cool in the peppermint wind.</pre>
                                   A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1 (used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. Note that eXpFS file is permitted to have a maximum of four data blocks.
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The owner of data files loaded through xfs-interfac is the root user. Userid is the index of the user table. Note that eXpFS file is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
