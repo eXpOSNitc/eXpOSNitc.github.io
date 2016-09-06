@@ -403,18 +403,18 @@ To cool in the peppermint wind.</pre>
                                   A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1 (used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The permission  is set to open(1). Note that eXpFS file is permitted to have a maximum of four data blocks.
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">permission</a> is set to open(1). Note that any file in eXpFS file system is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
                                 </li>
                               </ol>
                               <br>
-                              You must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a> before proceeding further. In the following steps we will see the above mentioned updations.
+                              Before proceeding further you must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a>. In the following steps we will see the above mentioned updations.
                             </li> 
 
                             <br>
-                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy Inode Table entries (Inode Table is stored in disk blocks 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
+                            <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy the <i>Inode Table</i>(Inode Table is stored in disk blocks 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
                             <br><br>
                             <div>
                               <pre># copy 3 4 $HOME/myexpos/inode_table.txt
