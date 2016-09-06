@@ -368,7 +368,7 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and login program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and <a href="http://exposnitc.github.io/os_design-files/misc.html#login" target="_blank">INIT program</a> (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
                             <br>
@@ -406,7 +406,7 @@ To cool in the peppermint wind.</pre>
                                   An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">permission</a> is set to open(1). Note that any file in eXpFS file system is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
-                                  An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
+                                  An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also.
                                 </li>
                               </ol>
                               <br>
@@ -479,7 +479,7 @@ peppermint wind</pre></div>
 
                             </li> 
                             <br/>
-                            <li> xfs-interface provides the <a href="./support_tools-files/xfs-interface.html#export" target="_blank">export</a> command  to export the files from XSM machine to UNIX machine in a single step. Export the file <tt>sample.dat</tt> to the UNIX file <tt>$HOME/myexpos/data.txt</tt> using the xfs-inteface as shown below and verify that the contents are same as that in step 8.
+                            <li> xfs-interface provides the <a href="./support_tools-files/xfs-interface.html#export" target="_blank">export</a> command  to export files from the XSM machine to the UNIX machine in a single step. Export the file <tt>sample.dat</tt> to the UNIX file <tt>$HOME/myexpos/data.txt</tt> using <i>xfs-inteface</i> as shown below and verify that the contents are same as that in step 8.
                               <br><br>
                               <div>
                                 <pre># export sample.dat $HOME/myexpos/data.txt</pre>
@@ -493,7 +493,7 @@ peppermint wind</pre></div>
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item">
-                            <a data-toggle="collapse"  href="#collapseq1"><b>Q1.</b> When a file is created entries are made in Inode table as well as in Root file. What is the need for this duplication?</a>
+                            <a data-toggle="collapse"  href="#collapseq1"><b>Q1.</b> When a file is created entries are made in the Inode table as well as the Root file. What is the need for this duplication?</a>
                             <div id="collapseq1" class="panel-collapse collapse">
                                           Inode table is a data structure which is accessible only in Kernel mode, whereas Root file is accessible both in Kernel and User mode. This enables the user to search for a file from an application program itself by reading the Root file.                                             
                                      
