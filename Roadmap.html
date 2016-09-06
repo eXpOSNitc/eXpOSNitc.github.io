@@ -318,7 +318,7 @@
                       
                             <li>
                               Start by formatting the disk to the eXpOS file system format in the XFS interface using <b>fdisk</b> command. <br/> <br/> 
-                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="http://exposnitc.github.io/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/>
+                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="http://exposnitc.github.io/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/></br>
                               Type the following commands in the xfs-interface prompt.
                               <br><br>
                               <div> 
@@ -368,7 +368,7 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and INIT program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and login program (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
                             <br>
@@ -403,7 +403,7 @@ To cool in the peppermint wind.</pre>
                                   A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1 (used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">owner</a> of data files loaded through xfs-interface is the root user. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of root is 1 and hence the userid field in the inode table is set to 1 for all data files loaded through the xfs interface and the permission is set to open(1). Note that eXpFS file is permitted to have a maximum of four data blocks.
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The permission  is set to open(1). Note that eXpFS file is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also (Why?).
