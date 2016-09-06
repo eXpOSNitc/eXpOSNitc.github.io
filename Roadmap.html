@@ -241,7 +241,7 @@
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo1">Learning Outcomes</a>
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo1">Learning Objectives</a>
                             <div id="lo1" class="panel-collapse expand">
                             <span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; At the end of this experiment, you
                             will learn how to set up the environment to build eXpOS.                                     
@@ -281,7 +281,7 @@
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo2">Learning Outcomes</a>
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo2">Learning Objectives</a>
                             <div id="lo2" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load/retrieve data and executable files from/to your host (Unix) system into the XSM disk.</li>
@@ -504,7 +504,7 @@ peppermint wind</pre></div>
                           </div>
 
                           <p><b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and observe that the corresponding entries for this file gets removed from the disk data structures.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and note the changes for the entries for this file in <i>inode table, root file and disk free list</i> .</p>
                          
                        </div>
                       </div>
@@ -527,8 +527,8 @@ peppermint wind</pre></div>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo3">Learning Objectives</a>
                             <div id="lo3" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small OS startup code and generate target using the SPL compiler.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your OS startup code into the boot block of the disk and this code executed on bootstrap.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small <i>OS startup code</i> and generate target using the SPL compiler.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your <i>OS startup code</i> into the <i>boot block</i> of the disk and get this code executed on bootstrap.</li>
                             </ul>                                  
                                      
                             </div>
@@ -539,10 +539,10 @@ peppermint wind</pre></div>
                           <!-- End Learning Objectives-->
 
                           <p>
-                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard coded into the machine. That is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. ROM code does the following operations :
+                            When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard-coded into the machine. That is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. Boot ROM code does the following operations :
                             <ol style="list-style-type:decimal;margin-left:10vw">
                               <li>Loads block 0 of disk to page 1 of memory (physical address 512).</li>
-                              <li>After loading the block to memory, it sets IP (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
+                              <li>After loading the block to memory, it sets the value of the register <a href ="http://exposnitc.github.io/arch_spec-files/machine_organisation.html" target="_blank">IP</a> (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
                             </ol>
                           </p> 
 
