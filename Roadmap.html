@@ -80,7 +80,7 @@
   </head>
   <body> 
      <!-- BEGAIN PRELOADER -->
-    <!-- <div id="preloader">
+    <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
     <!-- END PRELOADER -->
@@ -233,11 +233,10 @@
                         </h4>
                       </div>
 
-                     
- 		<div id="collapse1" class="panel-collapse collapse">
+                      <div id="collapse1" class="panel-collapse collapse">
                         <div class="panel-body">
 
-		   <!-- Begin Learning Objectives-->
+                          <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
@@ -252,30 +251,29 @@
                           </ul>
                           </div>
                           </div>
-
                           <!-- End Learning Objectives-->
 
-
+		<div style="font-size:15px">
                   <ol>
-                    <li> Download the complete eXpOS package from <a href="https://github.com/eXpOSNitc/eXpOSNitc.github.io/blob/master/package/expos.tar.gz"  download>here</a>.</li> 
+                    <li> Download the complete eXpOS package from <a href="https://github.com/eXpOSNitc/eXpOSNitc.github.io/raw/master/package/expos.tar.gz" download>here</a>.</li>
                     <li> Copy the tar file to your home directory. 
-                    <pre>cp expos.tar.gz $HOME/ </pre></li>
+                    <pre>cp expos.tar.gz $HOME/<br>cd $HOME</pre></li>
                     <li> Extract the contents using the command. 
                     <pre>tar -xvf expos.tar.gz </pre>
-                    Now you will have a directory <tt>expos</tt> in your home drectory, with all components required for building your own eXpOS.</li>
+                    Now you will have a directory <tt>myexpos</tt> in your home drectory, with all components required for building your own eXpOS.</li>
                     <li style="color:red">Install Kurian's thing</li>
-                    <li> Change directory to <tt>expos</tt> directory.
-                    <pre>cd $HOME/expos </pre> </li>  
+                    <li> Change directory to <tt>myexpos</tt> directory.
+                    <pre>cd $HOME/myexpos </pre> </li>  
                     <li> Make sure all the prerequisites which include <b>gcc</b>, <b>flex/lex</b> and <b>bison/yacc</b> are installed. 
                     In Ubuntu/Debian systems, use <b>apt</b> to install flex and bison.
                     <pre>sudo apt-get install flex bison </pre></li>  
                     <li> Make to build all the components.
                     <pre>make </pre></li>          
                   </ol>
-                
+                </div>
 
                           <p>
-                            After setting up of the system is done the following directories will be created. 
+                            Follow the instructions in the <a href="support_tools-files/setting-up.html" target="_blank"><b>setting up</b></a> section of the usage documentation to setup the system. This roadmap assumes that the entire package is extracted to <code>$HOME/myexpos</code>. If the setting up of the system is done correctly the following directories will be created. 
                           </p> 
                           
                           <div><img src="./img/xsm_folders.png"></div>
@@ -321,11 +319,16 @@
 
                             
                           <p>
-                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment.
+                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates a <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment. The xfs-interface is used for transferring files between your linux system and the xsm disk.
                             </p>
+                            <br>
+                            <figure><img src="img/Kernel_Module.png" style="display:block;margin-left:auto;margin-right:auto"></img>
+                            <figcaption style="text-align:center">Schematic interface between linux system and XSM disk</figurecaption>
+                            </figure>
+                            <br>
                             <i> In this stage, you will create a text file and load it to the XFS disk using xfs-interface.</i>
                             <br/><br/>
-
+			
                           <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
                               Run the XFS Interface<br><br>
@@ -452,7 +455,7 @@ To cool in the peppermint wind.</pre>
                               <pre>
 1
 root
-1
+512
 -1
 -1
 -1
@@ -466,15 +469,15 @@ root
 -1
 -1
 -1
--1
-
-0
--1
--1
+2
+sample.dat
+512
 -1
 -1
 -1
 -1
+-1
+69
 -1
 -1
 -1
