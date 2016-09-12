@@ -604,14 +604,14 @@ peppermint wind</pre></div>
                               <li>After loading the block to memory, it sets the value of the register <a href ="http://exposnitc.github.io/arch_spec-files/machine_organisation.html" target="_blank">IP</a> (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
                             </ol>
                           </p> 
-                          <p>In this stage, you will write a small assembly program to print "Hello world" using XSM Instruction set and load it into block 0 of the disk using XFS-Interface. This program which is loaded to block 0 of the disk is supposed to be the <b>OS Startup Code</b>. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup and is then executed. </p>
+                          <p>In this stage, you will write a small assembly program to print "HELLO_WORLD" using XSM Instruction set and load it into block 0 of the disk using XFS-Interface. This program which is loaded to block 0 of the disk is supposed to be the <b>OS Startup Code</b>. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup and is then executed. </p>
 			
 			<i>The steps to do this are explained in detail below. </i>
                           <br/><br/>
                                 
                           <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
-                              Create the assembly program to print "Hello world". <br>The assembly code to print "Hello world" :
+                              Create the assembly program to print "HELLO_WORLD". <br>The assembly code to print "HELLO_WORLD" :
                               <br><br>
                               <div> 
                                 <pre>
@@ -620,7 +620,30 @@ MOV R16, R0
 PORT P1, R16
 OUT
 HALT </pre>
-                              </div>                     
+			Save this file as <tt>$HOME/myexpos/spl/spl_progs/helloworld.xsm</tt>.
+                              </div>  
+                          </li>
+                            
+                            <br>
+                            <li>
+                            Load the file as OS Startup code to <tt>disk.xfs</tt> using XFS-Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
+                              <br><br>
+                              <div>
+                          <pre># load --os $HOME/myexpos/spl/spl_progs/helloworld.xsm
+# exit</pre>
+                          </div>
+                          Note that the <tt>--os</tt> option loads the file to Block 0 of the XFS disk.
+			      </li>
+                            <br/>
+                            <li> Run the machine using the command 
+                              <br><br>
+                              <div>
+                                <pre>cd $HOME/myexpos/xsm
+./xsm</pre>
+                              </div>
+                            </li>
+                          </ol>
+
                           </div>
                           </div>
                         <!-- Stage 4 -->
