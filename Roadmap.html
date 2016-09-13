@@ -702,7 +702,7 @@ Machine is halting.</pre>
                           <!-- End Learning Objectives-->
 
                           
-                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation,the target machine code is generated. We will then load this compiled code to block 0 of disk using XFS Interface, and get it executed by the machine like in the previous stage.  
+                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation,the target machine code is generated. We will then load this compiled code to block 0 of disk using XFS Interface, and get it executed by the machine like in the previous stage.  </p>
                           
                          
                           <ol style="list-style-type:decimal;margin-left:2px">
@@ -762,7 +762,7 @@ endwhile; </pre>
 Machine is halting</pre></div>
 
                           
-                          <p><b style="color:#26A65B">Assignment 1 : </b> Write the spl program to print sum of squares of the first 20 natural numbers. Load it using xfs interface and run the program in the machine.</p>
+                          <p><b style="color:#26A65B">Assignment 1 : </b> Write the spl program to print sum of squares of the first 20 natural numbers. Load it using xfs interface and run the in the machine.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">Debugger Specification</a>.</p>
 
                         </div>
@@ -778,13 +778,46 @@ Machine is halting</pre></div>
 
                       <div id="collapse5" class="panel-collapse collapse">
                         <div class="panel-body">
-                          
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
+                            <div id="lo4" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Being familiarised with the XSM Debugger.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
                         </div>
                       </div>
+		<!-- End Learning Objectives-->
+ 
+ 
+ 	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement which translates to <a href="arch_spec-files/instruction_set.html" 			target="_blank">BRKP</a> machine instruction. This instruction is used for debugging.
+ 	   </p>
 
-
-
-
+	 <ol style="list-style-type:decimal;margin-left:2px">
+		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between :  
+		<div> 
+                                <pre>
+alias counter R0;
+counter = 0;
+while(counter <= 20) do
+  if(counter%2 != 0) then
+    print counter;
+    breakpoint;
+  endif;
+  counter = counter + 1;
+endwhile; </pre>
+                              </div> 
+		</li>
+		
+		
+	</ol>
 
                     </div>
                   </div>
@@ -846,6 +879,7 @@ Machine is halting</pre></div>
               case 'stage2': $('#collapse2').removeClass('collapse').addClass('expand'); break;
               case 'stage3': $('#collapse3').removeClass('collapse').addClass('expand'); break;
               case 'stage4': $('#collapse4').removeClass('collapse').addClass('expand'); break;
+              case 'stage5': $('#collapse5').removeClass('collapse').addClass('expand'); break;
             }
             //window.scrollTo(0, $("#list_"+event.target.id).offset().top);
             $('html, body').animate({
