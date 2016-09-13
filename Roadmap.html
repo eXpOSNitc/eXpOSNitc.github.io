@@ -691,7 +691,7 @@ Machine is halting.</pre>
                             <div id="lo4" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small <i>OS startup code</i> and generate target using the SPL compiler.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your <i>OS startup code</i> into the <i>boot block</i> of the disk and get this code executed on bootstrap.</li>
+                 
                             </ul>                                  
                                      
                             </div>
@@ -702,18 +702,12 @@ Machine is halting.</pre>
                           <!-- End Learning Objectives-->
 
                           
-                          <p>Thus, if you write a program in SPL, compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler and load the compiled code to block 0 of disk using XFS Interface, your program will be executed by the machine. 
-                          
-                          <p>Since your goal is to create an OS that runs on the XSM machine, as the first step, you need to create
-                          a boot up code and store it in block 0 of the XSM disk so that this code gets loaded and executed upon 
-                          machine start up.  You can use the SPL Language (which is just an enriched XSM assembly language) 
-                          to write the boostrap code.  The code can be compiled using the SPL compiler supplied and the compiled
-                          XSM code can be loaded to block 0 of the XSM disk using xfs-interface. </p>    
+                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation,the target machine code is generated. We will then load this compiled code to block 0 of disk using XFS Interface, and get it executed by the machine like in the previous stage.  
                           
                          
                           <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
-                              Create the program to print odd numbers from 1 to 20 using SPL. (<a href="support_tools-files/spl.html" target="_blank">SPL Specification</a> need not be read now). See examples of SPL programs in <tt>$HOME/myexpos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
+                              Create the program to print odd numbers from 1 to 20 using SPL. See examples of SPL programs in <tt>$HOME/myexpos/spl/samples</tt>. SPL Code to print odd numbers from 1 to 20 :
                               <br><br>
                               <div> 
                                 <pre>
