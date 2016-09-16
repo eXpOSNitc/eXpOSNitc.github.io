@@ -797,7 +797,10 @@ Machine is halting</pre></div>
 		<!-- End Learning Objectives-->
  
  
- 	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement which translates to <a href="arch_spec-files/instruction_set.html" 			target="_blank">BRKP</a> machine instruction. This instruction is used for debugging.
+ 	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement.It translates to <a href="arch_spec-files/instruction_set.html" 			target="_blank">BRKP</a> machine instruction and is used for debugging.
+ 	  <br>
+ 	   The system pauses on execution of a BRKP instruction when the debug flag set and you can 
+ 	   check the contents of registers ,memory and os data structures at that state.
  	   </p>
 
 	 <ol style="list-style-type:decimal;margin-left:2px">
@@ -815,8 +818,20 @@ while(counter <= 20) do
 endwhile; </pre>
                               </div> 
 		</li>
-		
-		
+		<br>
+		<li>
+		Compile the program using the SPL compiler.
+		</li>
+		<br>
+		<li> 
+		Load the compiled xsm code as OS startup code into the XSM disk using the XFS interface.
+		</li>
+		<br>
+		<li> 
+		Run the machine in debug mode.
+		<pre>cd $HOME/myexpos/xsm
+./xsm --debug</pre>
+		</li>
 	</ol>
 
                     </div>
