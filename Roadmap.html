@@ -811,7 +811,6 @@ alias counter R0;
 counter = 0;
 while(counter <= 20) do
   if(counter%2 != 0) then
-    print counter;
     breakpoint;
   endif;
   counter = counter + 1;
@@ -831,6 +830,26 @@ endwhile; </pre>
 		Run the machine in debug mode.
 		<pre>cd $HOME/myexpos/xsm
 ./xsm --debug</pre>
+		</li>
+		<li>
+		The Machine pauses execution after the first print statement.<br>
+		View the Contents of Memory page 1. You can see the OS startup code.
+		<pre>mem 1</pre>
+		</li>
+		<li>
+		View the contents of Registers
+		<pre>reg</pre>
+		</li>
+		<li>
+		The output will be displayed as:
+		<pre> </pre>
+		</li>
+		<li>
+		Press c to continue execution till next execution of BRKP instruction.
+		<pre>c</pre>
+		</li>
+		<li>
+		View the contents of R0 register at each step and type c continue.
 		</li>
 	</ol>
 
