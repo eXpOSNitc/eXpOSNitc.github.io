@@ -958,8 +958,17 @@ _L2:
 		<p> The OS startup code will load the init process, set the necessary OS data structures necessary
 			to run the program. Finally, it sets the ip to 0 and transfers control to the init program using the IRET instruction.	
 		 </p>
+		 
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
+		<li>  Load the INIT program from the disk to the memory.
+		 In the memory, init program is stored in pages 65-66.
+		 The xfs-interface will store init program to disk blocks 7-8.
+		 The blocks 7-8 from disk is to be loaded to the memory pages 25-27 by the OS startup Code. 
+		 ( See <a href="os_implementation.html" target="_blank"> Memory Organization and Disk Organization </a> ). <br> <br>
+		 
+		 <pre>load(65,7);
+load(66,8);</pre>
+		 </li>
 		</ol>
  		
 		<b> Making Things Work</b> <br> <br>
