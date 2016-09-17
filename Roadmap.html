@@ -762,13 +762,14 @@ endwhile; </pre>
 Machine is halting</pre></div>
 
                           
-                          <p><b style="color:#26A65B">Assignment 1 : </b> Write the spl program to print sum of squares of the first 20 natural numbers. Load it using xfs interface and run the in the machine.</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="support_tools-files/xsm-simulator.html" target="_blank">Debugger Specification</a>.</p>
+                          <p><b style="color:#26A65B">Assignment 1 : </b> Write the spl program to print sum of squares of the first 20 natural numbers. Load it 						using xfs interface and run the in the machine.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand
+                           the <a href="support_tools-files/xsm-simulator.html" target="_blank">Debugger Specification</a>.</p>
 
                         </div>
                       </div>
 
-                      <!-- Stage 5 -->
+         <!-- Stage 5 -->
 
                       <div class="panel-heading" id="list_stage5">
                         <h4 class="panel-title">
@@ -858,8 +859,84 @@ endwhile; </pre>
                     </div>
                   </div>
 
-                  <!--========= Stage descrptions ends here ===========-->
+ 		
+ 		<!-- Stage 6 -->
 
+                      <div class="panel-heading" id="list_stage6">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse6"><span class="fa fa-check-square-o"></span>Stage 6 : Running a user program </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse6" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
+                            <div id="lo4" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Learn how to run an init program in user mode.</li>
+                            </ul>                     
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->
+		
+		<b> Step 1: Coding the user Program </b> <br> <br>
+	<ol style="list-style-type:decimal;margin-left:2px">
+		<li> Write the Machine Code to  :
+		<pre>
+//Program to calculate Squares of first 20 nums
+
+//Initialising R0(n) and R1(n^2)
+MOV R0, 0
+
+_L1:
+
+// Check for n < 20
+MOV R16, 20
+GE R16, R0
+JZ R16, _L2
+
+// Computing n^2 Store in R1
+MOV R16, R0
+MUL R16, R0
+MOV R1, R16
+
+//breakpoint instruction (to view contents of R1)
+BRKP
+
+// n = n + 1
+ADD R0, 1
+
+JMP _L1
+
+_L2:
+
+// End of Program.
+		</pre>
+		
+		 </li>
+		</ol>
+		
+		<b> Step 2: OS startup code </b> <br> <br>
+	<ol style="list-style-type:decimal;margin-left:2px">
+		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
+		</ol>
+ 		
+		<b> Step 3: Runnning </b> <br> <br>
+	<ol style="list-style-type:decimal;margin-left:2px">
+		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
+		</ol>
+		
+
+		<!--========= Stage descrptions ends here ===========-->
                 </div>
             </div>
           </div>
