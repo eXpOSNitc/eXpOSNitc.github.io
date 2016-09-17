@@ -898,9 +898,18 @@ endwhile; </pre>
 		 to physical addresses using the address translation scheme of the machine.
 		</p>
 		
+		<p>
+		In this stage, a user program is written in assembly language. 
+		It is then loaded to the disk as the INIT program. 
+		The first user program which is executed is called the INIT program. 
+		INIT program is stored in blocks 7 and 8 of the XFS disk. It does not have an inode or root entry. (Does it?)
+		</p>
 		
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Write the Machine Code to  :
+		<li> Write a program in machine code to compute squares of all numbers lesser 20. <br>
+		In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm . <br>
+		This program will be the INIT program in this stage. <br> <br>
+
 		<pre>
 //Program to calculate Squares of first 20 nums
 
@@ -931,16 +940,29 @@ _L2:
 
 // End of Program.
 		</pre>
+		 
+		 Note that IN and OUT are privilaged instructions and cannot be used in user mode programs. We will get i/p and o/p by s/m call
+		 traps that will be explained in the later stages. For now we will use the debug mode to view the contents of register R1.
 		
 		 </li>
+		 
+		 <br>
+		
+		<li> Load this file to disk.xfs as INIT program using XFS interface.
+		<pre># load --init $HOME/myexpos/expl/expl_progs/squares.xsm</pre>
+	
+</li>  
 		</ol>
 		
-		<b> Step 2: OS startup code </b> <br> <br>
+		<b> OS Startup Code </b> <br> <br>
+		<p> The OS startup code will load the init process, set the necessary OS data structures necessary
+			to run the program. Finally, it sets the ip to 0 and transfers control to the init program using the IRET instruction.	
+		 </p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
 		</ol>
  		
-		<b> Step 3: Runnning </b> <br> <br>
+		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
 		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
 		</ol>
