@@ -1066,9 +1066,9 @@ load(66,8);</pre>
             
             <!-- Stage 7 -->
 
-                      <div class="panel-heading" id="list_stage5">
+                      <div class="panel-heading" id="list_stage7">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 7 : User programs with Interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse7"><span class="fa fa-check-square-o"></span>Stage 7 : User programs with Interrupts </a>
                         </h4>
                       </div>
 
@@ -1092,9 +1092,13 @@ load(66,8);</pre>
                       </div>
 		<!-- End Learning Objectives-->
  
- 
- 	  <p>Interrupts are the mechanisms by which the user program can communicate with the kernal. When an interrupt occurs while the XSM simulator is running, it transfers control to specific memory locations corresponding to the interrupt. Interrupts can be invoked either by software (through INT instruction) or by hardware. Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b>.
-
+	   <p>By eXpOS convention, executable files are expected to follow <a href="exposnitc.github.io/abi.html">XEXE</a> format. </p>
+ 	  <p>Interrupts are the mechanisms by which the user program can communicate with the kernal. User programs can access operating system services by invoking software interrupts. When an interrupt occurs while the XSM simulator is running, it transfers control to specific memory locations corresponding to the interrupt. Interrupts can be invoked either by software (through INT instruction) or by hardware. Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b>.</p>
+ 	  
+ 	  <p>Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled. Upon encountering an interrupt, the machine transfers control to specific locations in memory and changes from user mode to kernel mode. These memory locations contains Interrupt Routines. Since interrupt routines are executed in kernel mode, use SPL to write them. Memory pages 4 and 5 contain the Timer Interrupt Routine. Memory page (10 and 11) to (38 and 39) contain Interrupt Routines 4 to 18 (See <a href="exposnitc.github.io/os_implementation.html">Memory Organization</a>). Each interrupt routine has 2 pages in memory.</p>
+ 	  <p><b>NOTE: </b>The interrupt instructions INT 1 to INT 7 can be invoked from an EXpL program using system call interfaces.</p> 
+ 	  <p>In this stage, you will be writing user programs in assembly code and loading them according to XEXE conventions. You will also write a sample timer interrupt and software interrupts 7 and 10.</p>
+ 	
 	 <ol style="list-style-type:decimal;margin-left:2px">
 		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between :  
 		<div> 
