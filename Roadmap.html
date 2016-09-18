@@ -187,20 +187,20 @@
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage5">
                 <span class="label custom-badge" id="stage5">5</span>
-                <h4>Debugging in kernel mode</h4>                
+                <h4>Debugging in Kernel mode</h4>                
                 </div>
                 </div>
 
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage6">
                 <span class="label custom-badge" id="stage6">6</span>
-                <h4>Running a user program</h4>                
+                <h4>Running a User program</h4>                
                 </div>
                 </div>
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage7">
                 <span class="label custom-badge" id="stage7">7</span>
-                <h4>User program with interrupts</h4>                
+                <h4>User program with Interrupts</h4>                
                 </div>
                 </div>
                 <div class="col-sm-3 well">
@@ -788,7 +788,7 @@ Machine is halting</pre></div>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
                             <div id="lo4" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Being familiarised with the XSM Debugger.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Getting familiarised with the XSM Debugger.</li>
                             </ul>                                  
                                      
                             </div>
@@ -888,7 +888,7 @@ endwhile; </pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
-		<p>  In the previous stages, you wrote a system programs and executed it. In this stage, you will write a user program in assembly code and execute it in the machine.
+		<p>  In the previous stages, you wrote and executed system programs. In this stage, you will write a user program in assembly code and execute it on the machine.
 		</p>
 		
 		<b> Coding the user Program  </b> <br> <br>
@@ -1062,9 +1062,98 @@ load(66,8);</pre>
 		<!--========= Stage descrptions ends here ===========-->
                 </div>
             </div>
+            
+            
+            <!-- Stage 7 -->
+
+                      <div class="panel-heading" id="list_stage5">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 7 : User programs with Interrupts </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse7" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo7">Learning Objectives</a>
+                            <div id="lo7" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; </li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->
+ 
+ 
+ 	  <p>Interrupts are the mechanisms by which the user program can communicate with the kernal. When an interrupt occurs while the XSM simulator is running, it transfers control to specific memory locations corresponding to the interrupt. Interrupts can be invoked either by software (through INT instruction) or by hardware. Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b>.
+
+	 <ol style="list-style-type:decimal;margin-left:2px">
+		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between :  
+		<div> 
+                                <pre>
+alias counter R0;
+counter = 0;
+while(counter <= 20) do
+  if(counter%2 != 0) then
+    breakpoint;
+  endif;
+  counter = counter + 1;
+endwhile; </pre>
+                              </div> 
+		</li>
+		<br>
+		<li>
+		Compile the program using the SPL compiler.
+		</li>
+		<br>
+		<li> 
+		Load the compiled xsm code as OS startup code into the XSM disk using the XFS interface.
+		</li>
+		<br>
+		<li> 
+		Run the machine in debug mode.
+		<pre>cd $HOME/myexpos/xsm
+./xsm --debug</pre>
+		</li>
+		<li>
+		The Machine pauses execution after the first print statement.<br>
+		View the Contents of Memory page 1. You can see the OS startup code.
+		<pre>mem 1</pre>
+		</li>
+		<li>
+		View the contents of Registers
+		<pre>reg</pre>
+		</li>
+		<li>
+		The output will be displayed as:
+		<pre> </pre>
+		</li>
+		<li>
+		Press c to continue execution till next execution of BRKP instruction.
+		<pre>c</pre>
+		</li>
+		<li>
+		View the contents of R0 register at each step and type c continue.
+		</li>
+	</ol>
+	
+                          <p><b style="color:#26A65B">Assignment 1 : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Virtual Machine Model</a>.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank">Address Translation Mechanism</a>.</p>
+                    </div>
+                  </div>
           </div>
         </div>
       </div>
+      
+      
     </section>
 
 <!--=========== Intoduction Section Ending ===============-->
