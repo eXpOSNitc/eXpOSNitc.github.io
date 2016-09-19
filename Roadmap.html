@@ -1140,7 +1140,7 @@ ireturn;</pre>
 	</ol>
 	
 	<b style="font-size:20px">INT 7</b>
-	<p>The write operation is handled by Interrupt 7. The result of computation is stored in R1 in the init program. So 
+	<p>The write operation is handled by Interrupt 7. Since interrupts are executed in kernel mode, the actual physical address is used to access memory locations. The word to be printed is passed through the stack to the interrupt routine. To access this word, the interrupt routine must calculate the physical address of SP.  </p>
 	<b style="font-size:20px">INT 10</b>
 	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init proram, we can load a program with only the halt instruction as INT 10.</p>
 	<p>Detailed instructions are as follows.</p>
