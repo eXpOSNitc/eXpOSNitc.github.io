@@ -1101,6 +1101,93 @@ load(66,8);</pre>
  	   
  	  <p>In this stage, you will be writing user programs in assembly code and loading them according to XEXE conventions. You will also write a sample timer interrupt and software interrupts 7 and 10.</p>
  	<br>
+ 	<b style="font-size:20px">Modifying the user program</b>
+ 	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be modified to incorporate the system call to print the result to the terminal.After the result of computation is stored in R1, INT 7 has to be invoked to write the result to the terminal.</p>
+ 	<ol style="list-style-type:decimal;margin-left:2px">
+	<li>Push the system call number for write on the stack.
+	<div>
+	<pre>PUSH 5</pre>
+	</div>
+	</li>
+	<br>
+	<li>Push the value -2 on the stack to indicate that the word has to be printed to the terminal.
+	<div>
+	<pre>PUSH -2</pre>
+	</div>
+	</li>
+	<br>
+	<li>The word to be printed is stored in register R1. Push the word on the stack.
+	<div>
+	<pre>PUSH R1</pre>
+	</div>
+	</li>
+	<br>
+	<li>By convention, all system calls have 3 arguments. As we do not have a third argument in this case, pushed a random value on the stack.
+	<div>
+	<pre>PUSH R1</pre>
+	</div>
+	</li>
+	<br>
+	<li>Allocate space for storing the return value on the stack.
+	<div>
+	<pre>PUSH R1</pre>
+	</div>
+	</li>
+	<br>
+	<li>Invoke interrupt 7.
+	<div>
+	<pre>INT 7</pre>
+	</div>
+	</li>
+	<br>
+	<li>Pop out all the values which were pushed on the stack prior to the system call.
+	<div>
+	<pre>POP R1</pre>
+	</div>
+	</li>
+	</ol>
+	<br>
+	<p>The resulting program is given below.
+	<div>
+	<pre>//Program to calculate Squares of first 20 nums
+
+//Initialising R0(n) and R1(n^2)
+MOV R0, 0
+
+_L1:
+
+// Check for n < 20
+MOV R16, 20
+GE R16, R0
+JZ R16, _L2
+
+// Computing n^2 Store in R1
+MOV R16, R0
+MUL R16, R0
+MOV R1, R16
+PUSH 5
+PUSH -2
+PUSH R1
+PUSH R1
+PUSH R1
+INT 7
+POP R1
+POP R1
+POP R1
+POP R1
+POP R1
+
+// n = n + 1
+ADD R0, 1
+
+JMP _L1
+
+_L2:
+
+// End of Program.
+	</pre>
+	</div>
+	</p>
  	<b style="font-size:20px">Timer Interrupt</b>
  	
  	<p> The XSM simulator has a timer which invokes the timer interrupt routine after specific number of instructions . (Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
