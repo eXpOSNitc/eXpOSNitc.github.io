@@ -1138,11 +1138,51 @@ ireturn;</pre>
 		</li>
 		
 	</ol>
-	
+	<br>
 	<b style="font-size:20px">INT 7</b>
-	<p>The write operation is handled by Interrupt 7. Since interrupts are executed in kernel mode, the actual physical address is used to access memory locations. The word to be printed is passed through the stack to the interrupt routine. To access this word, the interrupt routine must calculate the physical address of SP.  </p>
+	<p>The write operation is handled by Interrupt 7. In user mode, logical addresses are translated to physical address by the machine using its <a href="http://exposnitc.github.io/arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>. Since interrupts are executed in kernel mode, the actual physical address is used to access memory locations. The word to be printed is passed through the stack to the interrupt routine. To access this word, the interrupt routine must calculate the physical address of SP. The word to be printed is then retrieved from the stack and written to the terminal using the OUT instruction. </p>
+	
+	<p>Detailed instructions for doing so are given below.</p>
+	<ol style="list-style-type:decimal;margin-left:2px">
+	<li>
+	Calculate the physical address of SP and store it in a register.
+	<div>
+	<pre>alias physicalSP R0;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);</pre>
+	</div>
+	</li>
+	<br>
+	<li>
+	According to the system call conventions, physicalSP - 3 is the location of the word to be printed. The word to be printed is stored in a register.
+	<div>
+	<pre>alias word R1;
+word = [physicalSP - 3];</pre>
+	</div>
+	</li>
+	<br>
+	<li>
+	The word is printed to the terminal using the print instruction and control is passed back to the user program using the ireturn statement.
+	<div>
+	<pre>print (word);
+ireturn;</pre>
+	</div>
+	</li>
+	<br>
+	<li>
+	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
+	</li>
+	<br>
+	<li> 
+	Compile this program using the SPL compiler.
+	</li>
+	<br>
+	<li> 
+	Load the compiled XSM code as INT 7 into the XSM disk using XFS Interface.
+	</li>
+	</ol>
+ 	<br>
 	<b style="font-size:20px">INT 10</b>
-	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init proram, we can load a program with only the halt instruction as INT 10.</p>
+	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init program, we can load a program with only the halt instruction as INT 10.</p>
 	<p>Detailed instructions are as follows.</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>Write a program with only the halt instruction.</li>
