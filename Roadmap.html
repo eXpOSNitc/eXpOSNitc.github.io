@@ -1138,16 +1138,19 @@ ireturn;</pre>
 	</ol>
 	
 	<b style="font-size:20px">INT 7</b>
+	<p>
 	<b style="font-size:20px">INT 10</b>
-	<p>When the program finishes execution of the user program, the machine must halt. Interrupt 10 is automatically invoked when program finishes execution. So, in order to halt the machine on completion of the init proram, we can load a program with only the halt instruction as INT 10.</p>
-	<p>Detailed steps are as follows.</p>
+	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init proram, we can load a program with only the halt instruction as INT 10.</p>
+	<p>Detailed instructions are as follows.</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>Write a program with only the halt instruction.</li>
 	<br>
 	<li>Save this file on your UNIX machine as $HOME/myexpos/spl/spl_progs/halt_prog.spl.</li>
 	<br>
 	<li>Compile this program using the SPL compiler.</li>
-	
+	<br>
+	<li>Load the compiled XSM code as INT 10 into the XSM disk using XFS Interface.
+	<br>
 	
                           <p><b style="color:#26A65B">Assignment 1 : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Virtual Machine Model</a>.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank">Address Translation Mechanism</a>.</p>
