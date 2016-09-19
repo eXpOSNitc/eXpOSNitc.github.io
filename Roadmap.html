@@ -1048,15 +1048,43 @@ load(66,8);</pre>
 		Hence IP or instruction pointer needs to be set to 0 before a process starts executing. 
 		As IP cannot be set explicitly, put the value 0 to the top of the stack, and IRET instruction will implicitly 
 		set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
-		to access the top of the stack. Stack of INIT process is allocated physical page number 28.
-		Its corresponding physical address is 28 * 512. Hence, the following instruction will put 0 in the top of the stack
-		</li>
+		to access the top of the stack. Stack of INIT process is allocated physical page number 76.
+		Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 in the top of the stack
+		<br> <br>
+		<pre>   [76*512] = 0; </pre>
+		</li> <br>
+		
+		<li> Use the ireturn instruction to transfer control to user program. ireturn translates to IRET machine instruction
+		<br> <br>
+		<pre>   ireturn; </pre>
+		</li>	
 		</ol>
  		
 		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between : </li>
-		</ol>
+		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler with --os flag as shown.
+		<pre> cd $HOME/myxos/spl
+./spl --os $HOME/myxos/spl/spl_progs/os_startup.spl</pre>		
+		</li>
+		<li>
+		This will generate a file $HOME/myexpos/spl/spl_progs/os_startup.xsm.	
+		Load this file as the OS startup code to disk.xfs using the XFS Interface.
+		Invoke the XFS interface and use the following command to load the OS Startup Code.
+		<pre># load --os $HOME/myxos/spl/spl_progs/os_startup.xsm
+# exit</pre>
+		</li>
+		
+		<li>Run the machine in debug mode. (Timer??)
+		<pre>cd $HOME/myxos/xsm/
+./xsm --debug</pre>
+		</li>
+				
+		<li>
+			View the contents of R1 at each step.
+		</li>
+		
+		
+	</ol>
 		
 
 		<!--========= Stage descrptions ends here ===========-->
