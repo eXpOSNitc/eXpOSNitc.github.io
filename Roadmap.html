@@ -1129,16 +1129,18 @@ ireturn;</pre>
 		<br>
 		<li> 
 		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
+		<div>
 		<pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface
 # load --int=timer $HOME/spl/spl_progs/sample_timer.xsm
 # exit</pre>
+		</div>
 		</li>
 		
 	</ol>
 	
 	<b style="font-size:20px">INT 7</b>
-	<p>
+	<p>The write operation is handled by Interrupt 7. The result of computation is stored in R1 in the init program. So 
 	<b style="font-size:20px">INT 10</b>
 	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init proram, we can load a program with only the halt instruction as INT 10.</p>
 	<p>Detailed instructions are as follows.</p>
