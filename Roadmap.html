@@ -1217,7 +1217,7 @@ _L2:
 	</p>
 	<br>
 	<b style="font-size:20px">OS Startup Code</b>
-	<p></p>
+	<p>OS Startupt code used in the previous stage has to be modified to incorporate interrupts and comply with the XEXE format.</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>Load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5.
 	<div>
@@ -1240,6 +1240,32 @@ load(23,36);</pre>
 	</div>
 	</li>
 	<br>
+	<li>The virtual address space of eXpOS process is divided into 4 parts : Shared Library, Heap, Code and Stack. Shared Library, heap and stack occupy 2 pages each and the code section occupies 4 pages. The first two entries of the page table of eXpOS process should point to the shared library section. The next two entries should point to the heap section, the next four entries to the code section and the last two entries to the stack section.
+	<br>
+	As we are not using the shared library and heap sections now, we will invalidate their entries. Init program code occupies only two memory pages - 65 and 66. Hence, the other two entries allotted for the code section are invalidated. As we are allocating only one page for the stack section, the other entry allotted for stack is also invalidated. 
+	<div>
+	<pre>[PTBR+0] = -1;
+[PTBR+1] = "0000";
+[PTBR+2] = -1;
+[PTBR+3] = "0000";
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+[PTBR+8] = 65;
+[PTBR+9] = "0100";
+[PTBR+10] = 66;
+[PTBR+11] = "0100";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+[PTBR+16] = 76;
+[PTBR+17] = "0110";
+[PTBR+18] = -1;
+[PTBR+19] = "0000";</pre>
+	</div>
+	</li>
  	<b style="font-size:20px">Timer Interrupt</b>
  	
  	<p> The XSM simulator has a timer which invokes the timer interrupt routine after specific number of instructions . (Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
