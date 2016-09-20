@@ -1215,6 +1215,31 @@ _L2:
 	</pre>
 	</div>
 	</p>
+	<br>
+	<b style="font-size:20px">OS Startup Code</b>
+	<p>In this stage, </p>
+	<ol style="list-style-type:decimal;margin-left:2px">
+	<li>Load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5.
+	<div>
+	<pre>load(4, 17);
+load(5, 18);</pre>
+	</div>
+	</li>
+	<br>
+	<li>Load INT 7 routine from disk blocks 29 and 30 to memory pages 16 and 17.
+	<div>
+	<pre>load(65,7);
+load(66,8);</pre>
+	</div>
+	</li>
+	<br>
+	<li>Load INT 10 routine from disk blocks 35 and 36 to memory pages 22 and 23.
+	<div>
+	<pre>load(22,35);
+load(23,36);</pre>
+	</div>
+	</li>
+	<br>
  	<b style="font-size:20px">Timer Interrupt</b>
  	
  	<p> The XSM simulator has a timer which invokes the timer interrupt routine after specific number of instructions . (Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
