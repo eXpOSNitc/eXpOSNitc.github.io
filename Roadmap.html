@@ -860,7 +860,7 @@ endwhile; </pre>
 	
                           <p><b style="color:#26A65B">Assignment 1 : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Virtual Machine Model</a>.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank">Address Translation Mechanism</a>.</p>
-			  <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank"> XSM Unprivilaged Mode Execution Tutorial.</a>.</p>
+			  <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand the tutorial on<a href="arch_spec-files/paging_hardware.html" target="_blank"> XSM Unprivileged Mode Execution.</a>.</p>
 
                     </div>
                   </div>
@@ -894,17 +894,15 @@ endwhile; </pre>
                       </div>
 		<!-- End Learning Objectives-->
 
-<b> Before proceeding further, it is absolutely neccesary to completely understand the tutorial on <a href="" target="_blank">  XSM Unprivilaged Mode Execution</a>.</p> </b>
+<b> Before proceeding further, it is absolutely neccesary to completely understand the tutorial on <a href="" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
 
-		<p>  In the previous stages, you wrote and executed system programs which were executing in the privilaged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in the unprivilaged (user) mode.
+		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-		<b> Coding the user Program  </b> <br> <br>
+		<b> User Programs  </b> <br> <br>
 		
-		<p> A user program is different from a system program. It is to be noted that a system program is executed in kernel 
-		mode whereas a user program should be run in user mode. In user mode only unprivileged instructions can be executed.
-		 All memory addresses are logical in user mode . In user mode, the machine translates logical addresses
-		 to physical addresses using the address translation scheme of the machine.
+		<p> In user mode, the machine translates logical addresses
+		 to physical addresses using the <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme </a>of the machine.
 		</p>
 		
 		<p>
@@ -950,7 +948,7 @@ _L2:
 // End of Program.
 		</pre>
 		 
-		 Note that IN and OUT are privilaged instructions and cannot be used in user mode programs. We will get i/p and o/p by s/m call
+		 Note that IN and OUT are privileged instructions and cannot be used in user mode programs. We will get i/p and o/p by s/m call
 		 traps that will be explained in the later stages. For now we will use the debug mode to view the contents of register R1.
 		
 		 </li>
