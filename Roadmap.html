@@ -746,12 +746,12 @@ endwhile; </pre>
 
 
                             <br/>
-                            <li> Run the machine 
+                            <li> Run the machine. 
                              
                             </li>
                           </ol>
                           
-                          The machine will halt after printing all odd numbers from 1 to 20
+                          The machine will halt after printing all odd numbers from 1 to 20.
                           <br><br>
                           <div>
                             <pre>
@@ -779,7 +779,7 @@ Machine is halting</pre></div>
 
                       <div class="panel-heading" id="list_stage5">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 5 :Debugging in Kernel Mode </a>
+                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 5 : Debugging in Kernel Mode </a>
                         </h4>
                       </div>
 
@@ -804,10 +804,10 @@ Machine is halting</pre></div>
 		<!-- End Learning Objectives-->
  
  
- 	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement.It translates to <a href="arch_spec-files/instruction_set.html" 			target="_blank">BRKP</a> machine instruction and is used for debugging.
- 	  <br>
- 	   The system pauses on execution of a BRKP instruction when the debug flag set and you can 
- 	   check the contents of registers ,memory and os data structures at that state.
+ 	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement. The breakpoint statement translates to the <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction and is used for debugging.
+ 	 
+	If the XSM machine is run in the <a herf="support_tools-files/xsm-simulator.html" target="_blank" >Debug mode </a>, on encountering the BRKP instruction, the machine simulator will suspend the program execution and allow you to inspect the values of the registers, memory, os data structures etc.  Execution resumes only after you instruct the simulator to proceed.  
+
  	   </p>
 
 	 <ol style="list-style-type:decimal;margin-left:2px">
@@ -818,7 +818,7 @@ alias counter R0;
 counter = 0;
 while(counter <= 20) do
   if(counter%2 != 0) then
-    breakpoint;
+    <b>breakpoint;</b>
   endif;
   counter = counter + 1;
 endwhile; </pre>
@@ -844,7 +844,7 @@ endwhile; </pre>
 		<pre>mem 1</pre>
 		</li>
 		<li>
-		View the contents of Registers
+		View the contents of Registers. You can see that the contents of R0 change during each iteration.
 		<pre>reg</pre>
 		</li>
 		<li>
@@ -852,16 +852,16 @@ endwhile; </pre>
 		<pre> </pre>
 		</li>
 		<li>
-		Press c to continue execution till next execution of BRKP instruction.
+		Press c to continue execution till the BRKP instruction is executed again.
 		<pre>c</pre>
 		</li>
-		<li>
-		View the contents of R0 register at each step and type c continue.
-		</li>
+
 	</ol>
 	
                           <p><b style="color:#26A65B">Assignment 1 : </b> Read and understand the <a href="virtual_machine_spec.html" target="_blank">Virtual Machine Model</a>.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank">Address Translation Mechanism</a>.</p>
+			  <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand the <a href="arch_spec-files/paging_hardware.html" target="_blank"> XSM Unprivilaged Mode Execution Tutorial.</a>.</p>
+
                     </div>
                   </div>
 
@@ -893,7 +893,7 @@ endwhile; </pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
-		<p>  In the previous stages, you wrote and executed system programs. In this stage, you will write a user program in assembly code and execute it on the machine.
+		<p>  In the previous stages, you wrote and executed system programs which were executing in the privilaged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in the unprivilaged (user) mode.
 		</p>
 		
 		<b> Coding the user Program  </b> <br> <br>
