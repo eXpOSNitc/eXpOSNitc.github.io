@@ -972,7 +972,7 @@ The xfs-interface will store squares.xsm program to disk blocks 7-8. <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
 		<li>  Load the INIT program from the disk to the memory.
 		 In the memory, init program is stored in pages 65-66.
-		 The blocks 7-8 from disk is to be loaded to the memory pages 25-27 by the OS startup Code. 
+		 The blocks 7-8 from disk is to be loaded to the memory pages 65-66 by the OS startup Code. 
 		 (See <a href="os_implementation.html" target="_blank"> Memory Organization and Disk Organization </a> ). <br> <br>
 		 
 		 <pre>load(65,7);
@@ -984,21 +984,22 @@ load(66,8);</pre>
 		<a href ="os_design-files/process_table.html#per_page_table" target="_blank"> Page Table </a> for INIT must be
 		set up for address translation scheme to work correctly. 
 		 This is because INIT is a user process and all addresses generated are logical.
-		 Machine translates these logical addresses to physical addresses by looking up the page table for INIT.  
+		 Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>  
 		 The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
-		Here we set PTBR to the starting address of the page table (physical address = 28928).  You need  
-		two pages for storing the INIT program code (loaded from disk blocks 7 and 8) and one additional page for stack (why?). 
-		Hence, PTLR is set to value 3.  
+		 We must set PTBR to the starting address of the page table of INIT (physical address = 28928).  
+<br>
+		You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
+		and one additional page for stack (why?). Hence, PTLR is set to value 3.  
 
 		<pre> PTBR = 28928;
  PTLR = 3;</pre>
 		<li>
-			Set up entries for memory pages 65 to 66 (2 pages for code) as well as one entry for memory page 76 (1 page for stack). 
+			In the page table of INIT, set page numbers 65 and 66 for code and 76 for stack.   
 			(Pages 67 - 75 are reserved. See <a href ="os_implementation.html" target="_blank"> Memory Organisation </a>.) 
-			in the page table for the INIT process. Set the first word of each entry to corresponding physical page number (25 to 28) 
-			and set the second word (Auxiliary information) as "0100"
-			(<a href ="arch_spec-files/paging_hardware.html#aux_info" target="_blank">
-			Reference Bit, Valid Bit , Write Permission Bit  and Dirty Bit respectively </a>). 
+			Thus, the first word of each entry must be set to the corresponding physical page number (65 ,66 and 76).
+			Set the second word (<a href ="arch_spec-files/paging_hardware.html#aux_info" target="_blank"> Auxiliary information </a>) for pages 65 and 66 to "0100" and page 76 to "0110".  This sets the 
+			code pages "read only" and stack "read/write".  (why?)  
+			
 			
 			<pre>[PTBR+0] = 65;
 [PTBR+1] = "0100";
@@ -1009,7 +1010,7 @@ load(66,8);</pre>
 		</li>	
 		
 		<i> Note: Here we have introduced a simple memory model with 2 page code and 1 page stack memory. <br>
-		The actual memory model which we shall use is different and will be explained in the later stages. . </i>
+		The actual memory model which you will be using is different and will be explained in the later stages. . </i>
 		 
 		<br> <br>
 		
@@ -1026,7 +1027,7 @@ load(66,8);</pre>
 	
 		<br><br>
 		
-		Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address ( 3 * 512 = 1536). 
+		Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address 2 x 512 (= 1024).
 		 Since SP is used by the user program, its address should be a logical address.
 		
 		<br><br>
@@ -1042,29 +1043,24 @@ load(66,8);</pre>
 		
 			<li>The privilege mode is changed from KERNEL to USER mode. </li>
 		
-			<li>The value in the top of the user stack (pointed to by SP) is stored in IP or Instruction Pointer. 
-			The IP register contains the logical address of the next instruction to be executed in user mode.
-			 IP cannot be changed explicitly by the programmer using any instruction other than branching instructions, 
-			 subroutine instructions, IRET and INT instructions (See instructions). </li>
-		 
+			<li>The value at the top of the user stack (we have set SP to the logical address of the top of the stack) is transfered to the Instruction Pointer (IP register). <br>
+
 			<li> Decrement the value of SP by 1 </li>
 		<br>
 			</ol>
 		
-		For an IRET instruction to function properly, the value at the top of the stack should be
-		 the logical address of the next instruction. This value gets stored in IP.
 
-		The code pages of every program in memory starts from logical address 0. (See Runtime environment). 
-		Hence IP or instruction pointer needs to be set to 0 before a process starts executing. 
-		As IP cannot be set explicitly, put the value 0 to the top of the stack, and IRET instruction will implicitly 
+		The code of this program must execute from logical address 0.  
+		Hence IP or the instruction pointer needs to be set to 0 before it starts executing. 
+		As IP cannot be set explicitly, put the value 0 at the top of the stack, and IRET instruction will implicitly 
 		set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
-		to access the top of the stack. Stack of INIT process is allocated physical page number 76.
-		Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 in the top of the stack
+		to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
+		Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 at the top of the stack.
 		<br> <br>
 		<pre>   [76*512] = 0; </pre>
 		</li> <br>
 		
-		<li> Use the ireturn instruction to transfer control to user program. ireturn translates to IRET machine instruction
+		<li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
 		<br> <br>
 		<pre>   ireturn; </pre>
 		</li>	
@@ -1072,9 +1068,8 @@ load(66,8);</pre>
  		
 		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler with --os flag as shown.
-		<pre> cd $HOME/myxos/spl
-./spl --os $HOME/myxos/spl/spl_progs/os_startup.spl</pre>		
+		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.		<pre> cd $HOME/myxos/spl
+./spl $HOME/myxos/spl/spl_progs/os_startup.spl</pre>		
 		</li>
 		<li>
 		This will generate a file $HOME/myexpos/spl/spl_progs/os_startup.xsm.	
@@ -1084,9 +1079,9 @@ load(66,8);</pre>
 # exit</pre>
 		</li>
 		
-		<li>Run the machine in debug mode. (Timer??)
+		<li>Run the machine in debug mode. (We will disable the timer for now).  
 		<pre>cd $HOME/myxos/xsm/
-./xsm --debug</pre>
+./xsm --debug --timer 0</pre>
 		</li>
 				
 		<li>
