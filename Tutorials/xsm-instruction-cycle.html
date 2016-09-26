@@ -95,19 +95,24 @@
    
     <!-- Beginning of section -->
 
-   <section>
-      <div class="container">
+   <section id="expfs">
+		<br>
+		<br>
+		<br>
+          <div class="container">
         <div class="row">
-      <!-- heading -->
-          <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="heading">
-                <br/><br/><br/>
-                <h2>Understanding XSM Architecture</h2>
-                <br/><br/>
-				<p>In this tutorial we will be walking you through the instruction execution cycle of XSM architecture. <br>
-					For this purpose, we will be using the following SPL program that will display the contents of the first entry 
-					of the root file. You can refer the SPL specification <a href ="../support_tools-files/spl.html" target="_blank">here</a>. <br> <br> 
-					The spl program is given below:
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2 >XSM Instruction Execution Cycle</h2>
+                <br/>
+                <br/>
+                
+				<p>In this tutorial we will walk you through the instruction execution cycle of XSM architecture. <br>
+					For this purpose, we will use the following SPL program that will display the contents of the first entry of the root file as the OS startup code. You can refer the SPL specification <a href ="../support_tools-files/spl.html" target="_blank">here</a>. <br>
+					The SPL program is given below:
 					<div>
 					<pre>//Program to print the first entry of root file
 
@@ -124,7 +129,6 @@ while(counter < 8) do
 endwhile; </pre> 
 					</div>
 				</p>
-				 
 				<p><br>This corresponds to the following XSM code. 
 				<div>
 					<pre>// Initialising counter(R0) to 0
@@ -164,16 +168,23 @@ _L2:
 HALT</pre>
 
 				</div>
-
+				</p>
+				<p>
+				<br>
+				The given XSM code will be loaded into disk block 0 by the XFS Interface.
 				</p>
 				
-				<p> </p>
+				<p> When the machine starts execution, the values of all registers are 0. The value stored in Instruction pointer(IP) register is also 0. Hence, the XSM machine executes the instruction present at memory location 0. The ROM code is present in memory page 0. The first instruction of ROM code is to load the OS startup code from block 0 of disk to page 1 of memory. It then transfers control to the OS startup code loaded to page 1 of memory, ie. memory address 512.</p>
+				<div>
+				<pre>LOAD(1,0)
+JMP 512</pre>
+				</div>
+				<p>LOAD(1,0) is the instruction present at memory address 0. Hence, it is the first instruction executed by the machine. After its execution, the value of IP is incremented by 2 as each instruction occupies two words. The instruction present at memory address 2 is JMP 512. This instruction sets the value of IP to 512. 
 				 
 
              </div>
            </div>
          </div>
-      </div>
     </section> 
 
 
