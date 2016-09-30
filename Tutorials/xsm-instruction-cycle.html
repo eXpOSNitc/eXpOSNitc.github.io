@@ -120,7 +120,7 @@ alias counter R0;
 alias word R1;
 counter = 0;
 
-load(62,5);
+loadi(62,5);
 
 while(counter < 8) do
   word = [62 * 512 + counter];
@@ -135,7 +135,7 @@ endwhile; </pre>
 MOV R0, 0	
 
 // Load block num 5 (root file) to page 62  
-LOAD 62, 5
+LOADI 62, 5
 
 _L1:
 
@@ -182,7 +182,7 @@ HALT</pre>
 				The ROM code is assumed to be present at the memory page 0. Here are the contents of the ROM code (page 0) of XSM memory
 				</p>
 				<div>
-				<pre>LOAD 1,0
+				<pre>LOADI 1,0
 JMP 512</pre>
 
 				<p>
@@ -198,7 +198,8 @@ JMP 512</pre>
 				The machine first the instruction from the memory and places it in the Instruction Register(IR).
 				The second step is the Instruction decode. 
 				In this step the opcode part of the IR register is examined to see the Instruction Type. 
-				
+				The machine Recognises that it is a LOAD instruction.
+				The parameters of LOAD are passed to the Disk Controller
 				</p>
 			
 				<p>After the execution of each instruction, the value of IP is incremented by 2 by the XSM machine. 
