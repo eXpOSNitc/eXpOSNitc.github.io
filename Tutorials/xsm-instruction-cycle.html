@@ -197,18 +197,28 @@ JMP 512</pre>
 				</center>
 
 				<p> Let us see the execution of this instruction in detail. 
-				The first step is called the Instruction Fetch (IF).				
-				The machine first the instruction from the memory and places it in the Instruction Register(IR).
-				The second step is the Instruction decode. 
-				In this step the opcode part of the IR register is examined to see the Instruction Type. 
-				The machine Recognises that it is a LOAD instruction.
-				The parameters of LOAD are passed to the Disk Controller. The system pauses its execution till the Disk transfer completes and resumes the execution.
-				</p>
+				
+				<font size="3">				
+				<ol>
+
+			<li>	The first step is called the Instruction Fetch (IF).			
+				The machine fetches the instruction from the memory and places it in the Instruction Register(IR). </li>
+
+			<li>	The second step is the Instruction decode. 
+				In this step the opcode part of the IR register is examined to see the instruction type. 
+				The machine recognises that the instruction is a LOADI instruction.
+			</li>
+				
+			<li>	The parameters of LOADI are passed to the Disk Controller. The system pauses its execution till the Disk transfer completes and resumes the execution.
+			</li>
+				</ol> </p>
+
+				</font>				
 			
 				<p>After the execution of each instruction, the value of the IP Register is incremented by 2 by the XSM machine. 
 				 
 				</p>
-				<p> The value of IP register is now 2. The machine fetches the instruction from memory page 2. </p>
+				<p> The value of IP register is now 2. The machine fetches the instruction from memory address 2 and 3. </p>
 
 				<center>
 				<img src="img/2.png">
