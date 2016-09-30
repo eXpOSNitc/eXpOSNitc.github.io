@@ -233,7 +233,17 @@ JMP 512</pre>
 				</center>
 
 
-				<p>OS startup code is loaded at memory address 512. Hence MOV R0, 0 is executed next. IP is incremented to 514. MOV R16, 62 is the instruction at memory address 514. Hence, it is executed next. This continues until IP reaches 522. The instruction at memory address 522 is JZ R16, _L2. This instruction is loaded as JZ R16, 544 into the XSM disk by the XFS Interface. This instruction changes IP according to the value of R16. If R16 is 0, IP is set to 544. Otherwise, IP increments by 2 to 524.</p>
+				<p>OS startup code is loaded at memory address 512. 
+				Hence MOV R0, 0 is executed next. IP is incremented to 514.
+				The machine continues execution until the HALT instruction is encountered. 
+				The system halts on execution of HALT instruction. </p>
+
+				<p> The instruction at memory address 520 is JZ R16, 544.
+				 Note that the translanslation of label _L2 to memory address 544 					is done by the XFS Interface at the time of loading OS startup code to the XSM disk.
+				 
+
+				This instruction changes the value of IP according to the value of R16.
+				If R16 is 0, IP is set to 544. Otherwise, IP increments by 2 to 524.</p>
 		
 		</div> 
              </div>
