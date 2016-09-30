@@ -175,15 +175,18 @@ HALT</pre>
 				</i>				
 				</p>
 				
-				<p> When the machine starts execution, the values of the Instruction pointer(IP) register is set to 0.
-				
-				The XSM machine therefore fetches the instruction present at memory location 0. <br> 
 
-				The ROM code is assumed to be present at the memory page 0. Here are the contents of the ROM code (page 0) of XSM memory
+			<p>	The ROM code is assumed to be present at the memory page 0. Here are the contents of the ROM code (page 0) of XSM memory
 				</p>
 				<div>
 				<pre>LOADI 1,0
 JMP 512</pre>
+
+				<p> When the machine starts execution, the values of the Instruction pointer(IP) register is set to 0.
+				
+				The XSM machine therefore fetches the instruction present at memory locations 0 and 1. Note that each instruction in XSM occupies two words in memory. <br> 
+
+</p>
 
 				<p>
 				The first instruction of ROM code is to load the OS startup code from block 0 of disk to page 1 of memory.
@@ -199,11 +202,11 @@ JMP 512</pre>
 				The second step is the Instruction decode. 
 				In this step the opcode part of the IR register is examined to see the Instruction Type. 
 				The machine Recognises that it is a LOAD instruction.
-				The parameters of LOAD are passed to the Disk Controller
+				The parameters of LOAD are passed to the Disk Controller. The system pauses its execution till the Disk transfer completes and resumes the execution.
 				</p>
 			
-				<p>After the execution of each instruction, the value of IP is incremented by 2 by the XSM machine. 
-				Note that each instruction in XSM occupies two words in memory. 
+				<p>After the execution of each instruction, the value of the IP Register is incremented by 2 by the XSM machine. 
+				 
 				</p>
 				<p> The value of IP register is now 2. The machine fetches the instruction from memory page 2. </p>
 
