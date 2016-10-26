@@ -149,6 +149,7 @@ of return.</p>
 <br>
 
 <!--action 1-->
+ 
  <div class="container-fluid .2.1_code fig_code">
  <figure>
   <div class="row">
@@ -157,6 +158,8 @@ of return.</p>
     </div>
     <div class="col-sm-6">
     <pre>
+
+<b> Pseudo code</b>
 <code>
 .... 			// Code to push registers
 PUSH System_Call_Number	// Push system call number
@@ -166,22 +169,40 @@ PUSH Argument_3
 PUSH R0			// Push an empty space for return value
 INT number		// Invoke the corresponding INT 
 			   instruction
-
-(NOTE: The machine code above is in the form of pseudo code.)
+			   
 </code>
 	
 	</pre>
     </div>
   	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1 - Actions done by the user process before executing an INT instruction : </b>All the registers currently used by the process are pushed onto the user stack followed by the system call number corresponding to the system call. The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space.
-</figcaption>
-</div>
-</div>
+	
 </figure>
 </div>
 <br><br><br><br>
+
+<!-- Actions by Machine -->
+<p><h4><b>2. Actions done by the XSM machine upon execuing INT instruction.</b></h4></p>  
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. The execution mode is switched from user mode to kernel mode.</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. The return address (IP+2 value) is pushed to the top of the user stack.</p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. IP is set to the address corresponding to the interrupt routine.</p> 
+
+<br>
+
+  <div class="container-fluid .2.1_code fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-6">
+		<center>
+     <img src="../img/Stack_Management/actions_of_machine_upon_int.png" width="95%">
+		</center>
+    </div>
+  </div>
+	
+</figure>
+</div>
+<br><br><br><br>
+
+<!-- -->
   
 <p><h4><b>2. Actions done by the kernel module upon entry</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Compute the physical address of the top of the user stack.</p>
