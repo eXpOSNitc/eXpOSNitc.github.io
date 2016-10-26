@@ -53,7 +53,8 @@
     <![endif]-->
   </head>
   <body id="stack_desc"> 
-     <!-- BEGAIN PRELOADER -->
+	  
+     <!-- BEGAIN PRELOADER 
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
@@ -116,78 +117,28 @@
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
          <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
 	
-	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the INT 1 routine (that implements the scheduler) to perform a context switch. </p>
-	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the interrupt routine saves the context of the current process and schedules a new process for execution.  </p>
+	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the scheduler module to perform a context switch. </p>
+	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the timer interrupt routine saves the context of the current process and invokes the scheduler module.  </p>
 
 	<br>
 
-	<p>In the following, we will use the term "leaving process" to indicate the process that gets scheduled out and "entering process" to indicate the new process that gets scheduled in.</p>
-	<p>The actions done on the kernel stacks of the leaving and the entering processes in effecting a context switch may be classified as:</p>
-	<p>&nbsp;&nbsp;&nbsp;Step 1:  Operations performed by the leaving process on its own kernel stack before invoking the scheduler (INT 1 routine)</p>
-	<p>&nbsp;&nbsp;&nbsp;Step 2:  Operations performed by the scheduler (INT 1 routine) on the kernel stack of the leaving process.  </p>
-	<p>&nbsp;&nbsp;&nbsp;Step 3.  Operations  performed by the scheduler (INT 1 routine) on the kernel stack of the entering process. </p>
-	<p>&nbsp;&nbsp;&nbsp;Step 4.  Operations performed by the entering process on its kernel stack before resuming execution.</p>
-	<br>
-	<p>If the leaving process was executing in the user mode, then step 1 is empty.  This is because the scheduler is invoked through a hardware interrupt and thus the context switch is not in the control of the leaving process. Consequently if the entering procees is resuming execution in the user mode, Step 4 will be empty. </p>  
-	<p>On the other hand, if the leaving process initiates INT 1 routine while executing in the kernel mode as the result of a blocking operation, it saves its own context into its kernel stack before invoking the INT 1 routine. Consequently, if the entering process has to resume execution in the kernel mode, both Step 3 and Step 4 actions will be required. </p> 
-	<p> In the following, we describe each of these cases in detail.</p>
-
-	<!--
-	<p>&nbsp;&nbsp;&nbsp;a. A blocking system call gets executed in the kernel mode (non-preemptive scheduling). In this case, the process preempts itself and invok</p>
-	<p>&nbsp;&nbsp;&nbsp;b. A process in kernel mode gets scheduled for execution.</p>
-	<p>&nbsp;&nbsp;&nbsp;c. A timer interrupt occurs in user mode.</p>
-	<p>&nbsp;&nbsp;&nbsp;d. A process in user mode gets scheduled for execution.</p>
-	</p>
--->
+	In both these cases, the scheduler module need not save or restore the context of the callee as the callee saves its context before calling the scheduler module. See <a href=""> here </a>
+	<br><br>
+	
 	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
 	<p><b>Important Note</b>: Whenever the kernel stack pointer of a process is saved in the KPTR field of the process table, the <b>offset of SP register within the user area page </b>will be stored (and <b>not</b> the physical address of the kernel stack pointer). The page number of the user area page is stored in the USER AREA PAGE NUMBER field in the process table. Thus, the value of the offset can be calculated by the fomula <i>offset = SP – (512 * USER AREA PAGE NUMBER)</i>.</p>
 	<p>The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. Thus, if the user area page is swapped out, it can be swapped back later to a different physical memory page.</p>
      
      </div>
-	<br>
+	
 <!--Kernel Mode begins-->
 
       <div class="container">
       	<div class="row">
-	<p style="margin:0"><h4><b>1. When the leaving process is in kernel mode  </b></h4></p>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done in the case of a blocking system call can be divided into two:<br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.a.  Actions done by the leaving process (system call routine/ exception handler) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.1. Save the registers in use and the BP in the kernel stack </p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2. Invoke the INT 1 routine (scheduler) </p>	
-	<br><br>
-	<div class="container-fluid .2.1_code fig_code">
- 		<figure>
-  			<div class="row">
-   		 		<div class="col-sm-6">
-     				<img src="../img/kernel_mode_timer_step1.i.a.png" width="105%"></img>
-    				</div>
-    				<div class="col-sm-6">
-    					<pre>
-						<code>
-.... 			// Code to push registers
-PUSH BP			// Push BP onto the stack
-INT 1			// Invoke the corresponding INT 
-			   instruction
-...
-			   
-(NOTE: The machine code above is in the form of pseudo code.)
-						</code>
-	
-					</pre>
-    				</div>
-  			</div>
-			<div class="row">
-	 			<div class="col-sm-12">
-	 				
-					<figcaption><br><b>Fig.1.a - Actions done by the leaving process (system call routine/ exception handler): </b>All the registers currently used by the process are pushed onto the kernel stack followed by the BP. The system routine needs these values to resume its execution when scheduled back at a later point of time.
-					</figcaption>
-				</div>
-			</div>
-		</figure>
-	</div>
-<br><br><br>
-&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>1.b. Actions done by the scheduler (INT 1 routine) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.b.1. Save the current kernel stack pointer in the KPTR field of the process table </p>
+	<p style="margin:0"><h4><b>Actions done by the scheduler: </b></h4></p>
+
+&nbsp;&nbsp;&nbsp;1. Find the pid of the next process to be scheduled.<br> 
+&nbsp;&nbsp;&nbsp;2. Save the current kernel stack pointer offset in the KPTR field of the process table.
 <br><br>
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -197,6 +148,7 @@ INT 1			// Invoke the corresponding INT
     				</div>
     				<div class="col-sm-6">
     					<pre>
+<b> Pseudo code</b>							
 						<code>
 ...
 						
@@ -209,7 +161,6 @@ MOV KPTR,R5	// logicalSP =
 		   SP - (UAreaPgNo * 512)
 ...	
 	   
-(NOTE: The machine code above is in the form of pseudo code.)
 						</code>
 	
 					</pre>
@@ -218,22 +169,21 @@ MOV KPTR,R5	// logicalSP =
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.1.b - Actions done by the scheduler (INT 1 routine) : </b> Find the logical address of the current SP and store it in the KPTR field of the process table
+					<figcaption><br><b>Fig.1.b - Storing the offset of kernel SP in the KPTR field of the process table.</b>
 					</figcaption>
 				</div>
 			</div>
 		</figure>
 	</div>
-<br><br><br><br>
+<br><br>
 
-	
-<p style="margin:0"><h4><b>2. Entering process resumes execution in the kernel mode </b></h4></p>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">The actions done for scheduling back a process in kernel mode can be divided into two:<br><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="margin:0"><b>2.a. Actions done by the scheduler (INT 1 routine) :</b></p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1. Compute the physical address corresponding to the logical kernel stack pointer stored in the KPTR field of the process table, and store this to SP.</p><br>
-	<p style="margin:0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.2. Transfer control back to the system call using <b>RET</b> instruction (The RET instruction is used because after scheduling the process must continue in kernel mode) </p>
+&nbsp;&nbsp;&nbsp;3. Save the current PTBR and PTLR values in the process table of the leaving process. (Is this really required?)
+<br>
+&nbsp;&nbsp;&nbsp;4. Set the PTBR and PTLR values from the process table of the entering process.
+<br>
+&nbsp;&nbsp;&nbsp;5. Compute the physical address corresponding to the KPTR field of the process table of the entering process, and store this to SP.
 
-	<br><br>
+
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
   			<div class="row">
@@ -255,12 +205,9 @@ ADD R4, KPTR
 MOV SP, R4	
 	// store the physical address of the kernel 
 	   stack pointer in SP
-RET 
 
 ...
-
-(NOTE: The machine code above is in the form of pseudo code.)
-						</code>
+					</code>
 	
 					</pre>
     				</div>
@@ -268,12 +215,7 @@ RET
 			<div class="row">
 	 			<div class="col-sm-12">
 	 				
-					<figcaption><br><b>Fig.2.a - Actions done by the scheduler (INT 1 routine) : </b>
-					<p>2.a.1  Find the physical address of SP using the KPTR value in the process table and user area page number </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1.1  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-<p>2.a.2.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-<p>2.a.3.  Transfer control back to the system call routine.</p>
+					<figcaption><br><b>Fig.2.a - Setting the kernel SP from the offset value in the KPTR field of the process table. </b>
 					</figcaption>
 				</div>
 			</div>

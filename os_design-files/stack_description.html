@@ -51,7 +51,8 @@
     <![endif]-->
   </head>
   <body id="stack_desc"> 
-     <!-- BEGAIN PRELOADER -->
+	  
+     <!-- BEGIN PRELOADER  -->
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
@@ -353,38 +354,25 @@ POP System_Call_Number	// Pop and discard the
     </div>
     <div class="col-sm-5">
 <pre>
+<b> Pseudo code</b>	
 <code>
 ....
 MOV UPTR, SP	// Save the current SP register to 
 		   User stack pointer field of the 
 		   process table.
-MOV R4, User Area Page Number*512
-	// find the physical address of the user 
-	   area page 
-ADD R4, KPTR
-	// find the value of the kernel stack 
-	   pointer using the formula 512*user 
-	   area page number + KERNEL STACK POINTER
-MOV SP, R4	
-	// store the physical address of the kernel 
-	   stack pointer in SP 
-....	
+MOV SP, User Area Page Number*512 + KPTR
+	// Set kernel stack
 		   
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
+<i> (Note: Registers should not be used explicitly here
+    for calculations as they are not backed up yet.)</i>
 </pre>
     </div>
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
 		<figcaption><br><b>Fig.1.a. - Switch from the user stack to the kernel stack</b>
-		<p>1.a.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-		<p>1.a.2.  Compute the physical address of the kernel stack pointer </p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2.1.  Find the physical address of the user area page (multiply the user area page number in the process table by 512) </p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.a.2.2.  Find the value of the kernel stack pointer by adding the above value to the offset in kernel stack pointer field in process table.</p>
-		<p>1.a.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-	
+		
 </figcaption>
 </div>
 </div>
@@ -401,14 +389,13 @@ pseudo code.)
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>
 <code>
 ....
 BACKUP		// machine instruction to save the 
 		   register context
 ....
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 	
 	</pre>
@@ -441,14 +428,13 @@ pseudo code.)
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>
 <code>
 ....
 RESTORE		// machine instruction to restore
  		   the register context
 ....
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 	
 	</pre>
@@ -472,32 +458,28 @@ pseudo code.)
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>
 <code>
 ....
-MOV R4, User Area Page Number*512 
+MOV KPTR, User Area Page Number*512 - SP 
 		// find the physical address 
         	   of the user area page
-MOV R5, SP
-SUB R5,R4
-MOV KPTR,R5	// logicalSP = 
-		   SP - (UAreaPgNo * 512)
 MOV SP, UPTR	// point SP to the user stack
+
 IRET		// return to the user process
 ....
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
-	
+
+<i>(Note: Again, registers should not be used 
+	explicitly in the calculations as it will 
+	overwrite the restored register context)</i>	
 	</pre>
     </div>
   	</div>
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.{b,c,d} - </b>
-	<p>2.b.  Store the logical address of the current kernel stack top (SP) to the KPTR field </p>
-	<p>2.c.  Transfer the value stored in user stack pointer field to the SP register </p>
-	<p>2.d.  Transfer the control back to the user process</p>
+		<figcaption><br><b>Fig.3. - Switch the stack and Transfer the control back to the user process</b>
 </figcaption>
 </div>
 </div>
@@ -517,12 +499,23 @@ pseudo code.)
          <div class="row">
               	
               <h3>Invocation of a kernel module from another kernel module</h3>
-              <br>	      
-              <p>A kernel module can invoke another kernel module while it is executing. Since one kernel module invokes the other kernel module voluntarily, it is responsible for saving its own execution context before transferring control to the invoked kernel module. Thus in this case, the invoking kernel module must save the register context in the kernel stack. The arguments to the kernel module are passed through the registers R0, R1, R2. The invoked kernel module also uses the same kernel stack. The return value will be stored in register  R0. Before returning control to the module which invoked it, the invoked module pops off the space used during its execution, from the stack. The module which invoked the other module restores the register context upon return before resuming its execution.</p>
+              <br>
+              	      
+              <p>A kernel module or an interrupt service routine can invoke another kernel module while it is executing. 
+              Since the invocation is voluntarily, execution context of the callee should be saved in the kernel stack
+              before transferring control to the invoked kernel module. 
+              The arguments to the kernel module are passed through the registers R0, R1, R2. 
+              The invoked kernel module also uses the same kernel stack. 
+              <br>
+              The return value will be stored in register  R0. 
+              Before returning control to the callee, the invoked module pops off the space used 
+              during its execution, from the stack. The callee restores
+               the register context upon return before resuming its execution.</p>
+               
 	      <p> Note : RET instruction is used instead of IRET to return back to the kernel module.</p>
               <br>
               <br>
-              <p style="margin:0"><h4><b> 1. Actions done by the kernel module before executing the call to another kernel module </b></h4></p>
+              <p style="margin:0"><h4><b> 1. Actions done by callee before executing the call to a kernel module </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack</p> 
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the arguments argument_1, argument_2, argument_3,... to R0, R1, R2, ... respectively </p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the kernel module to be executed </p> 
@@ -535,6 +528,7 @@ pseudo code.)
     		</div>
     			<div class="col-sm-5">
 <pre>
+<b> Pseudo code</b>	
 <code>			
 ....		// save the registers in use
 MOV R0, argument_1
@@ -542,13 +536,11 @@ MOV R1, argument_2
 MOV R2, argument_3
 ...
 		// store the arguments
-CALL MODULE_N / INT_N	
-		// invoke the other kernel 
-		   module/interrupt routine
+CALL MODULE_N 
+		// invoke the kernel 
+		   module
 ....
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 </pre>
     </div>
@@ -566,7 +558,7 @@ pseudo code.)
 <br>	
 <br><br>         
 <br>
-              <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning to the kernel module which invoked it </b></h4></p>
+              <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pop off the space used during its execution from the kernel stack </p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use RET instruction to transfer control back to the kernel module which invoked it </p> 
 		<br>
@@ -578,6 +570,7 @@ pseudo code.)
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>		
 <code>
 ....
 POP R0	// pop off the space used during 
@@ -586,9 +579,6 @@ POP R0	// pop off the space used during
 RET	// return control to the module 
 	   which invoked it
 
-
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 	
 	</pre>
@@ -596,11 +586,8 @@ pseudo code.)
   	</div>  	  	        	
 	<div class="row">
 	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning to the kernel module which invoked it :</b>
-<p>2.a. After the execution is complete, any space used by this module in the kernel stack must be popped off</p> 
-<p>2.b. Use RET instruction to transfer control back to the kernel module which invoked it</p> 
-<p>Note: The kernel module which invoked the other kernel module must restore the values of the registers upon return before resuming its execution. The return value will be stored in the register R0, according to the SPL calling conventions given <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">here</a>.</p>
-    	      	</figcaption>
+		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning.</b>
+	      	</figcaption>
 </div>
 </div>
 </figure>
