@@ -185,7 +185,7 @@ INT number		// Invoke the corresponding INT
 <br><br><br><br>
 
  
-<p><h4><b>2. Actions done by the kernel module upon entry</b></h4></p>  
+<p><h4><b>2. Actions done by the System call service routine upon entry</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Compute the physical address of the top of the user stack.</p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments. (Note : The convention is to extract the system call number to register R0, and arguments to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R1,R2, and R3 in that order from the caller's stack)</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Switch the stack from user to kernel</p>
@@ -233,7 +233,7 @@ MOV SP, R4
 
 <!-- action 3 -->
 <br><br>
-<p><h4><b>3. Actions done by the kernel module before returning from the system call</b></h4></p>  
+<p><h4><b>3. Actions done by the System call service routine before returning from the system call</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Pop off all the contents from the kernel stack and store the logical address of the top of kernel stack to the KPTR field of the process table </p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Point the stack pointer (SP) to top of the user stack </p>
@@ -247,6 +247,7 @@ MOV SP, R4
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>
 <code>
 ....		   
 MOV R4, physicalSP
@@ -266,8 +267,6 @@ MOV SP, UPTR	// move the value of USER STACK
 IRET		// return to the user program
 ....
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 	
 	</pre>
@@ -291,6 +290,7 @@ pseudo code.)
     </div>
     <div class="col-sm-5">
     <pre>
+<b> Pseudo code</b>
 <code>
 ....
 POP R0			// Pop and save the return 
@@ -305,8 +305,6 @@ POP System_Call_Number	// Pop and discard the
 			   register context and 
 			   resume execution
 
-(NOTE: The machine code above is in the form of 
-pseudo code.)
 </code>
 	
 	</pre>
@@ -323,17 +321,30 @@ pseudo code.)
               	
               <h3>Exception/Interrupt Handler</h3>
               <br>
-              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine or the console interrupt routine. The actions done inside the timer interrupt routine (scheduler) are discussed <a href="timer_stack_management.html" target="_blank">here</a>. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions of the XSM machine facilitate this).</p>
+              <p>A hardware interrupt/exception can occur while an application program is executing.
+               It can be the exception handler, timer interrupt routine, disk interrupt routine or the 
+               console interrupt routine. Since the application does not have control over the transfer 
+               to the interrupt module, it would not have saved its context. Thus in this case the kernel 
+               module must save the register context of the application in its own stack before using the 
+               registers and must restore the context before returning to the application.  
+               The kernel stack is used to store the execution context of the user process. 
+               This context is restored before the return from the kernel module.  
+               (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
+				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
+				restore</a> instructions of the XSM machine facilitate this).</p>
 	      <p> NOTE: If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
+              <p> <i> The XSM machine pushes the return address (IP+2 value) to the user stack before transferring the control to the Interrut Service Routine</i> <p>
               <br>
-              <p style="margin:0"><h4><b> 1. Actions done by the kernel module upon entering the interrupt routine </b></h4></p>
+              <p style="margin:0"><h4><b> 1. Actions done by the kernel upon entering the interrupt service routine </b></h4></p>
                 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Save the values of the machine registers in the kernel stack using BACKUP machine instruction.  </p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the interrupt routine code</p>
-		
-              <br><p><b>Execution context before an interrupt/exception:</b></p><br>
+		<br> <br>
+		<div class="container-fluid fig_code">
+              <p><b>Execution context before an interrupt/exception:</b></p><br>
               <img src="../img/Stack_Management/execn_context_b4_interrupt.png" width="60%">
-<br><br><br><br>
+		</div>
+<br><br><br>
  <div class="container-fluid fig_code">
  <figure>
   <div class="row">
@@ -379,8 +390,7 @@ pseudo code.)
 </div>
 </figure>
 </div>
-<br><br><br><br>
-
+<br><br><br>
 
 
  <div class="container-fluid fig_code">
@@ -416,7 +426,7 @@ pseudo code.)
 
 
 <br>
-      <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning from the interrupt routine </b></h4></p>
+      <p style="margin:0"><h4><b> 2. Actions done by the kernel before returning from the interrupt routine </b></h4></p>
         &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Restore the values of the machine registers using RESTORE machine instruction</p> 
         &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the logical address of the current kernel stack top to the KPTR field </p>
 	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Set the value of SP to the top of the user stack  </p> 
