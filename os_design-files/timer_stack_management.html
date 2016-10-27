@@ -234,34 +234,28 @@ MOV SP, R4
 		</figure>
 	</div>
 	
-	&nbsp;&nbsp;&nbsp;8. RET ststement is executed .
+	&nbsp;&nbsp;&nbsp;8. RET statement is executed and control goes back to the Interrupt routine or kernel module that called the scheduler.
+	
 <br><br>         
 
 <h4><b> Case 2 : Entering process is a newly created process</b></h4>
 
-&nbsp;&nbsp;&nbsp;7. Compute the address stored in the UPTR field of the process table of the entering process, and store this to SP.
+&nbsp;&nbsp;&nbsp;7. Set SP to the address stored in the UPTR field of the process table of the entering process.
 
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
   			<div class="row">
    		 		<div class="col-sm-6">
-     				<img src="../img/kernel_mode_timer_step2.i.a.png" width="105%"></img>
+     				<img src="../img/user_mode_timer_step2c.png" width="105%"></img>
     				</div>
     				<div class="col-sm-6">
     					<pre>
 						<code>
 ...
 						
-MOV R4, User Area Page Number*512
-	// find the physical address of the user
-	   area page 
-ADD R4, KPTR
-	// find the value of the kernel stack 
-	   pointer using the formula 512*user 
-	   area page number + KERNEL STACK POINTER
-MOV SP, R4	
-	// store the physical address of the kernel 
-	   stack pointer in SP
+MOV SP, UPTR
+
+IRET
 
 ...
 					</code>
@@ -279,7 +273,7 @@ MOV SP, R4
 		</figure>
 	</div>
 	
-	&nbsp;&nbsp;&nbsp;8. IRET ststement is executed .
+	&nbsp;&nbsp;&nbsp;8. IRET statement is executed. Note that the start IP is set at top of user stack and SP is also set at time of fork s/m call. 
 <br><br>         
 
 
