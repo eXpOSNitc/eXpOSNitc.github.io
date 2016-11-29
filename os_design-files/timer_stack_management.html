@@ -115,21 +115,21 @@
     	 </div>
          <br>
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
-         <p>This document handles stack management in context switch , specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
+         <p>This document handles stack management in context switch, specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
 	
 	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the scheduler module to perform a context switch. </p>
 	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the timer interrupt routine saves the context of the current process and invokes the scheduler module.  </p>
 
 	<br>
 
-	In both these cases, the scheduler module need not save or restore the context of the caller. 
-	This is because the caller saves its context before calling the scheduler module 
+	In both these cases, the scheduler module need not save or restore the context of the leaving process (caller). 
+	This is because the caller saves its context before calling the scheduler module. 
 	The caller also restores its context after returning from the scheduler module. 
 	
 	<br><br>
 	
-	A special case occurs when the entering process is a newly created process. Here the scheduler module calls IRET instruction and returns directly to user mode. 
-	It is discussed in detail below.
+	A special case occurs when the entering process is a newly created process.
+	It will be dicussed in detail below.
 	<br> <br>
 	
 	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
