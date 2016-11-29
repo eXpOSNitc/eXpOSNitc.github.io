@@ -534,14 +534,24 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                           </div>
                           <div id="con" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. A module typically contains protected mode code that carries out certain functions as determined by the OS programmer. The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
+                                <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. 
+                                A module typically contains protected mode code that carries out certain functions as determined by the OS programmer.
+                                 The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
 
-                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in the memory. It is not recommended to transfer control directly into a location within a module from other modules.</p>
+                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in the memory. 
+                                It is not recommended to transfer control directly into a location within a module from other modules.</p>
 
-                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function within the module is to be invoked, as well as the parameters to that function) and return values shall be passed either through registers R0, R1, R2.. or through stack as required. </p>
+                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function 
+                                within the module is to be invoked, as well as the parameters to that function) 
+                                and return values shall be passed either through registers R0, R1, R2.. or through stack as required. </p>
                                    
 
-                                <p><code>Note: </code>The SPL compiler given here uses the constants (given in <i>splconstants.cfg</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules, which are (optionally) loaded into various pre-defined memory pages of the XSM machine when eXpOS starts up. In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding interrupt service routine locations in memory. The SPL predefined constants INT_0 to INT_18 can be used to invoke these modules.</p>
+                                <p><code>Note: </code>The SPL compiler given here uses the constants
+                                 (given in <i>splconstants.cfg</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules.
+                                 Expos (optionally) loads these modules into various pre-defined memory pages of the XSM machine on startup. 
+                                 In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding 
+                                 interrupt service routine locations in memory. 
+                                 </p>
  
                                 <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
                                <div style="padding-left:70px"> a. Execution of a software interrupt from an application (user mode) program.<br/>
@@ -550,7 +560,13 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                 </div>
                                    </p>
 
-                                <p><b>Case a)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack. The return values are also passed through the same stack. The convention is that the application must save the state of its registers before making the call. (For instance, the eXpL compiler will save the context in the user stack before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the context of the application and can use the registers R0-R15 without saving them. However, the application is not expected to save SP, BP registers before the call, and the module must save them for future return.</p>
+                                <p><b>Case a)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack.
+                                 The return values are also passed through the same stack. The convention is that the application must save the state 
+                                 of its registers before making the call. (For instance, the eXpL compiler will save the caller context in the user stack
+                                  before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the 
+                                  context of the application and can use the registers R0-R15 without saving them. 
+                                  However, the application is not expected to save the SP register before the call, 
+                                  and the module must save it for future return.</p>
 
                               <p><b>However, in this case, it is strongly recommended that the module allocates its own stack for local memory allocation and not use the application's stack.</b> This is to avoid potential user level “hacks” into kernel mode interrupt modules through the stack.</p>
                                 <center>                        <img src="../img/memory_management.png"></center>
