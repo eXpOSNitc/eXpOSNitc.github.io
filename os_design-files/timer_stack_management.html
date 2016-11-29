@@ -122,10 +122,10 @@
 
 	<br>
 
-	In both these cases, the scheduler module need not save or restore the context of the callee. 
-	This is because the callee saves its context before calling the scheduler module 
-	The callee also restores its context after returning from the execution of the module (ie when the process is scheduled later). 
-	See the design <a href="">here</a>.
+	In both these cases, the scheduler module need not save or restore the context of the caller. 
+	This is because the caller saves its context before calling the scheduler module 
+	The caller also restores its context after returning from the execution of the module (ie when the process is scheduled later). 
+	
 	<br><br>
 	
 	A special case occurs when the entering process is a newly created process. Here the scheduler module calls IRET instruction and returns directly to user mode. 
