@@ -148,23 +148,25 @@
               <h2 >File Status Table</h2>
                <br>
                <br>
-              <p>The File Status Table contains details about lock status and file open count of each file in the inode table. It consists of MAX_FILE_NUM (= 60 in the present eXpOS version) entries.</p>                                               
+              <p>The File Status Table contains details about lock status and file open count of each file in the inode table. 
+              For each file, the index of its entry in the inode table must match with the index of its entry in the file status table.  
+              <br>
+              It consists of MAX_FILE_NUM (= 60 in the present eXpOS version) entries.</p>                                               
 
-              <p>Each file lock status table entry is of size 4 words of which one is unused.</p>
+              <p>Each file lock status table entry is of size 4 words of which two are unused.</p>
               <table class="table table-bordered" >
                   <tr >
-                      <td style="border: 1px solid black">ULOCK</td>
-                      <td style="border: 1px solid black">KLOCK</td>
+                      <td style="border: 1px solid black">LOCK</td>
+                    
                       <td style="border: 1px solid black">FILE OPEN COUNT</td>
                       <td style="border: 1px solid black">Unused</td>
                                                                   
                   </tr>
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
-                   <li><b>ULOCK</b> (1 word)- If the file was locked by a process using  FLock system call, this field specifies the PID of the process, otherwise, it is set to -1. </li>
-                   <li><b>KLOCK</b> (1 word)- If the file is locked by the process inside a system call, this field specifies the PID of the process, otherwise, it is set to -1. </li>
+                   <li><b>LOCK</b> (1 word)- If the file is locked by a process inside a system call, this field specifies the PID of the process, otherwise, it is set to -1. </li>
                    <li><b>FILE OPEN COUNT</b> (1 word) - specifies the number of open instances of the file.  </li>                   
-                   <li><b>Unused</b> (1 word)</li>                                     
+                   <li><b>Unused</b> (2 words)</li>                                     
               </ul> 
               
               <p>All invalid entries are set to -1</p>     
@@ -303,7 +305,7 @@
               <table class="table table-bordered" >
                   <tr >
 		      <td style="border: 1px solid black"><font color="red">CURRENT_USER_ID</font></td>
-                      <td style="border: 1px solid black">NEXT_PID</td>                      		      
+                      <td style="border: 1px solid black">CURRENT_PID</td>                      		      
                       <td style="border: 1px solid black">MEM_FREE_COUNT</td>
                       <td style="border: 1px solid black">WAIT_MEM_COUNT</td>
                       <td style="border: 1px solid black">SWAPPED_COUNT</td>
@@ -314,7 +316,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>CURRENT_USER_ID</b> (1 word) - specifies the userid of the currently logged in user.</li>
-                   <li><b>NEXT_PID</b> (1 word) - specifies the pid of the process to be scheduled next. </li>
+                   <li><b>CURRENT_PID</b> (1 word) - specifies the pid of the currently running process. </li>
                    <li><b>MEM_FREE_COUNT</b> (1 word) - specifies the number of free pages available in memory.</li>
                    <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting (blocked) for memory. </li>
                    <li><b>SWAPPED_COUNT</b> (1 word) - specifies the number of processes which are swapped. A process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>

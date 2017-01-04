@@ -988,12 +988,12 @@ load(66,8);</pre>
 		 This is because INIT is a user process and all addresses generated are logical.
 		 Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>  
 		 The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
-		 We must set PTBR to the starting address of the page table of INIT (physical address = 28928).  
+		 We must set PTBR to the starting address of the page table of INIT.  
 <br>
 		You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
 		and one additional page for stack (why?). Hence, PTLR is set to value 3.  
 
-		<pre> PTBR = 28928;
+		<pre> PTBR = PAGE_TABLE_BASE;
  PTLR = 3;</pre>
 		<li>
 			In the page table of INIT, set page numbers 65 and 66 for code and 76 for stack.   
