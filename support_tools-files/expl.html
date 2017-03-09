@@ -107,7 +107,7 @@
                 <h2 >ExpL Specification</h2>
                 <br/>
                 <br/>
-                <p> intro to expl</p>
+                <p> <b>Intro to ExpL</b></p>
               </div>
 
               <!-- START ABOUT CONTENT -->
@@ -341,9 +341,20 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                 return < string constant/variable > ;    /* If the return type is string */
                 return < variable >;    /* If the return type of the function is a user defined type*/
 </pre> 
-             <p>If the return type of the function does not match the type of the expression/variable returned,  a compilation error should occur.  The <b>return type of main is integer</b> by specification</p>
+             <p>If the return type of the function does not match the type of the expression/variable returned,  a compilation error should occur. The return type of a function can be of type <b>int</b> , <b>str</b> or <b>user-defined</b> type The <b>return type of main is integer</b> by specification</p>
              <h3>Input/Output</h3> 
-             <p>doubt</p>
+              <p>
+                  Using read statement, we can <b>read a string or an integer into a variable</b> of type string or integer respectively from the standard input. The syntax of the input statement is as follows :
+                  <pre>
+                      read( &lt; variable &gt; );
+                  </pre>
+              </p>
+              <p>
+                  Using the write statement, we can <b>write</b> the value of an <b>integer or string type variable</b> or <b>the value of an arithmetic expression</b> to the standard output. The output statement is as follows :
+                  <pre>
+                      write( &lt; expr &gt; );
+                  </pre>
+              </p>
              <h3>Break and Continue Statements</h3> 
              <p>A <b>break;</b> statement inside a conditional/iterative block tranfers control to the end of the block.  A <b>continue;</b> inside a conditional/iterative block transfers control to the beginning of the block.    These statements do nothing if not inside any conditional/iterative statement.  </p>
              <p>The next section briefly discusses the library functions for dynamic memory allocation.</p>   
@@ -364,12 +375,12 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                           </div>
                           <div id="c4" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>The library functions <b>alloc()</b>, <b>free()</b> and <b>initialise()</b> are used as follows:  </p>
+                                <p>The library functions <b>alloc()</b>, <b>free()</b> and <b>initialize()</b> are used as follows:  </p>
 <pre style = "font-size:16px">
             t = alloc(); /* Allocates HBSIZE contiguous locations in the heap –
                             t must be a user defined variable */
             t = free(t);  /* Free the allocated block – t must be a user defined variable */
-            <span style="color:blue">t = initialise(); /* Initialises the heap area.*/</span>
+            <span style="color:blue">t = initialize(); /* Initialises the heap area.*/</span>
 </pre>     
                                 <p>A call to alloc() allocates HBSIZE contiguous memory locations in the heap memory (memory reserved for dynamic memory allocation) and returns the address of the starting location. In this version of ExpL, HBSIZE is set to 8 words. This address may be stored in a variable of user defined type .  A call to free() deallocates HBSIZE contiguous memory locations in the heap memory that is referenced by user defined type variable t. The function free()  returns NULL on successful deallocation.  Otherwise, the value of t is unchanged by call to free().    All unallocated user defined variables are set to predefined constant  NULL.  
 
@@ -480,9 +491,10 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                 decl
                     int fact(int n);
                 enddecl
-                int fact(int n)
+                int fact(int n) 
+                {
                     decl
-                        int rvalue;
+                      int rvalue;
                     enddecl
                     begin
                         if (n==1) then 
@@ -492,7 +504,10 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                         endif;
                         return rvalue;   /* Note that only one return statement is allowed.
                     end
+                }
+                
                 int main( )  /* Main definition should always begin like this  */
+                {
                     decl
                         int n,i ;
                     enddecl
@@ -505,6 +520,7 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                         endwhile;
                         return 1;  /* Any integer value may be returned */
                     end
+                }
 </pre>  
                                 <h3>Sample  ExpL program using User Defined types:</h3>
                                 <p>The following program reads elements into a linked list and prints them.</p>
@@ -520,6 +536,7 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                     List head;
                 enddecl
                 int main()
+                {
                     decl
                         int length, x;
                         List p, q;
@@ -549,6 +566,7 @@ The possible Lvalues are variables or an indexed array variables.  If the Lvalue
                         endwhile;
                         return 1;
                     end  	/* End of main */
+                }
 </pre>  
 
                                 
