@@ -247,7 +247,7 @@ is done by the allocator routines in the shared library (for example, memory all
     <td>2047</td>
   </tr>
 <tr>
-    <td>Code</td>
+    <td>Code<sup style="color:green">**</sup></td>
     <td>2048</td>	
     <td>4095</td>
   </tr> 
@@ -258,7 +258,10 @@ is done by the allocator routines in the shared library (for example, memory all
   </tr>                                    
                                 </table>                            
 <p><span style="color:red">*</span> If Library Flag is set to 1 in the executable header.</p>
-<p><span style="color:blue">&#8224;</span> The Stack Pointer is not initialised to the address 4096 by the eXpOS loader.</p>                                
+<p><span style="color:green">**</span> The eXpOS loader sets IP to the value specified in the program header.</p> 
+<p><span style="color:blue">&#8224;</span> The eXpOS loader does not gurentee that the values of SP and BP are initialised to the base address of the stack region.
+ Hence the executable program must contain code to initialise these registers.</p>                                
+
                                </div>
                           </div>
                         </div>
@@ -485,11 +488,31 @@ Associated with each system call, there is a system call number and interrupt ro
     <td>27</td>		
       <td>17</td>
   </tr>
-        <tr>
+  
+   <tr>
 	  <td>Test</td>
+	  <td>15</td>
+      <td>12</td>	
+  </tr>
+        
+   <tr>
+	  <td>Test1</td>
+	  <td>97</td>
+      <td>16</td>	
+  </tr>      
+  
+   <tr>
+	  <td>Test2</td>
+	  <td>98</td>
+      <td>17</td>	
+  </tr>      
+   
+   <tr>
+	  <td>Test3</td>
 	  <td>99</td>
       <td>18</td>	
-  </tr>                            
+  </tr>
+                              
 </table>
             <p>For details on the specification of the system calls, click <a href="os_spec-files/systemcallinterface.html" target="_blank">here</a>.</p>
 

@@ -114,7 +114,8 @@ of an OS on top of the XSM machine.  The language is minimalistic and consists o
                     Programming using SPL requires an understanding of the underlying <a href="../arch_spec.html" target="_blank" >XSM architecture</a>.  
 <p>
 Each SPL program is considered as a <b>module</b>.  A module consists of a maximum of 1024 words which includes both
-the space allocated for code and data.    
+the space allocated for code and data. Particular class of modules called <b> Interrupt Service Routines </b> can be invoked 
+from the application by the INT instruction. Other modules can only be invoked from the kernel.   
 The SPL compiler translates an SPL source program to a target XSM assembly module. <a href="../support_tools-files/xfs-interface.html" target="_blank" >(See Loading modules into the disk architecture)</a>.  </p>  
 
 <p>This specification defines the syntax and semantics of the basic constructs of the SPL language and also specifies
@@ -537,23 +538,8 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                 <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. 
                                 A module typically contains protected mode code that carries out certain functions as determined by the OS programmer.
                                  The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
-
-                                <p><span class="label label-success label-as-badge">1</span> Each module shall be designed to have a single entry point, which is generally the starting memory address of the module in the memory. 
-                                It is not recommended to transfer control directly into a location within a module from other modules.</p>
-
-                                <p><span class="label label-success label-as-badge">2</span> Arguments to a module (typically includes the function code indicating which function 
-                                within the module is to be invoked, as well as the parameters to that function) 
-                                and return values shall be passed either through registers R0, R1, R2.. or through stack as required. </p>
-                                   
-
-                                <p><code>Note: </code>The SPL compiler given here uses the constants
-                                 (given in <i>splconstants.cfg</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules.
-                                 Expos (optionally) loads these modules into various pre-defined memory pages of the XSM machine on startup. 
-                                 In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding 
-                                 interrupt service routine locations in memory. 
-                                 </p>
  
-                                <p><span class="label label-success label-as-badge">3</span> A module may be entered as a result of: <br/>
+                                <p>A module may be entered as a result of: <br/>
                                <div style="padding-left:70px"> a. Execution of a software interrupt from an application (user mode) program.<br/>
                                 b. Occurence of a hardware interrupt/exception while an application was executing.<br/>
                                 c. Call from another module.<br/>
@@ -561,24 +547,36 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                    </p>
 
                                 <p><b>Case a)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack.
-                                 The return values are also passed through the same stack. The convention is that the application must save the state 
-                                 of its registers before making the call. (For instance, the eXpL compiler will save the caller context in the user stack
+                                 The return values are also passed through the same stack. <b> The convention is that the application must save the state 
+                                 of its registers before making the call </b>. (For instance, the eXpL compiler will save the caller context in the user stack
                                   before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the 
                                   context of the application and can use the registers R0-R15 without saving them. 
                                   However, the application is not expected to save the SP register before the call, 
                                   and the module must save it for future return.</p>
 
-                              <p><b>However, in this case, it is strongly recommended that the module allocates its own stack for local memory allocation and not use the application's stack.</b> This is to avoid potential user level “hacks” into kernel mode interrupt modules through the stack.</p>
+                              <p><b>However, in this case the kernel module must switch to the kernel stack and not use the application's stack.</b>
+                               This is to avoid potential user level “hacks” into the interrupt modules through the stack.</p>
                                 <center>                        <img src="../img/memory_management.png"></center>
 
-                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. The difference here from <i>Case a)</i> is that the application does not have control over the transfer to the interrupt module, and hence would not have saved its context. Thus, in this case, the module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
+                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. 
+                                The difference here from <i>Case a)</i> is that the application does not have control over the transfer to the interrupt module, and hence would not have saved its context. 
+                                <b>Thus, in this case, the module must save the register context of the application in its own stack</b> (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
                                 <p>In this case also the module is expected to allocate its own stack in the memory and not use the application's stack.</p>
 
-                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R0, R1, R2... for
+                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R1, R2... for
 argument_1, argument_2, argument_3...  The return value of the module may be stored in R0.
 This convention is recommended instead of using the stack for passing arguments for improving efficiency. 
 As in the previous cases, the caller must save the values of the registers in use into the stack
 before the call. </p>
+
+
+                                <p><code>Note: </code>The SPL compiler given here uses the constants
+                                 (given in <i>splconstants.cfg</i> file) MOD_0 to MOD_7 as starting address of eXpOS kernel modules.
+                                 Expos kernel loads these modules into various pre-defined memory pages of the XSM machine on startup. 
+                                 In addition to these, all interrupt service routines can be programmed as SPL modules and loaded to the corresponding 
+                                 interrupt service routine locations in memory. 
+                                 </p>
+
 
                             </div>
                           </div>
