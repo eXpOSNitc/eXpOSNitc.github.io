@@ -1088,7 +1088,17 @@ loadi(66,8);</pre>
 		<li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
 		<br> <br>
 		<pre>   ireturn; </pre>
+		  <p> The XSM simulator on execution of the IRET instruction does three main things.
+ 	  <ol>
+ 	    
+ 	   <li>Switches the execution mode from real to protected</li> 
+ 	   <li>Sets the value of IP from top of stack.</li>
+ 	   <li>Transfers control to the corresponding IP value</li> 
+ 	  </ol>
+ 	  
 		</li>	
+		
+		
 		</ol>
  		
 		<b> Making Things Work</b> <br> <br>
@@ -1260,7 +1270,7 @@ SP = 8*512;
 
                       <div class="panel-heading" id="list_stage8">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 : Introduction to interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 : Interrupt Service Routines</a>
                         </h4>
                       </div>
 
@@ -1275,7 +1285,7 @@ SP = 8*512;
                             <div id="lo8" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the XEXE format.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the kernel stack management during hardware ISRs.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1286,14 +1296,19 @@ SP = 8*512;
 		<!-- End Learning Objectives-->
  
 	   <p>An interrupt is a signal to the processor emitted by hardware or software 
-	   to request the kernel services. There are two types of interrupts: hardware interrupts and software interrupts.</p>
+	   to request the kernel services.</p>
 	  <p>
 	  Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. 
  	  There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> 
  	  using which the user programs access the operating system services.</p>
   
- 	  <p> When an interrupt occurs while the XSM simulator is running, 
- 	  it transfers control to specific memory locations corresponding to the interrupt known as Interrupt Service Routines.
+ 	  <p> When an interrupt occurs , the XSM simulator does three main things.
+ 	  <ol>
+ 	   <li>Saves the current value of IP to top of user stack.</li> 
+ 	   <li>Switches the execution mode from protected to real</li> 
+ 	   <li>Transfers control to the corresponding ISR</li> 
+ 	  </ol>
+ 	  Interrupt Service Routines are stored in fixed memory locations.  
  	   
  	  	  
  	  <p>Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled.
