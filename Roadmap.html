@@ -918,8 +918,7 @@ endwhile; </pre>
 	<ol style="list-style-type:decimal;margin-left:2px">
 		<li> The following a program in machine code to compute squares of all numbers lesser than 20. The value of Register R1 during each iteration will hold the result<br> <br>
 
-		In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm . <br>
-		The following code will be the INIT program in this stage. <br> <br>
+		The following code illustrates the INIT program used in this stage. <br> <br>
 
 		<pre>
 
@@ -950,10 +949,33 @@ JMP _L1
 
 _L2:
 
+EXIT
+
 // End of Program.
 		</pre>
 		 
-		 The methods for terminal input and output of user programs have not been studied till now. (Note that IN and OUT are privileged instructions and cannot be used in user mode programs). Hence you have to use the debug mode to view the contents of register R1 to watch the ouput.  <b>Interrupt handlers </b> for input and output from user programs will be discussed in later stages.  
+Since the XFS-Interface does not recognise comments or labels, the XSM code 
+(after <a href="http://silcnitc.github.io/label-translation.html">Label Translation</a>) is given below.
+<br>
+In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm . 
+<br>
+<br>
+		<pre>
+MOV R0, 0
+MOV R1, 0
+MOV R2, 20
+GE R2, R0
+JZ R2, 20
+MOV R1, R0
+MUL R1, R0
+BRKP
+ADD R0, 1
+JMP 4</pre>
+
+		 
+	 The methods for terminal input and output of user programs have not been studied till now. (Note that IN and OUT are privileged instructions and cannot be used in user mode programs). Hence you have to use the debug mode to view the contents of register R1 to watch the ouput.  <b>Interrupt handlers </b> for input and output from user programs will be discussed in later stages.  
+
+<br>
 		
 		 </li>
 		 
@@ -1099,11 +1121,13 @@ load(66,8);</pre>
             </div>
             
             
-            <!-- Stage 7 -->
+            
+         <!-- Stage 7 -->
 
                       <div class="panel-heading" id="list_stage7">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse7"><span class="fa fa-check-square-o"></span>Stage 7 : Introduction to interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse7"><span class="fa fa-check-square-o">
+                          </span>Stage 7 : ABI and XEXE Format
                         </h4>
                       </div>
 
@@ -1127,128 +1151,19 @@ load(66,8);</pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
- 
-	   
- 	  <p>Interrupts are the mechanisms by which the user program can communicate with the kernal. 
- 	  When an interrupt occurs while the XSM simulator is running, it transfers control to specific memory locations corresponding to the interrupt.
- 	  Interrupts can be invoked either by software (through INT instruction) or by hardware. 
- 	  Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. 
- 	  There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> using which th euser programs access the operating system services.</p>
- 	  
- 	  <p>Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled. Upon encountering an interrupt, the machine transfers control to specific locations in memory and changes from user mode to kernel mode. 
- 	  These memory locations contains Interrupt Service Routines. Since interrupt routines are executed in kernel mode, we use SPL to write them.
- 	   Memory pages 4 and 5 contain the Timer Interrupt Routine. 
- 	   Memory page (10 and 11) to (38 and 39) contain Interrupt Routines 4 to 18 (See <a href="os_implementation.html" target="_blank">Memory Organization</a>). Each interrupt routine has 2 pages in memory.</p>
- 	  
- 	  <p><b>NOTE: </b>The interrupt instructions INT 4 to INT 18 can be invoked from an EXpL program using system call interfaces.</p>
- 	  <p>By eXpOS convention, executable files are expected to follow <a href="abi.html" target="_blank">XEXE</a> format. </p>
- 	  <p>In this stage, you will write a sample timer interrupt.</p>
- 	<br>
- 	<b style="font-size:20px">OS Startup Code</b>
-	<p>OS Startupt code used in the previous stage has to be modified to incorporate interrupts and comply with the XEXE format.</p>
-	<ol style="list-style-type:decimal;margin-left:2px">
-	<li>Load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5.
-	<div>
-	<pre>load(4, 17);
-load(5, 18);</pre>
-	</div>
-	</li>	
-	<br>
-	<li>The virtual address space of eXpOS process is divided into 4 parts : Shared Library, Heap, Code and Stack. Shared Library, heap and stack occupy 2 pages each and the code section occupies 4 pages. The first two entries of the page table of eXpOS process should point to the shared library section. The next two entries should point to the heap section, the next four entries to the code section and the last two entries to the stack section.
-	<br>
-	As we are not using the shared library and heap sections now, we will invalidate their entries. Init program code occupies only two memory pages - 65 and 66. Hence, the other two entries allotted for the code section are invalidated. As we are allocating only one page for the stack section, the other entry allotted for stack is also invalidated. 
-	<div>
-	<pre>[PTBR+0] = -1;
-[PTBR+1] = "0000";
-[PTBR+2] = -1;
-[PTBR+3] = "0000";
-[PTBR+4] = -1;
-[PTBR+5] = "0000";
-[PTBR+6] = -1;
-[PTBR+7] = "0000";
-[PTBR+8] = 65;
-[PTBR+9] = "0100";
-[PTBR+10] = 66;
-[PTBR+11] = "0100";
-[PTBR+12] = -1;
-[PTBR+13] = "0000";
-[PTBR+14] = -1;
-[PTBR+15] = "0000";
-[PTBR+16] = 76;
-[PTBR+17] = "0110";
-[PTBR+18] = -1;
-[PTBR+19] = "0000";</pre>
-	</div>
-	</li>
-	<br>
-	<li>The value of stack pointer has to be set to the corresponding logical address. As the stack occupies the eighth page in the virtual address space, value of SP is 8*512;
-	<div>
-	<pre>SP = 8*512;</pre>
-	</div>
-	</li>
-	</ol>
-	<br>
- 	<b style="font-size:20px">Timer Interrupt</b>
- 	
- 	<p> The XSM simulator has a timer which invokes the timer interrupt routine after specific number of instructions. (Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
- 	
- 	<p>Your task is to display "TIMER" every time a timer interrupt is triggered. Create a timer interrupt routine, which prints "TIMER". The Timer Interrupt Routine is loaded to memory by the OS Startup Code. The machine is run without disabling the timer. When a timer interrupt occurs, the control is passed to the timer interrupt routine. This routine prints "TIMER" and returns to the user program.</p>
-
-<p><b>NOTE:</b> Timer Interrupt is triggered at fixed intervals of instructions. The interval can be specified when the XSM simulator is started (see <a href="support_tools-files/xsm-simulator.html"> XSM</a>). Default interval for timer interrupt is 10 instructions.</p>
-
-<p>Detailed instructions to get this done are given below.</p>
-	 <ol style="list-style-type:decimal;margin-left:2px">
-		<li> Write an SPL program to print "TIMER". 
-		<div> 
-                                <pre>
-print "TIMER";
-ireturn;</pre>
-                              </div> 
-		</li>
-		<br>
-		<li>
-		Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_timer.spl
-		</li>
-		<br>
-		<li> 
-		Compile this program using the SPL compiler.
-		</li>
-		<br>
-		<li> 
-		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
-		<div>
-		<pre>cd $HOME/myexpos/xfs-interface
-./xfs-interface
-# load --int=timer $HOME/spl/spl_progs/sample_timer.xsm
-# exit</pre>
-		</div>
-		</li>
-		
-	</ol>
- 	<b style="font-size:20px">INT 10</b>
-	<p>When the execution of the user program is completed, the machine must halt. Interrupt 10 is invoked by the machine when a program finishes execution. So, in order to halt the machine on completion of the init program, we can load a program with only the halt instruction as INT 10.</p>
-	<p>Detailed instructions are as follows.</p>
-	<ol style="list-style-type:decimal;margin-left:2px">
-	<li>Write a program with only the halt instruction.</li>
-	<br>
-	<li>Save this file on your UNIX machine as $HOME/myexpos/spl/spl_progs/halt_prog.spl.</li>
-	<br>
-	<li>Compile this program using the SPL compiler.</li>
-	<br>
-	<li>Load the compiled XSM code as INT 10 into the XSM disk using XFS Interface.
-	<br>
-	
-                          <p><b style="color:#26A65B">Assignment 1 : </b> .</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> .</p>
-                    </div>
-                  </div>
-                  
-                  
-                   <!-- Stage 8 -->
+            
+            
+            
+        <!--========= Stage descrptions ends here ===========-->
+                </div>
+            </div>
+                
+            
+            <!-- Stage 8 -->
 
                       <div class="panel-heading" id="list_stage8">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 : Introduction to software interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 : Introduction to interrupts </a>
                         </h4>
                       </div>
 
@@ -1272,98 +1187,284 @@ ireturn;</pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
+ 
+	   <p>An interrupt is a signal to the processor emitted by hardware or software 
+	   to request the kernel services. There are two types of interrupts: hardware interrupts and software interrupts.</p>
+	  <p>
+	  Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. 
+ 	  There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> 
+ 	  using which the user programs access the operating system services.</p>
+  
+ 	  <p> When an interrupt occurs while the XSM simulator is running, 
+ 	  it transfers control to specific memory locations corresponding to the interrupt known as Interrupt Service Routines.
+ 	   
+ 	  	  
+ 	  <p>Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled.
+ 	   Since interrupt routines are executed in kernel mode, we use SPL to write them. 
+ 	   Each interrupt routine occupies 2 pages in the memory.
+ 	   </p>
+ 	    	  
+ 	  <p>In this stage, you will write a sample timer interrupt.</p>
+ 	  
+ 	<br>
+ 	<b style="font-size:20px">Modifications to OS Startup Code </b>
+ 	
+	<p>OS Startupt code used in the previous stage has to be modified to incorporate interrupts.</p>
+	<ol style="list-style-type:decimal;margin-left:2px">
+	<li>Load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5.
+	<div>
+	<pre>load(4, 17);
+load(5, 18);</pre>
+	</div>
+	</li>	
+	<br>
+	
+	<li>  In eXpOS, each process has a kernel stack in addition to user stack. 
+	The space for kernel stack is allocated in the <a href="os_design-files/process_table.html#user_area">User Area</a> 
+	page of the process. We maintain a seperate stack for the kernel operations to prevent user-level "hacks" into kernel. 
+Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
+ of the current process. User Area page is allocated in the physical page number 80.
+	<pre>
+[PROCESS_TABLE + 11] = 80;</pre>
+	</li>
+	<li>
+	Set the current PID field in the <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>.
+	<div>
+	<pre>
+[SYSTEM_STATUS_TABLE + 1] = 0;</pre></div>
+	</li>
+	</ol>
+	<br>
+ 	<b style="font-size:20px">Timer Interrupt</b>
+ 	
+ 	<p> The XSM simulator has a timer which invokes the timer 
+ 	interrupt routine after a specific number of instructions. 
+ 	(Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
+ 	
+
+<p><b>NOTE:</b> Timer Interrupt is triggered at fixed intervals of instructions. 
+The interval can be specified when the XSM simulator is started 
+(see <a href="support_tools-files/xsm-simulator.html"> XSM</a>). 
+Default interval for timer interrupt is 10 instructions.</p>
+
+<p><b>Read and understand the <a> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
+
+<p> Your task is to display "TIMER" every time a timer interrupt is triggered. 
+ 	You will create a timer interrupt routine, which prints "TIMER". </p>
+ 	
+<p>Detailed instructions to get this done are given below.</p>
+	 <ol style="list-style-type:decimal;margin-left:2px">
+		 
+		 
+		<li> 
+		Obtain the process id of the currently running process from <a>System Status Table</a>.
+		This value can be used to get its <a>Process Table</a> entry.
+		Save the current value of User SP into the corresponding Process Table entry.
+		
+		<b>NOTE: </b>Do not use registers to store intermediate results at this point as the user context is not saved yet. 
+		<div> 
+
+ <pre>
+[PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
+</pre> </div> </li>
+
+<li> Set the SP to beginning of the kernel stack.
+
+<div>
+	
+<pre>
+// Setting SP to UArea Page number * 512 - 1
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
+</pre> </div> </li>
+
+<li> Save the user context to the kernel stack using the <a>Backup</a> instruction.
+
+<div>
+	
+<pre>
+backup;
+</pre> </div> </li>
+
+<li> Print "timer".
+
+<div>
+	
+<pre>
+print "timer";
+</pre> </div> </li>
+
+<li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table before returning 
+to user mode.
+
+<div>
+	
+<pre>
+restore;
+SP = [PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13];
+</pre> </div> </li>
+
+<li> Use ireturn statement to switch to user mode.
+<div>
+	
+<pre>
+ireturn;
+</pre>
+                              </div> 
+		</li>
+		<br>
+		<li>
+		Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_timer.spl
+		</li>
+		<br>
+		<li> 
+		Compile this program using the SPL compiler.
+		</li>
+		<br>
+		<li> 
+		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
+		<div>
+		<pre>cd $HOME/myexpos/xfs-interface
+./xfs-interface
+# load --int=timer $HOME/spl/spl_progs/sample_timer.xsm
+# exit</pre>
+		</div>
+		</li>
+		
+	</ol>
+ 	
+    </div>
+    </div>              
+                   <!-- Stage 9 -->
+
+                      <div class="panel-heading" id="list_stage9">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9 : Introduction to software interrupts </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse9" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
+                            <div id="lo9" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the XEXE format.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->
+		
 		<b style="font-size:20px">Modifying the user program</b>
- 	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be modified to incorporate the system call to print the result to the terminal. After the result of computation is stored in R1, INT 7 has to be invoked to write the result to the terminal.</p>
+ 	<p><b>Read and understand the <a href="sete"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
+ 	
+ 	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be
+ 	 modified to incorporate the system call to print the result to the terminal. 
+ 	 After the result of computation is stored in R1, INT 5 has to be invoked to write the result to the terminal.</p>
  	<ol style="list-style-type:decimal;margin-left:2px">
+	<li> Save the context of the registers in use (R0,R1,R2 etc) into the user stack.
+	<pre>
+PUSH R0
+PUSH R1
+PUSH R2</pre>
+
+	</li>
 	<li>Push the system call number for write on the stack.
 	<div>
-	<pre>PUSH 5</pre>
+	<pre>
+MOV R0, 5
+PUSH R0</pre>
 	</div>
 	</li>
 	<br>
 	<li>Push the value -2 on the stack to indicate that the word has to be printed to the terminal.
 	<div>
-	<pre>PUSH -2</pre>
+	<pre>
+MOV R0, -2		
+PUSH R0</pre>
 	</div>
 	</li>
 	<br>
-	<li>The word to be printed is stored in register R1. Push the word on the stack.
+	<li>The word to be printed is stored in register R1. Push the word on to the stack.
 	<div>
 	<pre>PUSH R1</pre>
 	</div>
 	</li>
 	<br>
-	<li>By convention, all system calls have 3 arguments. As we do not have a third argument in this case, pushed a random value on the stack.
+	<li>By convention, all system calls have 3 arguments. 
+	As we do not have a third argument in this case, push R0 on to the stack.
 	<div>
-	<pre>PUSH R1</pre>
+	<pre>PUSH R0</pre>
 	</div>
 	</li>
 	<br>
 	<li>Allocate space for storing the return value on the stack.
 	<div>
-	<pre>PUSH R1</pre>
+	<pre>PUSH R0</pre>
 	</div>
 	</li>
 	<br>
-	<li>Invoke interrupt 7.
+	<li>Invoke interrupt 5.
 	<div>
-	<pre>INT 7</pre>
+	<pre>INT 5</pre>
 	</div>
 	</li>
 	<br>
+	
 	<li>Pop out all the values which were pushed on the stack prior to the system call.
 	<div>
-	<pre>POP R1</pre>
+	<pre>POP R1
+POP R1
+POP R1
+POP R1
+POP R1</pre>
 	</div>
+	</li>
+	<li>
+	Restore the register context from the stack.
+	<div>
+	<pre>
+POP R2
+POP R1
+POP R0</pre></div>
 	</li>
 	</ol>
 	<br>
 	<p>The resulting program is given below.
 	<div>
-	<pre>//Program to calculate Squares of first 20 nums
-
-//Initialising R0(n) and R1(n^2)
+	<pre>
+######Write the chenged pgm from ABI###########
 MOV R0, 0
-
-_L1:
-
-// Check for n < 20
-MOV R16, 20
-GE R16, R0
-JZ R16, _L2
-
-// Computing n^2 Store in R1
-MOV R16, R0
-MUL R16, R0
-MOV R1, R16
-PUSH 5
-PUSH -2
-PUSH R1
-PUSH R1
-PUSH R1
-INT 7
-POP R1
-POP R1
-POP R1
-POP R1
-POP R1
-
-// n = n + 1
+MOV R1, 0
+MOV R2, 20
+GE R2, R0
+JZ R2, 20
+MOV R1, R0
+MUL R1, R0
+BRKP
 ADD R0, 1
-
-JMP _L1
-
-_L2:
-
-// End of Program.
 	</pre>
 	</div>
 	</p>
 	<br>
 	
 	<br>
-	<b style="font-size:20px">INT 7</b>
-	<p>The write operation is handled by Interrupt 7. In user mode, logical addresses are translated to physical address by the machine using its <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>. Since interrupts are executed in kernel mode, the actual physical address is used to access memory locations. The word to be printed is passed through the stack to the interrupt routine. To access this word, the interrupt routine must calculate the physical address of SP. The word to be printed is then retrieved from the stack and written to the terminal using the OUT instruction. </p>
+	<b style="font-size:20px">INT 5</b>
+	<p>The write operation is handled by Interrupt 5. 
+	In user mode, logical addresses are translated to physical address by the machine using its
+	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
+	  Since interrupts are executed in kernel mode, the actual physical address is used to access memory 
+	  locations. The word to be printed is passed through the stack to the interrupt routine.
+	 To access this word, the interrupt routine must calculate the physical address of SP. 
+	 The word to be printed is then retrieved from the stack and written to the terminal using the OUT instruction. </p>
 	
 	<p>Detailed instructions for doing so are given below.</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
