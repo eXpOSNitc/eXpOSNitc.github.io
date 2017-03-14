@@ -999,10 +999,11 @@ The xfs-interface will store squares.xsm program to disk blocks 7-8. <br>
 		 The blocks 7-8 from disk is to be loaded to the memory pages 65-66 by the OS startup Code. 
 		 (See <a href="os_implementation.html" target="_blank"> Memory Organization and Disk Organization </a> ). <br> <br>
 		 
-		 <pre>load(65,7);
-load(66,8);</pre>
-
+		 <pre>loadi(65,7);
+loadi(66,8);</pre>
+<p> <b>Note:</b> loadi statement is used instead of load statement everywhere in the OS Startup code. Explain Why?</p>
 		 </li>
+	
 		 
 		 <li>
 		<a href ="os_design-files/process_table.html#per_page_table" target="_blank"> Page Table </a> for INIT must be
@@ -1141,8 +1142,8 @@ load(66,8);</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo7">Learning Objectives</a>
                             <div id="lo7" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the XEXE format.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Application Binary Interface(ABI) of eXpOS.</li>
+
                             </ul>                                  
                                      
                             </div>
@@ -1151,8 +1152,104 @@ load(66,8);</pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
+
+				Read and Understand the eXpOS <a href="abi.html"> Virtual Address Space Model </a> 
+				and <a href="abi.html"> XEXE Executable File Format </a> before proceeding.
+				
+				<p>
+				In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
+				</p>
             
+				<b>User Program</b>
+				<p>The first 8 lines are loaded as the header into the first 8 words on the disk by the xfs-interface.
+				The remaining lines are loaded as regular instructions (Each Instruction occupying 2 word in disk).
+				Note that the second line indicated the starting IP which is set to 2056. The subsequent labels are 
+				translated w.r.t this starting IP.
+				</p>
+				 
+				<pre>
+0
+2056
+0
+0
+0
+0
+0
+0					
+MOV R0, 0
+MOV R1, 0
+MOV R2, 20
+GE R2, R0
+JZ R2, 2076
+MOV R1, R0
+MUL R1, R0
+BRKP
+ADD R0, 1
+JMP 2060</pre>
+      <br>      
+            <b>Modifications to OS Startup Code</b><br><br>
+            <ol style="list-style-type:decimal;margin-left:2px">
+				<li> Load Library Code from disk to memory</li>
+				<pre>
+loadi(63,13);
+loadi(64,14);</pre>
+				<li> Modify The Page table entries according to ABI 
+				<!-- Remove if too spoonfeeding -->
+				<pre>
+//Library
+[PTBR+0] = 63;
+[PTBR+1] = "0100";
+[PTBR+2] = 64;
+[PTBR+3] = "0100";
+
+//Heap
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+
+//Code
+[PTBR+8] = 65;
+[PTBR+9] = "0100";
+[PTBR+10] = 66;
+[PTBR+11] = "0100";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+
+//Stack
+[PTBR+16] = 76;
+[PTBR+17] = "0110";
+[PTBR+18] = 77;
+[PTBR+19] = "0110";					
+</pre>
+				</li>
+<li>
+	Read the second word and initialise ip to that
+	<pre>
+SP = 8*512; 
+[76*512] = [65 * 512 + 1]; 	
+</pre>
+</li>
+			</ol>
             
+  
+  <br>
+  <b>Making Things Work </b><br><br>
+            <ol style="list-style-type:decimal;margin-left:2px">
+				<li>
+					Compile and load the modified OS startup Code
+				</li>
+				
+				<li>
+					Load the modified user program
+				</li>
+				
+				<li>
+					Run the machine in debug mode.
+				</li>
+			</ol>	
             
         <!--========= Stage descrptions ends here ===========-->
                 </div>
