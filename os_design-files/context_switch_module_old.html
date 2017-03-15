@@ -115,36 +115,16 @@
 				 
            
 			<h4><b>Algorithm:</b></h4>
-			<p> Obtain the PID current process from System Staus Table.</p>
-			<p ><a data-toggle="collapse"   href="#collapse11" >Save the context of the current process into its Process Table entry.</a></p>
-            <div id="collapse11" class="panel-collapse collapse">
-				<p style="text-indent: 4em;">Obtain the process table entry as PROCESS_TABLE + currentPID * 16.</p>
-				<p style="text-indent: 4em;">Save SP % 512 in the kernel stack pointer field of the Process Table.</p>
-				<p style="text-indent: 4em;">Save PTBR and PTLR into the corresponding fields in the Process Table.</p>
-    
-			</div>
-			<p><a data-toggle="collapse"   href="#collapse14" >Find the next process to schedule using Round Robin scheduling algorithm.</a></p>
-			<div id="collapse14" class="panel-collapse collapse">
-				<p style="text-indent: 4em;">Iterate through the process table entries to find a process in READY or CREATED state.</p>
-			</div>
-			<p ><a data-toggle="collapse"   href="#collapse13" >Restore the context of the new process from its Process Table entry.</a></p>
-            <div id="collapse13" class="panel-collapse collapse">
-				<p style="text-indent: 4em;">Obtain User Area Page number and kernel stack pointer value from Process Table entry 
-				of the new process.</p>
-				<p style="text-indent: 4em;">Set SP as User Area Page number + Kernel Stack pointer. </p>
-				<p style="text-indent: 4em;">Restore PTBR and PTLR from the corresponding fields in the Process Table entry.</p>
-    
-			</div>
-			<p>Set the PID of the new process in the current PID field of System Status Table.</p>
-			<p><a data-toggle="collapse"   href="#collapse15" >Check if the new process is in CREATED state.</a></p>
-			<div id="collapse15" class="panel-collapse collapse">
-				<p style="text-indent: 4em;">Set SP as User SP from its Process Table entry.</p>
-				<p style="text-indent: 4em;">Set its state as RUNNING.</p>
-				<p style="text-indent: 4em;">Ireturn.</p>
-			</div>
+			<p> Saves the context of the current process.</p>
+			<p>Set the process to the context of the “next pid” in the system status table.</p>
+			<p>Update “next pid” to the next process which is “schedulable”  (that is stack is in memory).</p>
+			<p>All except SP, BP and IP are set.</p>
+			<p>If the disk controller is free and memory is available, a swap in can be initiated to any process which is skipped because of “non-schedulability”.</p>
+			<p>If nothing better, idle process will be set.</p>
+			<p><b>Note: </b>Actual scheduling is not done here. Only set up work (except for SP, and IP) is completed.	Actual context swich will be done from the interrupt handler/timer, which typically invokes this module before the context switch.  </p>
+			
                            
-            <p>Set the state of new process as RUNNING.</p>      
-            <p>return.</p>
+                  
         	</div>
         </div>
 		
