@@ -1655,6 +1655,86 @@ ireturn;</pre>
  
           </div>
         </div>
+        
+     
+
+     <!-- Stage 10 -->
+
+                      <div class="panel-heading" id="list_stage8">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>
+                          Stage 10 : MultiProgramming</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse10" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo10">Learning Objectives</a>
+                            <div id="lo10" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement round robin scheduling.</li>
+      
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->    
+        
+        	<p> Multiprogramming refers to running more than one process simultaneously. In this stage, you will learn how to run two processes - one to print even numbers and one to print odd numbers - concurrently on the machine.</p> 
+
+        	<p>In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual function of timer interrupt routine is to preemt the current running process and to transfer execution to another ready processes. 
+        	In this stage we will modify the timer ISR to implemt this functionality. 
+        	</p>
+        
+        	 
+        	 <b>Modification to Timer Interrupt Routine</b>
+
+        	 <p> eXpOS supports module calls in kernel mode due to the availablilty of kernel stack. 
+        	XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. 
+        	We will modify the timer interrupt routine so that it calls the scheduler module. </p>
+        	
+        	<p>Read and Understand <a href="os_design-files/stack_description.html">Kernel Stack Managemnt during Module calls </a> before proceeeding. </p> 
+
+        	<p>	Modify timer interrupt routine to set the state of the current process to ready 
+        		and call the scheduler module (Module 5). <br> 
+        		See the full algorithm <a href="os_design-files/timer.html">here</a>.
+        	</p>
+
+
+		<b> Scheduler Module </b>
+
+			<p>
+				See the full algorithm <a href="os_design-files/context_switch_module.html">here</a>.
+			</p>    
+
+		<b> Modification to OS Startup code </b>
+		
+		The OS startp code must be modified to initialise kernel data structures for both processes.
+
+		<ol style="list-style-type:decimal;margin-left:2px">
+				<li>Load the odd program as init and the even program as an executable
+				<pre>
+load --init < path to odd.xsm >
+load --exec < path to even.xsm > </pre> 
+				Dump the <a href="os_design-files/disk_ds.html#inode_table"> inodetable </a> using <i>dump --inodetable</i> command in xfs-interface. Check the adress of first data block. Load the disk block to a free page in the memory, say 
+
+
+				</li>
+				<li></li>
+
+		</ol>
+
+        </div>
+        </div>
+
       </div>
       
       
