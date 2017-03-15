@@ -1480,7 +1480,7 @@ ireturn;
  	
  	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be
  	 modified to incorporate the system call to print the result to the terminal. 
- 	 After the result of computation is stored in R1, INT 5 has to be invoked to write the result to the terminal.</p>
+ 	 After the result of computation is stored in R1, INT 7 has to be invoked to write the result to the terminal.</p>
  	<ol style="list-style-type:decimal;margin-left:2px">
 	<li> Save the context of the registers in use (R0,R1,R2 etc) into the user stack.
 	<pre>
@@ -1524,9 +1524,9 @@ PUSH R0</pre>
 	</div>
 	</li>
 	<br>
-	<li>Invoke interrupt 5.
+	<li>Invoke interrupt 7.
 	<div>
-	<pre>INT 5</pre>
+	<pre>INT 7</pre>
 	</div>
 	</li>
 	<br>
@@ -1553,24 +1553,58 @@ POP R0</pre></div>
 	<p>The resulting program is given below.
 	<div>
 	<pre>
-######Write the chenged pgm from ABI###########
+0
+2056
+0
+0
+0
+0
+0
+0					
 MOV R0, 0
 MOV R1, 0
 MOV R2, 20
 GE R2, R0
-JZ R2, 20
+JZ R2, 2076
 MOV R1, R0
 MUL R1, R0
-BRKP
+
+PUSH R0
+PUSH R1
+PUSH R2
+
+MOV R0, 5
+PUSH R0
+MOV R0, -2		
+PUSH R0
+PUSH R1
+PUSH R0
+PUSH R0
+
+INT 7
+
+POP R1
+POP R1
+POP R1
+POP R1
+POP R1
+
+POP R2
+POP R1
+POP R0
+
 ADD R0, 1
+JMP 2060
+
+INT 10
 	</pre>
 	</div>
 	</p>
 	<br>
 	
 	<br>
-	<b style="font-size:20px">INT 5</b>
-	<p>The write operation is handled by Interrupt 5. 
+	<b style="font-size:20px">INT 7</b>
+	<p>The write operation is handled by Interrupt 7. 
 	In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
 	  Since interrupts are executed in kernel mode, the actual physical address is used to access memory 
