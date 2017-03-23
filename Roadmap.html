@@ -920,37 +920,36 @@ endwhile; </pre>
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-		<b> User Program  </b> <br> <br>
+    <p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. 
+
+    In this stage, first you will write a user program in assembly language and load it as the INIT program using XFS-Interface.
+
+    You will then write the OS startup code such that it loads the INIT program into the memory and initiate its execution at the time of system startup.
+
+    <br> <br>
 		
-		<p> In user mode, the machine translates logical addresses
-		 to physical addresses using the <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
-		</p>
+    <b> User Program  </b> <br> 
 		
-		<p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. The OS startup code must load this program into the memory for execution and initiate its execution at the time of system startup. 
-  </p>
-	<p>
-		In this stage, you will write a user program in assembly language. 
-		You will then load it as the INIT program using XFS-Interface into 
-		blocks 7 and 8 of the XFS disk. 
-		</p>
-		
+   
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li>The following code illustrates the INIT program used in this stage. It computes squares of all numbers lesser than 20. 
+		<li>The following code illustrates the INIT program used in this stage. It computes squares of first 5 numbers. 
 		The value of Register R1 during each iteration will hold the result.<br> <br>
 
 		<pre>
 
-//Program to calculate Squares of first 20 numbers
+//Program to calculate Squares of first 5 numbers
 
-//Initialising R0(n) to 0
-MOV R0, 0
-MOV R1, 0
+// R0 will hold value of n
+// R1 will hold value of n^2
+
+//Initialising R0(n) to 1
+MOV R0, 1
 
 _L1:
 
-// Check for n < 20
-MOV R2, 20
-GE R2, R0
+// Exit loop if n > 5
+MOV R2, 5
+GT R2, R0
 JZ R2, _L2
 
 // Computing n^2 in R1
@@ -971,37 +970,56 @@ EXIT
 
 // End of Program.
 		</pre>
-		 
+
+<!--		 
 Since the XFS-Interface does not recognise comments or labels, the XSM code 
 (after <a href="http://silcnitc.github.io/label-translation.html">Label Translation</a>) is given below.
 <br>
-In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm . 
-<br>
-<br>
-		<pre>
-MOV R0, 0
-MOV R1, 0
-MOV R2, 20
-GE R2, R0
-JZ R2, 20
-MOV R1, R0
-MUL R1, R0
-BRKP
-ADD R0, 1
-JMP 4
-INT 10</pre>
+-->
 
-		 
+<p> While executing in the user mode, the machine uses logical addressing scheme. The machine translates logical addresses
+     to physical addresses using the <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation mechanism</a>.
+
+In this stage, we will use a simple logical memory model where the first two logical pages are alloted for code (address 0 - 1023) and the third logical page is alloted for the stack (address 1024 - 1535). The actual logical memory model used in eXpOS is different and will be explained in the later stages.
+
+</p>
+
+<p>
+The above code contains labels that are not recognised by the XSM machine. 
+
+Since the code section occupies first two pages according to our memory model, the code address begins from logical address 0 
+. Hence, we will translate the labels accordingly.
+
+</p>
+
+
+The code is given in bold and the corresponding addresses are added for reference. In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm  
+
+
+<br> <br>
+		<pre>
+0<b>   MOV R0, 0 </b>
+2<b>   MOV R2, 5</b>
+4<b>   GT R2, R0</b>
+6<b>   JZ R2, 18</b>
+8<b>   MOV R1, R0</b>
+10<b>  MUL R1, R0</b>
+12<b>  BRKP</b>
+14<b>  ADD R0, 1</b>
+16<b>  JMP 2</b>
+18<b>  INT 10</b></pre>
+
+
+<p>
+
 	 The methods for terminal input and output of user programs have not been studied till now. 
 	 (Note that IN and OUT are privileged instructions and cannot be used in user mode programs). 
 	 Hence you have to use the debug mode to view the contents of register R1 to watch the ouput. 
 	  <b>Interrupt handlers </b> for input and output from user programs will be discussed in later stages.  
-
-<br>
+</p>
 		
 		 </li>
-		 
-		 <br>
+
 		
 		<li> Load this file to the XSM disk as the INIT program using XFS interface.
 		<pre># load --init $HOME/myexpos/expl/expl_progs/squares.xsm</pre>
@@ -1010,7 +1028,7 @@ The xfs-interface will store squares.xsm program to disk blocks 7-8. <br>
 </li>  
 		</ol> <br>
 		
-<b> INT 10</b>  <br> <br>
+<b> INT 10</b>  <br> 
 
 <p>
 At the end of the program, a user program calls the exit system call to return control back to the operating system.
@@ -1127,14 +1145,14 @@ loadi(23,36);</pre>
     
       <li>The instruction pointer is set to the value at the top of the user stack (we have set SP to the logical address of the top of the stack)<br>
 
-      <li> Decrement the value of SP by 1 </li>
+      <li> The value of SP is decremented by 1 </li>
     <br>
       </ol>
     
 
     The code of this program must execute from logical address 0.  
-    Hence IP or the instruction pointer needs to be set to 0 before it starts executing. 
-    As IP cannot be set explicitly, put the value 0 at the top of the stack, and IRET instruction will implicitly 
+    Hence IP or the instruction pointer needs to be set to 0 before the user program starts executing. 
+    As IP cannot be set explicitly, put the value of starting IP 0 at the top of the stack, and IRET instruction will implicitly 
     set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
     to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
     Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 at the top of the stack.
@@ -1158,7 +1176,8 @@ loadi(23,36);</pre>
 
 Q. What happens if exception in kernel mode?
 A- Machine halts
- 		
+
+<br> <br> 		
 		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
 		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.		<pre> cd $HOME/myxos/spl
@@ -1183,8 +1202,10 @@ A- Machine halts
 		
 <br>
 
-	
+Exercise : Change virtual memory model.	
 		
+    <br>
+
 	</ol>
 		
 
