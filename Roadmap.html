@@ -1253,54 +1253,57 @@ Exercise : Change virtual memory model.
         and <a href="abi.html"> XEXE Executable File Format </a> before proceeding further.</b>
         <br><br>
         <b>Modifying INIT</b>
+        
         <p>The INIT program must be modified to comply with the XEXE executable format. 
         The executable format stipulates that the first 8 words of the file must contain a header.
         The rest of the file contains the program instructions.  The OS is expected to load the file
         into logical pages starting from page 4.  Thus the first disk block of the program is loaded 
         into logical address starting from 2048,
         second (if the file size exceeds 512 words) to logical addresses starting from 2560 
-        and so forth. <br><br>
+        and so forth. </p>
         
+        <p>
         Since the first instruction starts after the 8 word header, the first instruction in the
         program will be loaded into memory address 2056. Since each instruction requires two words,
         the second instruction will start at memory address 2058 and so on.  Thus the jump addresses
-        in the INIT program must be designed with this in mind.  Here is the INIT program:   
+        in the INIT program must be designed with this in mind.  
+</p>
+    <p>    The INIT program complying to ABI is given below. The code is given in bold and the corresponding addresses are added for reference.   
       
         </p>
          
         <pre>
-0
-2056
-0
-0
-0
-0
-0
-0         
-MOV R0, 0
-MOV R1, 0
-MOV R2, 20
-GE R2, R0
-JZ R2, 2076
-MOV R1, R0
-MUL R1, R0
-BRKP
-ADD R0, 1
-JMP 2060
-INT 10</pre>
-      <br>      
+2048<b>  0</b>
+2049<b>  2056</b>
+2050<b>  0</b>
+2051<b>  0</b>
+2052<b>  0</b>
+2053<b>  0</b>
+2054<b>  0</b>
+2055<b>  0</b>         
+2056<b>  MOV R0, 0</b>
+2058<b>  MOV R2, 5</b>
+2060<b>  GT R2, R0</b>
+2062<b>  JZ R2, 2076</b>
+2064<b>  MOV R1, R0</b>
+2066<b>  MUL R1, R0</b>
+2068<b>  BRKP</b>
+2072<b>  ADD R0, 1</b>
+2074<b>  JMP 2060</b>
+2076<b>  INT 10</b></pre>
+  <br>      
             <b>Modifications to OS Startup Code</b><br>
             <ol style="list-style-type:decimal;margin-left:2px">
         <li> Load Library Code from disk to memory</li>
         <pre>
 loadi(63,13);
 loadi(64,14);</pre>
-        <li> Modify The Page table entries according to ABI 
+        <li> Modify The Page table entries according to ABI. 
         
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
 The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 19. 
-Since the total address space of a process is 10 pages, PTLR regiser must be set to value 10. 
+
 <br><br>
 
 The following code sets page table entries for logical page 4 (of the code) and logical page
@@ -1339,9 +1342,18 @@ The following code sets page table entries for logical page 4 (of the code) and 
 </pre>
         </li>
 <li>
-  Read the second word and initialise ip to that
+Since the total address space of a process is 10 pages, PTLR regiser must be set to value 10. 
+<pre>PTLR = 10;</pre>
+</li>
+
+<li>
+  Initialise IP to the second word in the header. Since the first code page is loaded into memory page 65, 
+  the address of the second word in header is calculated as (65 * 512) + 1. This value is stored to the top of the user stack. 
+  The machine on executing IRET instructions pops this value from the stack and sets IP to that value. 
+
   <pre>
 SP = 8*512; 
+
 [76*512] = [65 * 512 + 1];  
 </pre>
 </li>
