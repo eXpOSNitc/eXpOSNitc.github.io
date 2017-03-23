@@ -121,17 +121,17 @@
 
               <p>A hardware interrupt/exception can occur while an application program is executing.
               Since the application does not have control over the transfer 
-               to the interrupt module, it would not have saved its context. Thus in this case the kernel 
-               module must save the register context of the application in its own stack before using the 
-               registers and must restore the context before returning to the application.  
+               to the interrupt module, it would not have saved its context. </p>
+               <p>	
+               Thus in this case the Interrupt Service Routine must save the register context of the application in its own stack, perform the required operations and must restore the context before returning to the application.  
                The <b> <a href="process_table.html#user_area" target="_blank"> kernel stack</a> </b> is used to store the execution context of the user process. 
-               This context is restored before the return from the kernel module.  
                (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
 				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
 				restore</a> instructions of the XSM machine facilitate this).</p>
 	      
 	      
-
+			<b> Actions done by the XSM machine on receiving an interrupt/ exception </b>
+			<br> <br>		
                On Receiving an interrupt or exception, the XSM machine does 3 things: 
                	<br>
               &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pushes the return address (IP+2 value) to the user stack. </p>

@@ -107,39 +107,36 @@
          	
          <br><br><br><br>
 		<div class="heading">
-         <h2 style="font-size:27px">Kernel Stack Management in system calls, interrupts and kernel modules</h2>
+         <h2 style="font-size:27px">Kernel Stack Management during System Calls</h2>
 		 <br><br>
 		</div>
          <br>
-         <p>This document is a tutorial explaining how the eXpOS kernel must manage the kernel stack.  The document is
-specific to the implementation of eXpOS on the XSM machine. 
-	There are three different situations where the eXpOS kernel needs to do careful stack management:</p>
-	<br>
-	<p>&nbsp;&nbsp;&nbsp;a. A user program invokes a system call</p>
-	<p>&nbsp;&nbsp;&nbsp;b. An Exception / Interrupt occurs when a user process is executing</p>
-	<p>&nbsp;&nbsp;&nbsp;c. A kernel module invokes another kernel module</p>
-	</p>
-	
-	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
-	<p><b>Important Note</b>: Whenever the kernel stack pointer of a process is saved in the KPTR field of the process table, the <b>offset of SP register within the user area page </b>will be stored (and <b>not</b> the physical address of the kernel stack pointer). The page number of the user area page is stored in the USER AREA PAGE NUMBER field in the process table. Thus, the value of the offset can be calculated by the fomula <i>offset = SP – (512 * USER AREA PAGE NUMBER)</i>.</p>
-	<p>The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. Thus, if the user area page is swapped out, it can be swapped back later to a different physical memory page.</p>
-     
+         <p>This document is a tutorial explaining how the eXpOS kernel must manage the kernel stack during system calls.  The document is specific to the implementation of eXpOS on the XSM machine. 
+	     
      
      </div>
 
       <div class="container">
          <div class="row">
               	
-              <h3>System Call Invocation</h3>
-<br>
+            
 <p>An application program must push the input parameters to a system call through the user stack.  The return value of the system
-call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.</p>
-<p>If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
-stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  The system call module must be designed so as to access these arguments from the user stack of the process, do the processing
+call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.
+
+If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
+stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  
+</p>
+
+<p>
+The system call module must be designed so as to access these arguments from the user stack of the process, do the processing
 required and store the return value into the appropriate place in the user stack before returning to the user mode.  
 The system call module must also change the stack to its own (kernel) stack upon entry and switch back to the user stack at the time
 of return.</p>
-<p> Please note that the description below does not apply to the <a href="timer_stack_management.html" target="_blank">stack management during context switch</a> which is discussed elsewhere.</p>
+
+<p>
+Since the ... no save context like hardware ISR
+</p>
+
 <br>
 <p style="margin:0"><h4><b> 1. Actions done by the user process before executing an INT instruction </b></h4></p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Push the registers in use to the stack</p> 
@@ -316,386 +313,9 @@ POP System_Call_Number	// Pop and discard the
 </div>
 <br><br><br><br>
 </div>
-<!--Exception/Interrupt Handler-->
-<div class="container">
-         <div class="row">
-              	
-              <h3>Exception/Interrupt Handler</h3>
-              <br>
-              <p>A hardware interrupt/exception can occur while an application program is executing.
-               It can be the exception handler, timer interrupt routine, disk interrupt routine or the 
-               console interrupt routine. Since the application does not have control over the transfer 
-               to the interrupt module, it would not have saved its context. Thus in this case the kernel 
-               module must save the register context of the application in its own stack before using the 
-               registers and must restore the context before returning to the application.  
-               The kernel stack is used to store the execution context of the user process. 
-               This context is restored before the return from the kernel module.  
-               (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
-				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
-				restore</a> instructions of the XSM machine facilitate this).</p>
-	      <p> NOTE: If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
-              <p> <i> The XSM machine pushes the return address (IP+2 value) to the user stack before transferring the control to the Interrut Service Routine</i> <p>
-              <br>
-              <p style="margin:0"><h4><b> 1. Actions done by the kernel upon entering the interrupt service routine </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Save the values of the machine registers in the kernel stack using BACKUP machine instruction.  </p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the interrupt routine code</p>
-		<br> <br>
-		<div class="container-fluid fig_code">
-              <p><b>Execution context before an interrupt/exception:</b></p><br>
-              <img src="../img/Stack_Management/execn_context_b4_interrupt.png" width="60%">
-		</div>
-<br><br><br>
- <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-7">
-     <img  src="../img/Stack_Management/aftr_interrupt_step1a.png" width="95%"></img>
-    </div>
-    <div class="col-sm-5">
-<pre>
-<b> Pseudo code</b>	
-<code>
-....
-MOV UPTR, SP	// Save the current SP register to 
-		   User stack pointer field of the 
-		   process table.
-MOV SP, User Area Page Number*512 + KPTR
-	// Set kernel stack
-		   
-</code>
-<i> (Note: Registers should not be used explicitly here
-    for calculations as they are not backed up yet.)</i>
-</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1.a. - Switch from the user stack to the kernel stack</b>
-		
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br><br><br>
-
-
- <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-7">
-     <img src="../img/Stack_Management/aftr_interrupt_step1b.png" width="95%"></img>
-    </div>
-    <div class="col-sm-5">
-    <pre>
-<b> Pseudo code</b>
-<code>
-....
-BACKUP		// machine instruction to save the 
-		   register context
-....
-
-</code>
-	
-	</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1.{b,c} - Use the BACKUP machine instruction to save the values of the machine registers in the kernel stack and transfer control to the interrupt routine code</b>  
-	
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-
-
-<br>
-      <p style="margin:0"><h4><b> 2. Actions done by the kernel before returning from the interrupt routine </b></h4></p>
-        &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Restore the values of the machine registers using RESTORE machine instruction</p> 
-        &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the logical address of the current kernel stack top to the KPTR field </p>
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Set the value of SP to the top of the user stack  </p> 
-	&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Transfer control back to the user process</p>
-
-<br><br>
-	   <div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-7">
-     <img src="../img/Stack_Management/aftr_interrupt_step2a.png" width="95%"></img>
-    </div>
-    <div class="col-sm-5">
-    <pre>
-<b> Pseudo code</b>
-<code>
-....
-RESTORE		// machine instruction to restore
- 		   the register context
-....
-
-</code>
-	
-	</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2.a - Use the RESTORE machine instruction to restore the values of the machine registers</b>  
-	
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br><br><br><br>
-<div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-7">
-     <img src="../img/Stack_Management/aftr_interrupt_step2b.png" width="95%"></img>
-    </div>
-    <div class="col-sm-5">
-    <pre>
-<b> Pseudo code</b>
-<code>
-....
-MOV KPTR, User Area Page Number*512 - SP 
-		// find the physical address 
-        	   of the user area page
-MOV SP, UPTR	// point SP to the user stack
-
-IRET		// return to the user process
-....
-
-</code>
-
-<i>(Note: Again, registers should not be used 
-	explicitly in the calculations as it will 
-	overwrite the restored register context)</i>	
-	</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.3. - Switch the stack and Transfer the control back to the user process</b>
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br>
-	     
-
-<br><br>	      
-	      
-	      
-	      
-	     </div>
-</div>
-
-<div class="container">
-         <div class="row">
-              	
-              <h3>Invocation of a kernel module from another kernel module</h3>
-              <br>
-              	      
-              <p>A kernel module or an interrupt service routine can invoke another kernel module while it is executing. 
-              Since the invocation is voluntarily, execution context of the callee should be saved in the kernel stack
-              before transferring control to the invoked kernel module. 
-              The arguments to the kernel module are passed through the registers R0, R1, R2. 
-              The invoked kernel module also uses the same kernel stack. 
-              <br>
-              The return value will be stored in register  R0. 
-              Before returning control to the callee, the invoked module pops off the space used 
-              during its execution, from the stack. The callee restores
-               the register context upon return before resuming its execution.</p>
-               
-	      <p> Note : RET instruction is used instead of IRET to return back to the kernel module.</p>
-              <br>
-              <br>
-              <p style="margin:0"><h4><b> 1. Actions done by callee before executing the call to a kernel module </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Save the registers in use to the kernel stack</p> 
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Store the arguments argument_1, argument_2, argument_3,... to R0, R1, R2, ... respectively </p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control to the kernel module to be executed </p> 
-		<br>
-	      <div class="container-fluid fig_code">
- 	      <figure>
-  		<div class="row">
-    		<div class="col-sm-7">
-     		<img src="../img/Stack_Management/kernel_to_kernel_step1a.png" width="95%"></img>
-    		</div>
-    			<div class="col-sm-5">
-<pre>
-<b> Pseudo code</b>	
-<code>			
-....		// save the registers in use
-MOV R0, argument_1
-MOV R1, argument_2
-MOV R2, argument_3
-...
-		// store the arguments
-CALL MODULE_N 
-		// invoke the kernel 
-		   module
-....
-
-</code>
-</pre>
-    </div>
-  	</div>
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.1. -  Save the registers in use to the kernel stack, store the values of arguments to registers R0, R1, R2,.. in that order and transfer control to the kernel module to be executed</p></b>
-
-	
-</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br>	
-<br><br>         
-<br>
-              <p style="margin:0"><h4><b> 2. Actions done by the kernel module before returning </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pop off the space used during its execution from the kernel stack </p> 
-		&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Use RET instruction to transfer control back to the kernel module which invoked it </p> 
-		<br>
-<div class="container-fluid fig_code">
- <figure>
-  <div class="row">
-    <div class="col-sm-7">
-     <img src="../img/Stack_Management/kernel_to_kernel_step2.png" width="95%"></img>
-    </div>
-    <div class="col-sm-5">
-    <pre>
-<b> Pseudo code</b>		
-<code>
-....
-POP R0	// pop off the space used during 
-...	   its execution
-
-RET	// return control to the module 
-	   which invoked it
-
-</code>
-	
-	</pre>
-    </div>
-  	</div>  	  	        	
-	<div class="row">
-	 <div class="col-sm-12">
-		<figcaption><br><b>Fig.2. - Actions done by the kernel module before returning.</b>
-	      	</figcaption>
-</div>
-</div>
-</figure>
-</div>
-<br>
-              
-    	</div>
-</div>
 
 
 
-
-<!--
-<p>
-1. The stack operations performed by the user program before INT instruction :</p>
-<p>	All the registers currently used by the process is pushed onto the user stack followed by the system call number corresponding to the system call.The interrupt routine needs this value to identify the system call. Then the arguments are pushed in an order such that last argument comes on top. A push instruction PUSH R0 is done to put an empty space in the stack for the return value. The system call implementation must ensure that the return value is stored in this space. </p>
-<br>
-<img src="../img/sys_call_b4_int.png">
-<span style="float:right;">
-<br><br>
-<pre>
-<code>
-.... 			// Code to push registers
-PUSH System_Call_Number	// Push system call number
-PUSH Argument_1		// Push the arguments to the stack
-PUSH Argument_2
-PUSH Argument_3
-PUSH R0			// Push an empty space for return value
-INT number		// Invoke the corresponding INT instruction
-</code>
-</pre>
-<p>(NOTE: The machine code above is in the form of pseudo code.)</p>	
-</span>
-<br><br>
-<hr>	
-<br>
-<p>
-2. After the INT instruction is executed : 
-	The INT instruction pushes the address of instruction after the INT instruction onto the stack. This value will be used by 		interrupt routine to return back from the system call to the next instruction in the calling program. The current value of SP 		register is stored in the USER STACK POINTER field of the user program's process table entry. The INT instruction changes mode 		from USER to KERNEL mode and passes control to the Interrupt Routine corresponding to the system call. The kernel then extracts 	the parameters from the application's stack and then changes the value of SP to the value in the KERNEL STACK POINTER. Then the instructions in the corresponding interrupt routine are executed. 
-</p>
-<img src="../img/sys_call_aftr_int.png">
-<br><br>
-<hr>
-<br>
-<h4>Before returning from a system call</h4>
-<p>The return value is stored in the respective place in the user stack using the address in UPTR. The value of the SP register is then restored as the value in UPTR field. </p>
-<img src="../img/actions_of_process_aftr_return_sys_call.png">
-<br><br>
-<hr>
-<br>	
-<p>After return: 
-	The interrupt routine instruction transfers control back to the user program to the instruction following the INT instruction. The following machine instructions are present after the INT instruction in the eXpL compiled machine code given in the previous step.</p>
-<img src="../img/sys_call_aftr_ret.png">	
-<br><br>
-<pre>
-<code>
-POP R0			// Pop and save the return value
-POP Argument_3		
-POP Argument_2
-POP Argument_1		// Pop and discard the arguments
-POP Function_Code	// Pop and discard the system call number 
-</code>
-</pre>	
-	<p> The machine code above pops the values from the stack. The system call number and arguments were inputs to the system call and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program.</p>
-<hr>
-<br>	
-</div>
-</div>
-
-<div class="container">
-         <div class="row">
-              <br><br><br>	
-              <h3>Interrupts or Exceptions</h3>
-              
-              <br>
-              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are four steps in handling exception/interrupt.</p>
-              <p>1. Before the interrupt/exception occurs: The application process cannot store its context in the user stack as it doesn't have any control when an exception/interrupt occurs.</p>
-              <p><img src="../img/sys_call_b4_ex.png"><br><br></p>
-              <hr>
-              <p>2. After the interrupt/exception is executed: As soon as the control shifts to kernel, the current value of SP is stored in the User Stack Pointer entry of the process table and SP is set to the value in Kernel Stack Pointer. Once the execution mode is changed into kernel mode, it's the responibility of the kernel to backup the necessary data of the process. Thus, the context of the process is stored in the kernel stack. This changes the SP value (Note that the Kerenel Stack Pointer value remains the same resulting in an inconsistency). Now the corresponding exception/interrupt handler may be executed.</p>
-              <p><img src="../img/sys_call_aftr_ex.png"><br><br></p>
-              <hr>
-              <p>3. Before the return: After the execution of the exception/interrupt handler, the context of the process is restored from the kernel stack. SP is set to the value of User Stack Pointer in the process table. The address of the next instruction to be executed is be obtained using the EIP register.</p>
-              <p><img src="../img/ex_b4_ret.png"><br><br></p>
-              <hr>
-              <p>4. After the return: The execution of the process continues with the next instruction after the one that resulted in the exception/interrupt.</p>                            
-              <hr>
-         </div>
-</div>     
-
-<div class="container">
-         <div class="row">
-              <br><br><br>	
-              <h3>Invokation of kernel module from another kernel module</h3>
-              <br>
-              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling an invokation of a kernel module from a kernel module.</p>
-              <p>1. Before switching execution to the next kernel module: The current context is saved in the kernel stack.</p>
-              <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
-              <hr>
-              <p>2. While executing the latter kernel module: </p>
-              <p><img src="../img/in_kernel_to_kernel.png"><br><br></p>   
-              <hr>                       
-              <p>3. Before returning to the previously executed module: The previous execution context is restored and popped out of the kernel stack. Since there is no switch from one execution mode to another, the SP value need not be set manually.</p>
-              <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
-              <hr>
-         </div>
-</div>
--->
          
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
