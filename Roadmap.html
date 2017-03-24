@@ -1078,6 +1078,9 @@ loadi(66,8);</pre>
 <pre>loadi(22,35);
 loadi(23,36);</pre>
 
+Load the exception handler routine from the disk to the memory.
+<pre>loadi(2, 15);
+loadi(3, 16);</pre>
 
 <p>  Note the use of the  loadi instruction for loading a disk block to a memory page.
 The loadi instruction will suspend the execution of the XSM machine till the disk to memory transfer is completed.  XSM will execute the next instruction after the transfer is complete.  (In later stages you will use the LOAD instruction that can help to speed up execution). </p>
@@ -1132,7 +1135,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
       <li>The instruction pointer is set to the value at the top of the user stack <br>
 
       <li> The value of SP is decremented by 1 </li>
-    <br>
+  
 
 <p>
     The code of this program must execute from logical address 0.  
@@ -1144,7 +1147,6 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
 
 </p>
     
-    <br> <br>
     <pre>[76*512] = 0;
     SP = 2*512;</pre>
     </li> <br>
