@@ -1129,47 +1129,26 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
     
       <li>The privilege mode is changed from KERNEL to USER mode. </li>
     
-      <li>The instruction pointer is set to the value at the top of the user stack (we have set SP to the logical address of the top of the stack)<br>
+      <li>The instruction pointer is set to the value at the top of the user stack <br>
 
       <li> The value of SP is decremented by 1 </li>
     <br>
-      </ol>
-    
 
+<p>
     The code of this program must execute from logical address 0.  
     Hence IP or the instruction pointer needs to be set to 0 before the user program starts executing. 
     As IP cannot be set explicitly, put the value of starting IP 0 at the top of the stack, and IRET instruction will implicitly 
     set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
     to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
-    Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 at the top of the stack.
-    <br> <br>
-    <pre>[76*512] = 0;</pre>
-    </li> <br>
-    
+    Its corresponding physical address is 76 * 512. The stack pointer must be set to point to this address so that IRET fetches the correct address.
 
-    <li>
-     
-    Next we need to set the stack pointer (SP) register. Each program in memory has an associated runtime stack.
-    A runtime stack holds the local variables and function parameters while a process is running.
-    The Stack Pointer or SP points to the top of this stack.
+</p>
     
-    <br><br>
-    
-    Here we assign the stack of the process at the logical address 2 x 512 (= 1024) 
-    which corresponds to logical page number 2. Our page table setting sets the physical adress of the page to 76. 
-  
-    <br><br>
-    
-    Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address 2 x 512 (= 1024).
-    
-    Since SP is used by the user program, its address should be a logical address.
-    
-    <br><br>
-    
-    <pre>SP = 2*512;</pre>
-    
-    
+    <br> <br>
+    <pre>[76*512] = 0;
+    SP = 2*512;</pre>
     </li> <br>
+
     
     <li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
     <br> <br>
