@@ -1083,7 +1083,7 @@ Load the exception handler routine from the disk to the memory.
 loadi(3, 16);</pre>
 
 <p>  Note the use of the  loadi instruction for loading a disk block to a memory page.
-The loadi instruction will suspend the execution of the XSM machine till the disk to memory transfer is completed.  XSM will execute the next instruction after the transfer is complete.  (In later stages you will use the LOAD instruction that can help to speed up execution). </p>
+The loadi instruction will suspend the execution of the XSM machine till the disk to memory transfer is completed.  XSM will execute the next instruction after the transfer is complete.  (In later stages you will use the load instruction that can help to speed up execution). </p>
 
 
       </li>
@@ -1139,7 +1139,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
 
 <p>
     The code of this program must execute from logical address 0.  
-    Hence IP or the instruction pointer needs to be set to 0 before the user program starts executing. 
+    Hence IP or the instruction pointer needs to be set to 0 before the user program starts execution. 
     As IP cannot be set explicitly, put the value of starting IP 0 at the top of the stack, and IRET instruction will implicitly 
     set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
     to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
@@ -1148,7 +1148,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
 </p>
     
     <pre>[76*512] = 0;
-    SP = 2*512;</pre>
+SP = 2*512;</pre>
     </li> <br>
 
     
@@ -1168,6 +1168,9 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
 <p>
 We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical address not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
 </p>
+
+<p> Load the haltprog.xsm used above as the exception hanlder using XFS-interface </p>
+<pre>load --exhandler ../spl/progs/haltprog.xsm</pre>
 
 <br> <br> 		
 		<b> Making Things Work</b> <br> <br>
@@ -1194,8 +1197,10 @@ We also load the exception handler routine to memory.  The machine may raise an 
 		
 <br>
 
-Exercise : Change virtual memory model.	
-		
+<p>
+<b>Exercise </b> : Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
+You will have to modify the user program as well as the os startup code.	
+  </p>	
     <br>
 
 	</ol>
