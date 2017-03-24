@@ -922,9 +922,9 @@ endwhile; </pre>
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-    <p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. 
+    <p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
 
-    In this stage, first you will write a user program in assembly language and load it as the INIT program using XFS-Interface.
+    In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
 
     You will then write the OS startup code such that it loads the INIT program into the memory and initiate its execution at the time of system startup.
 
@@ -1077,8 +1077,13 @@ loadi(66,8);</pre>
  Load the INT10 module from the disk to the memory.
 <pre>loadi(22,35);
 loadi(23,36);</pre>
-<p> <b>Note:</b> <i>loadi</i> statement is used instead of <i>load</i> statement everywhere in the OS Startup code. Explain Why?</p>
-     </li>
+
+
+<p>  Note the use of the  loadi instruction for loading a disk block to a memory page.
+The loadi instruction will suspend the execution of the XSM machine till the disk to memory transfer is completed.  XSM will execute the next instruction after the transfer is complete.  (In later stages you will use the LOAD instruction that can help to speed up execution). </p>
+
+
+      </li>
   
      
      <li>
@@ -1116,28 +1121,7 @@ loadi(23,36);</pre>
      
     <br> <br>
     
-    <li>
-     
-    Next we need to set the stack pointer (SP) register. Each program in memory has an associated runtime stack.
-    A runtime stack holds the local variables and function parameters while a process is running.
-    The Stack Pointer or SP points to the top of this stack.
-    
-    <br><br>
-    
-    Here we assign the stack of the process at the logical address 2 x 512 (= 1024) 
-    which corresponds to logical page number 2 ( logical page numbering of a process starts from 0).
-  
-    <br><br>
-    
-    Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address 2 x 512 (= 1024).
-     Since SP is used by the user program, its address should be a logical address.
-    
-    <br><br>
-    
-    <pre>SP = 2*512;</pre>
-    
-    </li> <br>
-    
+
     <li>
     The OS Startup Code transfers control of execution to the user program using an IRET instruction. An IRET performs the following operations
     <br>
@@ -1160,6 +1144,31 @@ loadi(23,36);</pre>
     Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 at the top of the stack.
     <br> <br>
     <pre>[76*512] = 0;</pre>
+    </li> <br>
+    
+
+    <li>
+     
+    Next we need to set the stack pointer (SP) register. Each program in memory has an associated runtime stack.
+    A runtime stack holds the local variables and function parameters while a process is running.
+    The Stack Pointer or SP points to the top of this stack.
+    
+    <br><br>
+    
+    Here we assign the stack of the process at the logical address 2 x 512 (= 1024) 
+    which corresponds to logical page number 2. Our page table setting sets the physical adress of the page to 76. 
+  
+    <br><br>
+    
+    Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address 2 x 512 (= 1024).
+    
+    Since SP is used by the user program, its address should be a logical address.
+    
+    <br><br>
+    
+    <pre>SP = 2*512;</pre>
+    
+    
     </li> <br>
     
     <li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
