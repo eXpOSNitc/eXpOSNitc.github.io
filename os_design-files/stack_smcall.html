@@ -119,12 +119,14 @@
       <div class="container">
          <div class="row">
               	
-            
-<p>An application program must push the input parameters to a system call through the user stack.  The return value of the system
-call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.
+            <p> 
 
-If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
-stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  
+        Since the user program has control over the transfer to the system call module, it is expected to save its register context (in the user stack) before the system call and restore the context after returing from the system call.
+
+   The application program must also push the input parameters to the system call through the user stack.  The return value of the system call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.
+
+If the application program is written in ExpL, then the ExpL compiler will generate code for saving and restoring the context
+and pushing arguments into the user stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  
 </p>
 
 <p>
@@ -133,9 +135,6 @@ required and store the return value into the appropriate place in the user stack
 The system call module must also change the stack to its own (kernel) stack upon entry and switch back to the user stack at the time
 of return.</p>
 
-<p>
-Since the ... no save context like hardware ISR
-</p>
 
 <br>
 <p style="margin:0"><h4><b> 1. Actions done by the user process before executing an INT instruction </b></h4></p>
@@ -184,14 +183,10 @@ INT number		// Invoke the corresponding INT
 
  
 <p><h4><b>2. Actions done by the System call service routine upon entry</b></h4></p>  
-&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Compute the physical address of the top of the user stack.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments. (Note : The convention is to extract the system call number to register R0, and arguments to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R1,R2, and R3 in that order from the caller's stack)</p> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Switch the stack from user to kernel</p>
-<br>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c.1. Transfer the current SP register to User stack pointer field of the process table.</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c.2.  Compute the physical address of the kernel stack pointer. </p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c.3.  Transfer the physical address of the kernel stack pointer to the SP register.</p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Identify the system call using the system call number and transfer control to the system call code</p>
+
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Extract the system call number and the arguments from the user stack. </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Switch from the user stack to the kernel stack.</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Identify the system call using the system call number and transfer control to the system call code</p>
 <br>
 
  <div class="container-fluid fig_code">
@@ -205,18 +200,15 @@ INT number		// Invoke the corresponding INT
 <b> Pseudo code</b>
 <code>
 ... 
-MOV R4,	physicalSP  // Compute physicalSP 		      
-MOV R0, [R4 - 4]    // Extracting the system call number
-MOV R1, [R4 - 3]    // Extracting the values of the arguments
-MOV R2, [R4 - 2]
-MOV R3, [R4 - 1]			 
+syscallNumber <- address_translate(UserSP - 5);
+Argument_1    <- address_translate(UserSP - 4);
+Argument_2    <- address_translate(UserSP - 3);
+Argument_3    <- address_translate(UserSP - 2);
 
 // Switching the stack
 
-MOV UPTR, SP
-MOV R4, User Area Page Number*512
-ADD R4, KPTR  
-MOV SP, R4 
+UPTR <- UserSP
+SP   <- User Area Page Number * 512
 ...
 
 </code>
@@ -233,9 +225,8 @@ MOV SP, R4
 <br><br>
 <p><h4><b>3. Actions done by the System call service routine before returning from the system call</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Pop off all the contents from the kernel stack and store the logical address of the top of kernel stack to the KPTR field of the process table </p> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Point the stack pointer (SP) to top of the user stack </p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">d. Return to the user program using the IRET machine instruction</p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Move the stack pointer (SP) to top of the user stack </p>
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Return to the user program using the IRET machine instruction</p>
 <br>
  <div class="container-fluid fig_code">
  <figure>
@@ -248,25 +239,23 @@ MOV SP, R4
 <b> Pseudo code</b>
 <code>
 ....		   
-MOV R4, physicalSP
-		
-MOV [R4 - 1], return value 	    
-		// store the return value in the 
-		   space alloted in the user stack
-MOV R4, User Area Page Number*512 
-		// find the physical address 
-        	   of the user area page
-MOV R5, SP
-SUB R5,R4
-MOV KPTR,R5	// logicalSP = 
-		   SP - (UAreaPgNo * 512)	
-MOV SP, UPTR	// move the value of USER STACK 
-		   POINTER TO SP
-IRET		// return to the user program
-....
 
+// store the return value in the 
+       space alloted in the user stack
+
+Address_RetVal <- address_translate(UPTR - 1);
+		
+[Address_RetVal] <- return value 	    
+
+// move the value of User Stack 
+       Pointer TO SP
+		
+MOV SP, UPTR	
+
+// return to the user program
+
+IRET		
 </code>
-	
 	</pre>
     </div>
   	</div>
