@@ -504,7 +504,8 @@ sample.dat
                               </pre>
 
 
-                              <code>Note: </code> Instead of using the <tt>copy</tt> command you can use <a href="./support_tools-files/xfs-interface.html#dump" target="_blank"><tt>dump</tt></a> command provided by the XFS interface to directly copy the disk data structures (inode table, root file) to the UNIX machine as shown below. <br/>
+                              <code>Note: </code> Instead of using the <tt>copy</tt> command you can use <a href="./support_tools-files/xfs-interface.html#dump" target="_blank"><tt>dump</tt></a> command provided by the XFS interface to directly copy the disk data structures (inode table, root file) to the UNIX machine as shown below. This will write the contents of the inodetable into the file $HOME/myxos/xfs-interface/inodetable.txt
+
                               <pre># dump --inodetable</pre>
                             </div>
                             
@@ -1132,11 +1133,11 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
     
       <li>The privilege mode is changed from KERNEL to USER mode. </li>
     
-      <li>The instruction pointer is set to the value at the top of the user stack <br>
+      <li>The instruction pointer is set to the value at the top of the user stack <br> </li>
 
       <li> The value of SP is decremented by 1 </li>
   
-
+      </ol>
 <p>
     The code of this program must execute from logical address 0.  
     Hence IP or the instruction pointer needs to be set to 0 before the user program starts execution. 
@@ -1166,10 +1167,10 @@ SP = 2*512;</pre>
 <b> Exception handler</b> <br> 
 
 <p>
-We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical address not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
+We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical page not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
 </p>
 
-<p> Load the haltprog.xsm used above as the exception hanlder using XFS-interface </p>
+<p> Load the haltprog.xsm used above as the exception handler using XFS-interface </p>
 <pre>load --exhandler ../spl/progs/haltprog.xsm</pre>
 
 <br> <br> 		
@@ -1246,8 +1247,8 @@ You will have to modify the user program as well as the os startup code.
         <br>
         In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
         <br><br>
-        <b>Read and Understand the eXpOS <a href="abi.html"> Virtual Address Space Model </a> 
-        and <a href="abi.html"> XEXE Executable File Format </a> before proceeding further.</b>
+        Read and Understand the eXpOS <b> Virtual Address Space Model </b> 
+        and  <b> XEXE Executable File Format </b> from <a href="abi.html#xexe" target="_blank"> eXpOS ABI Documentation </a> before proceeding further.
         <br><br>
         <b>Modifying INIT</b>
         
@@ -1292,10 +1293,15 @@ You will have to modify the user program as well as the os startup code.
             <b>Modifications to OS Startup Code</b><br>
             <ol style="list-style-type:decimal;margin-left:2px">
         <li> Load Library Code from disk to memory</li>
+        
+        eXpOS has a shared library which is loaded into pages 63 and 64 of the memory.  The ABI sipulates that the OS must load the library to logical page 0 and 1 of every user program.  The purpose of the library is to provide some standard code for handling dynamic memory allocation as   
+
+
+
         <pre>
 loadi(63,13);
 loadi(64,14);</pre>
-        <li> Modify The Page table entries according to ABI. 
+        <li> Modify the Page table entries according to ABI. 
         
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
