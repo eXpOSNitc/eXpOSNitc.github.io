@@ -1802,7 +1802,7 @@ word = [physicalAddrWord];</pre>
 
      <!-- Stage 10 -->
 
-                      <div class="panel-heading" id="list_stage8">
+                      <div class="panel-heading" id="list_stage10">
                         <h4 class="panel-title">
                           <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>
                           Stage 10 : MultiProgramming</a>
@@ -1877,6 +1877,49 @@ load --exec < path to even.xsm > </pre>
         </div>
         </div>
 
+					<!-- Stage 12 -->
+
+                      <div class="panel-heading" id="list_stage12">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse12" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
+                            <div id="lo12" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+	<!-- End Learning Objectives-->    
+        In this stage you will implement the process system calls. There are three process system calls : fork, 
+        exec and exit with system call numbers 8, 9 and 10 and are handled by interrupt routines 8, 9 and 10 respectively.
+          
+		<p>A process creates a copy of itself using fork system call.</p>
+		
+		<b>Modifications to OS Startup Code</b><br>
+		<ol style="list-style-type:decimal;margin-left:2px">
+        <li> Initialise the state of all free process table entries to TERMINATED state. This is done to
+        identify the free entries while searching for a process table entry for a new process.</li>
+        <li> The OS supports maintains information about free memory pages usinng the <a href ="os_design-files/mem_ds.html#mem_free_list">Memory Free List</a> data structure.
+        The used pages are marked as 1 and the unused pages are marked as 0 in Memory Free List. The pages 0 - 75 are
+        reserved for the OS and the pages 75 - 80 are used as stack pages and user area pages by init and idle programs.
+        Hence, mark the pages 0 - 80 as used and 81 - 127 as unused. </li>
+        <li> Load interrupts 8, 9 and 10 from disk blocks 31 - 36 to memory pages 18 - 23.</li>
+		</ol>
       </div>
       
       
