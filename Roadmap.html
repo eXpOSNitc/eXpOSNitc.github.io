@@ -1907,19 +1907,47 @@ load --exec < path to even.xsm > </pre>
 	<!-- End Learning Objectives-->    
         In this stage you will implement the process system calls. There are three process system calls : fork, 
         exec and exit with system call numbers 8, 9 and 10 and are handled by interrupt routines 8, 9 and 10 respectively.
-          
-		<p>A process creates a copy of itself using fork system call.</p>
-		
+          <br><br>
 		<b>Modifications to OS Startup Code</b><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
         <li> Initialise the state of all free process table entries to TERMINATED state. This is done to
         identify the free entries while searching for a process table entry for a new process.</li>
-        <li> The OS supports maintains information about free memory pages usinng the <a href ="os_design-files/mem_ds.html#mem_free_list">Memory Free List</a> data structure.
+        <li> The OS supports maintains information about free memory pages usinng the <a href ="os_design-files/mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> data structure.
         The used pages are marked as 1 and the unused pages are marked as 0 in Memory Free List. The pages 0 - 75 are
         reserved for the OS and the pages 75 - 80 are used as stack pages and user area pages by init and idle programs.
         Hence, mark the pages 0 - 80 as used and 81 - 127 as unused. </li>
         <li> Load interrupts 8, 9 and 10 from disk blocks 31 - 36 to memory pages 18 - 23.</li>
 		</ol>
+		<br><br>
+		<b>Fork System Call</b>
+		<p>Fork System Call replicates the process invoking the system call. The heap, code and library regions
+		 of the parent are shared by the child. A new stack is allocated to the child and the parent's stack 
+		 is copied into the child's stack.</p>
+		<ol style="list-style-type:decimal;margin-left:2px">
+		<li>Save the value of SP in the Process Table entry of the process and set the value of SP to the 
+		beginning of User Area Page.
+         </li>
+         <li>Iterate through the Process Table entries to find a free entry to be allocated for the new process</li>
+         <li>If no free entry is found, return -1 indicating failure.</li>
+         <li>The new process requires 3 memory pages: 2 for user stack and 1 for User Area Page.
+         Invoke the Getpage() function in Memory Manager module thrice to obtain 3 memory pages.
+         Ensure that you push all the used registers to stack before invoking the module.
+         </li>
+         <li>The index of the Process Table entry found gives the PID of the child process.
+         PAE_TABLE_BASE + PID*20 would give the PTBR of the child process.
+         Copy the page table entries (code, heap and library) from the parent's page table to the 
+         child. Set the page table entries of user stack as the newly found pages for user stack.</li>
+         <li>The heap, code and library regions of the parent are shared by the child. 
+         For each page shared, increment its value in the Memory Free List</li>
+         <li>Copy the parent's <a href="process_table.html#machine_state" target="_blank">Machine State</a> 
+         (except PTBR and User Area Page number). Set the PTBR field of the Machine State to the address of 
+         the page table of the child. Set the User Area Page number field as the newly found page for User Area Page.</li>
+		 <li>Copy the user stack of parent to the user child of child.</li>
+		 <li>Set the return  value to 0 for the child process.</li>
+		 <li>The PID of the child process is set as the return value for the parent process.</li>
+		 <li>Set state of child process to CREATED. </li>
+		 <li>Set the value of SP to point to the user stack.</li>
+		 <li>Return to the parent process.</li>
       </div>
       
       
