@@ -1917,6 +1917,7 @@ load --exec < path to even.xsm > </pre>
         reserved for the OS and the pages 75 - 80 are used as stack pages and user area pages by init and idle programs.
         Hence, mark the pages 0 - 80 as used and 81 - 127 as unused. </li>
         <li> Load interrupts 8, 9 and 10 from disk blocks 31 - 36 to memory pages 18 - 23.</li>
+        <li> Load modules 2, </li>
 		</ol>
 		<br><br>
 		<b>Fork System Call</b>
@@ -1927,11 +1928,11 @@ load --exec < path to even.xsm > </pre>
 		<li>Save the value of SP in the Process Table entry of the process and set the value of SP to the 
 		beginning of User Area Page.
          </li>
-         <li>Iterate through the Process Table entries to find a free entry to be allocated for the new process</li>
-         <li>If no free entry is found, return -1 indicating failure.</li>
+         <li>Invoke the GetPTentry() from Process Manager module to find a free Process Table entry for the
+          child process. Ensure that you push all the used registers to stack before invoking the module.</li>
+         <li>If the value returned is -1 indicating no free Process Table entries, retuen -1 indicaing failure.</li>
          <li>The new process requires 3 memory pages: 2 for user stack and 1 for User Area Page.
          Invoke the Getpage() function in Memory Manager module thrice to obtain 3 memory pages.
-         Ensure that you push all the used registers to stack before invoking the module.
          </li>
          <li>The index of the Process Table entry found gives the PID of the child process.
          PAGE_TABLE_BASE + PID*20 would give the PTBR of the child process.
@@ -1950,12 +1951,35 @@ load --exec < path to even.xsm > </pre>
 		 <li>Return to the parent process.</li>
 		 </ol>
 		 <br><br>
+		 <b>GetPTentry()</b>
+		 <ol style="list-style-type:decimal;margin-left:2px">
+		 <li>Iterate through the Process Table entries to find a free entry to be allocated for the new process</li>
+		 <li>If no free entry is found, return -1.</li>
+		 </ol>
+		 <br><br>
 		 <b>Getpage()</b><br>
 		 <ol style="list-style-type:decimal;margin-left:2px">
         <li>Iterate through the Memory Free List to find a free entry (denoted by 0).</li>
         <li>If no free entry is found,....</li>
         <li>Return the index of the free entry.</li>
         </ol>
+        <br><br>
+        <b>Exec System Call</b>
+        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
+        address space. A successful Exec operation results in the extinction of the invoking process and hence
+        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Retrieve the filename of the new process from the user stack.</li>
+			<li>Return -1 if the filename is NULL.</li>
+			<li>Iterate through the Inode Table to find the inode index of the file.</li>
+			<li>If file is not found, return -1.</li>
+			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
+			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
+			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
+			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
+			1 for User Area Page and 1 for code.</li>
+          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
+          from disk to memory. </li>
       </div>
       
       
