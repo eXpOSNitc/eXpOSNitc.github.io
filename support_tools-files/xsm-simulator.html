@@ -110,21 +110,21 @@
                 <p>The <b>XSM (eXperimental String Machine)</b> Simulator is used to simulate the XSM hardware.</p>
                 <p> Within your XSM directory, use the following command to run the simulator </p>
 				<ul>
-					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>[--timer=#1] [--disk=#2] [--console=#3] [--debug]</i></b></tt>                           </p></li>	        
+					<li><p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>./xsm <i>[--timer #1] [--disk #2] [--console #3] [--debug]</i></b></tt>                           </p></li>	        
 				<li> 
-                    <b style="font-size:16px;color:#009100">(i) </b> <b><i>Syntax</i></b> : <tt>--timer=value</tt>
+                    <b style="font-size:16px;color:#009100">(i) </b> <b><i>Syntax</i></b> : <tt>--timer value</tt>
 				    </br>
-                  <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which timer interrupt is triggered to the <tt>value</tt> specified. <b>--timer=0</b> disables the timer. The range of value is from 0 to 1024.
+                  <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which timer interrupt is triggered to the <tt>value</tt> specified. <b>--timer 0</b> disables the timer. The range of value is from 0 to 1024.
 				</li>
                        <br/>
                 <li> 
-                    <b style="font-size:16px;color:#009100">(ii) </b><b><i>Syntax</i></b> : <tt>--disk=value</tt>
+                    <b style="font-size:16px;color:#009100">(ii) </b><b><i>Syntax</i></b> : <tt>--disk value</tt>
 				</br>
               <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which the disk interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024. Note that count begins only after a LOAD or STORE machine instruction gets executed.
 				</li>
                     <br/>
                   <li> 
-                      <b style="font-size:16px;color:#009100">(iii) </b><b><i>Syntax</i></b> : <tt>--console=value</tt>
+                      <b style="font-size:16px;color:#009100">(iii) </b><b><i>Syntax</i></b> : <tt>--console value</tt>
 				    </br>
           <b><i>Semantics</i></b> : This flag sets the number of user mode instructions after which console interrupt is triggered to the <tt>value</tt> specified. The range of value is from 0 to 1024. Note that count begins only after a IN machine instruction gets executed.
 				</li>
@@ -192,18 +192,18 @@
 <b><i>Semantics</i></b> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_2&gt; in the order specified in <b style="font-size:16px;color:#009100">(3)</b>.</li>
 					<br/>
 <li><b style="font-size:16px;color:#009100">(6) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the contents of the memory page &lt;page_num&gt;.<br/> 
+<b><i>Semantics</i></b> : </i> Writes the contents of the memory page &lt;page_num&gt; to the file "mem" in the XSM folder.<br/> 
 					    Sample usage: <tt>mem 5, m 20 </tt></li>
 					<br/>
 <li><b style="font-size:16px;color:#009100">(7) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
-<b><i>Semantics</i></b> : </i> Displays the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt;.<br/>
+<b><i>Semantics</i></b> : </i> Writes the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt; to the file "mem" in XSM folder.<br/>
 					    Sample usage: <tt>mem 5 8, m 0 10 </tt></li>
 					<br/>
 <li><b style="font-size:16px;color:#009100">(8) </b><b><i>Syntax</i></b> : </i><tt> pcb / p </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the Process Control Block of the process with the state as RUNNING.</li>
+<b><i>Semantics</i></b> : </i> Displays the Process Table entry of the process with the state as RUNNING.</li>
 					<br/>
 <li><b style="font-size:16px;color:#009100">(9) </b><b><i>Syntax</i></b> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the Process Control Block of the process with the given <tt>&lt;pid&gt;</tt>. </li>
+<b><i>Semantics</i></b> : </i> Displays the Process Table entry of the process with the given <tt>&lt;pid&gt;</tt>. </li>
 					<br/>
 <li><b style="font-size:16px;color:#009100">(10) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register).</li>
@@ -241,6 +241,9 @@
 					<br/>
 <li><b style="font-size:16px;color:#009100">(21) </b><b><i>Syntax</i></b> : </i><tt> help / h </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays commands.</li>
+<br/>
+<li><b style="font-size:16px;color:#009100">(22) </b><b><i>Syntax</i></b> : </i><tt> val  / v &lt;physical_address&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the content of the physical address specified.</li>
 
 				</ul>
 				</div>
