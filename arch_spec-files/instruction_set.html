@@ -291,8 +291,9 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                                             <div class="panel-body">
                                                 <p>The CALL instruction copies the address of the next instruction to be fetched(this value must be IP + 2 since each instruction is <b>two</b> memory words) on to location SP + 1. It also increments SP by one and transfers control to the instruction specified by the target_address. The RET instruction restores the IP value stored at location pointed by SP, decrements SP by one and continues execution fetching the next instruction pointed to by IP.</p>
                                                 <ul>  <li>1. <b>CALL</b><br>
-<i>Syntax</i> : CALL target_address<br>
-<i>Semantics</i> : Increments SP by 1, transfers IP + 2 to location pointed to by SP and jumps to instruction specified by target_address.
+<i>Syntax</i> : CALL target_address / Ri<br>
+<i>Semantics</i> : Increments SP by 1, transfers IP + 2 to location pointed to by SP and jumps to instruction specified by target_address/Ri.
+
 </li><br>
 <li>2. <b>RET</b><br><i>Syntax</i> : RET<br><i>Semantics</i> : Sets IP to the value pointed to by SP and decrements SP.
 </li></ul>
@@ -350,6 +351,30 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                                 </div>
                          <!--end INT-->
                          
+ <!-- NOP-->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse"  href="#collapse11">NOP Instruction</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse11" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                
+                                                <ul>  <li>
+<i>Syntax</i> : NOP<br>
+<i>Semantics</i> : Instruction that does nothing.<br>
+</li>
+</ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end NOP-->
+                         
+
+
                           </div>
                         </div>
                          <!--end unprivileged-->   
@@ -458,7 +483,7 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : BACKUP</p>
-                                                <p><i>Semantics</i> : This instruction is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed to by SP in the order : BP, PTBR, PTLR, R0 - R19. The value of SP gets incremented accordingly.
+                                                <p><i>Semantics</i> : This instruction is used to backup all the machine registers (except SP, IP, exception flag registers and ports) into the memory locations starting from the address pointed to by SP in the order : BP, R0 - R19. The value of SP gets incremented accordingly.
 </p>
 
                                             </div>
@@ -479,7 +504,7 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                                             <div class="panel-body">
                                                 
                                                 <p> <i>Syntax</i> : RESTORE</p>
-                                                <p><i>Semantics</i> : This instruction is used to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, PTLR, PTBR, BP. The value of SP gets decremented accordingly.  
+                                                <p><i>Semantics</i> : This instruction is used to restore the backed up machine registers from memory. The registers are restored from contiguous memory locations starting from the address pointed to by SP in the order : R19-R0, BP. The value of SP gets decremented accordingly.  
                                                 </p>
 
                                             </div>

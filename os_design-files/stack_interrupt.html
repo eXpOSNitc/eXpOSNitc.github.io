@@ -1,0 +1,360 @@
+<!--This document consists of header and footer only -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Kernel Stack Management in Hardware Interrupts or Exceptions</title>
+
+ <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body id="stack_desc"> 
+	  
+     <!-- BEGIN PRELOADER  -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                    
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+
+	 <!--=========== BEGIN  ================-->
+	
+     <div class="container">
+         
+         	
+         <br><br><br><br>
+		<div class="heading">
+         <h2 style="font-size:27px">Kernel Stack Management during hardware interrupts and exceptions</h2>
+		 <br><br>
+		</div>
+         <br>
+         <p>This document is a tutorial explaining how the eXpOS kernel must manage the kernel stack during events such as a hardware interrupt or an exception.  The document is specific to the implementation of eXpOS on the XSM machine. </p>  
+	
+     </div>
+
+      <div class="container">
+         <div class="row">
+ 
+
+              <p>A hardware interrupt/exception can occur while an application program is executing.
+              Since the application does not have control over the transfer 
+               to the interrupt module, it would not have saved its context. </p>
+               <p>	
+               Thus in this case the Interrupt Service Routine must save the register context of the application in its own stack, perform the required operations and must restore the context before returning to the application.  
+               The <b> <a href="process_table.html#user_area" target="_blank"> kernel stack</a> </b> is used to store the execution context of the user process. 
+               (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
+				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
+				restore</a> instructions of the XSM machine facilitate this).</p>
+	      
+	      
+			<b> Actions done by the XSM machine on receiving an interrupt/ exception </b>
+			<br> <br>		
+               On Receiving an interrupt or exception, the XSM machine does 3 things: 
+               	<br>
+              &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Pushes the return address (IP+2 value) to the user stack. </p>
+             &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Switches mode of execution from user to kernel.	</p>	
+             &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfers the control to the Interrut Service Routine or Exception Handler </p>
+
+              <br>
+            
+            <div class="container-fluid fig_code">
+              <p><b>Execution context just after interrupt/exception:</b></p><br>
+			
+
+              <img src="../img/Stack_Management/Kernel_interrupt1.png" width="60%" >
+
+</div>
+            <p> <br> <br>
+             <b>Notes</b>: 
+<p> 
+             1. The page number of the user area page is stored in the UArea Page Number field in the process table.
+</p>
+<p>
+             2. The offset of SP register within the user area page will be stored (and not the physical address of the kernel stack pointer) in the KPTR field of the process table .The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. 
+    </p><p>
+
+             3. When executing in user mode, the kernel stack is empty and hence the KPTR value is assumed to be zero. 
+             </p>
+<br> <br>
+              <p style="margin:0"><h4><b> 1. Actions done by the kernel upon entering the interrupt service routine </b></h4></p>
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Save the values of the machine registers in the kernel stack using BACKUP machine instruction.  </p> 
+		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Continue execution of the interrupt routine code</p>
+		
+		
+<br><br><br>
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img  src="../img/Stack_Management/Kernel_interrupt2.png" width="100%"></img>
+    </div>
+    <div class="col-sm-5">
+<pre>
+<b> Pseudo code</b>	
+<code>
+....
+MOV UPTR, SP	// Save the current SP register to 
+		   User stack pointer field of the 
+		   process table.
+MOV SP, User Area Page Number*512
+	// Set kernel stack
+		   
+</code>
+<i> (Note: Registers should not be used explicitly here
+    for calculations as they are not backed up yet.)</i>
+</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1.a. - Switch from the user stack to the kernel stack</b>
+		
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br>
+
+
+ <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/Kernel_interrupt3.png" width="75%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<b> Pseudo code</b>
+<code>
+....
+BACKUP		// machine instruction to save the 
+		   register context
+....
+
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.1.b - Use the BACKUP machine instruction to save the values of the machine registers in the kernel stack.</b>  
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+
+
+<br>
+      <p style="margin:0"><h4><b> 2. Actions done by the kernel before returning from the interrupt routine </b></h4></p>
+        &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Restore the values of the machine registers using RESTORE machine instruction</p> 
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Set the value of SP to the top of the user stack  </p> 
+	&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Transfer control back to the user process</p>
+
+<br><br>
+	   <div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/Kernel_interrupt2.png" width="95%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<b> Pseudo code</b>
+<code>
+....
+RESTORE		// machine instruction to restore
+ 		   the register context
+....
+
+</code>
+	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.2.a - Use the RESTORE machine instruction to restore the values of the machine registers</b>  
+	
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+<br><br><br><br>
+<div class="container-fluid fig_code">
+ <figure>
+  <div class="row">
+    <div class="col-sm-7">
+     <img src="../img/Stack_Management/Kernel_interrupt5.png" width="60%"></img>
+    </div>
+    <div class="col-sm-5">
+    <pre>
+<b> Pseudo code</b>
+<code>
+....
+
+MOV SP, UPTR	// point SP to the user stack
+
+IRET		// return to the user process
+....
+
+</code>
+
+<i>(Note: Again, registers should not be used 
+	explicitly in the calculations as it will 
+	overwrite the restored register context)</i>	
+	</pre>
+    </div>
+  	</div>
+	<div class="row">
+	 <div class="col-sm-12">
+		<figcaption><br><b>Fig.3. - Switch the stack and transfer the control back to the user process</b>
+</figcaption>
+</div>
+</div>
+</figure>
+</div>
+
+<br><br>	      
+	      
+
+<p> <b>NOTE: </b> If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 	      
+	      
+	      <br> <br>
+	     </div>
+</div>
+
+
+
+
+         
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>

@@ -222,9 +222,13 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
 
                             <h4 class="panel-title" style="padding-top: 20px">USER AREA</h4>                          
                           <div class="panel-body">
+
                               <p>Corresponding to each user process, the kernel maintains a seperate memory region (called the user area) for its own purposes.  The present version of eXpOS allocates one memory page per process as the user area.   A part of this space is 
-used to store the disk map table and the per process resource table of the process.  The rest of the memory allocated
-is used as a stack called the kernel stack of the process.  </p><br>
+used to store the disk map table and the per process resource table of the process.  The rest of the memory is alloted for the kernel stack of the process.  
+
+Hence in eXpOS, each process has a kernel stack in addition to user stack. We maintain a seperate stack for the kernel operations to prevent user-level "hacks" into kernel. 
+
+</p><br>
 
 			      <img src="../img/user_area.png" alt="User Area" style="display:block;margin-left:auto;margin-right:auto"></img>
  

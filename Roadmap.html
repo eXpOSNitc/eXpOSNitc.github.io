@@ -150,8 +150,15 @@
                 <h2 id="navtop">Using the Roadmap</h2>
                 <br>
                 <br>
-                <p>This roadmap is divided into stages. Each stage is to be done in sequential order. You will build eXpOS incrementally. Links are provided throughout the document for further reference. There are two kinds of links. The contents of the <b style="color:#26A65B">important links</b> must be read immediately before proceeding with the roadmap. The <span style="color:#26A65B">informative links</span> may be clicked for more information about a particular concept. However this information may not be necessary at that point and you may proceed with the roadmap without visiting these links.</p>
+                <p>This roadmap is divided into stages. Each stage is to be done in sequential order. 
+                You will build eXpOS incrementally. Links are provided throughout the document for further
+                 reference. There are two kinds of links. The contents of the <b style="color:#26A65B">important
+                  links</b> must be read immediately before proceeding with the roadmap. 
+                  The <span style="color:#26A65B">informative links</span> may be clicked for more information 
+                  about a particular concept. However this information may not be necessary at that point and 
+                  you may proceed with the roadmap without visiting these links.</p>
               
+              <!--
                 <div class="container-fluid">
                 <div class="row-fluid">
                 
@@ -210,6 +217,7 @@
                 <h4>Creating a data file</h4>                
                 </div>
                 </div>
+                
                 <div class="col-sm-3 well">
                 <div class="text-center custom-panel" id="stage9">
                 <span class="label custom-badge" id="stage9">9</span>
@@ -231,7 +239,8 @@
 
                       <div class="panel-heading" id="list_stage1">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse1"><span class="fa fa-check-square-o"></span>Stage 1 : Setting up the System </a>
+                          <a data-toggle="collapse"  href="#collapse1">
+							  <span class="fa fa-check-square-o"></span>Stage 1 : Setting up the System </a>
                         </h4>
                       </div>
 
@@ -270,7 +279,7 @@
                     <li> Change directory to <tt>myexpos</tt> directory.
                     <pre>cd $HOME/myexpos </pre> </li>  
                     <li> Make to build all the components.
-                    <pre>./make </pre></li>          
+                    <pre>make </pre></li>          
                   </ol>
                 </div>
 
@@ -495,8 +504,11 @@ sample.dat
                               </pre>
 
 
-                              <code>Note: </code> Instead of using the <tt>copy</tt> command you can use <a href="./support_tools-files/xfs-interface.html#dump" target="_blank"><tt>dump</tt></a> command provided by the XFS interface to directly copy the disk data structures (inode table, root file) to the UNIX machine as shown below. <br/>
+                              <code>Note: </code> Instead of using the <tt>copy</tt> command you can use <a href="./support_tools-files/xfs-interface.html#dump" target="_blank"><tt>dump</tt></a> command provided by the XFS interface to directly copy the disk data structures (inode table, root file) to the UNIX machine as shown below. 
+
                               <pre># dump --inodetable</pre>
+
+                              This will write the contents of the inodetable into the file $HOME/myxos/xfs-interface/inodetable.txt
                             </div>
                             
 
@@ -781,7 +793,7 @@ Machine is halting</pre></div>
 
                       <div class="panel-heading" id="list_stage5">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 5 : Debugging in Kernel Mode </a>
+                          <a data-toggle="collapse"  href="#collapse5"><span class="fa fa-check-square-o"></span>Stage 5 : XSM Debugging </a>
                         </h4>
                       </div>
 
@@ -808,17 +820,19 @@ Machine is halting</pre></div>
  
  	  <p>In this stage you will write an SPL program with a <b> breakpoint </b> statement. The breakpoint statement translates to the <a href="arch_spec-files/instruction_set.html" target="_blank">BRKP</a> machine instruction and is used for debugging.
  	 
-	If the XSM machine is run in the <a herf="support_tools-files/xsm-simulator.html" target="_blank" >Debug mode </a>, on encountering the BRKP instruction, the machine simulator will suspend the program execution and allow you to inspect the values of the registers, memory, os data structures etc.  Execution resumes only after you instruct the simulator to proceed.  
+	If the XSM machine is run in the <a herf="support_tools-files/xsm-simulator.html" target="_blank" >Debug mode </a>, 
+	on encountering the BRKP instruction, the machine simulator will suspend the program execution and allow you to inspect 
+	the values of the registers, memory, os data structures etc.  Execution resumes only after you instruct the simulator to proceed.  
 
  	   </p>
 
 	 <ol style="list-style-type:decimal;margin-left:2px">
-		<li> Write an SPL code to print odd numbers from 1 to 20. Add a debug instruction in between :  
+		<li> Write an SPL code to generate odd numbers from 1 to 10. Add a debug instruction in between :  
 		<div> 
                                 <pre>
 alias counter R0;
 counter = 0;
-while(counter <= 20) do
+while(counter <= 10) do
   if(counter%2 != 0) then
     <b>breakpoint;</b>
   endif;
@@ -841,54 +855,29 @@ endwhile; </pre>
 ./xsm --debug</pre>
 		</li>
 		<li>
-		The Machine pauses execution after the first print statement.<br>
-		View the Contents of Memory page 1. You can see the OS startup code.
-		<pre>mem 1</pre>
-		</li>
-		<li>
-		View the contents of Registers. You can see that the contents of R0 change during each iteration.
+		The Machine pauses after the execution of the first BRKP instruction.<br> <br>
+		
+		View the contents of registers using the command 
 		<pre>reg</pre>
+		
+		Enter the following command
+		<pre>mem 1</pre>
+		
+		This will write the contents of memory page 1 to the file mem inside the xsm folder.
+		Open this file and view the contents.
+		<br> <br>
+		
+		Use the following command step to the next instruction.
+		<pre>s</pre>
+		
+		
 		</li>
-		<li>
-		The output will be displayed as:
-		<pre>R0: 1
-R1: 
-R2: 
-R3: 
-R4: 
-R5: 
-R6: 
-R7: 
-R8: 
-R9: 
-R10: 
-R11: 
-R12: 
-R13: 
-R14: 
-R15: 
-R16: 1
-R17: 0
-R18: 
-R19: 
-P0: 
-P1: 
-P2: 
-P3: 
-BP: 
-SP: 
-IP: 532
-PTBR: 
-PTLR: 
-EIP: 
-EC: 
-EPN: 
-EMA: 
-</pre>
-		</li>
+		
 		<li>
 		Press c to continue execution till the BRKP instruction is executed again.
+		You can see that the content of R0 register changes during each iteration.
 		<pre>c</pre>
+		
 		</li>
 
 	</ol>
@@ -919,8 +908,9 @@ EMA:
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
                             <div id="lo4" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Create an address space in memory and set up page table for a user process.</li>
-							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load the INIT program from the disk and execute it in user mode from the OS start up code.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Learn how to set up the address space for an application. </li>
+
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Run an init program in user mode from the OS startup code.</li>
                             </ul>                     
                                      
                             </div>
@@ -935,41 +925,36 @@ EMA:
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-		<b> User Programs  </b> <br> <br>
-		
-		<p> In user mode, the machine translates logical addresses
-		 to physical addresses using the <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
-		</p>
-		
-		<p> The first user program which is executed is called the INIT program. 
-		The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk.
-		 The OS startup code must load this program into the memory for execution and initiate its execution at 
-		 the time of system startup. 
-  </p>
-	<p>
-		In this stage, you will write a user program in assembly language. 
-		You will then load it as the INIT program using XFS-Interface into 
-		blocks 7 and 8 of the XFS disk.  The INIT program does not have an <a href="os_design-files/process_table.html" target="_blank">inode</a> or <a href="os_design-files/disk_ds.html#root_file" target="_blank">root</a> entry.
-		</p>
-		
-	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> The following is a program in machine code to compute squares of all numbers lesser than 20. The value of Register R1 during each iteration will hold the result<br> <br>
+    <p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
 
-		The following code illustrates the INIT program used in this stage. <br> <br>
+    In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
+
+    You will then write the OS startup code such that it loads the INIT program into the memory and initiate its execution at the time of system startup.
+
+    <br> <br>
+		
+    <b> User Program  </b> <br> 
+		
+   
+	<ol style="list-style-type:decimal;margin-left:2px">
+		<li>The following code illustrates the INIT program used in this stage. It computes squares of first 5 numbers. 
+		The value of Register R1 during each iteration will hold the result.<br> <br>
 
 		<pre>
 
-//Program to calculate Squares of first 20 numbers
+//Program to calculate Squares of first 5 numbers
 
-//Initialising R0(n) to 0
-MOV R0, 0
-MOV R1, 0
+// R0 will hold value of n
+// R1 will hold value of n^2
+
+//Initialising R0(n) to 1
+MOV R0, 1
 
 _L1:
 
-// Check for n < 20
-MOV R2, 20
-GE R2, R0
+// Exit loop if n > 5
+MOV R2, 5
+GT R2, R0
 JZ R2, _L2
 
 // Computing n^2 in R1
@@ -990,170 +975,221 @@ EXIT
 
 // End of Program.
 		</pre>
-		 
+
+<!--		 
 Since the XFS-Interface does not recognise comments or labels, the XSM code 
 (after <a href="http://silcnitc.github.io/label-translation.html">Label Translation</a>) is given below.
 <br>
-In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm . 
-<br>
-<br>
+-->
+
+<p> While executing in the user mode, the machine uses logical addressing scheme. The machine translates logical addresses
+     to physical addresses using the <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation mechanism</a>.
+
+In this stage, we will use a simple logical memory model where the first two logical pages are alloted for code (address 0 - 1023) and the third logical page is alloted for the stack (address 1024 - 1535). The actual logical memory model used in eXpOS is different and will be explained in the later stages.
+
+</p>
+
+<p>
+The above code contains labels that are not recognised by the XSM machine. 
+
+Since the code section occupies first two pages according to our memory model, the code address begins from logical address 0 
+. Hence, we will translate the labels accordingly.
+
+</p>
+
+
+The code is given in bold and the corresponding addresses are added for reference. In the roadmap, the path of the file is assumed to be $HOME/myexpos/expl/expl_progs/squares.xsm  
+
+
+<br> <br>
 		<pre>
-MOV R0, 0
-MOV R1, 0
-MOV R2, 20
-GE R2, R0
-JZ R2, 20
-MOV R1, R0
-MUL R1, R0
-BRKP
-ADD R0, 1
-JMP 4
-INT 10</pre>
- 
+0<b>   MOV R0, 0 </b>
+2<b>   MOV R2, 5</b>
+4<b>   GT R2, R0</b>
+6<b>   JZ R2, 18</b>
+8<b>   MOV R1, R0</b>
+10<b>  MUL R1, R0</b>
+12<b>  BRKP</b>
+14<b>  ADD R0, 1</b>
+16<b>  JMP 2</b>
+18<b>  INT 10</b></pre>
+
+
+<p>
+
 	 The methods for terminal input and output of user programs have not been studied till now. 
 	 (Note that IN and OUT are privileged instructions and cannot be used in user mode programs). 
 	 Hence you have to use the debug mode to view the contents of register R1 to watch the ouput. 
-	 INT 10 instruction will invoke the software interrupt handler 10. This interrupt handler is responsible
-	 for graceful termination of the user program. For now, we will write the interrupt 10 handler with only the 
-	 HALT statement. 
-	 <b>Interrupt handlers </b> for input and output from user programs and interrupt 10 will be discussed in later stages.  
-
-<br>
+	  <b>Interrupt handlers </b> for input and output from user programs will be discussed in later stages.  
+</p>
 		
 		 </li>
-		 
-		 <br>
+
 		
 		<li> Load this file to the XSM disk as the INIT program using XFS interface.
 		<pre># load --init $HOME/myexpos/expl/expl_progs/squares.xsm</pre>
 The xfs-interface will store squares.xsm program to disk blocks 7-8. <br>
 	
 </li>  
-		</ol>
-		<br>
-		<b> OS Startup Code </b> <br> 
-		<p> The OS startup code will load the init process and set the OS data structures necessary
-			to run the program. Finally, it transfers control to the init program using the IRET instruction.	
-		 </p>
-		 
-	<ol style="list-style-type:decimal;margin-left:2px">
-		<li>  Load the INIT program from the disk to the memory.
-		 In the memory, init program is stored in pages 65-66.
-		 The blocks 7-8 from disk is to be loaded to the memory pages 65-66 by the OS startup Code. 
-		 (See <a href="os_implementation.html" target="_blank"> Memory Organization and Disk Organization </a> ). <br> <br>
-		 
-		 <pre>loadi(65,7);
-loadi(66,8);</pre>
-<p> <b>Note:</b> <i>loadi</i> statement is used instead of <i>load</i> statement everywhere in the OS Startup code. Explain Why?</p>
-		 </li>
+		</ol> <br>
+		
+<b> INT 10</b>  <br> 
+
+<p>
+At the end of the program, a user program calls the exit system call to return control back to the operating system.
+This is acheived by an INT 10 instruction. INT 10 instruction will invoke the software interrupt handler 10. This interrupt handler is responsible for graceful termination of the user program. 
+
+Interrupt handlers and system calls will be covered in detail in later stages
+of the roadmap.
+
+Since we have only one user process for now, we will write the interrupt 10 handler with only the "halt" statement.
+
+</p>
+
+<ol>
 	
-		 
-		 <li>
-		<a href ="os_design-files/process_table.html#per_page_table" target="_blank"> Page Table </a> for INIT must be
-		set up for address translation scheme to work correctly. 
-		 This is because INIT is a user process and all addresses generated are logical.
-		 Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>
-		 <br>  
-		 The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
-		 We must set PTBR to the starting address of the page table of INIT.  
+<li>
+	Create a file haltprog.spl with a single halt statement. 
+	<pre>halt;</pre></li>
+
+<li>Compile the program</li>
+
+<li>Load the compiled code as INT 10
+
+<pre>load --int=10 ../spl/progs/haltprog.xsm</pre>
+
+</li>
+
+</ol>
+	<br>
+<b> OS Startup Code </b> <br> 
+    <p> The OS startup code will load the init process and set the OS data structures necessary
+      to run the program. Finally, it transfers control to the init program using the IRET instruction. 
+     </p>
+     
+  <ol style="list-style-type:decimal;margin-left:2px">
+    <li>  Load the INIT program from the disk to the memory.
+     In the memory, init program is stored in pages 65-66.
+     The blocks 7-8 from disk is to be loaded to the memory pages 65-66 by the OS startup Code. 
+     (See <a href="os_implementation.html" target="_blank"> Memory Organization and Disk Organization </a> ). <br> <br>
+     
+     <pre>loadi(65,7);
+loadi(66,8);</pre>
+
+
+ Load the INT10 module from the disk to the memory.
+<pre>loadi(22,35);
+loadi(23,36);</pre>
+
+Load the exception handler routine from the disk to the memory.
+<pre>loadi(2, 15);
+loadi(3, 16);</pre>
+
+<p>  Note the use of the  loadi instruction for loading a disk block to a memory page.
+The loadi instruction will suspend the execution of the XSM machine till the disk to memory transfer is completed.  XSM will execute the next instruction after the transfer is complete.  (In later stages you will use the load instruction that can help to speed up execution). </p>
+
+
+      </li>
+  
+     
+     <li>
+    <a href ="os_design-files/process_table.html#per_page_table" target="_blank"> Page Table </a> for INIT must be
+    set up for address translation scheme to work correctly. 
+     This is because INIT is a user process and all addresses generated are logical.
+     Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>
+     <br>  
+     The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
+     We must set PTBR to the starting address of the page table of INIT.  
 <br><br>
-		You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
-		and one additional page for stack (why?). Hence, PTLR is set to value 3.  
+    You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
+    and one additional page for stack (why?). Hence, PTLR is set to value 3.  
 <br>
-		<pre> PTBR = PAGE_TABLE_BASE;
+    <pre> PTBR = PAGE_TABLE_BASE;
  PTLR = 3;</pre>
-		<li>
-			In the page table of INIT, set page numbers 65 and 66 for code and 76 for stack.   
-			(Pages 67 - 75 are reserved. See <a href ="os_implementation.html" target="_blank"> Memory Organisation </a>.) 
-			Thus, the first word of each entry must be set to the corresponding physical page number (65 ,66 and 76).
-			Set the second word (<a href ="arch_spec-files/paging_hardware.html#aux_info" target="_blank"> Auxiliary information </a>) for pages 65 and 66 to "0100" and page 76 to "0110".  This sets the 
-			code pages "read only" and stack "read/write".  (why?)  
-			<br>
-			
-			<pre>[PTBR+0] = 65;
+    <li>
+      In the page table of INIT, set page numbers 65 and 66 for code and 76 for stack.   
+      (Pages 67 - 75 are reserved. See <a href ="os_implementation.html" target="_blank"> Memory Organisation </a>.) 
+      Thus, the first word of each entry must be set to the corresponding physical page number (65 ,66 and 76).
+      Set the second word (<a href ="arch_spec-files/paging_hardware.html#aux_info" target="_blank"> Auxiliary information </a>) for pages 65 and 66 to "0100" and page 76 to "0110".  This sets the 
+      code pages "read only" and stack "read/write".  (why?)  
+      <br>
+      
+      <pre>[PTBR+0] = 65;
 [PTBR+1] = "0100";
 [PTBR+2] = 66;
 [PTBR+3] = "0100";
 [PTBR+4] = 76;
 [PTBR+5] = "0110";</pre>
-		</li>	
-		
-		<i> Note: Here we have introduced a simple memory model with 2 page code and 1 page stack memory. <br>
-		The actual memory model which you will be using is different and will be explained in the later stages. . </i>
-		 
-		<br> <br>
-		
-		<li>
-		 
-		Next we need to set the stack pointer (SP) register. Each program in memory has an associated runtime stack.
-		A runtime stack holds the local variables and function parameters while a process is running.
-		The Stack Pointer or SP points to the top of this stack.
-		
-		<br><br>
-		
-		Here we assign the stack of the process at the logical address 2 x 512 (= 1024) 
-		which corresponds to logical page number 2 ( logical page numbering of a process starts from 0).
-	
-		<br><br>
-		
-		Before OS Startup Code transfers control to the user program, the value of SP must be set to its starting logical address 2 x 512 (= 1024).
-		 Since SP is used by the user program, its address should be a logical address.
-		
-		<br><br>
-		
-		<pre>SP = 2*512;</pre>
-		
-		</li>	<br>
-		
-		<li>
-		The OS Startup Code transfers control of execution to the user program using an IRET instruction. An IRET performs the following operations
-		<br>
-			<ol style="list-style-type:lower-roman;margin-left:20px">
-		
-			<li>The privilege mode is changed from KERNEL to USER mode. </li>
-		
-			<li>The instruction pointer is set to the value at the top of the user stack (we have set SP to the logical address of the top of the stack)<br>
+    </li> 
+    
+    <i> Note: Here we have introduced a simple memory model with 2 page code and 1 page stack memory. <br>
+    The actual memory model which you will be using is different and will be explained in the later stages. . </i>
+     
+    <br> <br>
+    
 
-			<li> Decrement the value of SP by 1 </li>
-		<br>
-			</ol>
-		
+    <li>
+    The OS Startup Code transfers control of execution to the user program using an IRET instruction. An IRET performs the following operations
+    <br>
+      <ol style="list-style-type:lower-roman;margin-left:20px">
+    
+      <li>The privilege mode is changed from KERNEL to USER mode. </li>
+    
+      <li>The instruction pointer is set to the value at the top of the user stack <br> </li>
 
-		The code of this program must execute from logical address 0.  
-		Hence IP or the instruction pointer needs to be set to 0 before it starts executing. 
-		As IP cannot be set explicitly, put the value 0 at the top of the stack, and IRET instruction will implicitly 
-		set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
-		to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
-		Its corresponding physical address is 76 * 512. Hence, the following instruction will put 0 at the top of the stack.
-		<br> <br>
-		<pre>[76*512] = 0;</pre>
-		</li> <br>
-		
-		<li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
-		<br> <br>
-		<pre>ireturn; </pre>
-		 
- 	  
-		</li>	
-		
-		
-		</ol>
- 		<br>
-		<b> Making Things Work</b> <br> 
+      <li> The value of SP is decremented by 1 </li>
+  
+      </ol>
+<p>
+    The code of this program must execute from logical address 0.  
+    Hence IP or the instruction pointer needs to be set to 0 before the user program starts execution. 
+    As IP cannot be set explicitly, put the value of starting IP 0 at the top of the stack, and IRET instruction will implicitly 
+    set the IP to this value. Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
+    to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
+    Its corresponding physical address is 76 * 512. The stack pointer must be set to point to this address so that IRET fetches the correct address.
+
+</p>
+    
+    <pre>[76*512] = 0;
+SP = 2*512;</pre>
+    </li> <br>
+
+    
+    <li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
+    <br> <br>
+    <pre>ireturn; </pre>
+     
+    
+    </li> 
+    
+    
+    </ol>
+    <br>
+
+<b> Exception handler</b> <br> 
+
+<p>
+We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical page not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
+</p>
+
+<p> Load the haltprog.xsm used above as the exception handler using XFS-interface </p>
+<pre>load --exhandler ../spl/progs/haltprog.xsm</pre>
+
+<br> <br> 		
+		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.	<br><br>
-			<pre> cd $HOME/myxos/spl
+		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.		<pre> cd $HOME/myxos/spl
 ./spl $HOME/myxos/spl/spl_progs/os_startup.spl</pre>		
 		</li>
 		<li>
 		This will generate a file $HOME/myexpos/spl/spl_progs/os_startup.xsm.	
 		Load this file as the OS startup code to disk.xfs using the XFS Interface.
-		Invoke the XFS interface and use the following command to load the OS Startup Code.<br><br>
+		Invoke the XFS interface and use the following command to load the OS Startup Code.
 		<pre># load --os $HOME/myxos/spl/spl_progs/os_startup.xsm
 # exit</pre>
 		</li>
 		
-		<li>Run the machine in debug mode. (We will disable the timer for now).  <br><br>
+		<li>Run the machine in debug mode. (We will disable the timer for now).  
 		<pre>cd $HOME/myxos/xsm/
 ./xsm --debug --timer 0</pre>
 		</li>
@@ -1162,7 +1198,14 @@ loadi(66,8);</pre>
 			View the contents of R1 at each step.
 		</li>
 		
-		
+<br>
+
+<p>
+<b>Exercise </b> : Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
+You will have to modify the user program as well as the os startup code.	
+  </p>	
+    <br>
+
 	</ol>
 		
 
@@ -1171,8 +1214,7 @@ loadi(66,8);</pre>
             </div>
             
             
-            
-         <!-- Stage 7 -->
+             <!-- Stage 7 -->
 
                       <div class="panel-heading" id="list_stage7">
                         <h4 class="panel-title">
@@ -1192,7 +1234,7 @@ loadi(66,8);</pre>
                             <div id="lo7" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Application Binary Interface(ABI) of eXpOS.</li>
-							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify the INIT program to comply with the eXpOS ABI.</li>
+                <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify the INIT program to comply with the eXpOS ABI.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1200,73 +1242,81 @@ loadi(66,8);</pre>
                           </ul>
                         </div>
                       </div>
-		<!-- End Learning Objectives-->
+    <!-- End Learning Objectives-->
 
-				
-				
-				<br>
-				In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
-				<br><br>
-				<b>Read and Understand the eXpOS <a href="abi.html"> Virtual Address Space Model </a> 
-				and <a href="abi.html"> XEXE Executable File Format </a> before proceeding further.</b>
-				<br><br>
-				<b>Modifying INIT</b>
-				<p>The INIT program must be modified to comply with the XEXE executable format. 
-				The executable format stipulates that the first 8 words of the file must contain a header.
-				The rest of the file contains the program instructions.  The OS is expected to load the file
-				into logical pages starting from page 4.  Thus the first disk block of the program is loaded 
-				into logical address starting from 2048,
-				second (if the file size exceeds 512 words) to logical addresses starting from 2560 
-				and so forth. <br><br>
-				
-				Since the first instruction starts after the 8 word header, the first instruction in the
-				program will be loaded into memory address 2056. Since each instruction requires two words,
-				the second instruction will start at memory address 2058 and so on.  Thus the jump addresses
-				in the INIT program must be designed with this in mind.  Here is the INIT program:   
-			
-				</p>
-				 
-				<pre>
-0
-2056
-0
-0
-0
-0
-0
-0					
-MOV R0, 0
-MOV R1, 0
-MOV R2, 20
-GE R2, R0
-JZ R2, 2076
-MOV R1, R0
-MUL R1, R0
-BRKP
-ADD R0, 1
-JMP 2060
-INT 10</pre>
-      <br>      
+        
+        
+        <br>
+        In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
+        <br><br>
+        Read and Understand the eXpOS <b> Virtual Address Space Model </b> 
+        and  <b> XEXE Executable File Format </b> from <a href="abi.html#xexe" target="_blank"> eXpOS ABI Documentation </a> before proceeding further.
+        <br><br>
+        <b>Modifying INIT</b>
+        
+        <p>The INIT program must be modified to comply with the XEXE executable format. 
+        The executable format stipulates that the first 8 words of the file must contain a header.
+        The rest of the file contains the program instructions.  The OS is expected to load the file
+        into logical pages starting from page 4.  Thus the first disk block of the program is loaded 
+        into logical address starting from 2048,
+        second (if the file size exceeds 512 words) to logical addresses starting from 2560 
+        and so forth. </p>
+        
+        <p>
+        Since the first instruction starts after the 8 word header, the first instruction in the
+        program will be loaded into memory address 2056. Since each instruction requires two words,
+        the second instruction will start at memory address 2058 and so on.  Thus the jump addresses
+        in the INIT program must be designed with this in mind.  
+</p>
+    <p>    The INIT program complying to ABI is given below. The code is given in bold and the corresponding addresses are added for reference.   
+      
+        </p>
+         
+        <pre>
+2048<b>  0</b>
+2049<b>  2056</b>
+2050<b>  0</b>
+2051<b>  0</b>
+2052<b>  0</b>
+2053<b>  0</b>
+2054<b>  0</b>
+2055<b>  0</b>         
+2056<b>  MOV R0, 0</b>
+2058<b>  MOV R2, 5</b>
+2060<b>  GT R2, R0</b>
+2062<b>  JZ R2, 2076</b>
+2064<b>  MOV R1, R0</b>
+2066<b>  MUL R1, R0</b>
+2068<b>  BRKP</b>
+2072<b>  ADD R0, 1</b>
+2074<b>  JMP 2060</b>
+2076<b>  INT 10</b></pre>
+  <br>      
             <b>Modifications to OS Startup Code</b><br>
             <ol style="list-style-type:decimal;margin-left:2px">
-				<li> Load Library Code from disk to memory</li>
-				<pre>
+        <li> Load Library Code from disk to memory</li>
+        
+        eXpOS has a shared library which is loaded into pages 63 and 64 of the memory.  The ABI sipulates that the OS must load the library to logical page 0 and 1 of every user program.  The purpose of the library is to provide some standard code for handling dynamic memory allocation as   
+
+
+
+        <pre>
 loadi(63,13);
 loadi(64,14);</pre>
-				<li> Modify The Page table entries according to ABI 
-				
+        <li> Modify the Page table entries according to ABI. 
+        
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
 The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 19. 
-Since the total address space of a process is 10 pages, PTLR regiser must be set to value 10. 
+
 <br><br>
 
 The following code sets page table entries for logical page 4 (of the code) and logical page
 8 (stack).  Note that the code page must be kept read only whereas stack must be read-write.
 (see page table settings for details).     
 
-				<!-- Remove if too spoonfeeding -->
-				<pre>
+        <!-- Remove if too spoonfeeding -->
+        <pre>
 //Library
 [PTBR+0] = 63;
 [PTBR+1] = "0100";
@@ -1293,34 +1343,43 @@ The following code sets page table entries for logical page 4 (of the code) and 
 [PTBR+16] = 76;
 [PTBR+17] = "0110";
 [PTBR+18] = 77;
-[PTBR+19] = "0110";					
+[PTBR+19] = "0110";         
 </pre>
-				</li>
+        </li>
 <li>
-	Read the second word and initialise ip to that
-	<pre>
+Since the total address space of a process is 10 pages, PTLR regiser must be set to value 10. 
+<pre>PTLR = 10;</pre>
+</li>
+
+<li>
+  Initialise IP to the second word in the header. Since the first code page is loaded into memory page 65, 
+  the address of the second word in header is calculated as (65 * 512) + 1. This value is stored to the top of the user stack. 
+  The machine on executing IRET instructions pops this value from the stack and sets IP to that value. 
+
+  <pre>
 SP = 8*512; 
-[76*512] = [65 * 512 + 1]; 	
+
+[76*512] = [65 * 512 + 1];  
 </pre>
 </li>
-			</ol>
+      </ol>
             
   
   <br>
   <b>Making Things Work </b><br><br>
             <ol style="list-style-type:decimal;margin-left:2px">
-				<li>
-					Compile and load the modified OS startup Code
-				</li>
-				
-				<li>
-					Load the modified user program
-				</li>
-				
-				<li>
-					Run the machine in debug mode.
-				</li>
-			</ol>	
+        <li>
+          Compile and load the modified OS startup Code
+        </li>
+        
+        <li>
+          Load the modified user program
+        </li>
+        
+        <li>
+          Run the machine in debug mode.
+        </li>
+      </ol> 
             
         <!--========= Stage descrptions ends here ===========-->
                 </div>
@@ -1345,7 +1404,7 @@ SP = 8*512;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo8">Learning Objectives</a>
                             <div id="lo8" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the hardware interrupt mechanism in eXpOS.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the kernel stack management during hardware ISRs.</li>
                             </ul>                                  
                                      
@@ -1356,29 +1415,35 @@ SP = 8*512;
                       </div>
 		<!-- End Learning Objectives-->
  
-	   <p>An interrupt is a signal to the processor emitted by hardware or software 
-	   to request the kernel services.</p>
-	  <p>
-	  Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM. 
- 	  There are 15 software interrupts invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> 
- 	  using which the user programs access the operating system services.</p>
+	   <p>An interrupt is a signal to the processor to request the kernel services. An interrupt can be raised by the hardware (hardware interrupt) or from within a user program (software interrupts). 
+
+      When an interrupt occurs , the XSM machine saves the value of IP + 2 to top of user stack, switches the execution mode from protected to real and transfers control to the corresponding Interrupt Service Routine.
+  </p>
+
+<p>
+    Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM.
+    There are 15 software interrupts which can be invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> 
+    from within the user programs. 
+
+  </p>
   
- 	  <p> When an interrupt occurs , the XSM simulator does three main things.
- 	  <ol>
- 	   <li>Saves the current value of IP to top of user stack.</li> 
- 	   <li>Switches the execution mode from protected to real</li> 
- 	   <li>Transfers control to the corresponding ISR</li> 
- 	  </ol>
- 	  Interrupt Service Routines are stored in fixed memory locations.  
- 	   
- 	  	  
- 	  <p>Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled.
- 	   Since interrupt routines are executed in kernel mode, we use SPL to write them. 
- 	   Each interrupt routine occupies 2 pages in the memory.
+<p>
+     Additionaly, the XSM machine raises an exception for errors or events occurring during program execution that cannot be handled within the program itself (for eg Illegal Instruction or Page fault). The exception handler is invoked for such cases.
+
+     </p>
+
+    
+ 	  <p> 
+    Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled.
+    Interrupt Service Routines are stored in fixed memory locations and occupies 2 pages in the memory.
+
+    
  	   </p>
  	    	  
- 	  <p>In this stage, you will write a sample timer interrupt.</p>
+ 	  <p>In this stage, you will write a sample interrupt handler for the timer interrupt which prints the message "TIMER" on occurance of every timer interrupt and returns control to the user program.</p>
  	  
+    <p><b>Read and understand the <a href="os_design-files/stack_interrupt.html" target="_blank"> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
+
  	<br>
  	<b style="font-size:20px">Modifications to OS Startup Code </b>
  	
@@ -1392,9 +1457,7 @@ load(5, 18);</pre>
 	</li>	
 	<br>
 	
-	<li>  In eXpOS, each process has a kernel stack in addition to user stack. 
-	The space for kernel stack is allocated in the <a href="os_design-files/process_table.html#user_area">User Area</a> 
-	page of the process. We maintain a seperate stack for the kernel operations to prevent user-level "hacks" into kernel. 
+	<li>  
 Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
  of the current process. User Area page is allocated in the physical page number 80.
 	<pre>
@@ -1420,19 +1483,17 @@ The interval can be specified when the XSM simulator is started
 (see <a href="support_tools-files/xsm-simulator.html"> XSM</a>). 
 Default interval for timer interrupt is 10 instructions.</p>
 
-<p><b>Read and understand the <a> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
-
 <p> Your task is to display "TIMER" every time a timer interrupt is triggered. 
- 	You will create a timer interrupt routine, which prints "TIMER". </p>
- 	
-<p>Detailed instructions to get this done are given below.</p>
+ 	You will create a timer interrupt routine, which prints "TIMER". 
+
+  Detailed instructions to get this done are given below.</p>
 	 <ol style="list-style-type:decimal;margin-left:2px">
 		 
 		 
 		<li> 
-		Obtain the process id of the currently running process from <a>System Status Table</a>.
-		This value can be used to get its <a>Process Table</a> entry.
 		Save the current value of User SP into the corresponding Process Table entry.
+    Obtain the process id of the currently running process from <a>System Status Table</a>.
+		This value can be used to get its <a>Process Table</a> entry.
 		
 		<b>NOTE: </b>Do not use registers to store intermediate results at this point as the user context is not saved yet. 
 		<div> 
@@ -1463,7 +1524,7 @@ backup;
 <div>
 	
 <pre>
-print "timer";
+print "TIMER";
 </pre> </div> </li>
 
 <li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table before returning 
@@ -1537,7 +1598,7 @@ ireturn;
 		<!-- End Learning Objectives-->
 		
 		<b style="font-size:20px">Modifying the user program</b>
- 	<p><b>Read and understand the <a href="sete"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
+ 	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
  	
  	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be
  	 modified to incorporate the system call to print the result to the terminal. 
@@ -1703,7 +1764,7 @@ word = [physicalAddrWord];</pre>
 	<br>
 	<li>
 	Write the word to the terminal using the print instruction. 	<div>
-	<pre>print (word);</pre>
+	<pre>print word;</pre>
 	</div>
 	</li>
 	<br>
