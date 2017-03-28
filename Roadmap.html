@@ -1696,16 +1696,20 @@ INT 10
 	The word to be printed is passed from the user program through its user stack as the 
 	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
 	and writes it to the terminal using the OUT instruction. </p>
-	<p>Detailed instructions for doing so are given below.</p>
+	<p>Detailed instructions for doing so are given below:</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
-	<li> Save the value of user SP in a register as we need it for further computations.
+	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
 userSP = SP;</pre>
 	</div>
 	</li>
 	<br>
-	<li>Save the value of SP in the user SP field of Process Table entry of the process and set the value
-	of SP to beginning of the kernel stack.</li>
+	<li>Switch the stack from user stack to kernel stack. 
+<ol style="margin-left:20px;list-style-type:circle;">
+	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
+	<li>Set the value of SP to beginning of the kernel stack.</li>
+</ol>
+	</li>
 	<br>
 	<li>In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
@@ -1744,6 +1748,10 @@ word = [physicalAddrWord];</pre>
 	Pass control back to the user program using the ireturn statement.
 	</li>
 	<br>
+
+
+	</ol>
+
 	<li>
 	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
 	</li>
@@ -1755,11 +1763,16 @@ word = [physicalAddrWord];</pre>
 	<li> 
 	Load the compiled XSM code as INT 7 into the XSM disk using XFS Interface.
 	</li>
-	</ol>
+	<br>
+	<li> 
+	Run the Machine with timer disabled.
+	</li>
+
  	<br>
+	<!--
 	<p><b style="color:#26A65B">Assignment :</b> Why should we calculate the physical address of userSP-3 and userSP -1
 	seperately instead of calculating the physical address of userSP and subtracting required indices from it? </p>
-
+	-->
  
           </div>
         </div>
