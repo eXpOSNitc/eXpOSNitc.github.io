@@ -1303,7 +1303,7 @@ loadi(63,13);
 loadi(64,14);</pre>
 
         <p>
-       The eXpOS ABI stipulates that the code for a shared library must be loaded to disk blocks 13 and 14 of the disk.  During OS startup, the OS is supposed to load this code into memory pages 63 and 64.  This <b> library code must be attached to logical page 0 and logical page 1 of each process</b>.  Thus, this code will be shared by every application program running on the operating system and is called the common shared library or simply the library.  
+       The eXpOS ABI stipulates that the code for a shared library must be loaded to disk blocks 13 and 14 of the disk.  During OS startup, the OS is supposed to load this code into memory pages 63 and 64.  This <b> library code must be attached to logical page 0 and logical page 1 of each process</b>.  Thus, this code will be shared by every application program running on the operating system and is called the <b>common shared library </b> or simply the library.  
 </p>
 <p>
 The library provides a common code interface for all system calls.  This means, to invoke a system call, the application can call the corresponding library function and the library will in turn invoke the system call and return values back to the application.  The library also implements some functions like dynamic memory allocation and de-allocation from the heap area.  
