@@ -1416,12 +1416,11 @@ SP = 8*512;
                 </div>
             </div>
                 
-            
+           
             <!-- Stage 8 -->
-
-                      <div class="panel-heading" id="list_stage8">
+ <div class="panel-heading" id="list_stage8">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 : Interrupt Service Routines</a>
+                          <a data-toggle="collapse"  href="#collapse8"><span class="fa fa-check-square-o"></span>Stage 8 :  Handling Timer Interrupt </a>
                         </h4>
                       </div>
 
@@ -1434,6 +1433,98 @@ SP = 8*512;
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo8">Learning Objectives</a>
                             <div id="lo8" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Run the XSM machine with Timer enabled.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with timer interrupt handling.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->
+<p> 
+ Prerequisite reading:  Read Interrupts and Exception handling from XSM tutorial.  
+</p>
+<p>
+If the XSM simulator is run with the the timer set to some value - say 20, then every time the machine completes execution of 20 instructions in user mode, the timer device will send a hardware signal that interrupts machine execution.  The machine will push the IP value of the next user mode instruction to the stack and pass control to the the timer interrupt handler at physical address 2048.
+</p>
+<p>
+eXpOS design given here [http://exposnitc.github.io/os_implementation.html]   requires you to load a timer interrupt routine into two pages of memory starting at memory address 2048 (pages 4 and 5).  The routine must be written by you and loaded into disk blocks 17 and 18 so that the OS startup code can load this code into memory pages 4 and 5.  
+</p>
+<p>
+In this stage, we will run the machine with timer on and write a simple timer interrupt handler.  
+</p>
+
+<b style="font-size:20px">Modifications to OS Startup Code </b>
+ 	
+ 	<p>OS Startupt code used in the previous stage has to be modified to 
+	load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5. </p>
+	<div>
+	<pre>load(4, 17);
+load(5, 18);</pre>
+	</div>	
+	<br>
+
+	 	<b style="font-size:20px">Timer Interrupt</b>
+<p>
+We will write the timer interupt routine such that it just prints "TIMER" and returns to the user program.
+</p>
+
+<ol>
+
+<pre>
+print "TIMER";
+ireturn;
+</pre> 
+
+<li>
+		Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_timer.spl
+		</li>
+		<br>
+		<li> 
+		Compile this program using the SPL compiler.
+		</li>
+		<br>
+		<li> 
+		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
+		<div>
+		<pre>cd $HOME/myexpos/xfs-interface
+./xfs-interface
+# load --int=timer $HOME/spl/spl_progs/sample_timer.xsm
+# exit</pre>
+		</div>
+		</li>
+<li> Run the XSM machine with timer enabled</li>
+
+<pre>cd $HOME/myexpos/xsm
+./xsm --timer 2</pre>
+
+</ol>
+
+        <!--========= Stage descrptions ends here ===========-->
+                </div>
+            </div>
+                
+
+            <!-- Stage 9 -->
+
+                      <div class="panel-heading" id="list_stage9">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9 :  Handling Timer Interrupt </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse9" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
+                            <div id="lo9" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the hardware interrupt mechanism in eXpOS.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the kernel stack management during hardware ISRs.</li>
@@ -1478,15 +1569,7 @@ SP = 8*512;
  	<br>
  	<b style="font-size:20px">Modifications to OS Startup Code </b>
  	
-	<p>OS Startupt code used in the previous stage has to be modified to incorporate interrupts.</p>
-	<ol style="list-style-type:decimal;margin-left:2px">
-	<li>Load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5.
-	<div>
-	<pre>load(4, 17);
-load(5, 18);</pre>
-	</div>
-	</li>	
-	<br>
+	
 	
 	<li>  
 Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
@@ -1577,45 +1660,28 @@ ireturn;
                               </div> 
 		</li>
 		<br>
-		<li>
-		Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_timer.spl
-		</li>
-		<br>
-		<li> 
-		Compile this program using the SPL compiler.
-		</li>
-		<br>
-		<li> 
-		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
-		<div>
-		<pre>cd $HOME/myexpos/xfs-interface
-./xfs-interface
-# load --int=timer $HOME/spl/spl_progs/sample_timer.xsm
-# exit</pre>
-		</div>
-		</li>
 		
 	</ol>
  	
     </div>
     </div>              
-                   <!-- Stage 9 -->
+                   <!-- Stage 10 -->
 
-                      <div class="panel-heading" id="list_stage9">
+                      <div class="panel-heading" id="list_stage10">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9 : Introduction to software interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>Stage 10 : Introduction to software interrupts </a>
                         </h4>
                       </div>
 
-                      <div id="collapse9" class="panel-collapse collapse">
+                      <div id="collapse10" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
-                            <div id="lo9" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo10">Learning Objectives</a>
+                            <div id="lo10" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the XEXE format.</li>
@@ -1812,22 +1878,22 @@ word = [physicalAddrWord];</pre>
 
      <!-- Stage 10 -->
 
-                      <div class="panel-heading" id="list_stage10">
+                      <div class="panel-heading" id="list_stage11">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>
-                          Stage 10 : MultiProgramming</a>
+                          <a data-toggle="collapse"  href="#collapse11"><span class="fa fa-check-square-o"></span>
+                          Stage 11 : MultiProgramming</a>
                         </h4>
                       </div>
 
-                      <div id="collapse10" class="panel-collapse collapse">
+                      <div id="collapse11" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo10">Learning Objectives</a>
-                            <div id="lo10" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo11">Learning Objectives</a>
+                            <div id="lo11" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement round robin scheduling.</li>
       
