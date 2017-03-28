@@ -1349,9 +1349,9 @@ The following code sets page table entries for logical page 4 (of the code) and 
 [PTBR+3] = "0100";
 
 //Heap
-[PTBR+4] = -1;
+[PTBR+4] = 78;
 [PTBR+5] = "0000";
-[PTBR+6] = -1;
+[PTBR+6] = 79;
 [PTBR+7] = "0000";
 
 //Code
@@ -1372,12 +1372,14 @@ The following code sets page table entries for logical page 4 (of the code) and 
 </pre>
         </li>
 <li>
-Since the total address space of a process is 10 pages, PTLR regiser must be set to value 10. 
+Since the total address space of a process is 10 pages, PTLR register must be set to value 10. 
 <pre>PTLR = 10;</pre>
 </li>
 
 <li>
-  Initialise IP to the second word in the header. Since the first code page is loaded into memory page 65, 
+  The second entry of the header of an executable file will contain an entry point value.  This is the address of the first instruction to be executed when the program is run.  
+  
+  Hence, you must initialise IP to the second word in the header. Since the first code page is loaded into memory page 65, 
   the address of the second word in header is calculated as (65 * 512) + 1. This value is stored to the top of the user stack. 
   The machine on executing IRET instructions pops this value from the stack and sets IP to that value. 
 
@@ -1392,7 +1394,7 @@ SP = 8*512;
   
   <br>
   <b>Making Things Work </b><br><br>
-            <ol style="list-style-type:decimal;margin-left:2px">
+            <ol style="list-style-type:decimal;margin-left:10px">
         <li>
           Compile and load the modified OS startup Code
         </li>
@@ -1405,6 +1407,10 @@ SP = 8*512;
           Run the machine in debug mode.
         </li>
       </ol> 
+
+      <p>
+<b>Exercise </b> : Change the user program to compute cubes of the first five numbers. 	
+  </p>	
             
         <!--========= Stage descrptions ends here ===========-->
                 </div>
