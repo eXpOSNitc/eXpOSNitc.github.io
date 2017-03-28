@@ -1596,83 +1596,47 @@ ireturn;
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
-		
-		<b style="font-size:20px">Modifying the user program</b>
+		<p>
+
+ 	In the Stage 7, we wrote a user program and used the BRKP instruction to view the result in debug mode.
+
+ 	In this stage, we will modify the program such that the result is printed directly to the terminal. 
+	The terminal print is acheived by issuing a a write system call from the user program. 
+ 	The ISR corresponding to it is INT 7. We will also write the INT7 ISR.
+
+ 	  
+</p>
+
+  
+
+
  	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
  	
- 	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be
- 	 modified to incorporate the system call to print the result to the terminal. 
- 	 After the result of computation is stored in R1, INT 7 has to be invoked to write the result to the terminal.</p>
- 	<ol style="list-style-type:decimal;margin-left:2px">
-	<li> Save the context of the registers in use (R0,R1,R2 etc) into the user stack.
-	<pre>
-PUSH R0
-PUSH R1
-PUSH R2</pre>
+<b style="font-size:18px">Modifying the user program</b>
+<br> <br>
+<p>The user program is modified such that a write system call is issued to print the contents of register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions for the following:
+</p>
 
-	</li>
-	<li>Push the system call number for write on the stack.
-	<div>
-	<pre>
-MOV R0, 5
-PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Push the value -2 on the stack to indicate that the word has to be printed to the terminal.
-	<div>
-	<pre>
-MOV R0, -2		
-PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>The word to be printed is stored in register R1. Push the word on to the stack.
-	<div>
-	<pre>PUSH R1</pre>
-	</div>
-	</li>
-	<br>
-	<li>By convention, all system calls have 3 arguments. 
-	As we do not have a third argument in this case, push R0 on to the stack.
-	<div>
-	<pre>PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Allocate space for storing the return value on the stack.
-	<div>
-	<pre>PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Invoke interrupt 7.
-	<div>
-	<pre>INT 7</pre>
-	</div>
-	</li>
-	<br>
-	
-	<li>Pop out all the values which were pushed on the stack prior to the system call.
-	<div>
-	<pre>POP R1
-POP R1
-POP R1
-POP R1
-POP R1</pre>
-	</div>
-	</li>
-	<li>
-	Restore the register context from the stack.
-	<div>
-	<pre>
-POP R2
-POP R1
-POP R0</pre></div>
-	</li>
-	</ol>
-	<br>
-	<p>The resulting program is given below.
+<ol style="list-style-type:decimal;margin-left:2px">
+
+<li>Save the registers in use to the user stack. As per specification, since the user program has control over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
+</li>
+
+<br>
+
+<li> Push the system call number and arguments to the stack. For the Write system call,  the sytem call number is 5. Argument 1 is the file descritor which is -2 for the terminal. Argument 2 is the word to be written which is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. 
+</li> <br>
+
+<li> Push any register, say R0 to allocate space for the return value. </li> <br>
+
+<li>Invoke the interrupt by "INT7" instruction. </li> <br>
+
+<li> Pop out all the system call number and arguments which were pushed on the stack prior to the system call. </li>
+<br>
+<li> Restore the register context from the stack. </li>
+<br>
+</ol>
+	<p>The resulting program is given below. 
 	<div>
 	<pre>
 0
@@ -1691,14 +1655,16 @@ JZ R2, 2076
 MOV R1, R0
 MUL R1, R0
 
+
 PUSH R0
 PUSH R1
 PUSH R2
 
 MOV R0, 5
-PUSH R0
-MOV R0, -2		
-PUSH R0
+MOV R2, -2
+
+PUSH R0	
+PUSH R2
 PUSH R1
 PUSH R0
 PUSH R0
