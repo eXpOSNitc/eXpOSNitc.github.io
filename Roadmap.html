@@ -1303,7 +1303,7 @@ loadi(63,13);
 loadi(64,14);</pre>
 
         <p>
-       The eXpOS ABI stipulates that the code for a shared library must be loaded to disk blocks 13 and 14 of the disk.  During OS startup, the OS is supposed to load this code into memory pages 63 and 64.  This code must be attached to logical page 0 and logical page 1 of each process.  Thus, this code will be shared by every application program running on the operating system and is called the common shared library or simply the library.  
+       The eXpOS ABI stipulates that the code for a shared library must be loaded to disk blocks 13 and 14 of the disk.  During OS startup, the OS is supposed to load this code into memory pages 63 and 64.  This <b> library code must be attached to logical page 0 and logical page 1 of each process</b>.  Thus, this code will be shared by every application program running on the operating system and is called the common shared library or simply the library.  
 </p>
 <p>
 The library provides a common code interface for all system calls.  This means, to invoke a system call, the application can call the corresponding library function and the library will in turn invoke the system call and return values back to the application.  The library also implements some functions like dynamic memory allocation and de-allocation from the heap area.  
@@ -1328,7 +1328,7 @@ Thus, the OS must do the following to ensure correct run time linkage of library
         
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
-The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 19. 
+The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 9. 
 
 <br><br>
 
