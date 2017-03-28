@@ -929,8 +929,16 @@ endwhile; </pre>
 
     In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
 
-    You will then write the OS startup code such that it loads the INIT program into the memory and initiate its execution at the time of system startup.
+    You will then write the OS startup code such that it loads the INIT program into the memory and initiate its execution at the time of system startup. </p>
 
+    <p> 
+    	In OS jargon, a user program in execution is called a “process”.  Thus, in this stage, you are going to run the first user process.  Typically the OS maintains some memory data structures associated with each process - like the process table, page table, user area etc.  For now, we will not be concerned with most of these data structures except the page table.  In later stages, you will be introduced to these data structures one by one.
+    </p>
+
+<p>
+    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion.  
+
+</p> 
     <br> <br>
 		
     <b> User Program  </b> <br> 
@@ -1451,7 +1459,7 @@ SP = 8*512;
 If the XSM simulator is run with the the timer set to some value - say 20, then every time the machine completes execution of 20 instructions in user mode, the timer device will send a hardware signal that interrupts machine execution.  The machine will push the IP value of the next user mode instruction to the stack and pass control to the the timer interrupt handler at physical address 2048.
 </p>
 <p>
-eXpOS design given here [http://exposnitc.github.io/os_implementation.html]   requires you to load a timer interrupt routine into two pages of memory starting at memory address 2048 (pages 4 and 5).  The routine must be written by you and loaded into disk blocks 17 and 18 so that the OS startup code can load this code into memory pages 4 and 5.  
+eXpOS design given <a href="os_implementation.html" target="_blank">here</a> requires you to load a timer interrupt routine into two pages of memory starting at memory address 2048 (pages 4 and 5).  The routine must be written by you and loaded into disk blocks 17 and 18 so that the OS startup code can load this code into memory pages 4 and 5.  
 </p>
 <p>
 In this stage, we will run the machine with timer on and write a simple timer interrupt handler.  
@@ -1462,8 +1470,8 @@ In this stage, we will run the machine with timer on and write a simple timer in
  	<p>OS Startupt code used in the previous stage has to be modified to 
 	load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5. </p>
 	<div>
-	<pre>load(4, 17);
-load(5, 18);</pre>
+	<pre>loadi(4, 17);
+loadi(5, 18);</pre>
 	</div>	
 	<br>
 
@@ -1512,7 +1520,7 @@ ireturn;
 
                       <div class="panel-heading" id="list_stage9">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9 :  Handling Timer Interrupt </a>
+                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9:  Handling kernel stack. </a>
                         </h4>
                       </div>
 
