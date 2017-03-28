@@ -1596,83 +1596,47 @@ ireturn;
                         </div>
                       </div>
 		<!-- End Learning Objectives-->
-		
-		<b style="font-size:20px">Modifying the user program</b>
+		<p>
+
+ 	In the Stage 7, we wrote a user program and used the BRKP instruction to view the result in debug mode.
+
+ 	In this stage, we will modify the program such that the result is printed directly to the terminal. 
+	The terminal print is acheived by issuing a a write system call from the user program. 
+ 	The ISR corresponding to it is INT 7. We will also write the INT7 ISR.
+
+ 	  
+</p>
+
+  
+
+
  	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
  	
- 	<p>The user program to compute the squares of first 20 numbers used in the previous stage has to be
- 	 modified to incorporate the system call to print the result to the terminal. 
- 	 After the result of computation is stored in R1, INT 7 has to be invoked to write the result to the terminal.</p>
- 	<ol style="list-style-type:decimal;margin-left:2px">
-	<li> Save the context of the registers in use (R0,R1,R2 etc) into the user stack.
-	<pre>
-PUSH R0
-PUSH R1
-PUSH R2</pre>
+<b style="font-size:18px">Modifying the user program</b>
+<br> <br>
+<p>The user program is modified such that a write system call is issued to print the contents of register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions for the following:
+</p>
 
-	</li>
-	<li>Push the system call number for write on the stack.
-	<div>
-	<pre>
-MOV R0, 5
-PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Push the value -2 on the stack to indicate that the word has to be printed to the terminal.
-	<div>
-	<pre>
-MOV R0, -2		
-PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>The word to be printed is stored in register R1. Push the word on to the stack.
-	<div>
-	<pre>PUSH R1</pre>
-	</div>
-	</li>
-	<br>
-	<li>By convention, all system calls have 3 arguments. 
-	As we do not have a third argument in this case, push R0 on to the stack.
-	<div>
-	<pre>PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Allocate space for storing the return value on the stack.
-	<div>
-	<pre>PUSH R0</pre>
-	</div>
-	</li>
-	<br>
-	<li>Invoke interrupt 7.
-	<div>
-	<pre>INT 7</pre>
-	</div>
-	</li>
-	<br>
-	
-	<li>Pop out all the values which were pushed on the stack prior to the system call.
-	<div>
-	<pre>POP R1
-POP R1
-POP R1
-POP R1
-POP R1</pre>
-	</div>
-	</li>
-	<li>
-	Restore the register context from the stack.
-	<div>
-	<pre>
-POP R2
-POP R1
-POP R0</pre></div>
-	</li>
-	</ol>
-	<br>
-	<p>The resulting program is given below.
+<ol style="list-style-type:decimal;margin-left:2px">
+
+<li>Save the registers in use to the user stack. As per specification, since the user program has control over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
+</li>
+
+<br>
+
+<li> Push the system call number and arguments to the stack. For the Write system call,  the sytem call number is 5. Argument 1 is the file descritor which is -2 for the terminal. Argument 2 is the word to be written which is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. 
+</li> <br>
+
+<li> Push any register, say R0 to allocate space for the return value. </li> <br>
+
+<li>Invoke the interrupt by "INT7" instruction. </li> <br>
+
+<li> Pop out all the system call number and arguments which were pushed on the stack prior to the system call. </li>
+<br>
+<li> Restore the register context from the stack. </li>
+<br>
+</ol>
+	<p>The resulting program is given below. 
 	<div>
 	<pre>
 0
@@ -1691,14 +1655,16 @@ JZ R2, 2076
 MOV R1, R0
 MUL R1, R0
 
+
 PUSH R0
 PUSH R1
 PUSH R2
 
 MOV R0, 5
-PUSH R0
-MOV R0, -2		
-PUSH R0
+MOV R2, -2
+
+PUSH R0	
+PUSH R2
 PUSH R1
 PUSH R0
 PUSH R0
@@ -1730,16 +1696,20 @@ INT 10
 	The word to be printed is passed from the user program through its user stack as the 
 	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
 	and writes it to the terminal using the OUT instruction. </p>
-	<p>Detailed instructions for doing so are given below.</p>
+	<p>Detailed instructions for doing so are given below:</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
-	<li> Save the value of user SP in a register as we need it for further computations.
+	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
 userSP = SP;</pre>
 	</div>
 	</li>
 	<br>
-	<li>Save the value of SP in the user SP field of Process Table entry of the process and set the value
-	of SP to beginning of the kernel stack.</li>
+	<li>Switch the stack from user stack to kernel stack. 
+<ol style="margin-left:20px;list-style-type:circle;">
+	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
+	<li>Set the value of SP to beginning of the kernel stack.</li>
+</ol>
+	</li>
 	<br>
 	<li>In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
@@ -1778,6 +1748,10 @@ word = [physicalAddrWord];</pre>
 	Pass control back to the user program using the ireturn statement.
 	</li>
 	<br>
+
+
+	</ol>
+
 	<li>
 	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
 	</li>
@@ -1789,11 +1763,16 @@ word = [physicalAddrWord];</pre>
 	<li> 
 	Load the compiled XSM code as INT 7 into the XSM disk using XFS Interface.
 	</li>
-	</ol>
+	<br>
+	<li> 
+	Run the Machine with timer disabled.
+	</li>
+
  	<br>
+	<!--
 	<p><b style="color:#26A65B">Assignment :</b> Why should we calculate the physical address of userSP-3 and userSP -1
 	seperately instead of calculating the physical address of userSP and subtracting required indices from it? </p>
-
+	-->
  
           </div>
         </div>
@@ -1802,7 +1781,7 @@ word = [physicalAddrWord];</pre>
 
      <!-- Stage 10 -->
 
-                      <div class="panel-heading" id="list_stage8">
+                      <div class="panel-heading" id="list_stage10">
                         <h4 class="panel-title">
                           <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>
                           Stage 10 : MultiProgramming</a>
@@ -1877,6 +1856,113 @@ load --exec < path to even.xsm > </pre>
         </div>
         </div>
 
+					<!-- Stage 12 -->
+
+                      <div class="panel-heading" id="list_stage12">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse12" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
+                            <div id="lo12" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+	<!-- End Learning Objectives-->    
+        In this stage you will implement the process system calls. There are three process system calls : fork, 
+        exec and exit with system call numbers 8, 9 and 10 and are handled by interrupt routines 8, 9 and 10 respectively.
+          <br><br>
+		<b>Modifications to OS Startup Code</b><br>
+		<ol style="list-style-type:decimal;margin-left:2px">
+        <li> Initialise the state of all free process table entries to TERMINATED state. This is done to
+        identify the free entries while searching for a process table entry for a new process.</li>
+        <li> The OS supports maintains information about free memory pages usinng the <a href ="os_design-files/mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> data structure.
+        The used pages are marked as 1 and the unused pages are marked as 0 in Memory Free List. The pages 0 - 75 are
+        reserved for the OS and the pages 75 - 80 are used as stack pages and user area pages by init and idle programs.
+        Hence, mark the pages 0 - 80 as used and 81 - 127 as unused. </li>
+        <li> Load interrupts 8, 9 and 10 from disk blocks 31 - 36 to memory pages 18 - 23.</li>
+        <li> Load modules 2, </li>
+		</ol>
+		<br><br>
+		<b>Fork System Call</b>
+		<p>Fork System Call replicates the process invoking the system call. The heap, code and library regions
+		 of the parent are shared by the child. A new stack is allocated to the child and the parent's stack 
+		 is copied into the child's stack.</p>
+		<ol style="list-style-type:decimal;margin-left:2px">
+		<li>Save the value of SP in the Process Table entry of the process and set the value of SP to the 
+		beginning of User Area Page.
+         </li>
+         <li>Invoke the GetPTentry() from Process Manager module to find a free Process Table entry for the
+          child process. Ensure that you push all the used registers to stack before invoking the module.</li>
+         <li>If the value returned is -1 indicating no free Process Table entries, retuen -1 indicaing failure.</li>
+         <li>The new process requires 3 memory pages: 2 for user stack and 1 for User Area Page.
+         Invoke the Getpage() function in Memory Manager module thrice to obtain 3 memory pages.
+         </li>
+         <li>The index of the Process Table entry found gives the PID of the child process.
+         PAGE_TABLE_BASE + PID*20 would give the PTBR of the child process.
+         Copy the page table entries (code, heap and library) from the parent's page table to the 
+         child. Set the page table entries of user stack as the newly found pages for user stack.</li>
+         <li>The heap, code and library regions of the parent are shared by the child. 
+         For each page shared, increment its value in the Memory Free List</li>
+         <li>Copy the parent's <a href="process_table.html#machine_state" target="_blank">Machine State</a> 
+         (except PTBR and User Area Page number). Set the PTBR field of the Machine State to the address of 
+         the page table of the child. Set the User Area Page number field as the newly found page for User Area Page.</li>
+		 <li>Copy the user stack of parent to the user child of child.</li>
+		 <li>Set the return  value to 0 for the child process.</li>
+		 <li>The PID of the child process is set as the return value for the parent process.</li>
+		 <li>Set state of child process to CREATED. </li>
+		 <li>Set the value of SP to point to the user stack.</li>
+		 <li>Return to the parent process.</li>
+		 </ol>
+		 <br><br>
+		 <b>GetPTentry()</b>
+		 <ol style="list-style-type:decimal;margin-left:2px">
+		 <li>Iterate through the Process Table entries to find a free entry to be allocated for the new process</li>
+		 <li>If no free entry is found, return -1.</li>
+		 </ol>
+		 <br><br>
+		 <b>Getpage()</b><br>
+		 <ol style="list-style-type:decimal;margin-left:2px">
+        <li>Iterate through the Memory Free List to find a free entry (denoted by 0).</li>
+        <li>If no free entry is found,....</li>
+        <li>Return the index of the free entry.</li>
+        </ol>
+        <br><br>
+        <b>Exec System Call</b>
+        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
+        address space. A successful Exec operation results in the extinction of the invoking process and hence
+        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Retrieve the filename of the new process from the user stack.</li>
+			<li>Return -1 if the filename is NULL.</li>
+			<li>Iterate through the Inode Table to find the inode index of the file.</li>
+			<li>If file is not found, return -1.</li>
+			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
+			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
+			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
+			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
+			1 for User Area Page and 1 for code.</li>
+          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
+          from disk to memory. </li>
+          <li>Set up the page table entries of the new process. The first code page must be </li>
+          <li>Set up the Process Table entries.</li>
+          <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
+          <li>Set the value of SP as 4096.</li>
       </div>
       
       
