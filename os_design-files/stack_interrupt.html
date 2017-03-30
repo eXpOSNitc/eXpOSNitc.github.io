@@ -123,7 +123,7 @@
               Since the application does not have control over the transfer 
                to the interrupt module, it would not have saved its context. </p>
                <p>	
-               Thus in this case the Interrupt Service Routine must save the register context of the application in its own stack, perform the required operations and must restore the context before returning to the application.  
+               Thus in this case the Interrupt Service Routine must save the register context of the application in the kernel stack of the current process, perform the required operations and must restore the context before returning to the application.  
                The <b> <a href="process_table.html#user_area" target="_blank"> kernel stack</a> </b> is used to store the execution context of the user process. 
                (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
 				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
@@ -153,14 +153,19 @@
              1. The page number of the user area page is stored in the UArea Page Number field in the process table.
 </p>
 <p>
-             2. The offset of SP register within the user area page will be stored (and not the physical address of the kernel stack pointer) in the KPTR field of the process table .The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. 
+             2. The offset of SP register within the user area page will be stored (and not the physical address of the kernel stack pointer) in the KPTR field of the process table .
+             The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow 
+             the OS to relocate the user area page to another physical memory page. On entering a kernel module from the 
+             user process, the kernel stack will be empty and hence KTPR will be 0.
     </p><p>
 
              3. When executing in user mode, the kernel stack is empty and hence the KPTR value is assumed to be zero. 
              </p>
 <br> <br>
               <p style="margin:0"><h4><b> 1. Actions done by the kernel upon entering the interrupt service routine </b></h4></p>
-                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack</p> 
+                &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Switch from the user stack to the kernel stack. This involves storing the value of SP to UPTR field of
+                the Process Table entry and setting the value of SP to User Area Page Number * 512 -1 as kernel stack
+                is assumed to be empty on entering a kernel module from user process.</p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Save the values of the machine registers in the kernel stack using BACKUP machine instruction.  </p> 
 		&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Continue execution of the interrupt routine code</p>
 		
@@ -180,7 +185,7 @@
 MOV UPTR, SP	// Save the current SP register to 
 		   User stack pointer field of the 
 		   process table.
-MOV SP, User Area Page Number*512
+MOV SP, User Area Page Number*512 - 1
 	// Set kernel stack
 		   
 </code>
@@ -306,7 +311,7 @@ IRET		// return to the user process
 <br><br>	      
 	      
 
-<p> <b>NOTE: </b> If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 	      
+<p> <b>NOTE: </b> If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. Hoewever the procedure described above should be followed while handling page fault exception (since this does not result in termination of the user program).</p> 	      
 	      
 	      <br> <br>
 	     </div>
