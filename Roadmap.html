@@ -1107,7 +1107,14 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
      Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>
      <br>  
      The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
-     We must set PTBR to the starting address of the page table of INIT.  
+     We must set PTBR to the starting address of the page table of INIT.  The <a href="os_implementation.html" target="_blank">eXpOS memory organization</a>
+     stipulates that the page tables are stored from memory address 29696. 
+     Here since we are running the first user program, we will use the first few entries of this memory 
+     region for setting up the page table for the INIT process.  The <a href="support_tools-files/constants.html" target="_blank">SPL constant</a> PAGE_TABLE_BASE holds
+     the value 29696.  
+     
+     
+      
 <br><br>
     You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
     and one additional page for stack (why?). Hence, PTLR is set to value 3.  
