@@ -1638,10 +1638,15 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 		 
 		<li> 
 		Save the current value of User SP into the corresponding Process Table entry.
-    Obtain the process id of the currently running process from <a>System Status Table</a>.
-		This value can be used to get its <a>Process Table</a> entry.
-		
-		<b>NOTE: </b>Do not use registers to store intermediate results at this point as the user context is not saved yet. 
+    Obtain the process id of the currently executing process from <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>.
+		This value can be used to get the <a href="os_design-files/process_table.html">Process Table</a> entry of the
+		currently executing process.
+		<br><br>
+		<b>NOTE: </b>Registers RO-R15 are user registers.  Since you have not saved the register values
+		into the stack yet, you should be careful not to write any code that alters these registers till
+		the user context is saved into the stack.  Registers R16-R19 are marked for kernel use and hence
+		the kernel can modify them.  The SPL compiler will use these registers to translate your SPL code.
+		 
 		<div> 
 
  <pre>
