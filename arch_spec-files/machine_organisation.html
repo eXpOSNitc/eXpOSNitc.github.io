@@ -475,6 +475,10 @@ instruction inside the console interrupt routine.  Note that P0 will contain val
                             <div class="panel-body">
                              <p>
 When XSM machine starts up, program execution starts at the first word of the first page (Page 0) of memory.  There is a pre-loaded ROM code in Page 0 called the <b>bootstrap loader</b>.  This code loads the 1<sup>st</sup> disk block (block 0) called the <b>boot block</b> from the disk to page 1 of memory and then transfers control (using the jump instruction) to the 1<sup>st</sup> instruction in page 1.  This mechanism allows programmers to write their code and store it in the boot block so that when the machine starts up, control is transferred to this code. 
+</p>
+<p>The XSM machine has an interrupt vector table that maps each interrupt number to a corresponding address (of the interrupt handler). The vector table is stored starting from physical address 492 of memory. Locations 492,493,494 and 495 stores the addresses of exception handler, timer interrupt handler, disk interrupt handler and console interrupt handler. Location 496 contains the address of the first trap handler - INT 4, location 497 contains address of INT 5 handler and so on. When the machine encounters an INT n instruction, the corresponding ROM location is searched for the handler address and IP is set to this value.
+
+Note that the interrupt vector table is hard-coded in the ROM code of the XSM simulator given to you, you cannot change the addresses of the handlers.</p>
                                  <br/><code>Note</code> : Boot ROM code contains just 2 instructions (to load the Boot Block to page 1 and then jump to page 1 which now contains Boot Block). So, after the execution of Boot ROM, control is transferred to 1<sup>st</sup> instruction in page 1.
 </p>
                             </div>
