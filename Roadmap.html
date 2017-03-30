@@ -1549,24 +1549,44 @@ ireturn;
 		<!-- End Learning Objectives-->
  
 	   <p>eXpOS requires that when the OS enters an interrupt handler that runs in kernel mode, 
-	   the interrupt handler must switch to a different stack.  This requirement is prevent user level 
+	   the interrupt handler must switch to a different stack.  This requirement is to prevent user level 
 	   “hacks” into the kernel through the stack.  In the previous stage, though you entered the timer 
 	   interrupt service routine in the kernel mode, you did not change the stack.  In this stage,
 	    this will be done.</p> 
 
-<p>To isolate the kernel from the user stack, the OS kernel must maintain two stacks for a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <b>user area page</b> is allocated for each process.  A part of the space in this page will be used for the kernel stack (some other process information also will be stored in this page).  
+<p>To isolate the kernel from the user stack, the OS kernel must maintain two stacks for
+ a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <b>user area page</b> is 
+ allocated for each process.  A part of the space in this page will be used for the kernel stack 
+ (some other process information also will be stored in this page).  
 </p>
-<p>Whenever there is a transfer of program control from the user mode to kernel during interrupts (or exceptions), the interrupt handler will change the stack to the kernel stack of the program (that is, the SP register must point to the top of the kernel stack).  Before the machine returns to user mode from the interrupt, the user stack must be restored (that is, the SP register must point to the top of the user stack).
+
+<p>Whenever there is a transfer of program control from the user mode to kernel during interrupts 
+(or exceptions), the interrupt handler will change the stack to the kernel stack of the program 
+(that is, the SP register must point to the top of the kernel stack).  Before the machine returns to user mode 
+from the interrupt, the user stack must be restored (that is, the SP register must point to the top of the user 
+stack).
 </p>
-<p>Once we have two stacks for a user program, we need to design some data structure in memory to store the SP values of the two stacks.  This is because the SP register of the machine can store only one value.   
+
+<p>Once we have two stacks for a user program, we need to design some data structure in memory to store 
+the SP values of the two stacks.  This is because the SP register of the machine can store only one value.   
 </p>
+
 <p>eXpOS requires you to maintain a  <a href="os_design-files/process_table.html" target="_blank">Process Table</a>,
 where the data such as value of the kernel stack pointer, user stack pointer etc. pertaining to each process in execution is stored.  
 </p>
-<p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be created.  Each process table entry contains several fields.  But for now, we are only interested in storing  only 1)  user stack pointer and 2) the memory page allocated as user area for the program.  
+
+<p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be 
+created.  Each process table entry contains several fields.  But for now, we are only interested in storing  
+only 1)  user stack pointer and 2) the memory page allocated as user area for the program.  
 </p>
-<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process, we will use the first entry (the first 16 words starting at address 28672).  Among these, in this stage we will be updating only entries for user stack pointer (word 13) and user area page number (word 11).  </p>
-<p>You will modify the previous stage code so that the user program is allocated a user area page.  You will also create a process table entry for the program where you will make the necessary entries.  
+
+<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each 
+having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process,
+ we will use the first entry (the first 16 words starting at address 28672).  Among these, in this stage we will
+  be updating only entries for user stack pointer (word 13) and user area page number (word 11).  </p>
+  
+<p>You will modify the previous stage code so that the user program is allocated a user area page. 
+ You will also create a process table entry for the program where you will make the necessary entries.  
 </p>
 
     <p><b>Read and understand the <a href="os_design-files/stack_interrupt.html" target="_blank"> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
@@ -1586,7 +1606,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
 	the PID in the PID field of the process table.  
 	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
-	
+	</li>
+	<li>
 	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>
 	where the PID of the currently executing user process is maintained.  
 	This makes it easy to keep track of the current PID whenever the machine enteres any kernel mode routine. 
@@ -1609,21 +1630,7 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	<br>
  	<b style="font-size:20px">Timer Interrupt</b>
  	
- 	<p> The XSM simulator has a timer which invokes the timer 
- 	interrupt routine after a specific number of instructions. 
- 	(Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
- 	
-
-<p><b>NOTE:</b> Timer Interrupt is triggered at fixed intervals of instructions. 
-The interval can be specified when the XSM simulator is started 
-(see <a href="support_tools-files/xsm-simulator.html"> XSM</a>). 
-Default interval for timer interrupt is 10 instructions.</p>
-
-<p> Your task is to display "TIMER" every time a timer interrupt is triggered. 
- 	You will create a timer interrupt routine, which prints "TIMER". 
-
-  Detailed instructions to get this done are given below.</p>
-	 <ol style="list-style-type:decimal;margin-left:2px">
+ 	 <ol style="list-style-type:decimal;margin-left:2px">
 		 
 		 
 		<li> 
