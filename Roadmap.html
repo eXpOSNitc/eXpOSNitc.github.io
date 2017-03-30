@@ -1344,8 +1344,11 @@ The ABI stipulates that two pages must be allocated for the stack at logical pag
 
 <br><br>
 
-The following code sets page table entries for logical page 4 (of the code) and logical page
-8 (stack).  Note that the code page must be kept read only whereas stack must be read-write.
+The following code sets page table entries for logical page 4 and 5(for code area), logical page
+8 and 9(for user stack), logical pages 3 and 4(for heap) and logical pages 0 and 1(for library).
+Since pages 0 to 75 are reserved for the use of the OS kernel, the first four free pages (76,77,78 and 79) 
+will be allocated for stack and heap area. See <a href="exposnitc.github.io/os_implementation.html">Memory Organisatiion.</a>
+Note that the code and library pages must be kept read only whereas stack and heap must be read-write.
 (see <a href="arch_spec-files/paging_hardware.html" target="_blank" >page table </a> settings for details).     
 
         <!-- Remove if too spoonfeeding -->
@@ -1358,9 +1361,9 @@ The following code sets page table entries for logical page 4 (of the code) and 
 
 //Heap
 [PTBR+4] = 78;
-[PTBR+5] = "0000";
+[PTBR+5] = "0110";
 [PTBR+6] = 79;
-[PTBR+7] = "0000";
+[PTBR+7] = "0110";
 
 //Code
 [PTBR+8] = 65;
@@ -1534,7 +1537,7 @@ ireturn;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
                             <div id="lo9" class="panel-collapse expand">
                             <ul>
-							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Get introduced to setting up process table entry for a user program. </li> 
+							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Get introduced to setting up process table entry for a user program. </li> 
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the kernel stack management during hardware ISRs.</li>
                             </ul>                                  
                                      
@@ -1551,24 +1554,25 @@ ireturn;
 	   interrupt service routine in the kernel mode, you did not change the stack.  In this stage,
 	    this will be done.</p> 
 
-<p>To isolate the kernel from the user stack, the OS must maintain two stacks for a program - a user stack and a kernel stack.   In eXpOS, one page called the user area page is allocated for each process.  A part of the space in this page will be used for the kernel stack (some other process information also will be stored in this page).  
+<p>To isolate the kernel from the user stack, the OS kernel must maintain two stacks for a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <b>user area page</b> is allocated for each process.  A part of the space in this page will be used for the kernel stack (some other process information also will be stored in this page).  
 </p>
 <p>Whenever there is a transfer of program control from the user mode to kernel during interrupts (or exceptions), the interrupt handler will change the stack to the kernel stack of the program (that is, the SP register must point to the top of the kernel stack).  Before the machine returns to user mode from the interrupt, the user stack must be restored (that is, the SP register must point to the top of the user stack).
 </p>
 <p>Once we have two stacks for a user program, we need to design some data structure in memory to store the SP values of the two stacks.  This is because the SP register of the machine can store only one value.   
 </p>
-<p>eXpOS requires you to maintain a  <a href="os_design-files/process_table.html" target="_blank">Process Table </a>.
+<p>eXpOS requires you to maintain a  <a href="os_design-files/process_table.html" target="_blank">Process Table</a>,
 where the data such as value of the kernel stack pointer, user stack pointer etc. pertaining to each process in execution is stored.  
 </p>
 <p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be created.  Each process table entry contains several fields.  But for now, we are only interested in storing  only 1)  user stack pointer 2)  kernel stack pointer and  3) the memory page allocated as user area for the program.  
 </p>
+<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process, we will use the first entry (the first 16 words starting at address 28672).  Among these, in this stage we will be updating only entries for user stack pointer (word 13), kernel stack pointer (word 12) and user area page number (word 11).  </p>
 <p>You will modify the previous stage code so that the user program is allocated a user area page.  You will also create a process table entry for the program where you will make the necessary entries.  
 </p>
 
     <p><b>Read and understand the <a href="os_design-files/stack_interrupt.html" target="_blank"> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
 
  	<br>
- 	<b style="font-size:20px">Modifications to OS Startup Code </b>
+ 	<b style="font-size:20px">Modifications to the OS Startup Code </b>
  	
 	
 	<ol style="list-style-type:decimal;margin-left:10px">
