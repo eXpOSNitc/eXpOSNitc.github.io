@@ -1604,7 +1604,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	</li>
 	<li>
 	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
-	the PID in the PID field of the process table.  
+	the PID in the PID field of the process table. The <a href="support_tools-files/constants.html">SPL constant</a> PROCESS_TABLE points to the starting address(28672)
+	of the Process Table.
 	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
 	</li>
 	<li>
@@ -1614,7 +1615,9 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	The system status table is stored starting from memory address 29560.  The second field of this 
 	table must be set to the PID of the process which is going to be run in user mode.  
 	 
-	Set the current PID field in the System Status Table.
+	Set the current PID field in the System Status Table. The <a href="support_tools-files/constants.html">SPL
+	 constant</a> SYSTEM_STATUS_TABLE points to the starting address(28672)
+	of the Process Table.
 	<div>
 	<pre>
 [SYSTEM_STATUS_TABLE + 1] = 0;</pre></div>
@@ -1622,8 +1625,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	<li>
 	The kernel stack pointer for the process need not be set now as all interrupt handlers assume that the kernel stack is 
 	empty when the handler is entered from user mode. Thus whenever an interrupt handler is entered from user mode, the kernel 
-	stack pointer will be initialized assuming that the stack is empty.(See <a href="os_design-files/stack_interrupt.html">
-		Kernel Stack Management during hardware interrupts and exceptions</a>)
+	stack pointer will be initialized assuming that the stack is empty. (See <a href="os_design-files/stack_interrupt.html">
+		Kernel Stack Management during hardware interrupts and exceptions</a>).
 	 The KPTR value will be used in later stages when kernel modules invoke each other.
 	</li>
 	</ol>
