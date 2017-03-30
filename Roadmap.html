@@ -1578,20 +1578,32 @@ where the data such as value of the kernel stack pointer, user stack pointer etc
 	<ol style="list-style-type:decimal;margin-left:10px">
 	<li>  
 Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
- of the current process. Since the first available free page is 80, you should allocate the User Area page is allocated in the physical page number 80.
+ of the current process. Since the first available free page is 80, the User Area page is allocated at the physical page number 80.
 	<pre>
 [PROCESS_TABLE + 11] = 80;</pre>
 	</li>
 	<li>
-	As we are using the first Process Table entry, the PID will be 0.
-	Set the current PID field in the <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>.
+	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
+	the PID in the PID field of the process table.  
+	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
+	
+	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>
+	where the PID of the currently executing user process is maintained.  
+	This makes it easy to keep track of the current PID whenever the machine enteres any kernel mode routine. 
+	The system status table is stored starting from memory address 29560.  The second field of this 
+	table must be set to the PID of the process which is going to be run in user mode.  
+	 
+	Set the current PID field in the System Status Table.
 	<div>
 	<pre>
 [SYSTEM_STATUS_TABLE + 1] = 0;</pre></div>
 	</li>
 	<li>
-	The kernel stack pointer need not be set now as all interrupt handlers assume that the kernel stack is 
-	empty when the handler is entered from user mode.  The kernel stack pointer value will be used in later stages when kernel modules invoke each other.
+	The kernel stack pointer for the process need not be set now as all interrupt handlers assume that the kernel stack is 
+	empty when the handler is entered from user mode. Thus whenever an interrupt handler is entered from user mode, the kernel 
+	stack pointer will be initialized assuming that the stack is empty.(See <a href="os_design-files/stack_interrupt.html">
+		Kernel Stack Management during hardware interrupts and exceptions</a>)
+	 The KPTR value will be used in later stages when kernel modules invoke each other.
 	</li>
 	</ol>
 	<br>
