@@ -1563,9 +1563,9 @@ ireturn;
 <p>eXpOS requires you to maintain a  <a href="os_design-files/process_table.html" target="_blank">Process Table</a>,
 where the data such as value of the kernel stack pointer, user stack pointer etc. pertaining to each process in execution is stored.  
 </p>
-<p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be created.  Each process table entry contains several fields.  But for now, we are only interested in storing  only 1)  user stack pointer 2)  kernel stack pointer and  3) the memory page allocated as user area for the program.  
+<p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be created.  Each process table entry contains several fields.  But for now, we are only interested in storing  only 1)  user stack pointer and 2) the memory page allocated as user area for the program.  
 </p>
-<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process, we will use the first entry (the first 16 words starting at address 28672).  Among these, in this stage we will be updating only entries for user stack pointer (word 13), kernel stack pointer (word 12) and user area page number (word 11).  </p>
+<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process, we will use the first entry (the first 16 words starting at address 28672).  Among these, in this stage we will be updating only entries for user stack pointer (word 13) and user area page number (word 11).  </p>
 <p>You will modify the previous stage code so that the user program is allocated a user area page.  You will also create a process table entry for the program where you will make the necessary entries.  
 </p>
 
@@ -1592,8 +1592,6 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	<li>
 	The kernel stack pointer need not be set now as all interrupt handlers assume that the kernel stack is 
 	empty when the handler is entered from user mode.  The kernel stack pointer value will be used in later stages when kernel modules invoke each other.
-	For now, set the value of kernel stack pointer to 0.
-	<div><pre>[PROCESS_TABLE + 12] = 0;</pre></div>  
 	</li>
 	</ol>
 	<br>
