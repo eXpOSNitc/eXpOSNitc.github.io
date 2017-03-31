@@ -1767,12 +1767,15 @@ ireturn;
  	
 <b style="font-size:18px">Modifications to the user program</b>
 <br> <br>
-<p>The user program is modified such that a write system call is issued to print the contents of register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions for the following:
+<p>The user program of Stage 7 is modified such that a write system call is issued to print the contents of
+ register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions
+  for the following:
 </p>
 
 <ol style="list-style-type:decimal;margin-left:2px">
 
-<li>Save the registers in use to the user stack. As per specification, since the user program has control over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
+<li>Save the registers in use to the user stack. As per specification, since the user program has control 
+over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
 </li>
 
 <br>
@@ -1784,6 +1787,7 @@ ireturn;
 
 <li>Invoke the interrupt by "INT7" instruction. </li> <br>
 
+//The followinng code will be executed after return from the system call.<br><br>
 <li> Pop out all the system call number and arguments which were pushed on the stack prior to the system call. </li>
 <br>
 <li> Restore the register context from the stack. </li>
@@ -1841,15 +1845,18 @@ INT 10
 	</pre>
 	</div>
 	</p>
+	
+	
 	<br>
 	
 	<br>
+	Now, you will write the system call handler for processing the write request.<br>
 	<b style="font-size:20px">INT 7</b>
 	<p>The write operation is handled by Interrupt 7.
 	The word to be printed is passed from the user program through its user stack as the 
 	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
 	and writes it to the terminal using the OUT instruction. </p>
-	<p>Detailed instructions for doing so are given below:</p>
+	<p>Detailed instructions for doing so are given below</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
@@ -1862,25 +1869,30 @@ userSP = SP;</pre>
 	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
 	<li>Set the value of SP to beginning of the kernel stack.</li>
 </ol>
+Details can be found at <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a>.
 	</li>
 	<br>
 	<li>In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
-	 Since interrupts are executed in kernel mode, the actual physical address is used to access memory 
+	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
 	  locations. Hence to access the word to be printed we must 
 	  calculate the physical address of the memory location where the word is stored.
 		According to the system call conventions, userSP - 3 is the location of the word to be printed.
-	  So we will manually adress translate UserSP - 3.
+	  So we will manually address translate UserSP - 3.
 	<div>
 	<pre>alias physicalAddrWord R1;
-physicalAddrWord = ([PTBR + 2 * (userSP - 3/ 512)] * 512) + ((userSP - 3) % 512);</pre>
+alias physicalPageAddr R2;
+alias offset R3;
+physicalPageAddr = [PTBR + 2 * (userSP - 3/ 512)];
+offset = (userSP - 3) % 512
+physicalAddrWord = (physicalPageAddr * 512) + offset;</pre>
 	</div>
 	</li>
 	<br>
 	<li>
 	Extract the word to be printed and store it in a register.
 	<div>
-	<pre>alias word R2;
+	<pre>alias word R4;
 word = [physicalAddrWord];</pre>
 	</div>
 	</li>
@@ -1894,7 +1906,7 @@ word = [physicalAddrWord];</pre>
 	<li>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
-	<div><pre>alias physicalAddrRetVal R3;
+	<div><pre>alias physicalAddrRetVal R5;
 [physicalAddrRetVal] = ([PTBR + 2 * (userSP - 1/ 512)] * 512) + ((userSP - 1) % 512);</pre></div></li>
 	<br>
 	<li>
@@ -1904,7 +1916,7 @@ word = [physicalAddrWord];</pre>
 
 
 	</ol>
-	<br><br>
+	<br>
 	<b>Making Things Work</b>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>
@@ -1924,11 +1936,17 @@ word = [physicalAddrWord];</pre>
 	</li>
 	</ol>
  	<br>
-	<!--
-	<p><b style="color:#26A65B">Assignment :</b> Why should we calculate the physical address of userSP-3 and userSP -1
-	seperately instead of calculating the physical address of userSP and subtracting required indices from it? </p>
-	-->
- 
+	
+	<p><b style="color:#26A65B">Assignment :</b><a data-toggle="collapse" href="#collapse61" > Why should we calculate the physical address of userSP-3 and userSP-1
+	seperately instead of calculating the physical address of userSP and subtracting required indices from it? </a></p>
+	<div id="collapse61" class="panel-collapse collapse">
+
+    Suppose the physical address corresponding to logical address in userSP be - say 5000.  
+    it may not be the case that 4997 is the physical address corresponding to the logical address 
+    userSP-3.  Similarly the physical address corresponding to userSP-1 need not be 4999.  The problem
+    is that the stack of a process spreads over two pages and these two physical pages need not be contiguous.
+    Hence, logical addresses which are close together may be far separated in physical memory.  
+		</div>
           </div>
         </div>
         
