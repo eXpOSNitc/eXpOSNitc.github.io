@@ -1670,7 +1670,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 </pre> </div> </li>
 
 <li> Set the SP to beginning of the kernel stack.
-
+User Area Page number is the 16th word of the Process Table. The initial value of SP must be set to this 
+address*512 - 1.
 <div>
 	
 <pre>
@@ -1694,7 +1695,7 @@ backup;
 print "TIMER";
 </pre> </div> </li>
 
-<li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table before returning 
+<li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table, before returning 
 to user mode.
 
 <div>
