@@ -1218,7 +1218,7 @@ We also load the exception handler routine to memory.  The machine may raise an 
 <br>
 
 <p>
-<b>Exercise </b> : Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
+<p><b style="color:#26A65B">Assignment 1 : </b>Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
 You will have to modify the user program as well as the os startup code.	
   </p>	
     <br>
@@ -1343,8 +1343,15 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 
 <br>
 
-        <li> Modify the Page table entries according to ABI. 
-        
+        <li> Modify the Page table entries according to ABI.
+        <br> 
+        The <a href="support_tools-files/constants.html" target="_blank">SPL constant</a> PAGE_TABLE_BASE holds
+     the value 29696. A total of 16 page tables can be stored starting from this address.  
+Each page table will be 20 entries. For each user process, one page table will be allocated.
+     
+Here since we are running the first user program, we will use the first few entries of this memory 
+     region for setting up the page table for the INIT process.  
+<br><br>
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
 The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 9. 
@@ -1427,7 +1434,7 @@ SP = 8*512;
       </ol> 
 
       <p>
-<b>Exercise </b> : Change the user program to compute cubes of the first five numbers. 	
+<p><b style="color:#26A65B">Assignment 1 : </b> Change the user program to compute cubes of the first five numbers. 	
   </p>	
             
         <!--========= Stage descrptions ends here ===========-->
@@ -1604,25 +1611,26 @@ having 16 words.  Each entry holds information pertaining to one user process.  
 	
 	<ol style="list-style-type:decimal;margin-left:10px">
 	<li>  
-Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
+Set the User Area page number in the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry
  of the current process. Since the first available free page is 80, the User Area page is allocated at the physical page number 80.
 	<pre>
 [PROCESS_TABLE + 11] = 80;</pre>
 	</li>
 	<li>
 	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
-	the PID in the PID field of the process table. The <a href="support_tools-files/constants.html">SPL constant</a> PROCESS_TABLE points to the starting address(28672)
+	the PID in the PID field of the process table. The <a href="support_tools-files/constants.html" target="_blank">
+		SPL constant</a> PROCESS_TABLE points to the starting address(28672)
 	of the Process Table.
 	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
 	</li>
 	<li>
-	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>
+	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>
 	where the PID of the currently executing user process is maintained.  
 	This makes it easy to keep track of the current PID whenever the machine enteres any kernel mode routine. 
 	The system status table is stored starting from memory address 29560.  The second field of this 
 	table must be set to the PID of the process which is going to be run in user mode.  
 	 
-	Set the current PID field in the System Status Table. The <a href="support_tools-files/constants.html">SPL
+	Set the current PID field in the System Status Table. The <a href="support_tools-files/constants.html" target="_blank">SPL
 	 constant</a> SYSTEM_STATUS_TABLE points to the starting address(28672)
 	of the Process Table.
 	<div>
@@ -1632,7 +1640,7 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	<li>
 	The kernel stack pointer for the process need not be set now as all interrupt handlers assume that the kernel stack is 
 	empty when the handler is entered from user mode. Thus whenever an interrupt handler is entered from user mode, the kernel 
-	stack pointer will be initialized assuming that the stack is empty. (See <a href="os_design-files/stack_interrupt.html">
+	stack pointer will be initialized assuming that the stack is empty. (See <a href="os_design-files/stack_interrupt.html" target="_blank">
 		Kernel Stack Management during hardware interrupts and exceptions</a>).
 	 The KPTR value will be used in later stages when kernel modules invoke each other.
 	</li>
@@ -1645,8 +1653,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 		 
 		<li> 
 		Save the current value of User SP into the corresponding Process Table entry.
-    Obtain the process id of the currently executing process from <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>.
-		This value can be used to get the <a href="os_design-files/process_table.html">Process Table</a> entry of the
+    Obtain the process id of the currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>.
+		This value can be used to get the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry of the
 		currently executing process.
 		<br><br>
 		<b>IMPORTANT NOTE: </b>Registers RO-R15 are user registers.  Since you have not saved the register values
@@ -1669,7 +1677,7 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
 </pre> </div> </li>
 
-<li> Save the user context to the kernel stack using the <a>Backup</a> instruction.
+<li> Save the user context to the kernel stack using the <a href="arch_spec-files/instruction_set.html#backup" target="_blank">Backup</a> instruction.
 
 <div>
 	
@@ -1707,7 +1715,7 @@ ireturn;
 		
 	</ol>
 
- 	<b>Exercise:</b>Print the process id of currently executing process in timer interrupt
+ 	<p><b style="color:#26A65B">Assignment 1 : </b>Print the process id of currently executing process in timer interrupt
     </div>
     </div>              
                    <!-- Stage 10 -->
