@@ -1266,7 +1266,7 @@ You will have to modify the user program as well as the os startup code.
         <br>
         In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
         <br><br>
-        Read and Understand the eXpOS <b> Virtual Address Space Model </b> 
+        Read and Understand the eXpOS <b> Virtual Address Space Model </b>. 
         and  <b> XEXE Executable File Format </b> from <a href="abi.html#xexe" target="_blank"> eXpOS ABI Documentation </a> before proceeding further.
         <br><br>
         <b>Modifying INIT</b>
@@ -1970,7 +1970,7 @@ word = [physicalAddrWord];</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo11">Learning Objectives</a>
                             <div id="lo11" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understad the concept of idle process</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with EXPL</li>
       
                             </ul>                                  
                                      
@@ -1980,7 +1980,29 @@ word = [physicalAddrWord];</pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->  
+        <p>In the previous stages, you wrote and executed application programs in assembly language. 
+        Now, you will write application programs in EXPL and compile it to generate the assembly program.
+        This compiled code is loaded into the XSM disk as done in previous stages.</p>
+        <p><b>
+        Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">EXPL Specification</a>
+        before proceeding further.</b> </p>
         
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Write an EXPL program to print all numbers below 20. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
+			EXPL programs. The path to this file is assumed to be $HOME/myexpos/eXpl/samples/numbers.inp.
+			This will be the init program in this stage.</li>
+			
+			<li>Compile this program using the command
+			<div><pre>cd $HOME/myexpos/eXpl
+./expl samples/numbers.inp</pre></div></li>
+			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li>
+			<li>Run the XSM machine.</li>
+			</ol>
+			
+			<br>
+				<p><b style="color:#26A65B">Assignment 1 : </b> Write an EXPL program to print all odd numbers from
+				1-100 and run the machine with this program loaded as the init.</p>
+			
         </div>
         </div>
         <!-- Stage 12 -->
@@ -2022,6 +2044,25 @@ word = [physicalAddrWord];</pre>
         any other process.</p>
      
 		<b>Idle Program</b>
+		<br>
+		Idle program runs an infinite loop. The algorithm for the idle is as follows.
+		<div><pre>while(1) do
+endwhile</pre></div>
+		<br>
+		The EXPL program for idle is given below.
+		<div><pre>int main()
+{
+	decl
+		int a;
+	enddecl
+	begin
+		while(1==1) do
+			a=1;
+		endwhile;
+		return 0;
+	end	
+}	
+</pre></div>
 		<br><br>
 		<b>Modifications to OS Startup Code</b>
 		<ol style="list-style-type:decimal;margin-left:2px">
