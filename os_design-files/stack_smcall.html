@@ -151,7 +151,7 @@ of return.</p>
  <figure>
   <div class="row">
     <div class="col-sm-6">
-     <img src="../img/Stack_Management/actions_of_process_upon_encountering_sys_call.png" width="95%">
+     <img src="../img/Stack_Management/Kernel_sw1.png" width="75%">
     </div>
     <div class="col-sm-6">
     <pre>
@@ -189,13 +189,19 @@ INT number		// Invoke the corresponding INT
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Identify the system call using the system call number and transfer control to the system call code</p>
 <br>
 
- <div class="container-fluid fig_code">
+
+<div class="container-fluid fig_code">
+
+
+<img src="../img/Stack_Management/Kernel_sw2.png" width="70%"> </img>
+
+<br> <br> 
  <figure>
   <div class="row">
-    <div class="col-sm-6">
-     <img src="../img/Stack_Management/actions_of_kernel_upon_entering_sys_call_step2c.png" width="100%"></img>
+    <div class="col-sm-6">    
     </div>
     <div class="col-sm-6">
+    </div>
     <pre>
 <b> Pseudo code</b>
 <code>
@@ -208,7 +214,7 @@ Argument_3    <- address_translate(UserSP - 2);
 // Switching the stack
 
 UPTR <- UserSP
-SP   <- User Area Page Number * 512
+SP   <- User Area Page Number * 512 - 1
 ...
 
 </code>
@@ -232,7 +238,7 @@ SP   <- User Area Page Number * 512
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/Stack_Management/actions_of_kernel_returning_from_sys_call_step3.png" width="95%"></img>
+	<img src="../img/Stack_Management/Kernel_sw1.png" width="70%"> </img>     
     </div>
     <div class="col-sm-5">
     <pre>
@@ -278,7 +284,7 @@ beginning of the kernel stack.
  <figure>
   <div class="row">
     <div class="col-sm-7">
-     <img src="../img/Stack_Management/actions_of_process_aftr_return_sys_call.png" width="95%"></img>
+    
     </div>
     <div class="col-sm-5">
     <pre>
