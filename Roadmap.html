@@ -1334,7 +1334,10 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 </p>
 
 <ol style="list-style-type:lower-alpha;margin-left:20px">
-<li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup.  </li>
+<li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup. 
+The library code can be found in the eXpl folder in eXpOs package. 
+Load it into the XSM disk using the command
+<div><pre>load --library ../eXpl/library.lib</pre></div> </li>
 <li> During OS start-up, this code must be loaded to memory pages 63 and 64.  </li>
 <li> When each application is loaded for execution,  the logical pages 0 and 1 must be mapped to physical pages 63 and 64.</li>
 <li> Two physical pages must be allocated for the application's heap and attached to logical pages 2 and 3.  </li>
@@ -2010,6 +2013,17 @@ word = [physicalAddrWord];</pre>
 			</ol>
 			
 			<br>
+			
+			
+			<a data-toggle="collapse"  href="#collapseq4"><b>Q1.</b> If your ExpL program contains read() function
+			call, will it work now?</a>
+                            <div id="collapseq4" class="panel-collapse collapse">
+								Obviously not.  The ExpL compiler will generate a call to the library 
+								requesting a console read; the library code in turn will generate an
+								INT 6 for console input.  Since you haven't written any code for INT 6,
+								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
+								of calls in debug mode.  
+		</div>
 				<p><b style="color:#26A65B">Assignment 1 : </b> Write an EXPL program to print all odd numbers from
 				1-100 and run the machine with this program loaded as the init.</p>
 			
@@ -2033,7 +2047,7 @@ word = [physicalAddrWord];</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
                             <div id="lo12" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understad the concept of idle process</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the concept of idle process</li>
       
                             </ul>                                  
                                      
