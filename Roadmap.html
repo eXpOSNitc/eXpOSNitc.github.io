@@ -2115,11 +2115,14 @@ loadi(70,12);</pre></div>
 		<br>
 		<b>Modifictions to timer interrupt handler</b>
 		<br>
+		In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual
+        function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
+		ready processes. 
 		In this stage, you will write a sample scheduler which will schedule just two processes.
 		The scheduler will be implemented in the timer interrupt handler.
 		After saving the context of the currently executing process, the context of the next process to be scheduled
 		will be loaded to the registers. The register context will be saved to the kernel stack as done in previous stages.
-		Detailed intructions for scheduling is given below.
+		Detailed intructions for scheduling is given below.<br><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Change to kernel stack and save the register context using the backup instructions as done in 
 			previous stages.</li>
@@ -2204,16 +2207,14 @@ PTLR = [new_process_table + 15];</pre></div></li>
                       </div>
 		<!-- End Learning Objectives-->    
         
-        	<p> Multiprogramming refers to running more than one process simultaneously. In this stage, you will learn how to run two processes - one to print even numbers and one to print odd numbers - concurrently on the machine.</p> 
+        	<p> Multiprogramming refers to running more than one process simultaneously. 
+        	In this stage, you will implement the actual scheduler used in eXpOS which uses round robin scheduling
+        	technique. You will hand create another user process
+        	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
-        	<p>In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual
-        	 function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
-        	 ready processes. 
-        	In this stage we will modify the timer ISR to implement this functionality. We will hand create another user process
-        	(apart from idle and init) and schedule its execution using the timer interrupt.
-        	</p>
-			
-			
+        	<p><b>Read and Understand <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> and 
+        	<a href="os_design-files/stack_description.html" target="_blank">Kernel Stack Managemnt during Module calls </a> before proceeding further. </b></p> 			
+		
 		<ol style="list-style-type:decimal;margin-left:2px">
 				<li>Write an eXpL program to print the odd numbers from 1-100. Load this odd program as init.  				
 				<pre>load --init < path to odd.xsm ></pre>
@@ -2247,8 +2248,7 @@ loadi(51,64);</pre></div> </li>
         	XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. 
         	We will modify the timer interrupt routine so that it calls the scheduler module. </p>
         	
-        	<p>Read and Understand <a href="os_design-files/stack_description.html" target="_blank">Kernel Stack Managemnt during Module calls </a> before proceeeding. </p> 
-
+        	
         	<p>	Modify timer interrupt routine to set the state of the current process to ready 
         		and call the scheduler module (Module 5). <br> 
         		See the full algorithm <a href="os_design-files/timer.html" target="_blank">here</a>.
