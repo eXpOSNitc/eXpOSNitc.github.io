@@ -1107,7 +1107,14 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
      Machine translates these logical addresses to physical addresses by looking up the page table for INIT. <br>
      <br>  
      The PTBR or Page Table Base Register stores the starting address of the page table of a process. 
-     We must set PTBR to the starting address of the page table of INIT.  
+     We must set PTBR to the starting address of the page table of INIT.  The <a href="os_implementation.html" target="_blank">eXpOS memory organization</a>
+     stipulates that the page tables are stored from memory address 29696. 
+     Here since we are running the first user program, we will use the first few entries of this memory 
+     region for setting up the page table for the INIT process.  The <a href="support_tools-files/constants.html" target="_blank">SPL constant</a> PAGE_TABLE_BASE holds
+     the value 29696.  
+     
+     
+      
 <br><br>
     You need two pages for storing the INIT program code (loaded from disk blocks 7 and 8) 
     and one additional page for stack (why?). Hence, PTLR is set to value 3.  
@@ -1211,7 +1218,7 @@ We also load the exception handler routine to memory.  The machine may raise an 
 <br>
 
 <p>
-<b>Exercise </b> : Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
+<p><b style="color:#26A65B">Assignment 1 : </b>Change virtual memory model such that code occupies logical pages 4 and 5 and the stack lies in logical page 8.
 You will have to modify the user program as well as the os startup code.	
   </p>	
     <br>
@@ -1259,7 +1266,7 @@ You will have to modify the user program as well as the os startup code.
         <br>
         In this stage we will rewrite the user program and OS startup code of Stage 6 in compliance with expos ABI. 
         <br><br>
-        Read and Understand the eXpOS <b> Virtual Address Space Model </b> 
+        Read and Understand the eXpOS <b> Virtual Address Space Model </b>. 
         and  <b> XEXE Executable File Format </b> from <a href="abi.html#xexe" target="_blank"> eXpOS ABI Documentation </a> before proceeding further.
         <br><br>
         <b>Modifying INIT</b>
@@ -1327,7 +1334,10 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 </p>
 
 <ol style="list-style-type:lower-alpha;margin-left:20px">
-<li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup.  </li>
+<li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup. 
+The library code can be found in the eXpl folder in eXpOs package. 
+Load it into the XSM disk using the command
+<div><pre>load --library ../eXpl/library.lib</pre></div> </li>
 <li> During OS start-up, this code must be loaded to memory pages 63 and 64.  </li>
 <li> When each application is loaded for execution,  the logical pages 0 and 1 must be mapped to physical pages 63 and 64.</li>
 <li> Two physical pages must be allocated for the application's heap and attached to logical pages 2 and 3.  </li>
@@ -1336,16 +1346,26 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 
 <br>
 
-        <li> Modify the Page table entries according to ABI. 
-        
+        <li> Modify the Page table entries according to ABI.
+        <br> 
+        The <a href="support_tools-files/constants.html" target="_blank">SPL constant</a> PAGE_TABLE_BASE holds
+     the value 29696. A total of 16 page tables can be stored starting from this address.  
+Each page table will be 20 entries. For each user process, one page table will be allocated.
+     
+Here since we are running the first user program, we will use the first few entries of this memory 
+     region for setting up the page table for the INIT process.  
+<br><br>
 As noted, the first disk block of the INIT program (block 7) must be loaded to logical page 4.
 Similarly, block 8 must be loaded to logical page 5.  
 The ABI stipulates that two pages must be allocated for the stack at logical pages 8 and 9. 
 
 <br><br>
 
-The following code sets page table entries for logical page 4 (of the code) and logical page
-8 (stack).  Note that the code page must be kept read only whereas stack must be read-write.
+The following code sets page table entries for logical page 4 and 5(for code area), logical page
+8 and 9(for user stack), logical pages 3 and 4(for heap) and logical pages 0 and 1(for library).
+Since pages 0 to 75 are reserved for the use of the OS kernel, the first four free pages (76,77,78 and 79) 
+will be allocated for stack and heap area. See <a href="os_implementation.html" target="_blank">Memory Organisatiion.</a>
+Note that the code and library pages must be kept read only whereas stack and heap must be read-write.
 (see <a href="arch_spec-files/paging_hardware.html" target="_blank" >page table </a> settings for details).     
 
         <!-- Remove if too spoonfeeding -->
@@ -1358,9 +1378,9 @@ The following code sets page table entries for logical page 4 (of the code) and 
 
 //Heap
 [PTBR+4] = 78;
-[PTBR+5] = "0000";
+[PTBR+5] = "0110";
 [PTBR+6] = 79;
-[PTBR+7] = "0000";
+[PTBR+7] = "0110";
 
 //Code
 [PTBR+8] = 65;
@@ -1417,7 +1437,7 @@ SP = 8*512;
       </ol> 
 
       <p>
-<b>Exercise </b> : Change the user program to compute cubes of the first five numbers. 	
+<p><b style="color:#26A65B">Assignment 1 : </b> Change the user program to compute cubes of the first five numbers. 	
   </p>	
             
         <!--========= Stage descrptions ends here ===========-->
@@ -1520,7 +1540,7 @@ ireturn;
 
                       <div class="panel-heading" id="list_stage9">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9:  Handling kernel stack. </a>
+                          <a data-toggle="collapse"  href="#collapse9"><span class="fa fa-check-square-o"></span>Stage 9 : Handling kernel stack</a>
                         </h4>
                       </div>
 
@@ -1534,8 +1554,8 @@ ireturn;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
                             <div id="lo9" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the hardware interrupt mechanism in eXpOS.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the kernel stack management during hardware ISRs.</li>
+							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Get introduced to setting up process table entry for a user program. </li> 
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the management of kernel stack in hardware interrupt handlers.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1545,79 +1565,107 @@ ireturn;
                       </div>
 		<!-- End Learning Objectives-->
  
-	   <p>An interrupt is a signal to the processor to request the kernel services. An interrupt can be raised by the hardware (hardware interrupt) or from within a user program (software interrupts). 
+	   <p>eXpOS requires that when the OS enters an interrupt handler that runs in kernel mode, 
+	   the interrupt handler must switch to a different stack.  This requirement is to prevent user level 
+	   “hacks” into the kernel through the stack.  In the previous stage, though you entered the timer 
+	   interrupt service routine in the kernel mode, you did not change the stack.  In this stage,
+	    this will be done.</p> 
 
-      When an interrupt occurs , the XSM machine saves the value of IP + 2 to top of user stack, switches the execution mode from protected to real and transfers control to the corresponding Interrupt Service Routine.
-  </p>
+<p>To isolate the kernel from the user stack, the OS kernel must maintain two stacks for
+ a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <b>user area page</b> is 
+ allocated for each process.  A part of the space in this page will be used for the kernel stack 
+ (some other process information also will be stored in this page).  
+</p>
 
-<p>
-    Timer interrupt, disk controller interrupt and console interrupt are the hardware interrupts supported by XSM.
-    There are 15 software interrupts which can be invoked using machine instructions <b>INT 4</b> to <b>INT 18</b> 
-    from within the user programs. 
+<p>Whenever there is a transfer of program control from the user mode to kernel during interrupts 
+(or exceptions), the interrupt handler will change the stack to the kernel stack of the program 
+(that is, the SP register must point to the top of the kernel stack).  Before the machine returns to user mode 
+from the interrupt, the user stack must be restored (that is, the SP register must point to the top of the user 
+stack).
+</p>
 
-  </p>
+<p>Once we have two stacks for a user program, we need to design some data structure in memory to store 
+the SP values of the two stacks.  This is because the SP register of the machine can store only one value.   
+</p>
+
+<p>eXpOS requires you to maintain a  <a href="os_design-files/process_table.html" target="_blank">Process Table</a>,
+where data such as value of the kernel stack pointer, user stack pointer etc. pertaining to each process is stored.  
+</p>
+
+<p>For now, we just have one user program in execution.  Hence we will need just one process table entry to be 
+created.  Each process table entry contains several fields.  But for now, we are only interested in storing  
+only 1)  user stack pointer and 2) the memory page allocated as user area for the program.  
+</p>
+
+<p>The process table starts at page number 56 (address 28672).  The process has space for 16 entries, each 
+having 16 words.  Each entry holds information pertaining to one user process.  Since we have only one process,
+ we will use the first entry (the first 16 words starting at address 28672).  Among these, we will
+  be updating only entries for user stack pointer (word 13) and user area page number (word 11) in this stage.  </p>
   
-<p>
-     Additionaly, the XSM machine raises an exception for errors or events occurring during program execution that cannot be handled within the program itself (for eg Illegal Instruction or Page fault). The exception handler is invoked for such cases.
+<p>You will modify the previous stage code so that the user program is allocated a user area page. 
+ You will also create a process table entry for the program where you will make the necessary entries.  
+</p>
 
-     </p>
-
-    
- 	  <p> 
-    Interrupts can only be triggered or invoked in user mode. In Kernel mode interrupts are disabled.
-    Interrupt Service Routines are stored in fixed memory locations and occupies 2 pages in the memory.
-
-    
- 	   </p>
- 	    	  
- 	  <p>In this stage, you will write a sample interrupt handler for the timer interrupt which prints the message "TIMER" on occurance of every timer interrupt and returns control to the user program.</p>
- 	  
     <p><b>Read and understand the <a href="os_design-files/stack_interrupt.html" target="_blank"> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
 
  	<br>
- 	<b style="font-size:20px">Modifications to OS Startup Code </b>
+ 	<b style="font-size:20px">Modifications to the OS Startup Code </b>
  	
 	
-	
+	<ol style="list-style-type:decimal;margin-left:10px">
 	<li>  
-Set the User Area page number in the <a href="os_design-files/process_table.html">Process Table</a> entry
- of the current process. User Area page is allocated in the physical page number 80.
+Set the User Area page number in the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry
+ of the current process. Since the first available free page is 80, the User Area page is allocated at the physical page number 80.
+ The <a href="support_tools-files/constants.html" target="_blank">
+		SPL constant</a> PROCESS_TABLE points to the starting address(28672)
+	of the Process Table.
 	<pre>
 [PROCESS_TABLE + 11] = 80;</pre>
 	</li>
 	<li>
-	Set the current PID field in the <a href="os_design-files/mem_ds.html#ss_table">System Status Table</a>.
+	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
+	the PID in the PID field of the process table. 
+	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
+	</li>
+	<li>
+	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>
+	where the PID of the currently executing user process is maintained.  
+	This makes it easy to keep track of the current PID whenever the machine enters any kernel mode routine. 
+	The System Status Table is stored starting from memory address 29560.  The second field of this 
+	table must be set to the PID of the process which is going to be run in user mode.  
+	 
+	Set the current PID field in the System Status Table. The <a href="support_tools-files/constants.html" target="_blank">SPL
+	 constant</a> SYSTEM_STATUS_TABLE points to the starting address(28672)
+	of the System Status Table.
 	<div>
 	<pre>
 [SYSTEM_STATUS_TABLE + 1] = 0;</pre></div>
 	</li>
+	<li>
+	The kernel stack pointer for the process need not be set now as all interrupt handlers assume that the kernel stack is 
+	empty when the handler is entered from user mode. Thus whenever an interrupt handler is entered from user mode, the kernel 
+	stack pointer will be initialized assuming that the stack is empty. (See <a href="os_design-files/stack_interrupt.html" target="_blank">
+		Kernel Stack Management during hardware interrupts and exceptions</a>).
+	 The KPTR value will be used in later stages when kernel modules invoke each other.
+	</li>
 	</ol>
 	<br>
  	<b style="font-size:20px">Timer Interrupt</b>
- 	
- 	<p> The XSM simulator has a timer which invokes the timer 
- 	interrupt routine after a specific number of instructions. 
- 	(Note that, in real machines, a timer interrupt is triggered in fixed intervals of time using a timer device).</p>
- 	
-
-<p><b>NOTE:</b> Timer Interrupt is triggered at fixed intervals of instructions. 
-The interval can be specified when the XSM simulator is started 
-(see <a href="support_tools-files/xsm-simulator.html"> XSM</a>). 
-Default interval for timer interrupt is 10 instructions.</p>
-
-<p> Your task is to display "TIMER" every time a timer interrupt is triggered. 
- 	You will create a timer interrupt routine, which prints "TIMER". 
-
-  Detailed instructions to get this done are given below.</p>
-	 <ol style="list-style-type:decimal;margin-left:2px">
+ 	<br>
+ 	 <ol style="list-style-type:decimal;margin-left:2px">
 		 
 		 
 		<li> 
 		Save the current value of User SP into the corresponding Process Table entry.
-    Obtain the process id of the currently running process from <a>System Status Table</a>.
-		This value can be used to get its <a>Process Table</a> entry.
-		
-		<b>NOTE: </b>Do not use registers to store intermediate results at this point as the user context is not saved yet. 
+    Obtain the process id of the currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>.
+		This value can be used to get the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry of the
+		currently executing process.
+		<br><br>
+		<b>IMPORTANT NOTE: </b>Registers R0-R15 are user registers.  Since you have not saved the register values
+		into the stack yet, you should be careful not to write any code that alters these registers till
+		the user context is saved into the stack.  Registers R16-R19 are marked for kernel use and hence
+		the kernel can modify them.  The SPL compiler will use these registers to translate your SPL code.
+		 
 		<div> 
 
  <pre>
@@ -1625,7 +1673,8 @@ Default interval for timer interrupt is 10 instructions.</p>
 </pre> </div> </li>
 
 <li> Set the SP to beginning of the kernel stack.
-
+User Area Page number is the 16th word of the Process Table. The initial value of SP must be set to this 
+address*512 - 1.
 <div>
 	
 <pre>
@@ -1633,7 +1682,7 @@ Default interval for timer interrupt is 10 instructions.</p>
 SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
 </pre> </div> </li>
 
-<li> Save the user context to the kernel stack using the <a>Backup</a> instruction.
+<li> Save the user context to the kernel stack using the <a href="arch_spec-files/instruction_set.html#backup" target="_blank">Backup</a> instruction.
 
 <div>
 	
@@ -1649,7 +1698,7 @@ backup;
 print "TIMER";
 </pre> </div> </li>
 
-<li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table before returning 
+<li> Restore the user context from the kernel stack and set SP to the user SP saved in Process Table, before returning 
 to user mode.
 
 <div>
@@ -1670,14 +1719,16 @@ ireturn;
 		<br>
 		
 	</ol>
- 	
+	
+ 	<p><b style="color:#26A65B">Assignment 1 : </b>Print the process id of currently executing process in timer interrupt before returning to user mode.
+ 	You can look up this value from the System Status Table.</p>
     </div>
     </div>              
                    <!-- Stage 10 -->
 
                       <div class="panel-heading" id="list_stage10">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>Stage 10 : Introduction to software interrupts </a>
+                          <a data-toggle="collapse"  href="#collapse10"><span class="fa fa-check-square-o"></span>Stage 10 : Console output </a>
                         </h4>
                       </div>
 
@@ -1691,8 +1742,8 @@ ireturn;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo10">Learning Objectives</a>
                             <div id="lo10" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the timer interrupt mechanism in eXpOS.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the XEXE format.</li>
+							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the <a href="abi.html" target="_blank">low level system call interface</a> in eXpOS.</li> 	
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the console output mechanism in eXpOS.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1703,7 +1754,7 @@ ireturn;
 		<!-- End Learning Objectives-->
 		<p>
 
- 	In the Stage 7, we wrote a user program and used the BRKP instruction to view the result in debug mode.
+ 	In Stage 7, we wrote a user program and used the BRKP instruction to view the result in debug mode.
 
  	In this stage, we will modify the program such that the result is printed directly to the terminal. 
 	The terminal print is acheived by issuing a a write system call from the user program. 
@@ -1717,14 +1768,17 @@ ireturn;
 
  	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
  	
-<b style="font-size:18px">Modifying the user program</b>
+<b style="font-size:18px">Modifications to the user program</b>
 <br> <br>
-<p>The user program is modified such that a write system call is issued to print the contents of register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions for the following:
+<p>The user program of Stage 7 is modified such that a write system call is issued to print the contents of
+ register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions
+  for the following:
 </p>
 
 <ol style="list-style-type:decimal;margin-left:2px">
 
-<li>Save the registers in use to the user stack. As per specification, since the user program has control over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
+<li>Save the registers in use to the user stack. As per specification, since the user program has control 
+over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
 </li>
 
 <br>
@@ -1736,6 +1790,7 @@ ireturn;
 
 <li>Invoke the interrupt by "INT7" instruction. </li> <br>
 
+//The following code will be executed after return from the system call.<br><br>
 <li> Pop out all the system call number and arguments which were pushed on the stack prior to the system call. </li>
 <br>
 <li> Restore the register context from the stack. </li>
@@ -1793,15 +1848,18 @@ INT 10
 	</pre>
 	</div>
 	</p>
+	
+	
 	<br>
 	
 	<br>
+	Now, you will write the system call handler for processing the write request.<br>
 	<b style="font-size:20px">INT 7</b>
 	<p>The write operation is handled by Interrupt 7.
 	The word to be printed is passed from the user program through its user stack as the 
 	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
 	and writes it to the terminal using the OUT instruction. </p>
-	<p>Detailed instructions for doing so are given below:</p>
+	<p>Detailed instructions for doing so are given below</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
@@ -1814,25 +1872,30 @@ userSP = SP;</pre>
 	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
 	<li>Set the value of SP to beginning of the kernel stack.</li>
 </ol>
+Details can be found at <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a>.
 	</li>
 	<br>
 	<li>In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
-	 Since interrupts are executed in kernel mode, the actual physical address is used to access memory 
+	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
 	  locations. Hence to access the word to be printed we must 
 	  calculate the physical address of the memory location where the word is stored.
 		According to the system call conventions, userSP - 3 is the location of the word to be printed.
-	  So we will manually adress translate UserSP - 3.
+	  So we will manually address translate UserSP - 3.
 	<div>
 	<pre>alias physicalAddrWord R1;
-physicalAddrWord = ([PTBR + 2 * (userSP - 3/ 512)] * 512) + ((userSP - 3) % 512);</pre>
+alias physicalPageAddr R2;
+alias offset R3;
+physicalPageAddr = [PTBR + 2 * (userSP - 3/ 512)];
+offset = (userSP - 3) % 512
+physicalAddrWord = (physicalPageAddr * 512) + offset;</pre>
 	</div>
 	</li>
 	<br>
 	<li>
 	Extract the word to be printed and store it in a register.
 	<div>
-	<pre>alias word R2;
+	<pre>alias word R4;
 word = [physicalAddrWord];</pre>
 	</div>
 	</li>
@@ -1846,7 +1909,7 @@ word = [physicalAddrWord];</pre>
 	<li>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
-	<div><pre>alias physicalAddrRetVal R3;
+	<div><pre>alias physicalAddrRetVal R5;
 [physicalAddrRetVal] = ([PTBR + 2 * (userSP - 1/ 512)] * 512) + ((userSP - 1) % 512);</pre></div></li>
 	<br>
 	<li>
@@ -1856,7 +1919,9 @@ word = [physicalAddrWord];</pre>
 
 
 	</ol>
-
+	<br>
+	<b>Making Things Work</b>
+	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>
 	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
 	</li>
@@ -1872,24 +1937,29 @@ word = [physicalAddrWord];</pre>
 	<li> 
 	Run the Machine with timer disabled.
 	</li>
-
+	</ol>
  	<br>
-	<!--
-	<p><b style="color:#26A65B">Assignment :</b> Why should we calculate the physical address of userSP-3 and userSP -1
-	seperately instead of calculating the physical address of userSP and subtracting required indices from it? </p>
-	-->
- 
+	<a data-toggle="collapse"  href="#collapseq3"><b>Q1.</b> Why should we calculate the physical address of userSP-3 and userSP-1
+	seperately instead of calculating one and adding/subtracting the difference from the calculated value?</a>
+                            <div id="collapseq3" class="panel-collapse collapse">
+	    Suppose the physical address corresponding to logical address in userSP be - say 5000.  
+    it may not be the case that 4997 is the physical address corresponding to the logical address 
+    userSP-3.  Similarly the physical address corresponding to userSP-1 need not be 4999.  The problem
+    is that the stack of a process spreads over two pages and these two physical pages need not be contiguous.
+    Hence, logical addresses which are close together may be far separated in physical memory.  
+		</div>
+		
+		
+		<p><b style="color:#26A65B">Assignment 1 : </b> Write a program to print the first 20 numbers and run the 
+		system with timer enabled.</p>
           </div>
         </div>
         
-     
-
-     <!-- Stage 10 -->
+        <!-- Stage 11 -->
 
                       <div class="panel-heading" id="list_stage11">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse11"><span class="fa fa-check-square-o"></span>
-                          Stage 11 : MultiProgramming</a>
+                          <a data-toggle="collapse"  href="#collapse11"><span class="fa fa-check-square-o"></span>Stage 11 : Introduction to ExPL</a>
                         </h4>
                       </div>
 
@@ -1903,6 +1973,253 @@ word = [physicalAddrWord];</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo11">Learning Objectives</a>
                             <div id="lo11" class="panel-collapse expand">
                             <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the use of ExpL for writing application programs</li>
+      
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->  
+		<p>ExpL is a high level language in which you can write high application programs.
+		A compiler for ExpL supplied to you along with the eXpOS package will generate
+		target code compatible with the eXpOS ABI.  ExpL provides you with a function
+		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface to the OS</a>, through
+		which eXpOS system calls and other library routines can be invoked.  
+		Note that the only way to make system calls from
+		a high level ExpL program is to use the exposcall() function.  However, ExpL provides read() and
+		write() statements that permit console input and output to be performed directly, without using the 
+		exposcall() function.  
+		</p>
+        <p>In the previous stages, you wrote and executed application programs in assembly language. 
+        Now, you will write application programs in EXPL and compile it to generate the assembly program.
+        This compiled code is loaded into the XSM disk as done in previous stages.</p>
+        <p><b>
+        Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">EXPL Specification</a>
+        before proceeding further.</b> </p>
+        
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Write an EXPL program to print all numbers below 20. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
+			EXPL programs. The path to this file is assumed to be $HOME/myexpos/eXpl/samples/numbers.inp.
+			This will be the init program in this stage. </li>
+			
+			<li>Compile this program using the command
+			<div><pre>cd $HOME/myexpos/eXpl
+./expl samples/numbers.inp</pre></div></li>
+			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li>
+			<li>Run the XSM machine.</li>
+			</ol>
+			
+			<br>
+			
+			
+			<a data-toggle="collapse"  href="#collapseq4"><b>Q1.</b> If your ExpL program contains read() function
+			call, will it work now?</a>
+                            <div id="collapseq4" class="panel-collapse collapse">
+								Obviously not.  The ExpL compiler will generate a call to the library 
+								requesting a console read; the library code in turn will generate an
+								INT 6 for console input.  Since you haven't written any code for INT 6,
+								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
+								of calls in debug mode.  
+		</div>
+				<p><b style="color:#26A65B">Assignment 1 : </b> Write an EXPL program to print all odd numbers from
+				1-100 and run the machine with this program loaded as the init.</p>
+			
+        </div>
+        </div>
+        <!-- Stage 12 -->
+
+                      <div class="panel-heading" id="list_stage12">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Idle Process</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse12" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
+                            <div id="lo12" class="panel-collapse expand">
+                            <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the concept of idle process</li>
+      
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+		<!-- End Learning Objectives-->    
+        <p>Idle is a user program which is created and executed by the bootstrap loader.
+         It is stored in the disk and will be loaded to memory by the bootstrap loader. 
+         The main purpose of the idle process is to run as a background process in an infinite loop. 
+         This is demanded by the OS so that the scheduler will always have a process to schedule. 
+         The page table and process table for the idle process will be set up by the bootstrap loader. 
+         The PID of the idle process is fixed to be 0.</p>
+        <p>The idle process does nothing except running an infinite loop. It is to scheduled only when 
+        no other process is available for scheduling. However, in this stage we will schedule idle just like 
+        any other process.</p>
+     
+		<b>Idle Program</b>
+		<br>
+		Idle program runs an infinite loop. The algorithm for the idle is as follows.
+		<div><pre>while(1) do
+endwhile</pre></div>
+		<br>
+		The EXPL program for idle is given below.
+		<div><pre>int main()
+{
+	decl
+		int a;
+	enddecl
+	begin
+		while(1==1) do
+			a=1;
+		endwhile;
+		return 0;
+	end	
+}	
+</pre></div>
+		<br><br>
+		<b>Modifications to OS Startup Code</b>
+		<ol style="list-style-type:decimal;margin-left:2px">
+			<li>Load the idle code from disk to memory.
+			<div><pre>loadi(69,11);
+loadi(70,12);</pre></div>
+</li>
+			<li>Set the page table entries for idle process.As idle process does not use library functions or
+			 dynamic memory allocation, it doesn't need library and heap pages. Therefore, you need to set up the
+			 entries for only the code nad stack pages. We will allocate physical page 81 for stack as free pages
+			 76-80 will be used by the init process. 
+			 <div><pre>//Library
+[PTBR+0] = -1;
+[PTBR+1] = "0000";
+[PTBR+2] = -1;
+[PTBR+3] = "0000";
+
+//Heap
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+
+//Code
+[PTBR+8] = 69;
+[PTBR+9] = "0100";
+[PTBR+10] = 70;
+[PTBR+11] = "0100";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+
+//Stack
+[PTBR+16] = 81;
+[PTBR+17] = "0110";</pre></div></li>
+
+		<li>Set up the PID field as 0 in the Process Table entry for idle as the first entry is used for idle.</li>
+		<li>Set the state of idle process as CREATED.</li>
+		<li>Set the User Area Page number field as 80.</li>
+		<li>Set the KPTR field to 0 and UPTR field to 8*512 which is the logical address of user SP.</li>
+		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10.</li>
+		<li>Set the starting IP value from the header of idle process to top of its user stack.
+		<div><pre>[79 * 512] = [69*512 + 1];</pre></div></li>
+		<li>As each page table occupies 20 words, the page table for next process starts from PAGE_TABLE_BASE+20.
+		Set up the page table entries for init with PTBR as PAGE_TABLE_BASE + 20.</li>
+		<li>As each Process Table occupies 16 words, the Process Table entry for next process starts from PROCESS_TABLE+16.
+		Set up the Process Table entry for init as done for idle.</li>
+		</ol>
+		<br>
+		<b>Modifictions to timer interrupt handler</b>
+		<br>
+		In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual
+        function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
+		ready processes. 
+		In this stage, you will write a sample scheduler which will schedule just two processes.
+		The scheduler will be implemented in the timer interrupt handler.
+		After saving the context of the currently executing process, the context of the next process to be scheduled
+		will be loaded to the registers. The register context will be saved to the kernel stack as done in previous stages.
+		Detailed intructions for scheduling is given below.<br><br>
+		<ol style="list-style-type:decimal;margin-left:2px">
+			<li>Change to kernel stack and save the register context using the backup instructions as done in 
+			previous stages.</li>
+			<li>Obtain the PID of currently executing process from System Status Table.
+			<div><pre>alias currentPID R0;
+currentPID = [SYSTEM_STATUS_TABLE+1];</pre></div></li>
+		<li>The Process table entry of the current process can be computed as PROCESS_TABLE + cuurentPID*16.
+		Save the KPTR, PTBR and PTLR values to the Process Table entry of the current process.
+		Set the state of the process as READY.
+		<div><pre>alias process_table_entry R1;
+process_table_entry = PROCESS_TABLE + currentPID * 16;
+
+[process_table_entry + 12] = SP % 512;
+[process_table_entry + 14] = PTBR;
+[process_table_entry + 15] = PTLR;
+
+[process_table_entry + 4] = READY;
+</pre></div>
+Note that instead of saving the actual value of KPTR, we are saving KPTR%512. This is done so that the 
+User Area Page can be reallocated if necessary.</li>
+		<li>As we have only two processes to schedule, the scheduling algorithm we are going to use will just toggle
+		between the two processes.
+		<div><pre>alias newPID R2;
+if(currentPID == 0) then
+	newPID = 1;
+else
+	newPID = 0;
+endif;</pre></div></li>
+		<li>Restore the register values from the Process Table entry for the new process.
+		<div><pre>alias new_process_table R3;
+new_process_table = PROCESS_TABLE + newPID * 16;
+
+//Set back Kernel SP, PTBR , PTLR
+SP =  [new_process_table + 11] * 512 + [new_process_table + 12] ;
+PTBR = [new_process_table + 14];
+PTLR = [new_process_table + 15];</pre></div></li>
+
+		<li>Set the PID field of the System Status Table as nextPID.
+		<div><pre>[SYSTEM_STATUS_TABLE + 1] = newPID;
+</pre></div></li>
+
+		<li>Set the state of the newly found process as RUNNING.
+		<div><pre>[new_process_table + 4] = RUNNING;</pre></div></li>
+		<li>Restore the register context of the new process from its kernel stack and change the stack to user stack 
+		as done in previous stages.</li>
+		</ol>
+		<br>
+		<b>Making Things Work</b>
+		<ol style="list-style-type:decimal;margin-left:2px">
+			<li>Load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
+			<li>Compile and load the idle program into the XSM disk.</li>
+			<li>Run the machine with timer enabled.</li>
+		</div>
+		</div>
+		
+     <!-- Stage 13 -->
+
+                      <div class="panel-heading" id="list_stage13">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : MultiProgramming</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse13" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-13">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
+                            <div id="lo13" class="panel-collapse expand">
+                            <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement round robin scheduling.</li>
       
                             </ul>                                  
@@ -1914,58 +2231,69 @@ word = [physicalAddrWord];</pre>
                       </div>
 		<!-- End Learning Objectives-->    
         
-        	<p> Multiprogramming refers to running more than one process simultaneously. In this stage, you will learn how to run two processes - one to print even numbers and one to print odd numbers - concurrently on the machine.</p> 
+        	<p> Multiprogramming refers to running more than one process simultaneously. 
+        	In this stage, you will implement the actual scheduler used in eXpOS which uses round robin scheduling
+        	technique. You will hand create another user process
+        	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
-        	<p>In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual function of timer interrupt routine is to preemt the current running process and to transfer execution to another ready processes. 
-        	In this stage we will modify the timer ISR to implemt this functionality. 
-        	</p>
-        
-        	 
+        	<p><b>Read and Understand <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> and 
+        	<a href="os_design-files/stack_description.html" target="_blank">Kernel Stack Managemnt during Module calls </a> before proceeding further. </b></p> 			
+		
+		<ol style="list-style-type:decimal;margin-left:2px">
+				<li>Write an eXpL program to print the odd numbers from 1-100. Load this odd program as init.  				
+				<pre>load --init < path to odd.xsm ></pre>
+				</li>
+				<li>Write an eXpL program to print the even numbers from 1-100. Load this even program as an executable.
+				<pre>load --exec < path to even.xsm > </pre> 
+				Dump the <a href="os_design-files/disk_ds.html#inode_table" target="_blank"> inodetable </a> using 
+				<i>dump --inodetable</i> command in xfs-interface. 
+				Check the disk address of code blocks of even.xsm. 
+				</li>
+
+		</ol>
+					<br>
+        	 		<b> Modifications to OS Startup code </b>
+		<br>
+		
+		<ol style="list-style-type:decimal;margin-left:2px">
+			<li>Load the code pages of the new process from disk to memeory.</li>
+			<li>Set the Process Table entry and Page Table entries for the new user process.</li>
+			<li>Set the starting IP of the new process on top of its user stack.</li>
+			<li>For implementing the scheduling functionality, you will use the scheduler module. The eXpOS design stipulates that
+			the scheduler is MODULE_5. Load this module from disk to memeory.
+			<div><pre>loadi(50,63);
+loadi(51,64);</pre></div> </li>
+			</ol>
+			
+			<br>
         	 <b>Modification to Timer Interrupt Routine</b>
 
         	 <p> eXpOS supports module calls in kernel mode due to the availablilty of kernel stack. 
         	XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. 
         	We will modify the timer interrupt routine so that it calls the scheduler module. </p>
         	
-        	<p>Read and Understand <a href="os_design-files/stack_description.html">Kernel Stack Managemnt during Module calls </a> before proceeeding. </p> 
-
+        	
         	<p>	Modify timer interrupt routine to set the state of the current process to ready 
         		and call the scheduler module (Module 5). <br> 
-        		See the full algorithm <a href="os_design-files/timer.html">here</a>.
+        		See the full algorithm <a href="os_design-files/timer.html" target="_blank">here</a>.
         	</p>
 
 
 		<b> Scheduler Module </b>
 
 			<p>
-				See the full algorithm <a href="os_design-files/context_switch_module.html">here</a>.
+				See the full algorithm <a href="os_design-files/context_switch_module.html" target="_blank">here</a>.
 			</p>    
 
-		<b> Modification to OS Startup code </b>
-		
-		The OS startp code must be modified to initialise kernel data structures for both processes.
-
-		<ol style="list-style-type:decimal;margin-left:2px">
-				<li>Load the odd program as init and the even program as an executable
-				<pre>
-load --init < path to odd.xsm >
-load --exec < path to even.xsm > </pre> 
-				Dump the <a href="os_design-files/disk_ds.html#inode_table"> inodetable </a> using <i>dump --inodetable</i> command in xfs-interface. Check the adress of first data block. Load the disk block to a free page in the memory, say 
-
-
-				</li>
-				<li></li>
-
-		</ol>
 
         </div>
         </div>
 
-					<!-- Stage 12 -->
+					<!-- Stage 13 -->
 
-                      <div class="panel-heading" id="list_stage12">
+                      <div class="panel-heading" id="list_stage13">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 12 : Process system calls </a>
                         </h4>
                       </div>
 
