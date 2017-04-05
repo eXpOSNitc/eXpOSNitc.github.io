@@ -2154,26 +2154,37 @@ loadi(70,12);</pre></div>
 [PTBR+16] = 81;
 [PTBR+17] = "0110";</pre></div></li>
 
+<li>As each page table occupies 20 words, the page table for next process starts from PAGE_TABLE_BASE+20.
+		Set the Page Table entries for init as done in previous stages with PTBR as PAGE_TABLE_BASE+20.</li>
 
+<li>The eXpOS design stipulates that the PID of idle process is 0. Hence, the first Process Table entry will
+be used for idle. As each Process Table entry occupies 16 words, the Process Table entry for next process starts from
+		 PROCESS_TABLE+16.  Therefore, the Process Table entries for init starts from PROCESS_TABLE + 16.
+		 Set up the PID field as 0 for idle and 1 for init.</li>
+	
+<li>	
 As we are going to have two processess in concurrent execution, more entries of the process table
 needs to be set.  The state of a process can be ready or running depending whether it is currently
 being scheduled or not.  The bootstrap loader will schedule the init process first.  Thus, in the 
 OS start up code, we set the idle process to "READY" state and INIT process to "RUNNING" state.  
+</li>
 
-
-		<li>Set up the PID field as 0 in the Process Table entry for idle as the first entry is used for idle.</li>
-	
 		<li>We will allocate the next free page, 82 as the User Area Page for the idle process.
-		Set the User Area Page number field in the Process Table entry to 82.</li>
-		<li>Set the UPTR field to 8*512 which is the logical address of user SP. 
+		Set the User Area Page number field in the Process Table entry of idle to 82.
+		</li>
+	
+		<li>Set the UPTR field in the Process Table entry for idle
+		 to 8*512 which is the logical address of user SP. 
 		(These steps were explained in detail in Stage 7). </li>
+		
+		<li>Set the KPTR field of idle to 0.</li>
+		
 		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10.</li>
+		
 		<li>Set the entry point IP value from the header of idle process to top of its user stack.
 		<div><pre>[80 * 512] = [69*512 + 1];</pre></div></li>
-		<li>As each page table occupies 20 words, the page table for next process starts from PAGE_TABLE_BASE+20.
-		Set up the page table entries for init with PTBR as PAGE_TABLE_BASE + 20.</li>
-		<li>As each Process Table occupies 16 words, the Process Table entry for next process starts from
-		 PROCESS_TABLE+16.  Set up the Process Table entry for init program as done in .</li>
+		
+		<li> Set User Area Page number, UPTR, KPTR, PTBR and PTLR fields in the Process Table entry for init.</li>
 		</ol>
 		<br>
 		<b>Modifictions to timer interrupt handler</b>
