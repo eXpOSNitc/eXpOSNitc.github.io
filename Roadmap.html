@@ -2033,7 +2033,7 @@ word = [physicalAddrWord];</pre>
 
                       <div class="panel-heading" id="list_stage12">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Idle Process</a>
+                          <a data-toggle="collapse"  href="#collapse12"><span class="fa fa-check-square-o"></span>Stage 12 : Introduction to Multiprogramming</a>
                         </h4>
                       </div>
 
@@ -2047,7 +2047,7 @@ word = [physicalAddrWord];</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
                             <div id="lo12" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the concept of idle process</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Program the timer interrupt handler to concurrently schedule two processes.</li>
       
                             </ul>                                  
                                      
@@ -2057,23 +2057,44 @@ word = [physicalAddrWord];</pre>
                         </div>
                       </div>
 		<!-- End Learning Objectives-->    
-        <p>Idle is a user program which is created and executed by the bootstrap loader.
-         It is stored in the disk and will be loaded to memory by the bootstrap loader. 
-         The main purpose of the idle process is to run as a background process in an infinite loop. 
-         This is demanded by the OS so that the scheduler will always have a process to schedule. 
-         The page table and process table for the idle process will be set up by the bootstrap loader. 
-         The PID of the idle process is fixed to be 0.</p>
+		<p>This stage introduces you to multi-programming.  You will load two processes
+into memory during OS boostrap and put them on concurrent execution.  
+For this, you need to modify the timer interrupt
+handler to switch between the two processes.</p>
+
+		<p>We will use the the same init process as in stage 11.  A second process called
+an <a href="os_spec-files/processmodel.html" target="_blank"><b>idle process</b></a> will also be set up in memory 
+for execution during OS startup.
+The idle process simply contains an infinite loop.  
+</p>
+
+		<p>You will modify the timer to implement a very primitive scheduler that time shares
+the machine between the two processes.  More detailed implementation of the OS
+scheduler will be taken up in later stages.
+</p>
+
+        The main purpose of the idle process is to run as a background process in an infinite loop. 
+         This is demanded by the OS so that the scheduler will always have atleast one "READY" process to schedule. 
+         
         <p>The idle process does nothing except running an infinite loop. It is to scheduled only when 
         no other process is available for scheduling. However, in this stage we will schedule idle just like 
         any other process.</p>
      
 		<b>Idle Program</b>
 		<br>
+		<p>Idle is a user program which is loaded for execution durig OS bootstrap.
+         Before OS bootstrap, it must be stored in the disk blocks 11 and 12.  
+         The OS bootstrap loader will load this program to memory pages 69 and 70.  (See 
+         <a href="os_implementation.html" target="_blank">eXpOS Disk and Memory layout</a> for details)  
+         
+         The Page Table and Process Table for the idle process must be set up by the bootstrap loader. 
+         The PID of the idle process is fixed to be 0.</p>
+         
 		Idle program runs an infinite loop. The algorithm for the idle is as follows.
 		<div><pre>while(1) do
 endwhile</pre></div>
 		<br>
-		The EXPL program for idle is given below.
+		An EXPL program for idle is given below.
 		<div><pre>int main()
 {
 	decl
@@ -2087,6 +2108,8 @@ endwhile</pre></div>
 	end	
 }	
 </pre></div>
+Compile the above code and load it into disk blocks 11 and 12 before system startup, using the command.
+<div><pre>load --idle <...path to idle...></pre></div>
 		<br><br>
 		<b>Modifications to OS Startup Code</b>
 		<ol style="list-style-type:decimal;margin-left:2px">
@@ -2094,10 +2117,17 @@ endwhile</pre></div>
 			<div><pre>loadi(69,11);
 loadi(70,12);</pre></div>
 </li>
-			<li>Set the page table entries for idle process.As idle process does not use library functions or
+			<li>Set the page table entries for idle process. As idle process does not use library functions or
 			 dynamic memory allocation, it doesn't need library and heap pages. Therefore, you need to set up the
-			 entries for only the code nad stack pages. We will allocate physical page 81 for stack as free pages
+			 entries for only the code and stack pages. As memory requirements of idle is very low,
+			 we need to allocate only one physical page for stack. 
+			 
+			 Apart from the idle process, we will also run the INIT process of stage 11 (to print all numbers
+			 below 20) concurrently.  
+			 We will allocate page 81 for stack as pages
 			 76-80 will be used by the init process. 
+			 
+			 
 			 <div><pre>//Library
 [PTBR+0] = -1;
 [PTBR+1] = "0000";
@@ -2124,17 +2154,26 @@ loadi(70,12);</pre></div>
 [PTBR+16] = 81;
 [PTBR+17] = "0110";</pre></div></li>
 
+
+As we are going to have two processess in concurrent execution, more entries of the process table
+needs to be set.  The state of a process can be ready or running depending whether it is currently
+being scheduled or not.  The bootstrap loader will schedule the init process first.  Thus, in the 
+OS start up code, we set the idle process to "READY" state and INIT process to "RUNNING" state.  
+
+
 		<li>Set up the PID field as 0 in the Process Table entry for idle as the first entry is used for idle.</li>
-		<li>Set the state of idle process as CREATED.</li>
-		<li>Set the User Area Page number field as 80.</li>
-		<li>Set the KPTR field to 0 and UPTR field to 8*512 which is the logical address of user SP.</li>
+	
+		<li>We will allocate the next free page, 82 as the User Area Page for the idle process.
+		Set the User Area Page number field in the Process Table entry to 82.</li>
+		<li>Set the UPTR field to 8*512 which is the logical address of user SP. 
+		(These steps were explained in detail in Stage 7). </li>
 		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10.</li>
-		<li>Set the starting IP value from the header of idle process to top of its user stack.
-		<div><pre>[79 * 512] = [69*512 + 1];</pre></div></li>
+		<li>Set the entry point IP value from the header of idle process to top of its user stack.
+		<div><pre>[80 * 512] = [69*512 + 1];</pre></div></li>
 		<li>As each page table occupies 20 words, the page table for next process starts from PAGE_TABLE_BASE+20.
 		Set up the page table entries for init with PTBR as PAGE_TABLE_BASE + 20.</li>
-		<li>As each Process Table occupies 16 words, the Process Table entry for next process starts from PROCESS_TABLE+16.
-		Set up the Process Table entry for init as done for idle.</li>
+		<li>As each Process Table occupies 16 words, the Process Table entry for next process starts from
+		 PROCESS_TABLE+16.  Set up the Process Table entry for init program as done in .</li>
 		</ol>
 		<br>
 		<b>Modifictions to timer interrupt handler</b>
@@ -2206,7 +2245,7 @@ PTLR = [new_process_table + 15];</pre></div></li>
 
                       <div class="panel-heading" id="list_stage13">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : MultiProgramming</a>
+                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : Round robin scheduler</a>
                         </h4>
                       </div>
 
