@@ -2073,13 +2073,7 @@ the machine between the two processes.  More detailed implementation of the OS
 scheduler will be taken up in later stages.
 </p>
 
-        The main purpose of the idle process is to run as a background process in an infinite loop. 
-         This is demanded by the OS so that the scheduler will always have atleast one "READY" process to schedule. 
-         
-        <p>The idle process does nothing except running an infinite loop. It is to scheduled only when 
-        no other process is available for scheduling. However, in this stage we will schedule idle just like 
-        any other process.</p>
-     
+        
 		<b>Idle Program</b>
 		<br>
 		<p>Idle is a user program which is loaded for execution durig OS bootstrap.
@@ -2310,6 +2304,19 @@ endif;
 			<li>Load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
 			<li>Compile and load the idle program into the XSM disk.</li>
 			<li>Run the machine with timer enabled.</li>
+			
+		</ol>
+		
+		<a data-toggle="collapse"  href="#collapseq5"><b>Q1.</b>What is the significance of the idle process?</a>
+                            <div id="collapseq5" class="panel-collapse collapse">
+				The main purpose of the idle process is to run as a background process in an infinite loop. 
+         The idle process does nothing except running an infinite loop.
+         This is demanded by the OS so that the scheduler will always have atleast one "READY" process to schedule. 
+         It is to scheduled only when 
+        no other process is available for scheduling. However, in this stage we have scheduled idle just like 
+        any other process.
+     			
+		</div>
 		</div>
 		</div>
 		
