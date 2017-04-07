@@ -2178,7 +2178,7 @@ loadi(70,12);</pre></div>
      and 1 for init.</li>
 	
 <li>	
-The process being currently sceduled is said to be in RUNNING state.
+The process being currently shceduled is said to be in RUNNING state.
 The bootstrap loader will schedule the init process first. 
 Thus, in the OS start up code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
 The CREATED state indicates that the process had never been scheduled for execution
@@ -2196,11 +2196,11 @@ states</a>.
 		 to 8*512 which is the logical address of user SP. 
 		(These steps were explained in detail in Stage 7). </li>
 		
-		<li>Set the KPTR field of the process table for idle to 0.The User Area Page Number field of a process table entry stores the page number of the user area page allocated
+		<li>Set the KPTR field of the process table for idle to 0.<br>The User Area Page Number field of a process table entry stores the page number of the user area page allocated
 to the process.  The KPTR field must store the offset of the kernel stack pointer within this page. The UPTR
 points to the top of the current value of user stack pointer.  <br>
 Some explanation is of the order here.  When a process is executing in user mode, the active stack will be
-the user stack (page 8-9 of the process).  When the process switches to kernel mode, the first action by
+the user stack (logical pages 8-9 of the process).  When the process switches to kernel mode, the first action by
 the kernel code will be to save the SP value to UPTR and set the SP register to the physical address of the 
 top of the kernel stack.  When a process enters the kernel mode from user mode, the kernel stack will always
 be empty.  Hence, SP must be set to value (User Area Page Number * 512 - 1) whenever kernel mode is entered
