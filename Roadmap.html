@@ -2231,23 +2231,29 @@ will be empty when a process returns to user mode as there is no kernel context 
 		(You have alreay gone through the steps in Stage 7). </li>
 		<li> Set the Entry point adress for INIT process in the beginning of Stack page of INIT. Also set the SP register accordingly.</li>
 		<li>Transfer control to INIT using ireturn instruction.</li>
-		
+
 		</ol>
 		<br>
+
+		<p>
+		<b> Note: </b> You must be clear with <a href=" " target="_blank"> XSM unprivilaged mode execution </a> to understand the decription that follows.
+		</p>
+
 		<b>Modifications to timer interrupt handler</b>
-		<br>
+		<br><br>
 		In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual
         function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
 		ready processes. 
-		<br>
+		<br><br>
 		In this stage, you will write a sample scheduler which will schedule just two processes.
 		The scheduler will be implemented in the timer interrupt handler.
-		After saving the context of the currently executing process, the context of the next process to be scheduled
-		will be loaded to the registers. The register context will be saved to the kernel stack as done in previous stages.
-		Detailed intructions for scheduling is given below.<br><br>
+		After saving the context of the currently executing process in its kernel stack, the scheduler must
+		switch to the kernel stack to that of the next process to be scheduled.  The context of the next process
+	    has to be be loaded to the registers and then control of execution can be transferred to the process. 
+		Detailed intructions for scheduling are given below.<br><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
-			<li>Change to kernel stack and save the register context using the backup instructions as done in 
-			previous stages.</li>
+			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
+			 using the backup instructions as done in stage 9</li>
 			<li>Obtain the PID of currently executing process from System Status Table.
 			<div><pre>alias currentPID R0;
 currentPID = [SYSTEM_STATUS_TABLE+1];</pre></div></li>
