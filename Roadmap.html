@@ -2196,29 +2196,42 @@ states</a>.
 		 to 8*512 which is the logical address of user SP. 
 		(These steps were explained in detail in Stage 7). </li>
 		
-		<li>Set the KPTR field of the process table for idle to 0.<br>The User Area Page Number field of a process table entry stores the page number of the user area page allocated
+		<li>Set the KPTR field of the process table for idle to 0.
+
+		<br><br>The User Area Page Number field of a process table entry stores the page number of the user area page allocated
 to the process.  The KPTR field must store the offset of the kernel stack pointer within this page. The UPTR
-points to the top of the current value of user stack pointer.  <br>
+points to the top of the current value of user stack pointer.  <br><br>
 Some explanation is of the order here.  When a process is executing in user mode, the active stack will be
 the user stack (logical pages 8-9 of the process).  When the process switches to kernel mode, the first action by
 the kernel code will be to save the SP value to UPTR and set the SP register to the physical address of the 
 top of the kernel stack.  When a process enters the kernel mode from user mode, the kernel stack will always
 be empty.  Hence, SP must be set to value (User Area Page Number * 512 - 1) whenever kernel mode is entered
-from the user mode.  <br>
+from the user mode.  <br><br>
 Similarly, before a process executes IRET instruction and switch from kernel mode to user mode, the SP
 register must be set to previously stored value in UPTR field of the process table.  The kernel stack
 will be empty when a process returns to user mode as there is no kernel context to be remembered.     
-		
+		<br> <br>
 		</li>
 		
-		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10.</li>
+		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10 in the Process Table entry of idle process.</li>
 
 
 		
-		<li>Set the entry point IP value from the header of idle process to top of its user stack.
+		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process.
 		<div><pre>[80 * 512] = [69*512 + 1];</pre></div></li>
 		
+		The values of PTBR, PTLR, User Area Page Number, UPTR, KPTR etc. stored in the process table entry for a process
+		will be used to set up the values of the hardware registers just before the process is scheduled for execution. 
+        We will not be scheduling the idle process immediately.  Hence, the hardware registers will not
+		be set based on the above values now.  Instead, we will schedule the INIT process from the OS start up code. 
+		Hence your OS startup code must contain code to set up registers to schedule the INIT process, as outlined below: 
+		<br> <br>
 		<li> Set User Area Page number, UPTR, KPTR, PTBR and PTLR fields in the Process Table entry for init.</li>
+		<li> Initialise the machine's PTBR and PTLR registers for scheduling the INIT process. 
+		(You have alreay gone through the steps in Stage 7). </li>
+		<li> Set the Entry point adress for INIT process in the beginning of Stack page of INIT. Also set the SP register accordingly.</li>
+		<li>Transfer control to INIT using ireturn instruction.</li>
+		
 		</ol>
 		<br>
 		<b>Modifications to timer interrupt handler</b>
