@@ -2259,7 +2259,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 currentPID = [SYSTEM_STATUS_TABLE+1];</pre></div></li>
 		<li>The Process table entry of the current process can be computed as PROCESS_TABLE + cuurentPID*16.
 		Save the KPTR, PTBR and PTLR values to the Process Table entry of the current process.
-		Set the state of the process as READY.
+		Set the state of the process as READY. 
 		<div><pre>alias process_table_entry R1;
 process_table_entry = PROCESS_TABLE + currentPID * 16;
 
@@ -2269,8 +2269,9 @@ process_table_entry = PROCESS_TABLE + currentPID * 16;
 
 [process_table_entry + 4] = READY;
 </pre></div>
-Note that instead of saving the actual value of KPTR, we are saving KPTR%512. This is done so that the 
-User Area Page can be reallocated if necessary.</li>
+Note that instead of saving the actual value of KPTR, we are saving KPTR%512. This is because the OS design
+stipulate that KPTR must contain the offset of the kernel stack pointer within the User Area Page.  This is
+done so to allow the OS to relocate the User Area Page if necessary.</li>
 		<li>As we have only two processes to schedule, the scheduling algorithm we are going to use will just toggle
 		between the two processes.
 		<div><pre>alias newPID R2;
