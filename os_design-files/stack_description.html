@@ -120,7 +120,7 @@ specific to the implementation of eXpOS on the XSM machine.
 	<p>&nbsp;&nbsp;&nbsp;c. A kernel module invokes another kernel module</p>
 	</p>
 	
-	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
+	<p> The calling conventions followed here correspond to the one given in the <a href="../support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
 	<p><b>Important Note</b>: Whenever the kernel stack pointer of a process is saved in the KPTR field of the process table, the <b>offset of SP register within the user area page </b>will be stored (and <b>not</b> the physical address of the kernel stack pointer). The page number of the user area page is stored in the USER AREA PAGE NUMBER field in the process table. Thus, the value of the offset can be calculated by the fomula <i>offset = SP – (512 * USER AREA PAGE NUMBER)</i>.</p>
 	<p>The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. Thus, if the user area page is swapped out, it can be swapped back later to a different physical memory page.</p>
      
@@ -133,7 +133,7 @@ specific to the implementation of eXpOS on the XSM machine.
               <h3>System Call Invocation</h3>
 <br>
 <p>An application program must push the input parameters to a system call through the user stack.  The return value of the system
-call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="http://exposnitc.github.io/abi.html" target="_blank">ABI</a>.</p>
+call is also passed back to the application through the user stack. For the calling conventions followed in eXpOS, see <a href ="../abi.html" target="_blank">ABI</a>.</p>
 <p>If the application program is written in ExpL, then the ExpL compiler will generate code for pushing arguments into the user
 stack (if you are writing directly in assembly language, then your code must explicitly contain the code to do these).  The system call module must be designed so as to access these arguments from the user stack of the process, do the processing
 required and store the return value into the appropriate place in the user stack before returning to the user mode.  
@@ -330,8 +330,8 @@ POP System_Call_Number	// Pop and discard the
                registers and must restore the context before returning to the application.  
                The kernel stack is used to store the execution context of the user process. 
                This context is restored before the return from the kernel module.  
-               (The <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">
-				backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">
+               (The <a href="../arch_spec-files/instruction_set.html#backup" target="_blank">
+				backup</a> and <a href="../arch_spec-files/instruction_set.html#restore" target="_blank">
 				restore</a> instructions of the XSM machine facilitate this).</p>
 	      <p> NOTE: If an exception is caused by error conditions ( such as stack overflow, invalid stack pointer value, arithmetic exceptions etc.), the user program will be terminated. This is not dealt with in this tutorial. The tutorial describes the stack management only in the case of page fault exception (since this does not result in termination of the user program).</p> 
               <p> <i> The XSM machine pushes the return address (IP+2 value) to the user stack before transferring the control to the Interrut Service Routine</i> <p>
@@ -663,7 +663,7 @@ POP Function_Code	// Pop and discard the system call number
               <h3>Interrupts or Exceptions</h3>
               
               <br>
-              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are four steps in handling exception/interrupt.</p>
+              <p>A hardware interrupt/exception can occur while an application program is executing. It can be the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. Since the application does not have control over the transfer to the interrupt module, it would not have saved its context. Thus in this case the kernel module must save the register context of the application in its own stack (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.  The kernel stack is used to store the execution context of the user process.  This context is restored before the return from the kernel module.  (For the implementation of eXpOS on the XSM architecture, the <a href="../arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="../arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are four steps in handling exception/interrupt.</p>
               <p>1. Before the interrupt/exception occurs: The application process cannot store its context in the user stack as it doesn't have any control when an exception/interrupt occurs.</p>
               <p><img src="../img/sys_call_b4_ex.png"><br><br></p>
               <hr>
@@ -683,7 +683,7 @@ POP Function_Code	// Pop and discard the system call number
               <br><br><br>	
               <h3>Invokation of kernel module from another kernel module</h3>
               <br>
-              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="exposnitc.github.io/arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling an invokation of a kernel module from a kernel module.</p>
+              <p>In this case, the current execution context is stored in the same stack as the working stack (kernel stack). This results in the value of SP to be incremented. This context is restored on returning back, after the execution of the next kernel module (For the implementation of eXpOS on the XSM architecture, the <a href="../arch_spec-files/instruction_set.html#backup" target="_blank">backup</a> and <a href="../arch_spec-files/instruction_set.html#restore" target="_blank">restore</a> instructions facilitate this). There are two steps in handling an invokation of a kernel module from a kernel module.</p>
               <p>1. Before switching execution to the next kernel module: The current context is saved in the kernel stack.</p>
               <p><img src="../img/before_kernel_to_kernel.png"><br><br></p>
               <hr>
