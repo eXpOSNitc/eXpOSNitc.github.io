@@ -1625,7 +1625,7 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	<li>
 	As we are using the first Process Table entry, the PID will be 0.  eXpOS kernel is expected to store
 	the PID in the PID field of the process table. 
-	<div><pre>[PROCESS_TABLE + 1] = 0</pre></div>
+	<div><pre>[PROCESS_TABLE + 1] = 0;</pre></div>
 	</li>
 	<li>
 	The kernel maintains a data structure called <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>
@@ -1886,8 +1886,8 @@ Details can be found at <a href="os_design-files/stack_smcall.html" target="_bla
 	<pre>alias physicalAddrWord R1;
 alias physicalPageAddr R2;
 alias offset R3;
-physicalPageAddr = [PTBR + 2 * (userSP - 3/ 512)];
-offset = (userSP - 3) % 512
+physicalPageAddr = [PTBR + 2 * (userSP - 3)/ 512];
+offset = (userSP - 3) % 512;
 physicalAddrWord = (physicalPageAddr * 512) + offset;</pre>
 	</div>
 	</li>
@@ -1910,7 +1910,9 @@ word = [physicalAddrWord];</pre>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
 	<div><pre>alias physicalAddrRetVal R5;
-[physicalAddrRetVal] = ([PTBR + 2 * (userSP - 1/ 512)] * 512) + ((userSP - 1) % 512);</pre></div></li>
+physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 512);
+[physicalAddrRetVal] = 0;</pre></div></li>
+
 	<br>
 	<li>
 	Pass control back to the user program using the ireturn statement.
