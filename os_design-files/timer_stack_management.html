@@ -114,27 +114,64 @@
 	 <br><br>
     	 </div>
          <br>
+         
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
-         <p>This document handles stack management in context switch, specific to eXpOS implementation in XSM machine. There are two situations that can result in a context switch:</p>
+
+         <p>We save and restore this context from the kernel stack. This document specifies how the stack management should be performed during a context switch. There are two situations that can result in a context switch:</p>
 	
-	<p>&nbsp;&nbsp;&nbsp;1. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a file/disk). In this case, the process saves its own context and invokes the scheduler module to perform a context switch. </p>
-	<p>&nbsp;&nbsp;&nbsp;2. The time slice of a process executing in the user mode expires and a timer interrupt (INT 1) is raised.  In this case, the timer interrupt routine saves the context of the current process and invokes the scheduler module.  </p>
+	<p>1. The time slice of a process executing in the user mode expires and a timer interrupt is raised. </p>
+
+	<p>2. While executing in the kernel mode (inside a system call or the exception handler), a process executes a blocking operation (like waiting for a 
+	file/disk i/o).  </p>
+
+	</ol>
+
+<p>	
+	The scheduler module(MOD_5) is invoked to perform the context switch.
+</p>
+
+<br>
+<b> Case 1 : Saving and Restoring the context during timer interrupt.</b>
+
+<br> <br>
+	
+	<p>	As the Timer interrupt is a hardware interrupt, the user context is stored in the kernel stack of the process at the beginning of the Timer ISR (see <a href="stack_interrupt.html"> Kernel Stack Management during Interrupts </a> for more details). The Timer ISR then calls the scheduler module.
+	This yields control form the ISR and some other process is scheduled for execution. The process is scheduled back at a later point in time and the remaining Timer ISR code is executed. The Timer ISR at this point, restores the original user context from the kernel stack and transfers control to the user code. 
+</p>
+<p>
+	Note: We will write the Timer ISR in such a way that it does not use any registers. So, we need not store and restore any additional kernel level context inside the timer ISR before or after invoking the scheduler module.
+	</p>
+
+<br>
+<b> Case 2 : Saving and Restoring the context during blocking system calls.</b>
+
+<br> <br>
+
+<p>	In this case, the user context is saved and restored by the user process before and after the system call. So we will not bother about this for now. See <a href="stack_smcall.html"> Kernel Stack Management during system calls </a> for more details.
+</p>
+<p>
+Since the system call uses registers in the kernel mode, the system call must contain code to store and restore it's kernel-level context (registers it has used) in its kernel stack before and after invoking the scheduler module.
+</p>
+
+<br>
+<b> Scheduler Module</b>
+
+<br>
 
 	<br>
 
-	In both these cases, the scheduler module need not save or restore the context of the <b>leaving process </b>(caller). 
-	This is because the caller saves its context before calling the scheduler module. 
-	The caller also restores its context after returning from the scheduler module. 
+<p>
+	The scheduler module is responsible for performing the actual context switch. The context switch happens by the change of the SP, the PTBR and the PTLR registers. We store these register values of the old process to its Process Table and restore these register values of the new process from its Process Table. 
+
+</p>
+
+	<p><b>Important Note</b>: The <b>offset of SP register within the user area page </b> will be stored in the KPTR field of the process table(and <b>not</b> the physical address of the kernel stack pointer). The value of the offset can be calculated by the fomula <i>offset = SP – (512 * USER AREA PAGE NUMBER)</i>.
+	The purpose of storing the offset (instead of the physical address) is to allow the OS to relocate the user area page to another physical memory page during swapping. </p>
+
+	<p>
+	After switching the registers, the scheduler module executes the return instruction (Except for one special case which we will see below). This sets the IP value to - the address of the kernel code that invoked the from the scheduler module - from the top of the kernel stack of the new process. Note that since SP is changed, the kernel stack is changed and the returning IP will be changed accordingly. 
 	
-	<br><br>
-	
-	A special case occurs when the <b> entering process </b> (the process that is scheduled next by the scheduler) is a newly created process.
-	It will be dicussed in detail below.
-	<br> <br>
-	
-	<p> The calling conventions followed here correspond to the one given in the <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL documentation</a>.</p>
-	<p><b>Important Note</b>: Whenever the kernel stack pointer of a process is saved in the KPTR field of the process table, the <b>offset of SP register within the user area page </b>will be stored (and <b>not</b> the physical address of the kernel stack pointer). The page number of the user area page is stored in the USER AREA PAGE NUMBER field in the process table. Thus, the value of the offset can be calculated by the fomula <i>offset = SP – (512 * USER AREA PAGE NUMBER)</i>.</p>
-	<p>The purpose of storing the offset (instead of the physical address) in the KPTR field is to allow the OS to relocate the user area page to another physical memory page. Thus, if the user area page is swapped out, it can be swapped back later to a different physical memory page.</p>
+	</p>	
      
      </div>
 	
@@ -145,44 +182,7 @@
 	<p style="margin:0"><h4><b>Actions done by the scheduler: </b></h4></p>
 
 &nbsp;&nbsp;&nbsp;1. Find the pid of the next process to be scheduled.<br> 
-&nbsp;&nbsp;&nbsp;2. Save the current kernel stack pointer offset in the KPTR field of the process table.
-<br><br>
-	<div class="container-fluid .2.1_code fig_code">
- 		<figure>
-  			<div class="row">
-   		 		<div class="col-sm-6">
-     				<img src="../img/kernel_mode_timer_step1.ii.a.png" width="105%"></img>
-    				</div>
-    				<div class="col-sm-6">
-    					<pre>
-<b> Pseudo code</b>							
-						<code>
-...
-						
-MOV R4, User Area Page Number*512 
-		// find the physical address 
-        	   of the user area page
-MOV R5, SP
-SUB R5,R4
-MOV KPTR,R5	// logicalSP = 
-		   SP - (UAreaPgNo * 512)
-...	
-	   
-						</code>
-	
-					</pre>
-    				</div>
-  			</div>
-			<div class="row">
-	 			<div class="col-sm-12">
-	 				
-					<figcaption><br><b>Fig.1.b - Storing the offset of kernel SP in the KPTR field of the process table.</b>
-					</figcaption>
-				</div>
-			</div>
-		</figure>
-	</div>
-<br><br>
+&nbsp;&nbsp;&nbsp;2. Save the current kernel stack pointer offset in the KPTR field of the process table.<br>
 
 &nbsp;&nbsp;&nbsp;3. Save the current PTBR and PTLR values in the process table of the leaving process. (Is this really required?)
 <br>
@@ -191,6 +191,8 @@ MOV KPTR,R5	// logicalSP =
 &nbsp;&nbsp;&nbsp;5. Set the state of the entering process as running. (State of the leaving process is set before calling the scheduler module).
 <br>
 &nbsp;&nbsp;&nbsp;6. Identify wheather the entering process is a normal process or a newly created process from the state field of the process table.
+
+<br><br>
 
 <h4><b> Case 1 : Entering process is a normal process</b></h4>
 
@@ -234,7 +236,7 @@ MOV SP, R4
 		</figure>
 	</div>
 	
-	&nbsp;&nbsp;&nbsp;8. RET statement is executed and control goes back to the Interrupt routine or kernel module that called the scheduler.
+	&nbsp;&nbsp;&nbsp;8. return instruction is executed and control goes back to the Interrupt routine or kernel module that called the scheduler.
 	
 <br><br>         
 
@@ -273,7 +275,7 @@ IRET
 		</figure>
 	</div>
 	
-	&nbsp;&nbsp;&nbsp;8. IRET statement is executed. Note that the start IP is set at top of user stack and SP is also set at time of fork s/m call. 
+	&nbsp;&nbsp;&nbsp;8. IRET statement is executed. Note that the start IP is set at top of user stack and SP is also set at time of exec s/m call. 
 <br><br>         
 
 
