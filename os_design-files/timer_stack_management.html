@@ -117,7 +117,10 @@
          
          <p>Context switch involves switching a machine from executing one process to executing another even before the former is completed. This involves saving the state of all volatile data like registers, PTBR, BP, etc. (in other words the "context") and, then loading the context of a new process or starting a new process from scratch which will have its own context. This technique allows the machine to concurrently execute multiple processes.</p>
 
-         <p>eXpOS maintains a kernel stack for each application process.  At the time of a context switch, the scheduler must save the context of the outgoing process into its kernel stack.  The previously saved context of the newly scheduled process must be restored from the kernel stack of that process.  This document specifies how stack management has to be performed during a context switch. There are two situations that can result in a context switch:</p>
+         <p>eXpOS maintains a kernel stack for each application process. Before a context switch, the context of the outgoing process must be saved into its kernel stack.  The previously saved context of the incoming process must be restored from the kernel stack of that process.  </p>
+
+<p>
+         This document specifies how stack management has to be performed during a context switch. There are two situations that can result in a context switch:</p>
 	
 	<p>1. The time slice of a process executing in the user mode expires and a timer interrupt is raised. </p>
 
