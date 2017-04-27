@@ -135,13 +135,12 @@
 
 <br> <br>
 	
-	<p>	The Timer ISR saves the user context of the process from which it was entered into the kernel stack of that process.  (see <a href="stack_interrupt.html"> Kernel Stack Management during Interrupts </a> for more details). The Timer ISR then calls the scheduler module.  The scheduler module determines which process must be run next, and changes the 
+	<p>	The Timer ISR saves the user context of the process from which it was entered, into the kernel stack of that process.  (see <a href="stack_interrupt.html"> Kernel Stack Management during Interrupts </a> for more details). The Timer ISR then calls the scheduler module.  The scheduler module determines which process must be run next, and changes the 
   machine's stack to the kernel stack of the new processes.  This stack is expected to contain the previously saved context of the 
   new process.   The scheduer module then returns to the timer.  When the timer returns to the
   user mode, the new process will be executed.  This is because the execution context is now restored from the kernel stack
   of the new process.  The details will be explained below.  
 
-	The action performed by the scheduler module results in control from the ISR and some other process is scheduled for execution. The process is scheduled back at a later point in time and the remaining Timer ISR code is executed. The Timer ISR at this point, restores the original user context from the kernel stack and transfers control to the user code. 
 </p>
 <p>
 	Note: We will write the Timer ISR in such a way that it does not use any registers. So, we need not store and restore any additional kernel level context inside the timer ISR before or after invoking the scheduler module.
