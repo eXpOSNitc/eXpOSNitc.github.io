@@ -1921,6 +1921,16 @@ physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 51
 
 
 	</ol>
+	
+	<b style="font-size:18px">Modifications to the OS startup code</b>
+<br> <br>
+<p>Add code in the OS startup code to load  INT7 from disk to memory.
+</p>
+<pre>
+loadi(16,29);
+loadi(17,30);
+</pre>
+
 	<br>
 	<b>Making Things Work</b>
 	<ol style="list-style-type:decimal;margin-left:2px">
@@ -2003,7 +2013,7 @@ physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 51
         before proceeding further.</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
-			<li>Write an EXPL program to print all numbers below 20. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
+			<li>Write an EXPL program to print all numbers below 50. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
 			EXPL programs. The path to this file is assumed to be $HOME/myexpos/eXpl/samples/numbers.inp.
 			This will be the init program in this stage. </li>
 			
