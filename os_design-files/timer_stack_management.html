@@ -203,9 +203,9 @@ system call.)
 
 <br><br>
 
-<h4><b> Case 1 : Entering process is in READY state</b></h4>
+<h4><b> Case 1 : The new process is in READY state</b></h4>
 
-&nbsp;&nbsp;&nbsp;7. Compute the physical address corresponding to the KPTR field of the process table of the entering process, and store this to SP.
+&nbsp;&nbsp;&nbsp;7. Compute the physical address corresponding to the offset stored in KPTR field of the process table entry of the new process, and store this to SP.
 
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -249,9 +249,9 @@ MOV SP, R4
 	
 <br><br>         
 
-<h4><b> Case 2 : Entering process is a newly created process</b></h4>
+<h4><b> Case 2 : The new process is in CREATED state</b></h4>
 
-&nbsp;&nbsp;&nbsp;7. Set SP to the address stored in the UPTR field of the process table of the entering process.
+&nbsp;&nbsp;&nbsp;7. Set SP to the address stored in the UPTR field of the process table of the new process.
 
 	<div class="container-fluid .2.1_code fig_code">
  		<figure>
@@ -284,9 +284,13 @@ IRET
 		</figure>
 	</div>
 	
-	&nbsp;&nbsp;&nbsp;8. IRET statement is executed. 
+	&nbsp;&nbsp;&nbsp;8. ireturn statement is executed.  (In this case, the scheduler directly kicks off execution of the new process in
+  user mode.)
 <br><br>         
 
+* A process may invoke the scheduler for several reasons.  As noted earlier as Case 1, one reason is that the time slice of the process is finished.  Other possibilities (handled under Case 2) includes waiting for disk, terminal, semaphore, file etc.  
+Before calling the scheduler a process must set the STATE field of the process table entry to indicate the correct reason 
+for invoking the scheduler.  Note that the scheduler cannot set the STATE field as only the caller will know the cause.  
 
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
