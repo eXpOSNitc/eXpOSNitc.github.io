@@ -2256,14 +2256,22 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<b> Note: </b> You must be clear with <a href=" " target="_blank"> XSM unprivilaged mode execution </a> to understand the decription that follows.
 		</p>
 
+
+
+
+
+
+
+
 		<b>Modifications to timer interrupt handler</b>
 		<br><br>
-		In the previous stage you made the timer interrupt to display "TIMER" at fixed intervals. However, the actual
+		In the previous stage you made the timer interrupt display "TIMER" at fixed intervals. However, the actual
         function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
 		ready processes. 
 		<br><br>
 		In this stage, you will write a sample scheduler which will schedule just two processes.
 		The scheduler will be implemented in the timer interrupt handler.
+
 		After saving the context of the currently executing process in its kernel stack, the scheduler must
 		switch to the kernel stack to that of the next process to be scheduled.  The context of the next process
 	    has to be be loaded to the registers and then control of execution can be transferred to the process. 
@@ -2271,10 +2279,13 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
 			 using the backup instructions as done in stage 9</li>
-			<li>Obtain the PID of currently executing process from System Status Table.
+			
+			<li>Obtain the PID of currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table </a>.
+
 			<div><pre>alias currentPID R0;
 currentPID = [SYSTEM_STATUS_TABLE+1];</pre></div></li>
-		<li>The Process table entry of the current process can be computed as PROCESS_TABLE + cuurentPID*16.
+
+		<li>The Process table entry of the current process can be computed as PROCESS_TABLE + currentPID*16.
 		Save the KPTR, PTBR and PTLR values to the Process Table entry of the current process.
 		Set the state of the process as READY. 
 		<div><pre>alias process_table_entry R1;
@@ -2287,8 +2298,10 @@ process_table_entry = PROCESS_TABLE + currentPID * 16;
 [process_table_entry + 4] = READY;
 </pre></div>
 Note that instead of saving the actual value of KPTR, we are saving KPTR%512. This is because the OS design
-stipulate that KPTR must contain the offset of the kernel stack pointer within the User Area Page.  This is
-done so to allow the OS to relocate the User Area Page if necessary.</li>
+stipulates that KPTR must contain the offset of the kernel stack pointer within the User Area Page.  This is
+done so as to allow the OS to relocate the User Area Page if necessary.</li>
+
+
 		<li>As we have only two processes to schedule, the scheduling algorithm we are going to use will just toggle
 		between the two processes.
 		<div><pre>alias newPID R2;
@@ -2297,7 +2310,7 @@ if(currentPID == 0) then
 else
 	newPID = 0;
 endif;</pre></div></li>
-		<li>Restore the register values from the Process Table entry for the new process.
+		<li>Restore the SP, PTBR and PTLR values from the Process Table entry for the new process.
 		<div><pre>alias new_process_table R3;
 new_process_table = PROCESS_TABLE + newPID * 16;
 
@@ -2306,7 +2319,7 @@ SP =  [new_process_table + 11] * 512 + [new_process_table + 12] ;
 PTBR = [new_process_table + 14];
 PTLR = [new_process_table + 15];</pre></div></li>
 
-		<li>Set the PID field of the System Status Table as nextPID.
+		<li>Set the PID field of the System Status Table as newPID.
 		<div><pre>[SYSTEM_STATUS_TABLE + 1] = newPID;
 </pre></div></li>
 
@@ -2322,6 +2335,7 @@ before being scheduled. On the other hand, a process in READY state is one which
 RUNNING state in the past.  Such a process will have an associated (saved user context) which the scheduler
 would have saved in the kernel stack when it was scheduled out earlier.  This context
 has to be restored before the process is scheduled again for correct resumption of execution.
+
 <br>
 		Check if the newly found process is in CREATED state.
 		If so, set SP to top of its user stack and return to user mode.
@@ -2329,7 +2343,11 @@ has to be restored before the process is scheduled again for correct resumption 
 	SP = [new_process_table + 13];
 	ireturn;
 endif;
-</pre></div> 
+</pre></div>
+Note:  In this experiment, the only situation where the timer finds the next process in CREATED state is when
+the IDLE process is to be scheduled for the first time.  Since INIT is scheduled directly from the OS startup code,
+the INIT process never goes through the CREATED state.  INIT is the only process in eXpOS that begins 
+in the CREATED state.  
 		</li>
 		
 		<li>Restore the register context of the new process from its kernel stack and change the stack to user stack 
