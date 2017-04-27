@@ -122,15 +122,15 @@
 <p>
          This document specifies how stack management has to be performed during a context switch. There are two situations that can result in a context switch:</p>
 	
-	<p>1. The time slice of a process executing in the user mode expires and a timer interrupt is raised. </p>
+	<p>1. The time slice of a process executing in the user mode expires and a timer interrupt is raised. The timer interrupt routine  invokes the scheduler module(MOD_5) to perform a context switch.</p>
 
-	<p>2. While executing in the kernel mode (inside a system call or the exception handler), a process has to wait for some event to happen (ex: wait for a resource like disk, terminal etc.) and hence voluntarily invokes the scheduler to schedule itself out.   
+	<p>2. While executing in the kernel mode (inside a system call or the exception handler), a process has to wait for some event to happen (ex: wait for a resource like disk, terminal etc) and hence voluntarily invokes the scheduler(MOD_5) to schedule itself out.   
   </p>
 
 	</ol>
 
 <p>	
-	In both the above cases, the scheduler module(MOD_5) is invoked to perform the context switch.
+	In both the above cases, 
 </p>
 
 <br>
