@@ -2195,7 +2195,7 @@ loadi(70,12);</pre></div>
      and 1 for init.</li>
 	
 <li>	
-The process being currently shceduled is said to be in RUNNING state.
+The process being currently shceduled is said to be in <a href="support_tools-files/constants.html" target="_blank">RUNNING</a> state.
 The bootstrap loader will schedule the init process first. 
 Thus, in the OS start up code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
 The CREATED state indicates that the process had never been scheduled for execution
@@ -2323,9 +2323,7 @@ PTLR = [new_process_table + 15];</pre></div></li>
 		<div><pre>[SYSTEM_STATUS_TABLE + 1] = newPID;
 </pre></div></li>
 
-		<li>Set the state of the newly found process as RUNNING.
-		<div><pre>[new_process_table + 4] = RUNNING;</pre></div></li>
-		
+
 		<li>
 		
 Our scheduler must distinguish between two cases when a process is scheduled for execution.  
@@ -2340,6 +2338,7 @@ has to be restored before the process is scheduled again for correct resumption 
 		Check if the newly found process is in CREATED state.
 		If so, set SP to top of its user stack and return to user mode.
 		<div><pre>if([new_process_table + 4] == CREATED) then
+	[new_process_table + 4] = RUNNING;
 	SP = [new_process_table + 13];
 	ireturn;
 endif;
@@ -2349,7 +2348,11 @@ the IDLE process is to be scheduled for the first time.  Since INIT is scheduled
 the INIT process never goes through the CREATED state.  INIT is the only process in eXpOS that begins 
 in the CREATED state.  
 		</li>
+
+	<li>Set the state of the newly found process as RUNNING.
+	<div><pre>[new_process_table + 4] = RUNNING;</pre></div></li>
 		
+
 		<li>Restore the register context of the new process from its kernel stack and change the stack to user stack 
 		as done in previous stages. Note that if this is the case, then the process would have been in RUNNING state before.</li>
 		</ol>
@@ -2416,7 +2419,7 @@ in the CREATED state.
         	technique. You will hand create another user process
         	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
-        	<p><b>Read and Understand 
+        	<p><b>It is absolutely neccesary to read and understand 
         	<a href="os_design-files/stack_module.html" target="_blank">Kernel Stack Management during Module calls </a> and <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> before proceeding further. </b></p> 			
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
