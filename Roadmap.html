@@ -2351,7 +2351,7 @@ in the CREATED state.
 		</li>
 		
 		<li>Restore the register context of the new process from its kernel stack and change the stack to user stack 
-		as done in previous stages.</li>
+		as done in previous stages. Note that if this is the case, then the process would have been in RUNNING state before.</li>
 		</ol>
 		<br>
 		<b>Making Things Work</b>
@@ -2367,11 +2367,15 @@ in the CREATED state.
 				The main purpose of the idle process is to run as a background process in an infinite loop. 
          The idle process does nothing except running an infinite loop.
          This is demanded by the OS so that the scheduler will always have atleast one "READY" process to schedule. 
-         It is to scheduled only when 
+         It is to be scheduled only when 
         no other process is available for scheduling. However, in this stage we have scheduled idle just like 
         any other process.
      			
 		</div>
+<br> <br>
+
+<b style="color:#26A65B">Assignment 1: </b> Write Expl programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently.
+
 		</div>
 		</div>
 		
@@ -2393,9 +2397,10 @@ in the CREATED state.
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
                             <div id="lo13" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement round robin scheduling.</li>
-      
-                            </ul>                                  
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS module programming.</li>
+                            
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Round Robin scheduling algorithm as an eXpOS module.</li>
+      						  </ul>                                  
                                      
                             </div>
                           </li>
@@ -2405,7 +2410,7 @@ in the CREATED state.
 		<!-- End Learning Objectives-->    
         
         	<p> Multiprogramming refers to running more than one process simultaneously. 
-        	In this stage, you will implement the actual scheduler used in eXpOS which uses round robin scheduling
+        	In this stage, you will implement the actual scheduler used in eXpOS which uses Round Robin scheduling
         	technique. You will hand create another user process
         	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
