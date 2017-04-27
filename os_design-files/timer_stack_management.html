@@ -156,8 +156,8 @@
 <br> <br>
 
 <p>	In this case, the scheduler modules was invoked from some other kernel code - typically some blocking system call, exception
-handler etc.  Here, the calling module/handler would have saved its context (registers in use) in its kernel stack 
-before invoking the scheduler module.  Later, when the scheduler returns to this handler/module, the handler/module will restore the context and resume execution.  
+handler etc.  Here, the calling module/handler should save its context (registers in use) in its kernel stack 
+before invoking the scheduler module.  Later, when the scheduler returns to this handler/module, the handler/module should restore the context and resume execution.  See the <a href="stack_module.html" target="_blank"> Kernel Stack management during module calls</a> for more details.
 
 </p>
 
@@ -177,7 +177,7 @@ before invoking the scheduler module.  Later, when the scheduler returns to this
 	The purpose of storing the offset (instead of the physical address) is to allow the OS to relocate the user area page to another physical memory page during swapping. </p>
 
 	<p>
-	After switching the registers, the scheduler module executes the return instruction (Except for one special case which we will see below). This sets the IP value to - the address of the kernel code that invoked the from the scheduler module - from the top of the kernel stack of the new process. Note that since SP is changed, the kernel stack is changed and the returning IP will be changed accordingly. 
+	After switching the registers, the scheduler module executes the return instruction resulting in the IP value being set from the top of the kernel stack of the new process (except for one special case which we will see below). This transfers control to the next instruction in the kernel handler/module in the new process that had invoked the scheduler previously while executing a blocking operation.     
 	
 	</p>	
      
