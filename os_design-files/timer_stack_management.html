@@ -162,14 +162,11 @@ before invoking the scheduler module.  Later, when the scheduler returns to this
 </p>
 
 <br>
-<b> Scheduler Module</b>
 
-<br>
-
-	<br>
+<h3> Scheduler Module</h3>
 
 <p>
-	The scheduler module is responsible for performing the actual context switch. The context switch happens by the change of the SP, the PTBR and the PTLR registers. We store these register values of the old process to its Process Table and restore these register values of the new process from its Process Table. 
+	The scheduler module is responsible for performing the actual context switch. Context switch happens by a change of SP, PTBR and PTLR registers. We store these register values of the old process to its Process Table and restore SP, PTBR and PTLR values from the Process Table of the new process. 
 
 </p>
 
@@ -177,8 +174,7 @@ before invoking the scheduler module.  Later, when the scheduler returns to this
 	The purpose of storing the offset (instead of the physical address) is to allow the OS to relocate the user area page to another physical memory page during swapping. </p>
 
 	<p>
-	After switching the registers, the scheduler module executes the return instruction resulting in the IP value being set from the top of the kernel stack of the new process (except for one special case which we will see below). This transfers control to the next instruction in the kernel handler/module in the new process that had invoked the scheduler previously while executing a blocking operation.     
-	
+	After switching the registers, the scheduler module executes the return instruction resulting in IP value being set from the top of the kernel stack of the new process (except for one special case which we will see below). This transfers control to the next instruction in the kernel handler/module in the new process.
 	</p>	
      
      </div>
@@ -192,17 +188,22 @@ before invoking the scheduler module.  Later, when the scheduler returns to this
 &nbsp;&nbsp;&nbsp;1. Find the pid of the next process to be scheduled.<br> 
 &nbsp;&nbsp;&nbsp;2. Save the current kernel stack pointer offset in the KPTR field of the process table.<br>
 
-&nbsp;&nbsp;&nbsp;3. Save the current PTBR and PTLR values in the process table of the leaving process. (Is this really required?)
+&nbsp;&nbsp;&nbsp;3. Save the current PTBR and PTLR values in the process table of the leaving process. (This operation is redundant)
 <br>
-&nbsp;&nbsp;&nbsp;4. Set the PTBR and PTLR values from the process table of the entering process.
+
+&nbsp;&nbsp;&nbsp;4. Restore the PTBR and PTLR values from the process table of the entering process.
 <br>
-&nbsp;&nbsp;&nbsp;5. Set the state of the entering process as running. (State of the leaving process is set before calling the scheduler module).
+&nbsp;&nbsp;&nbsp;5. Set the state of the entering process as running. 
+(State of the leaving process is set before calling the scheduler module * ).
+
 <br>
-&nbsp;&nbsp;&nbsp;6. Identify wheather the entering process is a normal process or a newly created process from the state field of the process table.
+&nbsp;&nbsp;&nbsp;6. Identify wheather the new process is a READY process or a newly CREATED process from the state field of the process table.  (A process that has never been scheduled for execution previously will be in CREATED state, as set by the fork 
+system call.)
+
 
 <br><br>
 
-<h4><b> Case 1 : Entering process is a normal process</b></h4>
+<h4><b> Case 1 : Entering process is in READY state</b></h4>
 
 &nbsp;&nbsp;&nbsp;7. Compute the physical address corresponding to the KPTR field of the process table of the entering process, and store this to SP.
 
