@@ -122,27 +122,27 @@ always invoked from some kernel routine like an interrupt/exception handler or s
 <p>
 When a kernel routine invokes a module, the return address from the module gets pushed into the currently active
 kernel stack.  The functional and interface design of eXpOS
-modules are presented <a href="os_modules/Module_Design.html" target="_blank"> here </a>.  
+modules are presented <a href="../os_modules/Module_Design.html" target="_blank"> here </a>.  
 </p>
 
 <p>
-SPL lays down programming conventions regarding the invocation and programming of kernel modules.  The <a href="../support_tools-files/spl.html"> SPL module programming conventions </a> (see Case c) documentation describes these conventions.  
+SPL lays down programming conventions regarding the invocation and programming of kernel modules.  The <a href="../support_tools-files/spl.html" target="_blank"> SPL module programming conventions </a> (see Case c) documentation describes these conventions.  
 </p>    
 
 
               	      
               <p>A kernel module or an interrupt service routine can invoke another kernel module while it is executing. 
-              The invoked kernel module also uses the same kernel stack. </p>
-              <p>
+              The invoked kernel module also uses the same kernel stack. 
+              
               Since the invocation is voluntary, execution context of the caller should be saved in its kernel stack
               before transferring control to the invoked kernel module. 
               </p>
+
+
               <p>
               The arguments to the kernel module are passed through the registers R1, R2 , etc. 
               The return value will be stored in register  R0.
-              </p>
-
-               <p> 
+              
               Before returning control to the caller, the invoked module pops off the space used 
               during its execution, from the stack. The caller restores
               the register context upon return before resuming its execution.
