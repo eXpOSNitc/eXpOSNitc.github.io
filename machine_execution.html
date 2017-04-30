@@ -1,0 +1,1628 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 5.1.6.2 (Linux)"/>
+	<meta name="created" content="2017-03-30T17:00:11.712220409"/>
+	<meta name="changed" content="2017-03-30T17:21:26.144510450"/>
+	<style type="text/css">
+		@page { margin: 2cm }
+		p { margin-bottom: 0.25cm; line-height: 120% }
+	</style>
+</head>
+<body lang="en-IN" dir="ltr">
+<p style="margin-bottom: 0cm; line-height: 100%"><b>XSM Machine
+Execution Environment Tutorial</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">This tutorial will
+help you to understand the architectural features of the XSM machine
+necessary to for implementing the eXpOS operating system and these
+features will be used by the eXpOS kernel.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The CPU of the XSM
+virtual machine [LINK:
+snitc.github.io/arch_spec-files/machine_organisation.html] contains
+20 general-purpose registers R0-R19, each of which can store an
+integer or a string.  (see XSM specification    LINK:
+http://exposnitc.github.io/arch_spec.html).  Along with these are the
+registers stack pointer (SP), base pointer (BP) and instruction
+pointer (IP).  There are other special purpose registers PTBR, PTLR,
+EIP, EC, EPN, EMA and four ports P0,P1,P2,P3.    We will discuss the
+role of these soon.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The machine's memory
+consists of 65536 memory words.  Each word can store an integer or a
+string.  The <b>memory is divided into pages of 512 words each</b>. 
+Thus memory addresses 0 to 511 belong to page 0,  512-1023 belong to
+page 1 and so on.  The last (page 127) contain memory address 65024
+to 65535.   The <b>memory is word addressable</b>.   This means that
+XSM provides instructions that allow you to access any memory word.  
+For instance, the instruction &quot;MOV R0, [1345]&quot; transfers
+the contents of memory location 1345 to register R0.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The machine also has
+a disk having 512 blocks.  Each <b>disk </b><b>block can store 512
+words</b>.   Thus the total storage capacity is 512 x 512 = 262144
+words.  However, the <b>disk is block addressable</b> and not word
+addressable.    XSM provides just three instructions to manipulate
+the disk – LOAD, LOADI and STORE.  These instructions can be used
+to transfer a disk block to a memory page or back.  Suppose we want
+to access the 10th word of block 12, then the only way to do so is to
+first transfer the 12th block to some memory page and then access the
+corresponding memory address.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Apart from disk and
+memory, the machine also has three devices – an I/O  <b>Console, a
+timer and disk controller</b>.  We will discuss them later.  The
+organization of the XSM machine is given [here
+http://exposnitc.github.io/arch_spec-files/machine_organisation.html]</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The machine can
+operate in two fundamental modes – <b>privileged and unprivileged.</b>
+  When the machine gets powered on, it begins execution in the
+privileged mode.     We will discuss unprivileged mode later and
+assume privileged mode execution in the following.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Note:  The ExpOS
+documentation (unfortunately) uses the words &quot;kernel mode&quot;
+for privileged mode and &quot;user mode&quot; for unprivileged mode
+execution.  This terminology arose because the OS kernel code runs in
+privileged mode and application programs run in unprivileged mode. 
+However &quot;kernel&quot; and &quot;user&quot; and OS level
+abstractions, not connected to the machine,  and the terminology is
+not used in this document while referring to architectural concepts. 
+ 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\section <b>Boot-up.
+ </b>
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">What happens when
+the machine is powered on?  All registers will be set to value zero. 
+In particular, IP register also assumes value 0.   Once powered on,
+the machine will start repeatedly executing the following
+fetch-execute cycle in privileged mode.   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Transfer the
+contents of two memory locations starting at the address stored in IP
+register to the CPU.  The XSM machine treats the contents read like a
+machine instruction.  This action is called the <span style="font-weight: normal">instruction</span><b>
+fetch cycle</b>.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  The next step is
+the <b>execute cycle</b> where the instruction fetched in Step 1 is
+executed by the machine.    What happens here depends on the
+instruction [ see XSM instruction set
+http://exposnitc.github.io/arch_spec-files/instruction_set.html]</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">For example, if the
+instruction fetched is &quot;MOV R0, [1256]&quot;, the execute cycle
+action will result in the contents of memory location 1256 being
+transferred to register R0.   If the instruction fetched in &quot;JMP
+1110&quot;, the value of the IP register will be set to 1110.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.    The final step
+is to set the instruction pointer to the next instruction to be
+executed.  Since each XSM instruction is two words, <span style="font-weight: normal">IP
+will normally be incremented by 2.</span>   There are exceptions to
+this rule.  For instance in the case of &quot;JMP 1110&quot;, IP is
+set to 1110 and hence not incremented.  Thus the next fetch must be
+from 1110.    After Step 3, the machine loops back to Step 1.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Also see Wiki Link: 
+[https://en.wikipedia.org/wiki/Instruction_cycle]</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">When the machine is
+just powered on, IP value is 0.  Hence, the first instruction will be
+fetched from memory locations 0 and 1.    The XSM machine has a boot
+ROM containing just two instructions:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Location            
+ Instruction                              Instruction semantics</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0                   
+      LOADI 1, 0                             Load contents of disk
+block 0 to memory page 1.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2                   
+      JMP 512                                   Change IP value to
+512.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The bootstrap code
+is hard coded into a boot ROM so that the memory contents are not
+lost even after machine shutdown.  This is necessary because when
+machine is powered on, there must be some meaningful instruction at
+address 0 from where the first fetch takes place.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Study the above
+bootstrap code carefully.  What it does is to load the contents of
+disk block zero to memory page 1 and then set the IP value to 512 so
+that the next fetch happens from memory address 512.    This last
+step is very important because the machine will fetch contents of
+memory address 512 and 513 next, decode it assuming there is a valid
+instruction stored there and execute it and proceed from there. 
+Hence, if you write an XSM assembly language program and store it in
+block 0 in such a way that your first instruction is stored in the
+first word of block 0, the machine will execute it immediately after
+JMP 512.  Consequently, your code gets control of the machine, and
+the fetch-execute cycle continues with your code.  You will be
+writing the <b>OS bootstrap loader </b>and storing it in block 0 in
+Stage 3 of the ExpOS roadmap.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Note:  The boot ROM
+actually contains more information than what is written above.  The
+boot ROM contains an <b>interrupt vector table</b> located between
+addresses 492 to 511.  The vector table specifies the physical
+address to which interrupts must transfer control to.  We will
+discuss this later.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\section <b>Privileged
+mode of execution</b>.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The privileged mode
+of execution is easy to comprehend.   All instructions in the XSM
+machine instruction set described here 
+[http://exposnitc.github.io/arch_spec-files/instruction_set.html] 
+will execute in the most natural way in the privileged mode of
+execution.   Most of the instructions like data transfer
+instructions, arithmetic and logic instructions, and control flow
+instructions (JMP etc.) are straightforward to understand from the
+specification and not described here.    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Instead, we will
+focus here on the execution semantics of the following four (slightly
+non-trivial) instructions when executed in privileged mode – PUSH,
+POP, CALL and RET.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The value of the SP
+register holds a pivotal role in these operations.   The PUSH
+instruction results in the following actions:</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Contents of SP
+gets incremented by 1.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  The data
+specified by the PUSH instruction is transferred to the location
+pointed to by SP.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  IP gets
+incremented by 2 to point to the next instruction.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Example:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV SP, 1000   // 
+SP register is loaded with value 1000.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">PUSH R0    //  SP is
+set to 1001 and contents of R0 is copied to memory address 1001.    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The POP instruction
+is a reverse operation to PUSH.   The contents of the memory address
+pointed to by SP will be retrieved to a register specified, and SP is
+decremented.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The CALL instruction
+results in the following:</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Increment SP by
+one.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Transfer
+contents of IP register to the memory address pointed to by SP.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  Set IP to the
+value of register/constant value specified in the CALL instruction.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Example:</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV SP, 1000  //  SP
+is set 1000</p>
+<p style="margin-bottom: 0cm; line-height: 100%">CALL 21110   //  a)
+Increment SP to1001, b) Copy contents of IP to location 1001 c) MOV
+21110 to IP register.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">As a consequence,
+the next instruction fetch will happen from address 21110.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The RET instruction
+reverses the actions of a CALL instruction.  The contents of address
+pointed to by SP register is copied to the IP register, and SP is
+decremented.  Since IP is modified, the next instruction is fetched
+from the newly set value.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Finally, we initiate
+a discussion on the most complicated instruction – IRET.    This
+instruction can be only executed in privileged mode, but IRET is the
+only XSM instruction that results in the XSM machine to switch from
+the privileged mode to unprivileged mode.   After an instruction
+fetch, if the XSM encounters the IRET instruction, the following
+actions take place:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">IRET execution
+semantics</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Enable paging
+and change from privileged mode to unprivileged mode</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Execute the RET
+instruction in the unprivileged mode.  (The execution semantics now
+is different, and you must read next section to understand how RET
+works in unprivileged mode).   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">After the IRET
+instruction, the machine continues fetch execute cycle, but in the
+unprivileged mode.  Note that the change of machine mode from
+privileged to unprivileged happens before the actual fetch-execution
+cycle.  Thus, to understand how an instruction works, one needs to
+know how paging and address translation works.    We discuss
+unprivileged mode execution in the next section.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\ section
+<b>Unpreviliged Mode Execution.  </b>
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>Pre-requisite
+reading:  </i>You must go through the following links before reading
+further:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>Paging
+specification:</i>  
+http://exposnitc.github.io/arch_spec-files/paging_hardware.html</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>Virtual address
+space model: </i>
+http://exposnitc.github.io/virtual_machine_spec.html</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">In the privileged
+mode, a memory address refers to the actual physical memory address. 
+For instance, The instruction sequence:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV SP, 1000</p>
+<p style="margin-bottom: 0cm; line-height: 100%">PUSH R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">will first set SP to
+1001 and transfer the contents of register R0 to the memory location
+101.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">However, the PUSH
+and other instructions have a different behavior when executed in
+unprivileged mode.  PUSH will increment SP to 1001 as before, but the
+memory address to which contents of R0 is copied is determined in a
+different way.   The machine will treat the contents of SP as a<b>
+logical address</b>, find out the physical address corresponding to
+the logical address 1001 using page table address translation and
+transfer contents of R0 to that location.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><span style="font-weight: normal">The
+translation of a logical address to physical address is done
+completely by the machine</span><span style="font-weight: normal">'s</span><span style="font-weight: normal">
+</span><b>paging </b><b>hardware</b><span style="font-weight: normal">.</span>
+ The sequence of steps involved may be abstractly described by the
+following steps, which will be described in detail with examples
+soon:    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"> 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Given logical
+address – find logical page number and offset specified by the
+address.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Search the page
+table to find the physical page number from the logical page number.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  Multiply
+physical page number by page size to find physical page address.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  physical address
+=  physical page address + offset.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The machine assumes
+that the <b>PTBR register</b> holds the (starting) address of the
+page table in memory.  Since PTBR register can be accessed only in
+privileged mode,  your code must have set the PTBR register to store
+the address of the page table before entering unprivileged mode
+execution.  Moreover, you also must set appropriate values in the
+page table before you code execute an IRET instruction to switch the
+machine to unprivileged mode to get the address translation work the
+way you would like it to.   Thus, some setup work needs to be done in
+the previliged mode before a switch to unprivileged mode.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">How does the machine
+translate a logical address – say 1001- to the physical address? 
+The machine does the following sequence of actions.   Let us assume
+that PTBR contains value – say 3000, set previously.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">a. calculate 
+logical_page_number = logical_address DIV page_size = (1001 DIV
+512)=1.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">b. calculate  offset
+= logical_address MOD page_size = (1001 MOD 512) = 489.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">c. Find the
+page_table_address  = contents of PTBR = 3000.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">d. Find
+physical_page_number = value stored in address (page_table_address +
+2 x logical_page_number) =value stored in address (3000 + 2 x 1) =
+value stored in address 3002.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Suppose that this
+value is 7.  (The minimum value possible is 0 and the maximum value
+possible is 63 – why?).  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">e.  Calculate
+Physical_address = physical_page_number x page_size + offset = 7 x
+512 + 489 = 4073.   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Thus, PUSH R0 will
+transfer contents of R0 to the physical address 4073.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">There are several
+points to mention here.  The PUSH operation will be successful only
+if the <b>auxiliary information</b> for logical page number 1 in the
+page table is set to ensure that the page is valid.  Otherwise, the
+machine will generate an <b>exception</b>, switching back to
+privileged mode.  We will discuss exception handling later.     
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">To get a better
+picture of the unprivileged mode execution, we need to digress
+briefly to discuss the underlying theoretical concepts.    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\subsection <b>Paging
+and virtual memory</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">First of all, as an
+OS designer, why should you learn to run the machine in unprivileged
+mode at all?   An OS will have to allow execution of other &quot;user
+programs&quot; (or application programs).   The OS needs to be
+careful not to allow application programs to run malicious code that
+corrupt other user programs or the OS itself.  This requires
+provision to run application programs in a &quot;less privileged&quot;
+mode of execution where only a limited set of instructions can be
+executed, and only limited memory space and system resources are
+accessible.    Architecture support is needed to achieve this.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The architecture
+support provided by the XSM machine is support for the [LINK: XSM
+virtual machine model
+http://exposnitc.github.io/virtual_machine_spec.html].  When a
+program runs in unprivileged mode on the XSM machine, only a
+restricted machine model is available to the application program.   A
+key architectural technique that supports such a model is paging.  
+Paging allows the OS to provide each application program running in
+unprivileged mode a virtual (or logical) address space.  The
+application's access can be restricted to this address space.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The virtual address
+space of an application is a contiguous memory address space starting
+from logical address 0 to a maximum limit set by the OS.   Thus the
+addresses found in the application program's code shall only be
+between 0 and the maximum limit.  The application's code and data
+must fit into this address space.   When the application is loaded
+into memory, the OS may load the pages into physical memory addresses
+that are different from the logical address space of the application.
+   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">XSM Paging hardware
+provides machine support for such relocation.    Before running an
+application, the OS must execute previliged code to do the following:
+ 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Set the PTLR
+register to define the address space maximum limit.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Set up a valid
+page table in memory and the PTBR register to the beginning address
+of the page table.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  Set up the
+application's stack.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">4.  Compute the
+physical address corresponding to the logical address in SP.  Then,
+copy the logical address of the first instruction (entry point) that
+much be fetched after IRET into this physical memory location and
+execute IRET.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">We explain each of
+the above four steps in detail:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Step 1:  XSM
+stipulates that the address space limit of an application must be a
+multiple of XSM page size=512.  Suppose, the OS decides that the
+application must be provided a virtual address space of 10 pages,
+then the PTLR register must be set to value 10.  In this case, the
+logical address space of the application will be between 0 and
+512x10-1=5119.  (The ExpOS kernel that you design sets the address
+space of every application to 10 pages).</p>
+<p style="margin-bottom: 0cm; line-height: 100%">     While executing
+in user mode, if an application generates an address beyond this
+limit, the machine will raise an exception.  This will result in the
+machine switching to privileged mode and control transferred to the
+starting address of the exception handler routine (memory address
+1024 – see
+http://exposnitc.github.io/arch_spec-files/machine_organisation.html#content).
+ 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">For example, if
+PTLR=10 and if the application contains an instruction like MOV R0,
+[6000], an exception will be generated because the instructions
+contain addresses outside the logical address space set by PTLR.   As
+another example, JMP 7000 instruction will result in setting IP to
+7000 and in the very next fetch cycle, an exception will be generated
+because an instruction fetch will be attempted from a logical address
+beyond the address space.  If SP holds value 5119, then a PUSH
+instruction will similarly result in an exception.  Exception
+handling will be discussed in detail later.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Step 2:  Once the
+address space size is determined by PTLR value, a page table has to
+be set up in the memory to tell the hardware which logical page is
+mapped to which physical page.  The number of entries in the page
+table is determined by the number of pages allocated to the
+application.  Thus if PTLR=10, then the page table must contain ten
+entries.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">  Each page table
+entry requires two memory words and contains information about the
+corresponding logical page.  That is, the first two words of the page
+table contain information about logical page 0, the next two about
+logical page 1 and so on.  If PTLR=10, the page table of the
+application will require total 20 memory words.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">  The first word of
+each page table entry contains the physical page number of the
+corresponding logical page.  The second word stores auxiliary
+information.   The auxiliary information for a page consists of four
+binary values:</p>
+<p style="margin-bottom: 0cm; line-height: 100%">a) <b>Reference bit</b>.
+ b) <b>Valid bit</b>,  c) <b>Write permission bit</b>,   d) <b>Dirty
+bit</b>.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">    Proper values
+for Valid (V bit) and the Write permission bit (W bit) must be set by
+your privileged code of step 2 before starting unprivileged mode
+execution.  We describe these settings below.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">If the Valid bit is
+set to 0, the page table entry is considered invalid.  In this case,
+if any logical address accessing the page will generate an exception.
+  If the write permission bit is set to 0, the application will not
+have write permission to the page.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">For example, if
+entry 0 of the page table has valid bit 0, then an instruction like
+MOV [100],R0 or JMP 112 will generate an exception.   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">If entry 0 of the
+page table has write permission bit 0, then MOV [100],R0 that
+modifies the page will raise an exception.  However, JMP R0,[100] or
+JMP 112 that do not modify the contents of the page will execute
+normally in unprivileged mode.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The <b>Reference bit
+and the Dirty bit are set by the machine</b>.  When the application
+is executing, if an address is generated accessing some logical page,
+then the reference bit of the page is set automatically to 1 by the
+machine.  For instance, MOV R0, [1500] accesses the logical page 2
+and hence the reference bit of the corresponding page table entry
+will be set to 1 by the machine automatically.  The dirty bit is set
+if the instruction modifies the contents of the page.  MOV R0, [1500]
+does not result in the machine setting the dirty bit for logical page
+2 because the instruction does not modify contents of the page. 
+However MOV [1500], R0 set the dirty bit.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\subsection <b>Loading
+application to address space</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Suppose an
+application contains 3 pages of code.  Assume that the first page of
+the code has been loaded into physical page number 100 and second
+page to 110.  Assume that the third page is not loaded into memory. 
+(The load instruction can be used in the privileged mode to transfer
+a program in disk to memory).    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">suppose the first
+few lines of the application code is as below:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R1, 0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">L0:  CMP R0, 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JNZ L1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R1, R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP L0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">L1:  ....</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP addresses are
+indicated by labels for clarity of understanding.  The actual
+executable code is will not have any labels, but will only have
+logical addresses.  Suppose L0 corresponds to logical address – say
+2060, then the address of  L1 must be 2070 because each XSM
+instruction takes two words.   Counting backward, the address of the
+first instruction must have been  2056.   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Here we must
+particularly note something -  the application code is designed to be
+loaded by the OS to start execution from logical address  2056.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The code with labels
+replaced by logical addresses will be as follows:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R1, 0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">CMP R0, 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JNZ 2070</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R1, R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP 2060</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; font-weight: normal; line-height: 100%">
+<i>This code will not execute correctly unless loaded as the fifth
+logical page because jump addresses will be invalid.  </i>
+</p>
+<p style="margin-bottom: 0cm; font-weight: normal; line-height: 100%">
+<br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Thus, the physical
+address of logical page 4 (starting at logical address 2048) must be
+associated with physical page 100.   Assume that the code continues
+to the next logical pages,  the page number for logical page 5 must
+be set to 110.  The valid bit for both entries must be set to 1.  The
+valid bit for logical page 6  must be set to 0 since the page is not
+valid (and the machine should not assume that whatever value stored
+in the entry for the physical address is correct).  As noted
+previously, setting off the valid bit ensures that the machine will
+generate an exception if either or instruction fetch or operand fetch
+is attempted from that page. Finally, since code pages are expected
+not to be modified during program execution,  the Write permission
+bit must be set to 0.   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(Setting write
+permission off for code pages is a necessary exercise.   A typical
+multi-tasking  OS will permit several applications to share code
+pages in memory.  It then is the duty of the OS to ensure that one
+application doesn't modify the shared code to &quot;hack&quot;
+others.)  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The essential idea
+to understand here is that each application is designed (by some
+programmer) to be loaded into certain part of its virtual address
+space.  Although paging allows logical pages to be mapped to
+arbitrary physical pages, the logical page where each region of code
+must be loaded cannot be changed.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(Note:  There are
+architectures that allow application programmers write position
+independent code
+[https://en.wikipedia.org/wiki/Position-independent_code] that can be
+loaded anywhere into the address space.  We will not discuss this
+topic here.)  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Finally, the page
+table itself needs to be stored somewhere in memory.  Let us assume
+that page table of the application begins at physical address 1000. 
+Then, the entries in the page table must be set as below:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Location            
+ Entry           Desciption</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1000                
+   xx                 // page 0 physical page number - irrelevant
+(not loaded).</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1001                
+   ??                 //  page 0 invalid – what must be the value
+set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1002                
+   xx                //  page 1 physical page number (not loaded)  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1003                
+   ??                //  page 1 invalid – what must be the value
+set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1004                
+   xx               //   page 2 physical page number (not loaded)</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1005                
+    ??              //  page 2 invalid - what must be the value set
+here?</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1006                
+    xx              //  Page 3 not loaded</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1007                
+    ??               //  Must be set to invalid</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1008                
+    100             //  Page 4 – loaded to physical page100</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1009                
+    ??                //  Page 4 – Valid, Write Only – what must
+be set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1010                
+    110              //  Page 5 – loaded to physical page 110.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1011                
+     ??                //  Page 5 Valid, write only.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1012                
+     xx                //  Page not loaded   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1013                
+     ??                 //  Invalid  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1014                
+     xx                 //  Page not loaded</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1015                
+     ??                  //  Invalid</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1016                
+     xx                 //   Page not loaded  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1017                
+     ??                 //  Invalid</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1018                
+     xx                 //  Page not loaded</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1019                
+     ??                 //  Invalid.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Since PTLR=10, 
+there are 20 words for the page table.  We must set all unloaded
+pages invalid.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The PTBR register
+must be set to value 1000 (MOV PTBR, 1000).  Now address translation
+for logical page 4 and logical page 5 will correctly translate to
+physical page 100 and physical page 110.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">To summarize:   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">a)  The valid bit
+must be set for the pages loaded.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">b)  Logical page to
+physical page mapping must be set up in the page table correctly</p>
+<p style="margin-bottom: 0cm; line-height: 100%">c)  PTBR register
+must be set to the start address of the page table.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Important Note:  
+Suppose you are designing the loader program of an operating system
+to load an execute an unknown applications, how will you figure out
+where must be code pages of the application loaded?  In general,
+there is no way unless there is a prior agreement with the
+application programmer.   Hence, each operating system publishes an
+interface specification called Application Binary Interface (ABI)
+that fixes this and several other matters.   In the eXpOS project,
+the ABI convention is that the application code must be loaded to
+logical pages 4,5,6 and 7.  The details are given in the eXpOS ABI
+given [here :  http://exposnitc.github.io/abi.html].  Thus the code
+area of an eXpOS application will start at address 2048.   The above
+example had followed this eXpOS ABI.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Step 3:   A minimum
+of one page must be allocated to each application for maintaining a
+stack before the application is executed in unprivileged mode in the
+XSM machine.  This is because the IRET instruction (to be discussed
+next) that changes from privileged mode to unprivileged mode requires
+a stack page.  The pages allowed for stack must be writable, and
+hence the write permission for these pages must be set in the page
+table.  Normally an application's run-time data will be stored in the
+stack.  Arguments to function calls in the application and return
+values are also normally passed through the stack.  How the
+application uses the stack is its concern, but an aspect important to
+us here is that INT instruction which allows an application to switch
+the mode back to the privileged mode, as well as the IRET instruction
+that allows the mode switch from previliged mode to unpreviliged
+mode, requires the stack.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><b>The eXpOS ABI of
+our concern stipulates that logical pages 8 and 9 of an application
+must be allocated for the stack.</b>  Hence the stack begins at
+logical address 4096.   Therefore, before an application is run for
+the first time, SP is set to value 4095 (why not 4096?).  Continuing
+the above example, if the physical pages allocated for the stack are
+120 and 121, then the page table starting at address 1000 will be as
+below:    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Location            
+ Entry           Description</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1000                
+   xx                 // page 0 physical page number - irrelevant
+(not loaded).</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1001                
+   ??                 //  page 0 invalid – what must be the value
+set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1002                
+   xx                //  page 1 physical page number (not loaded)  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1003                
+   ??                //  page 1 invalid – what must be the value
+set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1004                
+   xx               //   page 2 physical page number (not loaded)</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1005                
+    ??              //  page 2 invalid - what must be the value set
+here?</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1006                
+    xx              //  Page 3 not loaded</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1007                
+    ??               //  Must be set to invalid</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1008                
+    100             //  Page 4 – loaded to physical page100</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1009                
+    ??                //  Page 4 – Valid, Write Only – what must
+be set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1010                
+    110              //  Page 5 – loaded to physical page 110.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1011                
+     ??                //  Page 5 Valid, write only.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1012                
+     xx                //  Page not loaded   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1013                
+     ??                 //  Invalid  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1014                
+     xx                 //  Page not loaded</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1015                
+     ??                  //  Invalid</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1016                
+     120               //  First stack page</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1017                
+     ??                 //   Valid, Write permission on – what must
+be set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1018                
+     121               //  Second Stack page</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1019                
+     ??                 //   Valid,  Write permission on – what
+must be set here?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Step 4:   Now we
+must set up the instruction pointer (IP) so that the first
+instruction of the application is fetched and executed from the
+correct address.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">How do we know what
+is the correct logical address from which the first instruction must
+be fetched?  In general, there is no way.  To solve the issue, the 
+ABI stipulates that the application must tell the operating system
+which is the correct address.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The way in which the
+eXpOS ABI does this is as follows.  Each eXpOS application can have
+at most four code pages of machine instructions.   An eXpOS
+compatible XEXE executable file http://exposnitc.github.io/abi.html)
+must contain these instructions listed in sequential order.  But
+before the code, the file must contain an eight-word <b>header</b>. 
+The code follows the header.  The first word (word 0) must be set to
+value 0.  For the time being, we will be concerned only about the
+second word (word 1) called <b>entry point</b>.    This word must
+contain the logical address of the first instruction to be executed
+when the application is run.   The values of the remaining six words
+can be ignored.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Coming back to the
+code in our running example:    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R1, 0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">CMP R0, 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JNZ 2070</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R1, R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP 2060</p>
+<p style="margin-bottom: 0cm; line-height: 100%">..</p>
+<p style="margin-bottom: 0cm; line-height: 100%">..</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The first
+instruction must begin at address 2056.  The contents of an XEXE
+executable file containing this code (header included) would be as
+below:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2056</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R1, 0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">CMP R0, 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JNZ 2070</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R1, R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP 2060</p>
+<p style="margin-bottom: 0cm; line-height: 100%">..</p>
+<p style="margin-bottom: 0cm; line-height: 100%">..</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Note that the start
+address of the code was specifically designed to be 2056 so that the
+first instruction starts after eight words from the beginning of
+logical page 4 (starting at 2048), leaving space for the header in
+the page.  eXpOS ABI stipulates that an XEXE executable file
+(including the header) must fit into four pages of memory.   Thus, an
+executable file can have an eight-word header plus a maximum of 1020
+instructions (why?).  The first executable instruction will be in
+address 2056.  (However, the application might want to start
+execution from some other address – say 3000 - in that case, the
+entry point value must be set to the value 3000.)  In the present
+case, since the above code is designed to start from 2056, the entry
+point value must be set to 2056.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">When the file is
+loaded into memory, the contents will be mapped to logical pages 4 to
+7.  In our running example, logical page 4 was mapped to physical
+page 100, starting at physical address 51200.  The second word
+(51201) will contain the entry point value (in our example – 2056).
+ Thus, when the application is run in unprivileged mode, IP must be
+set to this value.   To do this:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Place the entry
+point value to the top of the stack and set the stack pointer to
+point to this value.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Execute the IRET
+instruction.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The instruction
+sequence in the specific example above will be:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Please verify this
+code:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, [51201] // 
+move entry point value to a register</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV [61440], R0  // 
+ store entry point to first word in the stack = 120x512=61440</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV SP, 4096 //  SP
+to contain logical addresses.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">IRET   //
+Unprivileged mode execution starts.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The IRET instruction
+will first change the mode to unprivileged, then transfer the
+contents of logical address 4096 (translating to contents of physical
+address 61440) into the IP register and decrement the stack pointer. 
+Since this value is the entry point (in the above example, 2056), IP
+will be loaded with this value and next instruction fetch will happen
+from logical address 2056 (what will be the physical address?). 
+Since then, the fetch-execute cycle continues in the unprivileged
+mode with paging enabled.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">A program running in
+the unprivileged mode may switch the machine back to the privileged
+mode using the trap instruction INT n.  Where n can take values from
+4 up to 18 The INT n instruction will result in the following:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Increment SP and
+transfer contents of IP register to the stack.  (SP register holds
+the logical address of the top of the stack).</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  IP is loaded
+with a value that depends on the value of n, as given in the
+following table:</p>
+<p style="margin-bottom: 0cm; line-height: 100%">http://exposnitc.github.io/os_implementation.html</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  Machine switches
+to privileged mode.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">For example,  INT 4
+results in IP being loaded with physical address page 10 (address
+5120).  Since a switch to privileged mode takes place, paging will be
+disabled, and the next fetch will happen from physical address 5120. 
+  INT 5 will result in next fetch occurring from physical address
+6144.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">There are two
+concepts to understand here.  First, how does the machine map
+interrupt numbers to addresses  (which interrupt maps to which memory
+address) and second why should an application use this instruction?  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">INT 4 to INT 18
+instructions are called software interrupts or traps.  The XSM
+machine has an <b>interrupt vector table</b> that maps each interrupt
+number to a corresponding address (of the interrupt handler).  The
+vector table is stored starting from physical address 492 of memory. 
+   Locations 492,493,494 and 495 stores the addresses of the
+exception handler, the timer interrupt handler, the disk interrupt
+handler and console interrupt handler.  We will discuss this in the
+next section.   Location 496 contains the address of the first trap
+handler - INT 4,  location 497 contains address of INT 5 handler and
+so on.  When the machine encounters an INT n instruction, the
+corresponding ROM location is searched for the handler address, and
+IP is set to this value.  Since the values are hard-coded in the ROM
+code of the XSM simulator given to you, you cannot change the
+addresses of the handlers.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Why do you need
+software interrupts?  As explained previously, application programs
+run in unprivileged mode and cannot access memory beyond its virtual
+address space.  If the application wishes to do tasks like
+input-output or disk access which are not permitted in unprivileged
+mode,  then the OS must provide a &quot;regulated access mechanism&quot;
+through which the application can invoke an OS routine to do the
+task.  The OS routine must be designed to run in privileged mode,
+must validate the application's request (permissions, etc.), perform
+the task and then return to the application.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">OS handlers that can
+be called from application programs for privileged tasks are known as
+<b>system call routines. </b>  Software interrupts provide hardware
+support for implementing system calls.  In the eXpOS project, the
+mapping of each system call to interrupt numbers is given here: 
+http://exposnitc.github.io/abi.html.  (Note that in some cases, the
+same interrupt handler is designed to handle multiple system calls. 
+In such cases the system call number passed as an argument to the
+interrupt handler is used to identify the correct service).  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Typically, the
+application pushes the input arguments to a system call handler into
+the stack before executing INT instruction.  The handler after doing
+the corresponding action stores return value in a designated position
+in the application's stack.  The conventions regarding how arguments
+and return values are passed  are stipulated in the ABI.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Example:  In our
+running example, suppose the instruction at logical address 2070 is
+INT 4:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2056</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV R1, 0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">CMP R0, 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JNZ 2070</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R1, R0</p>
+<p style="margin-bottom: 0cm; line-height: 100%">ADD R0, 1</p>
+<p style="margin-bottom: 0cm; line-height: 100%">JMP 2060</p>
+<p style="margin-bottom: 0cm; line-height: 100%">INT 4  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The INT 4
+instruction will push the logic address of the next instruction
+(2072) into the stack location corresponding to logical address 4096
+and set IP register to address 5120 and change machine mode to
+privileged.  Hence, the next instruction will be fetched from 5120. 
+Note that if the PTBR register value is not changed, execution of an
+IRET instruction in privileged mode will result in the IP value
+(2072) to be popped of the stack so that execution continues with the
+next instruction.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Note:  In the eXpOS
+project, you will have to write code for various trap handlers and
+store it on the disk.  Your bootstrap loader must load these
+interrupt handlers from the disk to the appropriate memory pages. 
+The eXpOS system has clear specification regarding the disk locations
+where each interrupt handler must be stored and the memory pages to
+which the OS bootstrap loader must place each interrupt handler. 
+These are specified here
+[http://exposnitc.github.io/os_implementation.html]</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">This completes our
+discussion on XSM unprivileged execution mode.  Next, we take up
+interrupts and exceptions.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">\section <b>Interrupts
+and Exception handling</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">In the previous
+section, we have seen that an application program can transfer
+control to a privileged mode trap handler using the INT instruction. 
+Hardware interrupts (or simply interrupts) are useful to transfer
+control into handlers that must be run on the occurrence of hardware
+events.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">XSM machine supports
+three hardware interrupts.  The timer interrupt handler, disk
+interrupt handler and the console interrupt handler.  The addresses
+of these handlers are stored in locations 493, 494 and 495 of the ROM
+and are preset to values 2048, 3072 and 4096.  Thus, the OS bootstrap
+code must load the timer interrupt handler into memory starting from
+2048, disk interrupt handler from address 3072 and console interrupt
+handler from 4096.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><b>Timer Interrupt</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">XSM has a timer
+device which can be set to interrupt the machine at regular intervals
+of time.  When you run the XSM simulator with the option - - timer:  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"> 
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">xsm  --timer 10</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Then, every time the
+machine completes executing ten instructions in unprivileged mode,
+the machine does the following actions:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  Push the IP
+value into the top of the stack.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  Set IP to value
+2048 and change mode to privileged.  Hence, next instruction will be
+fetched from address 2048.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Note that the action
+is similar to the INT instruction except that the application does
+not invoke the timer handler using the INT instruction.  In fact, the
+application does not have any control over the process.   Interrupts
+are disabled when machine runs in the privileged mode so that there
+are no race conditions.  After return from the timer interrupt
+handler, the next entry into the handler occurs only after the
+machine executes another ten instructions in user mode.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The timer device can
+be used to ensure that privileged code gets control of the machine at
+regular intervals of time.  This is necessary to ensure that an
+application once started is not allowed to run &quot;forever.&quot; 
+In a time-sharing environment, the timer handler invokes the
+scheduler (dispatch module) of the OS to do a context switch to a
+different process when one process has completed its time quantum.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><b>Disk and Console
+Interrupts</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The other two
+interrupt handlers are associated with the disk and the console.  The
+XSM privileged instructions load(page_num,block_num) and
+store(block_num, page_num) are used for transfer of data from disk to
+memory and memory to disk.  The actual data transfer involves time
+delay as disk access is slow.   On encountering a load/store
+instruction, the XSM machine will start a disk transfer, increment IP
+by two and fetch the next instruction without waiting for the data
+transfer to be completed.  When the actual disk-memory data transfer
+is completed, the disk controller will raise the disk interrupt. 
+Similarly, the IN instruction initiates a console input but will not
+suspend machine execution till some input is read.  Machine execution
+proceeds to the next instruction in the program.  When the user
+enters data, the data is transferred to port P0, and a console
+interrupt is raised by the console device.    
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">After the execution
+of each instruction in privileged mode, the machine checks whether a
+pending disk/console/timer interrupt.  If so, the machine pushes the
+address of the next instruction to the stack and transfers control to
+the interrupt handler (just as in the case of the timer interrupt). 
+As noted previously, the OS must load the disk interrupt handler into
+the two pages starting at memory page 6 (address 3072), and console
+interrupt handler into the two pages starting at memory page 8
+(address 4096).   This is normally done during OS start-up.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The XSM machine
+enables interrupts only when the machine is executing in unprivileged
+mode.  (if a previously initiated load/store/IN operation is
+completed while XSM is running in privileged mode, the machine waits
+for next transition to unprivileged mode before processing the
+interrupt.)</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><b>Exception
+handling in XSM   </b>
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">What must happen
+when an application running in unprivileged mode contains an illegal
+instruction or a divide by zero instruction or an instruction that
+tries to write data into a logical address outside its address space?
+ Clearly, the machine must not halt, for otherwise one application
+will be able to halt the whole system.  The correct action must be to
+transfer control to some privileged mode handler.   This privileged
+mode handler is the exception handler.   The exception handler code
+must start at memory address 1024. (page 2).   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">While an application
+is running in unprivileged mode on the XSM machine, if any of the
+following events occur, the XSM machine raises an exception.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>a)  Illegal
+Memory Access:</i>    Occurs when any address generated by the
+application lies outside its logical address space.   This also
+occurs when the process tries to write into pages whose Write access
+bit is not set in the page table.   Recall that the logical page
+number generated for a valid instruction should be between 0 and the
+value of (512 * PTLR) - 1.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>b) Illegal
+instructions:</i>  Occurs an application tries to execute an
+instruction not belonging to the instruction set or when an
+operand/data in an instruction is not legal.  (Example:  MOV 4 R0,</p>
+<p style="margin-bottom: 0cm; line-height: 100%">MOV IP,  4)</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>c) Arithmetic
+exception:</i>  If there is a division by zero.   (Example:  DIV R0,
+0)</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">In all the above
+cases, the typical action is for the exception handler code is to
+pass control to other privileged mode OS routines to terminate the
+application and schedule other applications.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>d)  Page fault: </i>
+This is the most significant exception handling function that must be
+understood clearly.   A page fault occurs if an instruction contains
+an address whose page table entry is not valid.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">Page fault exception
+can occur either during instruction fetch or operand fetch.  Suppose
+during execution of an application, the value of IP reaches value –
+say  3000.  The next fetch will try to translate the logical address
+3000 to physical address using the page table.  The logical page
+number corresponding to address 3000 is 3000 DIV 512 = 5.  The
+machine must look up the page table entry corresponding to logical
+page 5.  If the valid bit for this entry is set to 0, the page
+reference is invalid. In this case, the machine will raise an
+exception.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">The second
+possibility for a page fault to occur is during operand fetch. 
+Suppose an instruction is successfully fetched – say MOV R0,
+[5000].   To execute the instruction, the machine will try to
+translate the logical address 5000 using page table.  As in the
+previous case, if the page is not valid, then the machine raises an
+exception.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">When the machine
+raises an exception, the following occurs:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">1.  SP incremented,
+and the logical address of the current instruction is pushed onto the
+stack.  (The instruction failed to execute correctly.  So, upon
+return - if ever there is one - the same instruction must be
+re-executed.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">2.  IP is set to
+value 1024 and machine switches to privileged mode.  Thus, the next
+instruction will be fetched from the exception handler.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">3.  The machine sets
+several CPU registers with values that describe (to the exception
+handler) the cause of the exception.  These are explained below:</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">a) EIP (Exception
+IP):  The logical IP value of the unprivileged mode instruction that
+caused the exception is stored in this register.   For example, if
+the instruction MOV R0, [5000], fetched from IP=3000 caused an
+exception because the logical page corresponding to address 5000
+(logical page 8) was invalid, the EIP will be loaded with value 3000.
+   
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">b) EPN (Exception
+Page Number):  The logical page number that caused the page fault is
+stored in this register.  In the above example, if MOV R0, [5000]
+caused a page fault because logical page 8 was invalid, then EPN will
+have value 8.  Note that if the instruction fetch caused a page fault
+(say IP=3000), then EPN would have contained value 5.  
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">c) EC (Exception
+Cause):  The EC register will indicate the cause of the exception –
+values are set as below.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(i) Page Fault: The
+value stored in the EC register for this exception is 0.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(ii) Illegal
+instruction: The value stored in the EC register for this exception
+is 1.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(iii) Illegal memory
+access: The value stored in the EC register for this exception is 2.</p>
+<p style="margin-bottom: 0cm; line-height: 100%">(iv) Arithmetic
+exception: The value stored in the EC register for this exception is
+3.</p>
+<p style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p style="margin-bottom: 0cm; line-height: 100%">d) EMA (Exception
+memory address):  The value of this register is relevant only in the
+case of illegal memory access. The illegal memory which was tried to
+be accessed is stored in the register. Either the address referred to
+is outside the range 0 - 512*(PTLR-1) or a write is attempted to a
+page which is read-only.</p>
+</body>
+</html>
