@@ -2429,7 +2429,7 @@ in the CREATED state.
 				XFSinterface will load the executable into the disk and create <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table </a> entry for the file.  
 				XFSinterface will also create a  <a href="os_design-files/disk_ds.html#root_file" target="_blank"> root entry </a> for the loaded file.  From the Inode Table Entry,
 				you will be able to find out the disk blocks where the contents of the file are loaded by XFSinterface.  
-				Recall that these were discussed in detail in Stage 2 Understanding the File System)
+				Recall that these were discussed in detail in Stage 2 :<a href="#collapse2" target="_blank">Understanding the File System </a>)
 				<li>Write an eXpL program to print the even numbers from 1-100. Load this even program as an executable.
 				<pre>load --exec < path to even.xsm > </pre> 
 				Dump the <a href="os_design-files/disk_ds.html#inode_table" target="_blank"> inodetable </a> using 
@@ -2447,8 +2447,11 @@ in the CREATED state.
 			<li>Set the Process Table entry and Page Table entries for setting up a process for the 
 			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialise the process state as CREATED in the process table entry for the even process.</li>
 			<li>Set the starting IP of the new process on top of its user stack.</li>
-			<li>For implementing the scheduling functionality, you will use the scheduler module. The eXpOS design stipulates that
-			the scheduler is MODULE_5. Load this module from disk to memeory.
+			<li>We will implement the scheduler as a seperate subroutine that can be invoked from the timer ISR.  
+			Such stand alone subroutines are implemented as <a href="os_modules/Module_Design.html" target="_blank"> kernel modules </a> in eXpOS.   The eXpOS design stipulates that 
+			the scheduler is implemented as MODULE_5, and loaded in <a href="os_implementation.html" target="_blank">disk blocks </a> 63 and 64 of the 
+			XFS disk. The OS startup code must load this module from disk to <a href="os_implementation.html" target="_blank"> memory pages </a> 50 and 51. (We will take up
+			the implementation of the module soon below). 
 			<div><pre>loadi(50,63);
 loadi(51,64);</pre></div> </li>
 			</ol>
