@@ -2419,8 +2419,6 @@ in the CREATED state.
         	technique. You will hand create another user process
         	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
-        	<p><b>It is absolutely neccesary to read and understand 
-        	<a href="os_design-files/stack_module.html" target="_blank">Kernel Stack Management during Module calls </a> and <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> before proceeding further. </b></p> 			
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
 				<li>Write an eXpL program to print the odd numbers from 1-100. Load this odd program as init.  				
@@ -2459,10 +2457,12 @@ loadi(51,64);</pre></div> </li>
 			<br>
         	 <b>Modification to Timer Interrupt Routine</b>
 
-        	 <p> eXpOS supports module calls in kernel mode due to the availablilty of kernel stack. 
-        	XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. 
-        	We will modify the timer interrupt routine so that it calls the scheduler module. </p>
+        	 <p>  XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction.
+        	We must write the scheduler code in MOD_5 and change the timer ISR to call this module to affect
+        	a context switch.  Hence, We will modify the timer interrupt routine so that it calls the scheduler module. </p>
         	
+        	<p><b>It is absolutely neccesary to read and understand 
+        	<a href="os_design-files/stack_module.html" target="_blank">Kernel Stack Management during Module calls </a> and <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> before proceeding further. </b></p> 
         	
         	<p>	Modify timer interrupt routine to set the state of the current process to ready 
         		and call the scheduler module (Module 5). <br> 
