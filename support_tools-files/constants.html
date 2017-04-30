@@ -143,7 +143,7 @@
                     <tr> <td>MOD_6</td> 	<td>26624</td><td></td> </tr>
                     <tr> <td>MOD_7</td> 	<td>27648</td><td></td> </tr>   
                     <tr> <td>PROCESS_TABLE</td> 	<td>28672</td><td></td> </tr>
-                    <tr> <td>OPEN_FILE_TABLE</td> 	<td>28928</td><td></td> </tr> 
+                    <tr> <td>FILE_TABLE</td> 	<td>28928</td><td>List of Open files</td> </tr> 
                     <tr> <td>SEMAPHORE_TABLE</td> 	<td>29056</td><td></td> </tr> 
                    
                     <tr> <td>MEMORY_FREE_LIST</td> 	<td>29184</td><td></td> </tr> 
@@ -151,17 +151,34 @@
                     <tr> <td>DISK_STATUS_TABLE</td> 	<td>29552</td><td></td> </tr> 
                     <tr> <td>SYSTEM_STATUS_TABLE</td> 	<td>29560</td><td></td> </tr>
                     <tr> <td>TERMINAL_STATUS_TABLE</td> 	<td>29568</td><td></td> </tr> 
-                    <tr> <td>PAGE_TABLE</td> 	<td>29696</td><td></td> </tr>
+                    <tr> <td>PAGE_TABLE_BASE</td> 	<td>29696</td><td></td> </tr>
                     <tr> <td>BUFFER_TABLE</td> 	<td>30016</td><td></td> </tr> 
                     <tr> <td>INODE_TABLE</td> 	<td>30208</td><td></td> </tr>
                     <tr> <td>DISK_FREE_LIST</td> 	<td>31232</td><td></td> </tr>
                     <tr> <td>ROOT_FILE</td> 	<td>31744</td><td></td> </tr> 
-                    <tr> <td>USER_TABLE</td> 	<td>32224</td><td></td> </tr> 
+                    <tr> <td>USER_TABLE</td> 	<td>31168</td><td></td> </tr> 
                     <tr> <td>LIBRARY</td> 	<td>32256</td><td></td> </tr> 
                     <tr> <td>LOGIN</td> 	<td>33280</td><td></td> </tr> 
                     <tr> <td>SHELL</td> 	<td>34304</td><td></td> </tr> 
                     <tr> <td>IDLE</td> 	<td>35328</td><td></td> </tr> 
-                    <tr> <td>DISK_SWAP_AREA</td> 	<td>...</td><td></td> </tr>                
+                    <tr> <td>DISK_SWAP_AREA</td> 	<td>256</td><td>Starting block number of Swap Area</td> </tr> 
+                    <tr> <td>BUFFER_BASE</td>  <td>71</td><td>Starting page number of Buffer Cache</td> </tr> 
+                    
+
+                    <tr> <td>READY</td>  <td>1</td><td>Process State READY</td> </tr> 
+                    <tr> <td>RUNNING</td>  <td>2</td><td>Process State RUNNING</td> </tr> 
+                    <tr> <td>CREATED</td>  <td>3</td><td>Process State CREATED</td> </tr> 
+                    <tr> <td>TERMINATED</td>  <td>4</td><td>Process State TERMINATED</td> </tr>
+
+                    <tr> <td>WAIT_DISK</td>  <td>5</td><td>Process is waiting to acquire disk</td> </tr>
+                    <tr> <td>WAIT_FILE</td>  <td>6</td><td>Process is waiting for release on an Inode</td> </tr>
+                    <tr> <td>WAIT_BUFFER</td>  <td>7</td><td>Process is waiting for release of buffer cache</td> </tr>
+                    <tr> <td>WAIT_TERMINAL </td>  <td>8</td><td>Process is waiting to acquire terminal</td> </tr>
+                    <tr> <td>WAIT_PROCESS</td>  <td>9</td><td>Process is waiting for a signal from another process</td> </tr>
+                    <tr> <td>WAIT_SEMAPHORE </td>  <td>10</td><td>Process is waiting to acquire a semaphore</td> </tr>
+                    <tr> <td>WAIT_MEM</td>  <td>11</td><td>Process is waiting as memory is not available</td> </tr>
+
+
 					<!--tr> <td>SCRATCHPAD</td> 	<td>512</td> </tr>
 					<tr> <td>PAGE_TABLE</td> 	<td>1024</td> </tr>
 					<tr> <td>MEM_LIST</td> 		<td>1280</td> </tr>
