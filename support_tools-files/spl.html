@@ -539,24 +539,26 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                           <div class="panel-heading">
                             <h4 class="panel-title">
                               <a data-toggle="collapse" href="#con">
-                                <span class="fa fa-check-square-o"></span>SPL Module Programming Conventions
+                                <span class="fa fa-check-square-o"></span>SPL Interrupt Handler and Module Programming Conventions
                               </a>
                             </h4>
                           </div>
                           <div id="con" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <p>Each SPL module is designed to occupy a maximum of two pages of continuous memory in the XSM machine. 
-                                A module typically contains protected mode code that carries out certain functions as determined by the OS programmer.
-                                 The following suggests certain programming conventions which are recommend while designing SPL modules.</p>
+
+                                <p>Each SPL System Call Handler/Interrupt Handler/Module is designed to occupy a maximum of two pages of continuous memory in the XSM machine.  (Sometimes, the generic term "module" is abused to indicate
+                                all types of routines of the above categories, though we avoid this usage here).    
+                                They contain protected mode code that carries out certain functions as determined by the OS programmer.
+                                 The following suggests certain programming conventions which are recommend while designing SPL modules and interrupt handlers.</p>
  
-                                <p>A module may be entered as a result of: <br/>
-                               <div style="padding-left:70px"> a. Execution of a software interrupt from an application (user mode) program.<br/>
-                                b. Occurence of a hardware interrupt/exception while an application was executing.<br/>
-                                c. Call from another module.<br/>
+                                <p>These routines may be entered as a result of: <br/>
+                               <div style="padding-left:70px"> a. A system call handler is entered upon execution of a software interrupt from an application (user mode) program. <br/>
+                                b. A hardware interrupt/exception is executed when the machine raises a corresponding hardware signal/exception while an application was executing.<br/>
+                                c. A module may invoked from another module/Interrupt handler.<br/>
                                 </div>
                                    </p>
 
-                                <p><b>Case a)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack.
+                                <p><b>Case a:  Software Interrupts)</b> In this case, the arguments to the module are passed through the <b>application program</b> stack.
                                  The return values are also passed through the same stack. <b> The convention is that the application must save the state 
                                  of its registers before making the call </b>. (For instance, the eXpL compiler will save the caller context in the user stack
                                   before invoking a software interrupt). Thus, the interrupt routine need not concern itself about saving the 
@@ -568,16 +570,17 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                                This is to avoid potential user level “hacks” into the interrupt modules through the stack.</p>
                                 <center>                        <img src="../img/memory_management.png"></center>
 
-                                <p><b>Case b)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. 
+                                <p><b>Case b:  Hardware Interrupts)</b> This case applies to the exception handler, timer interrupt routine, disk interrupt routine and the console interrupt routine. 
                                 The difference here from <i>Case a)</i> is that the application does not have control over the transfer to the interrupt module, and hence would not have saved its context. 
                                 <b>Thus, in this case, the module must save the register context of the application in its own stack</b> (or elsewhere in the memory) before using the registers and must restore the context before returning to the application.</p>
                                 <p>In this case also the module is expected to allocate its own stack in the memory and not use the application's stack.</p>
 
-                                <p><b>Case c)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R1, R2... for
-argument_1, argument_2, argument_3...  The return value of the module may be stored in R0.
-This convention is recommended instead of using the stack for passing arguments for improving efficiency. 
-As in the previous cases, the caller must save the values of the registers in use into the stack
-before the call. </p>
+                                <p><b>Case c:  Modules)</b> In this case, since the caller and the callee are both executing in protected mode, the same stack can be used. Here, the recommended parameter passing convention is to use R1, R2... for argument_1, argument_2, argument_3...  The return value of the module may be stored in R0.
+
+                                This convention is recommended instead of using the stack for passing arguments for improving efficiency. 
+                                
+                                As in the previous cases, the caller must save the values of the registers in use into the stack
+                                before the call. </p>
 
 
                                 <p><code>Note: </code>The SPL compiler given here uses the constants
