@@ -6,40 +6,40 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Module Design</title>
+     <title>Resource Manager</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
 
     <!-- CSS
     ================================================== -->       
     <!-- Bootstrap css file-->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
     <!-- Superslide css file-->
-    <link rel="stylesheet" href="css/superslides.css">
+    <link rel="../stylesheet" href="css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="css/slick.css" rel="stylesheet"> 
+    <link href="../css/slick.css" rel="stylesheet"> 
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="css/animate.css">  
+    <link rel="stylesheet" href="../css/animate.css">  
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
     <!-- Default Theme css file -->
-    <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
-    <link href="style.css" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
    
     <!-- Google fonts -->
-    <link href='css/opensans.css' rel='stylesheet' type='text/css'>
-    <link href='css/varela.css' rel='stylesheet' type='text/css'>
-    <link href='css/montserrat.css' rel='stylesheet' type='text/css'>
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,15 +48,22 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   
+ <style type="text/css">
    
+   pre{
+    font-family: Times new Roman; 
+    font-size: 15px;"
+   }
+
+ </style>>   
 
   </head>
   <body> 
-     <!-- BEGAIN PRELOADER -->
+     <!-- BEGAIN PRELOADER 
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
-    <!-- END PRELOADER -->
+     END PRELOADER -->
 
   
     <!--=========== BEGIN HEADER SECTION ================-->
@@ -114,7 +121,7 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 >Kernel Module Interface</h2>
+                <h2 > Resource Manager</h2>
                 <br/>
                 <br/>
                 
@@ -130,9 +137,7 @@
               </div>
 
                  <br> <br> 
-                 
-   <h3> Module_0 : Resource Manager </h3>
-   <br>
+  
 
 <table class="table table-bordered" style="text-align: center;">
     <tr class="success">
@@ -175,171 +180,133 @@
     <td>File Descriptor</td>
   </tr>
 
-                                </table>  
+<tr>
+    <td>6</td>
+    <td>Acquire Buffer</td>
+    <td>Buffer Number</td>
+  </tr>
+
+<tr>
+    <td>7</td>
+    <td>Release Buffer</td>
+    <td>Buffer Number</td>
+  </tr>
+
+</table>  
                      
 
-
-
-
-
-
-<h3> Module_1 : Process Manager </h3>
+               
+   <h3> Acquire Disk </h3>
    <br>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
+<pre>
+while ( disk is locked ){
+        Set state of the process as ( WAIT_DISK , - );
+        Invoke the scheduler;
+        }
 
+Lock the disk;
+return;
+</pre>
 
-  <tr>    
-    <td>1</td>
-    <td>Get Pcb Entry</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Free Pcb Entry</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>3</td>
-    <td>Exit Process</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>4</td>
-    <td>Free Page Table</td>
-    <td>PID</td>
-  </tr>
-
-
-</table>
-
-<h3> Module_2 :  Memory Manager </h3>
+ <h3> Acquire Inode </h3>
    <br>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
+<pre>
+while ( inode is locked ){
+    Set state of the process as ( WAIT_INODE , Inode Index );
+    Invoke the scheduler;
+    }
+
+Lock the Inode;
+return;
+</pre>
 
 
-  <tr>    
-    <td>1</td>
-    <td>Get Free Page</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Release Page</td>
-    <td>Page Number</td>
-  </tr>
-
-
-   </table>                  
-
-
-<h3> Module_3 :  File Buffer Manager </h3>
+<h3> Acquire Terminal </h3>
    <br>
 
+<pre>
+while ( Terminal device is locked ){
+    Set state of the process as ( WAIT_TERMINAL , - );
+    Invoke the scheduler;
+    }
+    
+Lock the Terminal device;
+return;
+</pre>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Buffer Write</td>
-    <td>Disk Number, Offset, Word </td>
-  </tr>
-       
-
- <tr>    
-    <td>2</td>
-    <td>Buffer Read</td>
-    <td>Disk Number, Offset, Memory Address</td>
-  </tr>
-
-   </table>
-
-
-
-<h3> Module_4 :  Device Manager </h3>
+<h3> Release Inode </h3>
    <br>
 
+<pre>
+Free the lock in the inode table entry corresponding to the inode index;
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-  <tr>    
-    <td>1</td>
-    <td>Disk Store</td>
-    <td>Page Number, Block Number</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Disk Load</td>
-    <td>Page Number, Block Number</td>
-  </tr>
+loop through the process table{ 
+       if (the process state is ( WAIT_INODE , Inode Index ) ){
+             Set state of process as (READY , _ )
+         } 
+}
+return;
+</pre>
 
 
-<tr>    
-    <td>3</td>
-    <td>Terminal Write</td>
-    <td>??</td>
-  </tr>
+<h3> Close File</h3>
+   <br>
+<!-- Move to Another module if necessary -->
+<pre>
+Get the User Area page number of the process from the Process Table;
+
+Get the Resource table entry corresponding to the 
+file descriptor;
+
+Get the Open File Table index form the Resource table entry;
+
+Get the Inode index corresponding to the file from the 
+Open File Table entry;
+
+Decrement file open count in File status table entry 
+corresponding to the Inode index;
+
+Decrement file open count in Open File Table entry;
+
+if ( the file open count == 0){
+    Invalidate the Open File Table entry;
+}
+
+Invalidate the Resource Table entry;
+
+return;
+</pre>
 
 
-  <tr>    
-    <td>4</td>
-    <td>Terminal Read</td>
-    <td>??</td>
-  </tr>
+<h3> Acquire Buffer</h3>
+   <br>
+<!-- Move to Another module if necessary -->
+<pre>
+while ( Buffer is locked ){
+    Set state of the process as ( WAIT_BUFFER , Buffer Number );
+    Invoke the scheduler;
+    }
 
-   </table>                  
+Lock the Buffer;
+return;
+</pre>
 
 
-
-<h3> Module_5 :  Context Switch Module </h3>
+<h3> Release Buffer </h3>
    <br>
 
+<pre>
+Free the lock in the buffer table entry corresponding to the buffer Number;
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-  <tr>    
-    <td>-</td>
-    <td>Switch Context</td>
-    <td>Nil</td>
-  </tr>
-
-</table>
-
-
-
-
+loop through the process table{ 
+       if (the process state is ( WAIT_BUFFER , Buffer Number ) ){
+             Set state of process as (READY , _ )
+         } 
+}
+return;
+</pre>
                      <!--end-->   
                     
                                </div>
