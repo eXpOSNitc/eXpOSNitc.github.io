@@ -112,19 +112,22 @@
              
               <p>The hardware requirement specification for eXpOS assumes that the machine is equipped
                with a timer device that sends periodic hardware interrupts.  
-               The Timer Interrupt routine handler implements a co-operative
-                multitasking <a href="http://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">round
-                 robin scheduler</a> for eXpOS. </p>
+               The timer interrupt handler internally invokes the eXpOS <a href="context_switch_module.html" target="_blank"> scheduler module </a>.  
+               </p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
              <p>Save user SP in Process Table entry of the current process. </p>
-			 <p>Set the value of SP to the beginning of User Area page.</p>
-			 <p>Backup the context of the current process using BACKUP instruction.</p>
-			 <p>Change the state of the current process in its Process Table entry from RUNNING to READY.</p>
-			 <p>Invoke the context switch module using the call MOD_5 instruction.</p>
-			 <p>Restore the context of the new process using RESTORE instruction.</p>
-			 <p>Set SP as the user SP saved in the Process Table entry of the new process.</p>
+			 
+             <p>Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the user Area page of the process).</p>
+
+      			 <p>Backup the context of the current process using BACKUP instruction.</p>
+      			 <p>Change the state of the current process in its Process Table entry from RUNNING to READY.</p>
+      			 <p>Invoke the <a href="context_switch_module.html" target="_blank">context switch module </a> using the call MOD_5 instruction.</p>
+          
+      			 <p>Restore the context of the new process using RESTORE instruction.</p>
+      			 <p>Set SP as the user SP saved in the Process Table entry of the new process.</p>
+             
              <p>Ireturn.</p>
          </div>
 		</div>

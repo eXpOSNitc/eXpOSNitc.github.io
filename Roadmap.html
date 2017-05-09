@@ -2463,7 +2463,7 @@ loadi(51,64);</pre></div> </li>
 
         	<p>
         	When the timer ISR calls the scheduler, the currently active kernel stack will be that of the currently RUNNING
-        	process.  The scheduler assumes that the timer handler would have saved the context of the current process into 
+        	process.  The scheduler assumes that the timer handler would have saved the user context of the current process (values of R0-R19 and BP registers) into 
         	the kernel stack before the call.  It also assumes that the state of the process has been changed to READY.  
         	However, the machine's SP register will still point to the top of the stack of the currently
         	running process at the time of the call.  </p>
@@ -2477,31 +2477,29 @@ loadi(51,64);</pre></div> </li>
 			</p>
 
 			<p>
-        	However since the stack has been changed, the timer resumes execution from the return address stored on the top of the 
-        	kernel stack of the new process.  The timer will restore the context of the new process from the stack and return to
-        	the user mode, resulting in the new process being executed.  
+        	Since the stack has been changed, the timer resumes execution from the return address stored on the top of the 
+        	kernel stack of the new process.  The timer will restore the user context of the new process from the stack and 
+        	return to the user mode, resulting in the new process being executed.  
         	</p>
-
 
             <p> An exception to this situation occurs when the scheduler finds that the new process is in state CREATED and not 
             READY.  This means that the process has never been executed previously.  Thus, the timer ISR would not have set
             any retrun address in its kernel stack previously because the process was never run before.  In this case, the 
             scheduler must not return to the timer ISR.  Instead the scheduler will set the state of the process to RUNNING
-            and intialize machine registers PTLR and PTBR  Now, the scheduler proceeds to run the process in user mode.  
+            and intialize machine registers PTLR and PTBR.  Now, the scheduler proceeds to run the process in user mode.  
             Hence, SP is set to the top of the user stack The scheduler then 
             "kick starts" execution of the new process by tranferring control to user mode through the IRET instruction. 
             </p>
 
-            <p>	
-            The scheduler expects that When a process is set up in the CREATED state by the OS startup code, the following
-            actions are done.  
-            <ol>
-            <li>The state of the process is set to CREATED.</li>
-            <li>The UPTR field of the process table entry has been set to the top of the user stack and the (stack-top contains the address of the instruction to be fetched next when the process is run in the user mode). </li>   
-            <li>PTBR, PTLR, User Area Page Number and KPTR fields in the process table entry has been set up</li>
-            </ol>
-            </p>           	  
-        	
+            <p>	The scheduler expects that When a process is set up in the CREATED state by the OS startup code, the following
+            actions are done. </p> 
+            
+            <p> 1. The state of the process is set to CREATED.</p>
+            
+            <p> 2. The UPTR field of the process table entry has been set to the top of the user stack and the (stack-top contains the address of the instruction to be fetched next when the process is run in the user mode). </p>   
+            
+            <p> 3. PTBR, PTLR, User Area Page Number and KPTR fields in the process table entry has been set up. </p>
+            
         	<p><b>It is absolutely neccesary to read and understand 
         	<a href="os_design-files/stack_module.html" target="_blank">Kernel Stack Management during Module calls </a> and <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> before proceeding further. </b></p> 
 
@@ -2520,6 +2518,11 @@ loadi(51,64);</pre></div> </li>
 				See the full algorithm <a href="os_design-files/context_switch_module.html" target="_blank">here</a>.
 			</p>    
 
+			Modification to INT 10 handler. 
+			Terminated state.
+			halt if no process other than idle in TERMINATED state.
+
+			Exercise: Run with odd, even ,idle and primes. 
 
         </div>
         </div>
