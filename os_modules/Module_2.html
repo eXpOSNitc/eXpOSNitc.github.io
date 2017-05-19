@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Module Design</title>
+     <title>Memory Manager</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -48,7 +48,14 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   
+ <style type="text/css">
    
+   pre{
+    font-family: Times new Roman; 
+    font-size: 15px;"
+   }
+
+ </style>>   
 
   </head>
   <body> 
@@ -56,7 +63,7 @@
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
-    <!-- END PRELOADER -->
+     END PRELOADER -->
 
   
     <!--=========== BEGIN HEADER SECTION ================-->
@@ -96,12 +103,6 @@
       </div>
       <!-- END MENU -->
 
-      <style type="text/css">
-      	h3 a{
-      		color: black;
-      	}
-
-      </style>
       
     </header>
 		
@@ -120,7 +121,7 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 >Kernel Module Interface</h2>
+                <h2 > Memory Manager</h2>
                 <br/>
                 <br/>
                 
@@ -136,107 +137,7 @@
               </div>
 
                  <br> <br> 
-                 
-   <h3> <a href="Module_0.html" target="_blank">Module_0 : Resource Manager</a> </h3>
-   <br>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>
-    
-    <td>1</td>
-    <td>Acquire Disk</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-  	
-    <td>2</td>
-    <td>Acquire Inode</td>
-    <td>Inodeindex</td>
-  </tr>
-
-<tr>
-   	
-    <td>3</td>
-    <td>Acquire Terminal</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>4</td>
-    <td>Release Inode</td>
-    <td>Inodeindex</td>
-  </tr>
-
-<tr>
-    <td>5</td>
-    <td>Close File</td>
-    <td>File Descriptor</td>
-  </tr>
-
-<tr>
-    <td>6</td>
-    <td>Acquire Buffer</td>
-    <td>Buffer Number</td>
-  </tr>
-
-<tr>
-    <td>7</td>
-    <td>Release Buffer</td>
-    <td>Buffer Number</td>
-  </tr>
-                                </table>  
-                     
-
-
-
-
-
-
-<h3> Module_1 : Process Manager </h3>
-   <br>
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Get Pcb Entry</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Free User Area Page</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>3</td>
-    <td>Exit Process</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>4</td>
-    <td>Free Page Table</td>
-    <td>PID</td>
-  </tr>
-
-
-</table>
 
 <h3> Module_2 :  Memory Manager </h3>
    <br>
@@ -262,97 +163,32 @@
   </tr>
 
 
-   </table>                  
+   </table>    
+                     
 
-
-<h3> Module_3 :  File Buffer Manager </h3>
+               
+   <h3> Get Free Page </h3>
    <br>
 
+<pre>
+    loop through entries in the Memory Free List{
+        if ( a free entry is found ){
+              Mark the entry as used in the the Memory Free List;
+              Return the corresponding page number;
+        }
+    }
+    return -1;
+</pre>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Buffer Write</td>
-    <td>Disk Number, Offset, Word </td>
-  </tr>
-       
-
- <tr>    
-    <td>2</td>
-    <td>Buffer Read</td>
-    <td>Disk Number, Offset, Memory Address</td>
-  </tr>
-
-   </table>
-
-
-
-<h3> Module_4 :  Device Manager </h3>
+ <h3> Release Page </h3>
    <br>
 
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-  <tr>    
-    <td>1</td>
-    <td>Disk Store</td>
-    <td>Page Number, Block Number</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Disk Load</td>
-    <td>Page Number, Block Number</td>
-  </tr>
-
-
-<tr>    
-    <td>3</td>
-    <td>Terminal Write</td>
-    <td> Word</td>
-  </tr>
-
-
-  <tr>    
-    <td>4</td>
-    <td>Terminal Read</td>
-    <td> Memory Address</td>
-  </tr>
-
-   </table>                  
-
-
-
-<h3> Module_5 :  Context Switch Module </h3>
-   <br>
-
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-  <tr>    
-    <td>-</td>
-    <td>Switch Context</td>
-    <td>Nil</td>
-  </tr>
-
-</table>
+<pre>
+    Decrement the entry corresponding to the page in 
+    the Memory free list;
+    
+    return;
+</pre>
 
 
 
