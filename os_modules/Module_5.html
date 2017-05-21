@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Module Design</title>
+     <title>Context Switch Module</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -48,7 +48,14 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   
+ <style type="text/css">
    
+   pre{
+    font-family: Times new Roman; 
+    font-size: 15px;"
+   }
+
+ </style>>   
 
   </head>
   <body> 
@@ -56,7 +63,7 @@
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
-    <!-- END PRELOADER -->
+     END PRELOADER -->
 
   
     <!--=========== BEGIN HEADER SECTION ================-->
@@ -96,12 +103,6 @@
       </div>
       <!-- END MENU -->
 
-      <style type="text/css">
-      	h3 a{
-      		color: black;
-      	}
-
-      </style>
       
     </header>
 		
@@ -120,7 +121,7 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 >Kernel Module Interface</h2>
+                <h2 > Context Switch Module</h2>
                 <br/>
                 <br/>
                 
@@ -136,207 +137,8 @@
               </div>
 
                  <br> <br> 
-                 
-   <h3> <a href="Module_0.html" target="_blank">Module_0 : Resource Manager</a> </h3>
-   <br>
 
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>
-    
-    <td>1</td>
-    <td>Acquire Disk</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-  	
-    <td>2</td>
-    <td>Acquire Inode</td>
-    <td>Inodeindex</td>
-  </tr>
-
-<tr>
-   	
-    <td>3</td>
-    <td>Acquire Terminal</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>4</td>
-    <td>Release Inode</td>
-    <td>Inodeindex</td>
-  </tr>
-
-<tr>
-    <td>5</td>
-    <td>Close File</td>
-    <td>File Descriptor</td>
-  </tr>
-
-<tr>
-    <td>6</td>
-    <td>Acquire Buffer</td>
-    <td>Buffer Number</td>
-  </tr>
-
-<tr>
-    <td>7</td>
-    <td>Release Buffer</td>
-    <td>Buffer Number</td>
-  </tr>
-                                </table>  
-                     
-
-
-
-
-
- <h3> <a href="Module_1.html" target="_blank"> Module_1 : Process Manager </a> </h3>
-
-   <br>
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Get Pcb Entry</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Free User Area Page</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>3</td>
-    <td>Exit Process</td>
-    <td>PID</td>
-  </tr>
-
-<tr>    
-    <td>4</td>
-    <td>Free Page Table</td>
-    <td>PID</td>
-  </tr>
-
-
-</table>
-
- <h3> <a href="Module_2.html" target="_blank"> Module_2 :  Memory Manager </a> </h3>
-
-   <br>
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Get Free Page</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Release Page</td>
-    <td>Page Number</td>
-  </tr>
-
-
-   </table>                  
-
-
-<h3> <a href="Module_3.html" target="_blank"> Module_3 :  File Buffer Manager  </a> </h3>
-<h3> </h3>
-   <br>
-
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-
-  <tr>    
-    <td>1</td>
-    <td>Buffer Write</td>
-    <td>Disk Number, Offset, Word </td>
-  </tr>
-       
-
- <tr>    
-    <td>2</td>
-    <td>Buffer Read</td>
-    <td>Disk Number, Offset, Memory Address</td>
-  </tr>
-
-   </table>
-
-
-<h3> <a href="Module_4.html" target="_blank"> Module_4 :  Device Manager </a> </h3>
-
-   <br>
-
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-    </tr>
-
-  <tr>    
-    <td>1</td>
-    <td>Disk Store</td>
-    <td>Page Number, Block Number</td>
-  </tr>
-
-<tr>    
-    <td>2</td>
-    <td>Disk Load</td>
-    <td>Page Number, Block Number</td>
-  </tr>
-
-
-<tr>    
-    <td>3</td>
-    <td>Terminal Write</td>
-    <td> Word</td>
-  </tr>
-
-
-  <tr>    
-    <td>4</td>
-    <td>Terminal Read</td>
-    <td> Memory Address</td>
-  </tr>
-
-   </table>                  
-
-
-<h3> <a href="Module_5.html" target="_blank">  Module_5 :  Context Switch Module </a> </h3>
+<h3> Module_5 :  Context Switch Module </h3>
    <br>
 
 
@@ -354,8 +156,41 @@
   </tr>
 
 </table>
+   
 
+               
+   <h3>Switch Context</h3>
+   <br>
 
+<pre>
+    Get the pid of the current process from System Status Table;
+    
+    Save the SP, PTBR and PTLR registers to the Process Table entry of the current process;
+    
+    Find the next process to schedule using the Round Robin scheduling technique;
+    
+    If no process is in READY or CREATED state, select the Idle process;
+    
+    Set the PTBR and PTLR registers to the corresponding values in the process table entry
+    of the new process;
+    
+    Set the new PID in the System Status Table;
+    
+    Set the state of the new process as (RUNNING, - );
+    
+    if (the new Process is in CREATED state){
+          Set SP to the value of UserSP field in the Process table entry of the new process;
+        
+          Use ireturn statement to transfer control back to user mode;
+    }
+    
+    Read the KPTR field and the UArea Page number from the Process table entry of the
+    new process;
+
+    Set SP to UArea_Page * 512 + KPTR;
+    
+    return;
+</pre>
 
 
                      <!--end-->   
