@@ -137,7 +137,7 @@ physical address corresponding to the logical address 1001 using page table addr
 transfer contents of R0 to that location.  
 </p>
 <p>
-The translation of a logical address to physical address is done completely by the machine's paging hardware.  
+<b>The translation of a logical address to physical address is done completely by the machine's paging hardware.</b>  
 The sequence of steps involved may be abstractly described by the following steps, which will be described in 
 detail with examples soon:    
 <br>
@@ -180,7 +180,7 @@ Thus, PUSH R0 will transfer contents of R0 to the physical address 4073.
 <p>
 There are several points to mention here.  The PUSH operation will be successful only if the 
 auxiliary information for logical page number 1 in the page table is set to ensure that the page is valid.  
-Otherwise, the machine will generate an exception, switching back to privileged mode.  
+<b>Otherwise, the machine will generate an exception,</b> switching back to privileged mode.  
 We will discuss exception handling later.     
 </p>
 <p>
@@ -217,12 +217,15 @@ address 0 to a maximum limit set by the OS.   Thus the addresses found in the ap
 shall only be between 0 and the maximum limit.  The application's code and data must fit into this address space.   When the application is loaded into memory, the OS may load the pages into physical memory addresses that are different from the logical address space of the application.    
 </p>
 <p>
-XSM Paging hardware provides machine support for such relocation.    
+XSM Paging hardware provides machine support for such relocation.  
+<b>To use this mechanism, the OS must maintain a seperate page table for each application program.</b> 
+The page table stores the physical page in memory to which each logical page is mapped into.   
 Before running an application, the OS must execute privileged code to do the following:  
 <br>
 1.  Set the PTLR register to define the address space maximum limit.
 <br>
-2.  Set up a valid page table in memory and the PTBR register to the beginning address of the page table.  
+2.  Set up a valid page table in memory and the PTBR register to the beginning address of the page table 
+<b>of the particular application</b>.  
 <br>
 3.  Set up the application's stack.  
 <br>
@@ -239,8 +242,8 @@ We explain each of the above four steps in detail:
    application to 10 pages).
    </p>
    <p>
-   While executing in user mode, if an application generates an address beyond this limit, 
-   the machine will raise an exception.  This will result in the machine switching to privileged mode and 
+   <b>While executing in user mode, if an application generates an address beyond this limit, 
+   the machine will raise an exception.</b>  This will result in the machine switching to privileged mode and 
    control transferred to the starting address of the exception handler routine
     (memory address 1024 – see <a href="http://exposnitc.github.io/arch_spec-files/machine_organisation.html#content"
     target="_blank">Machine Organisation</a>).  
@@ -255,26 +258,26 @@ fetch cycle, an exception will be generated because an instruction fetch will be
  
 	   <br>
 <b style="color:#26A65B">Step 2:</b>  Once the address space size is determined by PTLR value, a page table has to be set up in the memory 
-to tell the hardware which logical page is mapped to which physical page.  The number of entries in the page 
+for the application to tell the hardware which logical page is mapped to which physical page.  The number of entries in the page 
 table is determined by the number of pages allocated to the application.  Thus if PTLR=10, then the page table 
 must contain ten entries.
 </p>
    <p>
-  Each page table entry requires two memory words and contains information about the corresponding logical page. 
+  <b>Each page table entry requires two memory words</b> and contains information about the corresponding logical page. 
    That is, the first two words of the page table contain information about logical page 0, the next two about
     logical page 1 and so on.  If PTLR=10, the page table of the application will require total 20 memory words.  
   The first word of each page table entry contains the physical page number of the corresponding logical page.  
-  The second word stores auxiliary information.   The auxiliary information for a page consists of four binary
+  <b>The second word stores auxiliary information.   The auxiliary information for a page consists of four binary
    values:
-a) Reference bit,  b) Valid bit,  c) Write permission bit,   d) Dirty bit.
+a) Reference bit,  b) Valid bit,  c) Write permission bit,   d) Dirty bit.</b>
 
     Proper values for Valid (V bit) and the Write permission bit (W bit) must be set by your privileged code 
     of step 2 before starting unprivileged mode execution.  We describe these settings below.  
 </p>
    <p>
-If the Valid bit is set to 0, the page table entry is considered invalid.  In this case, if any logical address
+If the <b>Valid bit</b> is set to 0, the page table entry is considered invalid.  In this case, if any logical address
  accessing the page will generate an exception.   </p>
-   <p>If the write permission bit is set to 0, the application will
+   <p>If the <b>write permission bit</b> is set to 0, the application will
   not have write permission to the page.  
 
 For example, if entry 0 of the page table has valid bit 0, then an instruction like MOV [100], R0 or JMP 112 
@@ -285,7 +288,7 @@ raise an exception.  However, JMP R0,[100] or JMP 112 that do not modify the con
 normally in unprivileged mode.
 </p>
    <p>
-The Reference bit and the Dirty bit are set by the machine.  When the application is executing, if an address 
+<b>The Reference bit and the Dirty bit are set by the machine.</b>  When the application is executing, if an address 
 is generated accessing some logical page, then the reference bit of the page is set automatically to 1 by the 
 machine.  For instance, MOV R0, [1500] accesses the logical page 2 and hence the reference bit of the 
 corresponding page table entry will be set to 1 by the machine automatically.  The dirty bit is set if the 
@@ -319,8 +322,8 @@ Suppose L0 corresponds to logical address – say 2060, then the address of  L1 
 XSM instruction takes two words.   Counting backwards, the address of the first instruction must have been  2056.   
 </p>
 <p>
-Here we must particularly note something -  the application code is designed to be loaded by the OS to start 
-execution from logical address  2056.  
+Here we must particularly note something -  <b>the application code is designed to be loaded by the OS to start 
+execution from logical address  2056.</b>  
 
 The code with labels replaced by logical addresses will be as follows:  
 <div><pre>
@@ -338,20 +341,20 @@ invalid.
 </p><p>
 Thus, the physical address of logical page 4 (starting at logical address 2048) must be associated with 
 physical page 100.   Assume that the code continues to the next logical pages,  the page number for logical page
- 5 must be set to 110.  The valid bit for both entries must be set to 1.  
+ 5 must be set to 110.  <b>The valid bit for both entries must be set to 1.</b>
  The valid bit for logical page 6  must be set to 0 since the page is not valid 
  (and the machine should not assume that whatever value stored in the entry for the physical address is correct).
    As noted previously, setting off the valid bit ensures that the machine will generate an exception if 
-   either of instruction fetch or operand fetch is attempted from that page. Finally, since code pages are 
-   expected not to be modified during program execution,  the Write permission bit must be set to 0.   
+   either of instruction fetch or operand fetch is attempted from that page. <b>Finally, since code pages are 
+   expected not to be modified during program execution,  the Write permission bit must be set to 0.</b>   
 
 (Setting write permission off for code pages is a necessary exercise.   
 A typical multi-tasking  OS will permit several applications to share code pages in memory.  
 It then is the duty of the OS to ensure that one application doesn't modify the shared code to "hack" others.)  
 </p><p>
-The essential idea to understand here is that each application is designed (by some programmer) 
+<i>The essential idea to understand here is that each application is designed (by some programmer) 
 to be loaded into certain part of its virtual address space.  Although paging allows logical pages to be 
-mapped to arbitrary physical pages, the logical page where each region of code must be loaded cannot be changed.  
+mapped to arbitrary physical pages, the logical page where each region of code must be loaded cannot be changed.</i>  
 (Note:  There are architectures that allow application programmers write 
 <a href="https://en.wikipedia.org/wiki/Position-independent_code" target="_blank">
 position independent code</a> that can be loaded anywhere into the address space.  
@@ -625,20 +628,20 @@ pages allocated for the stack are 120 and 121, then the page table starting at a
 </p>
 <p>
 	<br>
-<b style="color:#26A65B">Step 4:</b>Now we must set up the instruction pointer (IP) so that the first 
-instruction of the application is fetched and executed from the correct address.  
+<b style="color:#26A65B">Step 4:</b><b>Now we must set up the instruction pointer (IP) so that the first 
+instruction of the application is fetched and executed from the correct address.</b>
 <br>
 How do we know what is the correct logical address from which the first instruction must be fetched? 
 <br>
-In general, there is no way.  To solve the issue, the  ABI stipulates that the application must tell 
-the operating system which is the correct address.  
+In general, there is no way.  To solve the issue, the  ABI stipulates that <b>the application must tell 
+the operating system which is the correct address.</b>  
 </p><p>
 The way in which the eXpOS ABI does this is as follows.  Each eXpOS application can have at most four code 
 pages of machine instructions.   An eXpOS compatible <a href="http://exposnitc.github.io/abi.html" target="_blank">XEXE</a> executable file 
  must contain these instructions listed in sequential order.  But before the code, the file must contain an 
- eight-word header.  The code follows the header.  The first word (word 0) must be set to value 0.  
- For the time being, we will be concerned only about the second word (word 1) called entry point.    
- This word must contain the logical address of the first instruction to be executed when the application is run.
+ eight-word <b>header</b>.  The code follows the header.  The first word (word 0) must be set to value 0.  
+ For the time being, we will be concerned only about the second word (word 1) called <b>entry point</b>.    
+ This word <b>must contain the logical address of the first instruction to be executed</b> when the application is run.
     The values of the remaining six words can be ignored.  
 
 </p><p>
@@ -678,8 +681,8 @@ JMP 2060
 
 Note that the start address of the code was specifically designed to be 2056 so that the first instruction 
 starts after eight words from the beginning of logical page 4 (starting at 2048), leaving space for the header 
-in the page.  eXpOS ABI stipulates that an XEXE executable file (including the header) must fit into four pages 
-of memory.   Thus, an executable file can have an eight-word header plus a maximum of 1020 instructions (Why?).  
+in the page.  <b>eXpOS ABI stipulates that an XEXE executable file (including the header) must fit into four pages 
+of memory.</b>   Thus, an executable file can have an eight-word header plus a maximum of 1020 instructions (Why?).  
 The first executable instruction will be in address 2056.  (However, the application might want to start 
 execution from some other address – say 3000 - in that case, the entry point value must be set to the value 3000.)  In the present case, since the above code is designed to start from 2056, the entry point value must be set to 2056.  
 </p><p>
@@ -699,14 +702,14 @@ MOV SP, 4096 //  SP to contain logical addresses.
 IRET   // Unprivileged mode execution starts.  
 </pre></div>
 </p><p>
-The IRET instruction will first change the mode to unprivileged, then transfer the contents of logical 
+<b>The IRET instruction will first change the mode to unprivileged, then transfer the contents of logical 
 address 4096 (translating to contents of physical address 61440) into the IP register and decrement the 
-stack pointer.  Since this value is the entry point (in the above example, 2056), IP will be loaded with this 
+stack pointer.</b>  Since this value is the entry point (in the above example, 2056), IP will be loaded with this 
 value and next instruction fetch will happen from logical address 2056 (what will be the physical address?).  
 Since then, the fetch-execute cycle continues in the unprivileged mode with paging enabled.  
 </p><p>
-A program running in the unprivileged mode may switch the machine back to the privileged mode using 
-the trap instruction INT n.  Where n can take values from 4 up to 18 The INT n instruction will result 
+<b>A program running in the unprivileged mode may switch the machine back to the privileged mode using 
+the trap instruction INT n.</b>  Where n can take values from 4 up to 18 The INT n instruction will result 
 in the following:
 <br>
 1.  Increment SP and transfer contents of IP register to the stack.  (SP register holds the logical address 
@@ -726,9 +729,9 @@ There are two concepts to understand here.
 First, how does the machine map interrupt numbers to addresses
 (which interrupt maps to which memory address) and second why should an application use this instruction?  
 </p><p>
-INT 4 to INT 18 instructions are called software interrupts or traps.  The XSM machine has an interrupt 
-vector table that maps each interrupt number to a corresponding address (of the interrupt handler).  
-The vector table is stored starting from physical address 492 of memory.     Locations 492,493,494 and 495 
+INT 4 to INT 18 instructions are called software interrupts or traps.  <b>The XSM machine has an interrupt 
+vector table that maps each interrupt number to a corresponding address</b> (of the interrupt handler).  
+<b>The vector table is stored starting from physical address 492 of memory.</b>     Locations 492,493,494 and 495 
 stores the addresses of the exception handler, the timer interrupt handler, the disk interrupt handler 
 and console interrupt handler.  Location 496 contains the address of the first trap handler - INT 4,  
 location 497 contains the address of INT 5 handler and so on.  When the machine encounters an INT n 
@@ -743,17 +746,17 @@ the application can invoke an OS routine to do the task.  The OS routine must be
 mode, must validate the application's request (permissions, etc.), perform the task and then return to the 
 application.
 </p><p>
-OS handlers that can be called from application programs for privileged tasks are known as system call routines.
-   Software interrupts provide hardware support for implementing system calls.  In the eXpOS project, 
+<b>OS handlers that can be called from application programs for privileged tasks are known as system call routines.
+   Software interrupts provide hardware support for implementing system calls.</b>  In the eXpOS project, 
    the mapping of each system call to interrupt numbers is given 
    <a herf="http://exposnitc.github.io/abi.html" target="_blank">here</a>.  
    (Note that in some cases, the same interrupt handler is designed to handle multiple system calls. 
     In such cases the system call number passed as an argument to the interrupt handler is used to
      identify the correct service).  
 </p><p>
-Typically, the application pushes the input arguments to a system call handler into the 
+<i>Typically, the application pushes the input arguments to a system call handler into the 
 stack before executing INT instruction.  The handler after doing the corresponding action 
-stores return value in a designated position in the application's stack.  The conventions 
+stores return value in a designated position in the application's stack.</i>  The conventions 
 regarding how arguments and return values are passed are stipulated in the ABI.  
 <br><br>
 Example:  In our running example, suppose the instruction at logical address 2070 is INT 4:  
