@@ -110,48 +110,147 @@
                 <br/>
                 <br/>
                 
-				<p>This tutorial will help you to understand the architectural features of the XSM machine 
-				necessary to for implementing the eXpOS operating system. These features will be used by
-				the eXpOS kernel.  </p>
-				
-				<p>The CPU of the <a href="../arch_spec-files/machine_organisation.html" target="_blank">
-					XSM virtual machine</a>
-				 contains 20 general-purpose registers R0-R19, each of which can store an integer
-				  or a string.  (see <a href="../arch_spec.html" target="_blank">XSM specification</a>). 
-				   Along with these are the registers stack pointer (SP), base pointer (BP) and instruction 
-				   pointer (IP).  There are other special purpose registers: PTBR, PTLR, EIP, EC, EPN, EMA and 
-				   four ports P0, P1, P2, P3.    We will discuss the roles of these soon.  </p>
+				<p>In this tutorial we will walk you through the instruction execution cycle of XSM architecture. <br>
+					For this purpose, we will use the following SPL program that will display the contents of the first entry of the root file as the OS startup code. You can refer the SPL specification <a href ="../support_tools-files/spl.html" target="_blank">here</a>. <br>
+					The SPL program is given below:
+					<div>
+					<pre>//Program to print the first entry of root file
 
-				<p>The machine's memory consists of 65536 memory words.  Each word can store an integer or a 
-				string.  The memory is divided into pages of 512 words each.  Thus memory addresses 0 to 511 
-				belong to page 0,  512-1023 belong to page 1 and so on.  The last (page 127) contain memory 
-				addresses 65024 to 65535. The memory is word addressable. This means that XSM provides 
-				instructions that allows you to access any memory word.   For instance, the instruction 
-				"MOV R0, [1345]" transfers the contents of memory location 1345 to register R0.  </p>
+alias counter R0;
+alias word R1;
+counter = 0;
+
+loadi(62,5);
+
+while(counter < 8) do
+  word = [62 * 512 + counter];
+  print(word);
+  counter = counter + 1;
+endwhile; </pre> 
+					</div>
+				</p>
+				<p><br>This corresponds to the following XSM code. 
+				<div>
+					<pre>// Initialising counter(R0) to 0
+MOV R0, 0	
+
+// Load block num 5 (root file) to page 62  
+LOADI 62, 5
+
+_L1:
+
+// Check for R0 < 8
+MOV R16, 8
+GT R16, R0
+JZ R16, _L2
+
+// R16 = 512 * 62 + R0
+MOV R16, 62
+MUL R16, 512
+ADD R16, R0
+
+// Transfer contents of memory location pointed to by R16 to R1
+MOV R1, [R16]
+
+// Printing word (R1)
+PORT P1, R1
+OUT
+
+// counter = counter + 1
+MOV R16, R0
+ADD R16, 1
+MOV R0, R16
+
+JMP _L1
+_L2:
+
+HALT</pre>
+
+				</div>
+				</p>
+
+				<p>
+				<i>We assume that the given XSM code will be loaded into disk block 0 by the XFS Interface. <br>
+				All the labels in the code are translated to corresponding machine address by the xfs-interface.
+				</i>				
+				</p>
 				
-				<p>The machine also has a disk having 512 blocks.  Each disk block can store 512 words.   
-				Thus the total storage capacity is 512 x 512 = 262144 words.  However, the disk is block 
-				addressable and not word addressable.    XSM provides just three instructions to manipulate 
-				the disk – LOAD, LOADI and STORE.  These instructions can be used to transfer a disk block to 
-				a memory page or back.  Suppose we want to access the 10th word of block 12, then the only way 
-				to do so is to first transfer the 12th block to some memory page and then access the 
-				corresponding memory address.</p>
+
+			<p>	The ROM code is assumed to be present at the memory page 0. Here are the contents of the ROM code (page 0) of XSM memory
+				</p>
+				<div>
+				<pre>LOADI 1,0
+JMP 512</pre>
+
+				<p> When the machine starts execution, the values of the Instruction pointer(IP) register is set to 0.
 				
-				<p>Apart from disk and memory, the machine also has three devices – an I/O  Console, 
-				a timer and disk controller.  We will discuss them later.  The organisation of the XSM machine 
-				is given <a href="../arch_spec-files/machine_organisation.html" target="_blank">here</a></p>
+				The XSM machine therefore fetches the instruction present at memory locations 0 and 1. Note that each instruction in XSM occupies two words in memory. <br> 
+
+</p>
+
+				<p>
+				The first instruction of ROM code is to load the OS startup code from block 0 of disk to page 1 of memory.
+				</p>
+
+				<center>
+				<img src="img/1.png">
+				</center>
+
+				<p> Let us see the execution of this instruction in detail. 
 				
-				<p>The machine can operate in two fundamental modes – privileged and unprivileged.   
-				When the machine gets powered on, it begins execution in the privileged mode.     
-				We will discuss unprivileged mode later and assume privileged mode execution in the following.</p>
+				<font size="3">				
+				<ol>
+
+			<li>	The first step is called the Instruction Fetch (IF).			
+				The machine fetches the instruction from the memory and places it in the Instruction Register(IR). </li>
+
+			<li>	The second step is the Instruction decode. 
+				In this step the opcode part of the IR register is examined to see the instruction type. 
+				The machine recognises that the instruction is a LOADI instruction.
+			</li>
 				
-				<p><b>Note:</b>  The ExpOS documentation (unfortunately) uses the words "kernel mode" for 
-				privileged mode and "user mode" for unprivileged mode execution.  This terminology arose 
-				because the OS kernel code runs in privileged mode and application programs run in unprivileged 
-				mode.  However "kernel" and "user" and OS level abstractions, not connected to the machine,  
-				and the terminology is not used in this document while referring to architectural concepts.   </p>
+			<li>	The parameters of LOADI are passed to the Disk Controller. The system pauses its execution till the Disk transfer completes and resumes the execution.
+			</li>
+				</ol> </p>
+
+				</font>				
+			
+				<p>After the execution of each instruction, the value of the IP Register is incremented by 2 by the XSM machine. 
+				 
+				</p>
+				<p> The value of IP register is now 2. The machine fetches the instruction from memory address 2 and 3. </p>
+
+				<center>
+				<img src="img/2.png">
+				</center>
+
+				<p>This instruction sets the value of IP Regiser to 512 and hence transfers control to the 
+				OS startup code loaded into page 1 of memory, ie. memory address 512.</p>
+
 				
-				<p></p>
+				<center>
+				<img src="img/3.png">
+				</center>
+
+
+				<p>OS startup code is loaded at memory address 512. 
+				Hence MOV R0, 0 is executed next. IP is incremented to 514.
+				The machine continues execution until the HALT instruction is encountered. 
+				The system halts on execution of HALT instruction. </p>
+
+				<p> Now let us consider the execution of the instruction at memory address 520.
+				The instruction is JZ R16, 544.
+				<i> Note that the translanslation of label _L2 to memory address 544 					is done by the XFS Interface at the time of loading OS startup code to the XSM disk.
+				 </i>
+				</p>
+				
+				<ol>
+					<li>In the IF stage the instruction is fetched to the IR register.</li>
+					<li>The ID stage recognises the instructuion as JZ. </li>
+					<li>   </li>
+					<li>    </li>
+				</ol>
+		
 		</div> 
              </div>
            </div>
