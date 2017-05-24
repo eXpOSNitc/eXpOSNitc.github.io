@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Architecture Tutorial</title>
+     <title>XSM Instruction Exceution Cycle</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -150,8 +150,144 @@
 				because the OS kernel code runs in privileged mode and application programs run in unprivileged 
 				mode.  However "kernel" and "user" and OS level abstractions, not connected to the machine,  
 				and the terminology is not used in this document while referring to architectural concepts.   </p>
+				<br>
+				<h4><b>Boot-up</b></h4>
+				<p>What happens when the machine is powered on?  
+				<br>All registers will be set to value zero.  In particular, IP register also assumes value 0.   
+				Once powered on, the machine will start repeatedly executing the following fetch-execute cycle 
+				in privileged mode.
 				
-				<p></p>
+				<br>
+				
+				1.  Transfer the contents of two memory locations starting at the address stored in IP register 
+				to the CPU.  The XSM machine treats the contents read like a machine instruction.  This action 
+				is called the instruction fetch cycle.  
+				<br>
+				2.  The next step is the execute cycle where the instruction fetched in Step 1 is 
+				executed by the machine.    What happens here depends on the 
+				instruction. (See <a href="../arch_spec-files/instruction_set.html" target="_blank">XSM instruction set</a>.)
+				For example, if the instruction fetched is "MOV R0, [1256]", the execute cycle action will 
+				result in the contents of memory location 1256 being transferred to register R0.   If the 
+				instruction fetched in "JMP 1110", the value of the IP register will be set to 1110.  
+				<br>
+				3.    The final step is to set the instruction pointer to the next instruction to be executed.  
+				Since each XSM instruction is two words, IP will normally be incremented by 2.   There are 
+				exceptions to this rule.  For instance in the case of "JMP 1110", IP is set to 1110 and hence 
+				not incremented.  Thus the next fetch must be from 1110.    After Step 3, the machine loops 
+				back to Step 1.  
+				<br>
+				
+				Also see <a href="https://en.wikipedia.org/wiki/Instruction_cycle" target="_blank">Wiki Link</a>.
+
+</p>
+				<p>When the machine is just powered on, IP value is 0.  Hence, the first instruction will be 
+				fetched from memory locations 0 and 1.    The XSM machine has a boot ROM containing just two 
+				instructions:
+				
+				<table class="table table-bordered" style="text-align: center;">
+                                    <tr>
+                                        <th style="text-align: center;">Location</th>
+                                        <th style="text-align: center;">Instruction</th>
+					<th style="text-align: center;">Instruction semantics</th>	
+                                    </tr>
+  <tr>
+<td>0</td>                       
+<td>LOADI 1, 0</td>                    
+<td>Load contents of disk block 0 to memory page 1</td>
+</tr>
+	<tr>
+	<td>2</td>
+	<td>JMP 512</td>
+	<td>Change IP value to 512</td></tr>
+				</table>
+				</p>
+				
+				
+				<p>The bootstrap code is hard coded into a boot ROM so that the memory contents are not lost 
+				even after machine shutdown.  This is necessary because when the machine is powered on, there 
+				must be some meaningful instruction at address 0 from where the first fetch takes place.  </p>
+				
+				<p>Study the above bootstrap code carefully.  What it does is to load the contents of disk block 
+				0 to memory page 1 and then set the IP value to 512 so that the next fetch happens from memory 
+				address 512.    This last step is very important because the machine will fetch contents of 
+				memory address 512 and 513 next, decode it assuming there is a valid instruction stored there 
+				and execute it and proceed from there.  Hence, if you write an XSM assembly language program 
+				and store it in block 0 in such a way that your first instruction is stored in the first word 
+				of block 0, the machine will execute it immediately after JMP 512.  Consequently, your code 
+				gets control of the machine, and the fetch-execute cycle continues with your code.  You will be 
+				writing the OS bootstrap loader and storing it in block 0 in Stage 3 of the eXpOS roadmap.</p>
+				
+				<p><b>Note:</b>  The boot ROM actually contains more information than what is written above.  
+				The boot ROM contains an interrupt vector table located between addresses 492 to 511.  The 
+				vector table specifies the physical address to which interrupts must transfer control to.  
+				We will discuss this later.  
+</p>
+<br>
+
+				<h4><b>Privileged mode of execution</b></h4>
+				<p>The privileged mode of execution is easy to comprehend.   All instructions in the XSM 
+				machine instruction set described <a href="../arch_spec-files/instruction_set.html" 
+				target="_blank">here</a> will execute in the most natural way in the privileged mode of 
+				execution.   Most of the instructions like data transfer instructions, arithmetic and logic 
+				instructions, and control flow instructions (JMP etc.) are straightforward to understand from 
+				the specification and not described here.    </p>
+
+				<p>Instead, we will focus here on the execution semantics of the following four 
+				(slightly non-trivial) instructions when executed in privileged mode – PUSH, POP, CALL and RET.  </p>
+				
+				<p>The value of the SP register holds a pivotal role in these operations.   
+				The PUSH instruction results in the following actions:
+				<br>
+				1.  Contents of SP gets incremented by 1.
+				<br>
+2.  The data specified by the PUSH instruction is transferred to the location pointed to by SP.
+<br>
+3.  IP gets incremented by 2 to point to the next instruction.  
+<br>
+<br>
+Example:  
+<div>
+<pre>
+MOV SP, 1000   //  SP register is loaded with value 1000.  
+PUSH R0    //  SP is set to 1001 and contents of R0 is copied to memory address 1001.</pre></div></p>
+
+				<p>The POP instruction is a reverse operation to PUSH.   
+				The contents of the memory address pointed to by SP will be retrieved to a register specified, 
+				and SP is decremented. </p>
+				
+				<p>The CALL instruction results in the following:
+				<br>
+1.  Increment SP by one.
+<br>
+2.  Transfer contents of IP register to the memory address pointed to by SP.
+<br>
+3.  Set IP to the value of register/constant value specified in the CALL instruction.
+<br><br>
+Example:
+<div><pre>MOV SP, 1000  //  SP is set 1000
+CALL 21110   //  a) Increment SP to1001, b) Copy contents of IP to location 1001 c) MOV 21110 to IP register.</pre></div></p>
+				<p>As a consequence, the next instruction fetch will happen from address 21110.</p>
+				
+				<p>The RET instruction reverses the actions of a CALL instruction.  The contents of address 
+				pointed to by SP register is copied to the IP register, and SP is decremented.  Since IP is 
+				modified, the next instruction is fetched from the newly set value.</p>
+				
+				<p>Finally, we initiate a discussion on the most complicated instruction – IRET.    
+				This instruction can be only executed in privileged mode, but IRET is the only XSM 
+				instruction that results in the XSM machine to switch from the privileged mode to 
+				unprivileged mode.   After an instruction fetch, if the XSM encounters the IRET 
+				instruction, the following actions take place:
+				
+				<br>
+				1.  Enable paging and change from privileged mode to unprivileged mode
+				<br>
+2.  Execute the RET instruction in the unprivileged mode.  (The execution semantics now is different, 
+and you must read next section to understand how RET works in unprivileged mode).   
+</p>
+				<p>After the IRET instruction, the machine continues fetch-execute cycle, but in the 
+				unprivileged mode.  Note that the change of machine mode from privileged to unprivileged 
+				happens before the actual fetch-execution cycle.  Thus, to understand how an instruction 
+				works, one needs to know how paging and address translation works.   </p>
 		</div> 
              </div>
            </div>
