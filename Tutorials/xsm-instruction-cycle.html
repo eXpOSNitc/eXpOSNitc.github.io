@@ -115,33 +115,33 @@
 				the eXpOS kernel.  </p>
 				
 				<p>The CPU of the <a href="../arch_spec-files/machine_organisation.html" target="_blank">
-					XSM virtual machine</a>
+					XSM machine</a>
 				 contains 20 general-purpose registers R0-R19, each of which can store an integer
 				  or a string.  (see <a href="../arch_spec.html" target="_blank">XSM specification</a>). 
 				   Along with these are the registers stack pointer (SP), base pointer (BP) and instruction 
 				   pointer (IP).  There are other special purpose registers: PTBR, PTLR, EIP, EC, EPN, EMA and 
 				   four ports P0, P1, P2, P3.    We will discuss the roles of these soon.  </p>
 
-				<p>The machine's memory consists of 65536 memory words.  Each word can store an integer or a 
-				string.  The memory is divided into pages of 512 words each.  Thus memory addresses 0 to 511 
+				<p><b>The machine's memory consists of 65536 memory words.  Each word can store an integer or a 
+				string.  The memory is divided into pages of 512 words each.</b> Thus memory addresses 0 to 511 
 				belong to page 0,  512-1023 belong to page 1 and so on.  The last (page 127) contain memory 
-				addresses 65024 to 65535. The memory is word addressable. This means that XSM provides 
+				addresses 65024 to 65535. <b>The memory is word addressable.</b> This means that XSM provides 
 				instructions that allows you to access any memory word.   For instance, the instruction 
 				"MOV R0, [1345]" transfers the contents of memory location 1345 to register R0.  </p>
 				
-				<p>The machine also has a disk having 512 blocks.  Each disk block can store 512 words.   
-				Thus the total storage capacity is 512 x 512 = 262144 words.  However, the disk is block 
-				addressable and not word addressable.    XSM provides just three instructions to manipulate 
+				<p><b>The machine also has a disk having 512 blocks.  Each disk block can store 512 words.</b>
+				Thus the total storage capacity is 512 x 512 = 262144 words.  However, <b>the disk is block 
+				addressable and not word addressable.</b>    XSM provides just three instructions to manipulate 
 				the disk – LOAD, LOADI and STORE.  These instructions can be used to transfer a disk block to 
 				a memory page or back.  Suppose we want to access the 10th word of block 12, then the only way 
 				to do so is to first transfer the 12th block to some memory page and then access the 
 				corresponding memory address.</p>
 				
-				<p>Apart from disk and memory, the machine also has three devices – an I/O  Console, 
-				a timer and disk controller.  We will discuss them later.  The organisation of the XSM machine 
+				<p>Apart from disk and memory, the machine also has three <b>devices – an I/O  Console, 
+				a timer and disk controller.</b>  We will discuss them later.  The organisation of the XSM machine 
 				is given <a href="../arch_spec-files/machine_organisation.html" target="_blank">here</a></p>
 				
-				<p>The machine can operate in two fundamental modes – privileged and unprivileged.   
+				<p>The machine can operate in two fundamental modes of execution – <b>privileged and unprivileged</b>.   
 				When the machine gets powered on, it begins execution in the privileged mode.     
 				We will discuss unprivileged mode later and assume privileged mode execution in the following.</p>
 				
@@ -153,7 +153,7 @@
 				<br>
 				<h4><b>Boot-up</b></h4>
 				<p>What happens when the machine is powered on?  
-				<br>All registers will be set to value zero.  In particular, IP register also assumes value 0.   
+				<br><b>All registers will be set to value zero.</b>  In particular, IP register also assumes value 0.   
 				Once powered on, the machine will start repeatedly executing the following fetch-execute cycle 
 				in privileged mode.
 				
@@ -220,7 +220,13 @@
 				<p><b>Note:</b>  The boot ROM actually contains more information than what is written above.  
 				The boot ROM contains an interrupt vector table located between addresses 492 to 511.  The 
 				vector table specifies the physical address to which interrupts must transfer control to.  
-				We will discuss this later.  
+				Locations 492,493,494 and 495 stores the addresses of exception handler, timer interrupt 
+				handler, disk interrupt handler and console interrupt handler. Location 496 contains the 
+				address of the first trap handler - INT 4, location 497 contains address of INT 5 handler 
+				and so on. When the machine encounters an INT n instruction, the corresponding ROM location 
+				is searched for the handler address and IP is set to this value. Note that the interrupt 
+				vector table is hard-coded in the ROM code of the XSM simulator given to you, you cannot 
+				change the addresses of the handlers. 
 </p>
 <br>
 
@@ -282,7 +288,7 @@ CALL 21110   //  a) Increment SP to1001, b) Copy contents of IP to location 1001
 				1.  Enable paging and change from privileged mode to unprivileged mode
 				<br>
 2.  Execute the RET instruction in the unprivileged mode.  (The execution semantics now is different, 
-and you must read next section to understand how RET works in unprivileged mode).   
+and you must read <a href="xsm_unprivileged_tutorial.html" target="_blank">XSM unpriviliged mode execution</a> to understand how RET works in unprivileged mode).   
 </p>
 				<p>After the IRET instruction, the machine continues fetch-execute cycle, but in the 
 				unprivileged mode.  Note that the change of machine mode from privileged to unprivileged 
