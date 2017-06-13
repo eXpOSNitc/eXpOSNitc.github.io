@@ -90,12 +90,12 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
-	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+	      <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
@@ -125,28 +125,20 @@
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. 
-			Note that OS blocks only inside the modules. A module is designed to call only another module.
-			It returns using return (RET machine) instruction. 
-                </p>
-                
-                <p>
-         The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
-
+                <p> This module handles allocation and deallocation of memory pages.
+                The memory free list entry denotes the number of processes using(sharing) the memory page. 
+                Unused pages are therefore indicated by 0 in the corresponding entry in memory free list.
                 </p>
               </div>
 
                  <br> <br> 
-
-
-<h3> Module_2 :  Memory Manager </h3>
-   <br>
 
 <table class="table table-bordered" style="text-align: center;">
     <tr class="success">
         <th style="text-align: center;">Function Number</th>
         <th style="text-align: center;">Function Name</th>
         <th style="text-align: center;">Arguments</th>
+        <th style="text-align: center;">Return Value</th>
     </tr>
 
 
@@ -154,12 +146,14 @@
     <td>1</td>
     <td>Get Free Page</td>
     <td>NIL</td>
+    <td>Free Page number</td>
   </tr>
 
 <tr>    
     <td>2</td>
     <td>Release Page</td>
     <td>Page Number</td>
+    <td>NIL</td>
   </tr>
 
 
@@ -168,29 +162,33 @@
 
                
    <h3> Get Free Page </h3>
-   <br>
+   <i> <b>Description </b></i>: Returns the page number of a free page. Returns -1 if memory is full.<br><br>
 
 <pre>
     loop through entries in the Memory Free List{
         if ( a free entry is found ){
-              Mark the entry as used in the the Memory Free List;
+              Set the Memory Free List entry as 1;
               Return the corresponding page number;
         }
     }
     return -1;
 </pre>
 
+Called by fork and exec system calls. Also called by exception handler on demand paging. 
+
  <h3> Release Page </h3>
-   <br>
+ <i> <b>Description </b></i>: Decrements the entry corresponding to page in memory free list. <br><br>
+
 
 <pre>
-    Decrement the entry corresponding to the page in 
-    the Memory free list;
+    Decrement the entry corresponding to the page in the Memory free list;
     
     return;
 </pre>
+Called by the Free page table and Free UArea Page functions.
 
-
+<br><br>
+Note : Do not Clear the contents of the page. This may lead to unexpected behaviour.<br> <br><br>
 
 
                      <!--end-->   

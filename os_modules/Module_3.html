@@ -91,11 +91,11 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
 	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
@@ -125,13 +125,7 @@
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. 
-			Note that OS blocks only inside the modules. A module is designed to call only another module.
-			It returns using return (RET machine) instruction. 
-                </p>
-                
-                <p>
-         The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
+                <p> This module contains the functions that handle read/write from/to the buffer.
 
                 </p>
               </div>
@@ -139,16 +133,12 @@
                  <br> <br> 
 
 
-
-<h3> Module_3 :  File Buffer Manager </h3>
-   <br>
-
-
 <table class="table table-bordered" style="text-align: center;">
     <tr class="success">
         <th style="text-align: center;">Function Number</th>
         <th style="text-align: center;">Function Name</th>
         <th style="text-align: center;">Arguments</th>
+        <th style="text-align: center;">Return Value</th>
     </tr>
 
 
@@ -156,6 +146,7 @@
     <td>1</td>
     <td>Buffer Write</td>
     <td>Disk Number, Offset, Word </td>
+    <td>NIL</td>
   </tr>
        
 
@@ -163,6 +154,7 @@
     <td>2</td>
     <td>Buffer Read</td>
     <td>Disk Number, Offset, Memory Address</td>
+    <td>NIL</td>
   </tr>
 
    </table>
@@ -170,7 +162,7 @@
 
                
    <h3> Buffer Write </h3>
-   <br>
+   <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word provided is written into the offset position of the buffer.<br> Buffer managemnet is handled by this function internally.<br><br>
 
 <pre>
     Calculate buffer Number as Disk Number % 4;
@@ -203,9 +195,14 @@
     return;
 </pre>
 
- <h3> Buffer Read </h3>
-   <br>
+Called by the Write system call.
 
+
+
+
+ <h3> Buffer Read </h3>
+ <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word present at the offset position of the buffer is copied to the Memory address provided. <br> Buffer managemnet is handled by this function internally.<br> <br>
+NOTE: Physical memory address must be provided. <br> <br>
 <pre>
     Calculate buffer Number as Disk Number % 4;
     
@@ -239,6 +236,7 @@
 
 </pre>
 
+Called by the Read system call. <br> <br><br>
 
                      <!--end-->   
                     

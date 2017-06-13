@@ -91,11 +91,11 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
 	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
@@ -121,25 +121,18 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 > Process Manager</h2>
+                <h2 > Device Manager</h2>
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. 
-			Note that OS blocks only inside the modules. A module is designed to call only another module.
-			It returns using return (RET machine) instruction. 
-                </p>
-                
-                <p>
-         The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
+              <p> Handles Terminal I/O and Disk operations (Load and Store).
 
                 </p>
               </div>
 
                  <br> <br> 
 
-<h3> Module_4 :  Device Manager </h3>
-   <br>
+
 
 
 <table class="table table-bordered" style="text-align: center;">
@@ -147,18 +140,21 @@
         <th style="text-align: center;">Function Number</th>
         <th style="text-align: center;">Function Name</th>
         <th style="text-align: center;">Arguments</th>
+        <th style="text-align: center;">Return Value</th>
     </tr>
 
   <tr>    
     <td>1</td>
     <td>Disk Store</td>
     <td>Page Number, Block Number</td>
+    <td>NIL</td>
   </tr>
 
 <tr>    
     <td>2</td>
     <td>Disk Load</td>
     <td>Page Number, Block Number</td>
+    <td>NIL</td>
   </tr>
 
 
@@ -166,6 +162,7 @@
     <td>3</td>
     <td>Terminal Write</td>
     <td> Word</td>
+    <td>NIL</td>
   </tr>
 
 
@@ -173,13 +170,14 @@
     <td>4</td>
     <td>Terminal Read</td>
     <td> Memory Address</td>
+    <td>NIL</td>
   </tr>
 
    </table>    
 
                
    <h3>Disk Store</h3>
-   <br>
+   <i> <b>Description </b></i>: Stores the contents of the page into the disk block.<br><br>
 
 <pre>
     Acquire the lock on the disk device by calling the Acquire_Disk() function
@@ -194,8 +192,11 @@
     return;
 </pre>
 
+Called by the Buffer Read, Buffer Write functions.<br>
+Also called by the Shutdown system call ( to commit disk data structures).
+
  <h3> Disk Load </h3>
-   <br>
+   <i> <b>Description </b></i>: Loads the contents of the disk block to the page.<br><br>   
 
 <pre>
     Acquire the lock on the disk device by calling the 
@@ -210,9 +211,13 @@
     return;
 </pre>
 
+Called by the Buffer Read, Buffer Write functions, exec sm call (to load the first code page) 
+and the exception handler(demand paging). <br> <br>
+
+Note: The bootstrap code must use <i>loadi</i> statement and not this function.
 
 <h3> Terminal Write </h3>
-   <br>
+<i> <b>Description </b></i>: Reads a word from the Terminal to the Memory address provided.<br><br>      
 
 <pre>
     Acquire the lock on the terminal device by calling the 
@@ -225,10 +230,11 @@
     
     return;
 </pre>
+Called by the Write system call.
 
 <h3> Terminal Read</h3>
    <br>
-
+  <i> <b>Description </b></i>: Loads the contents of the disk block to the page.<br><br>   
 <pre>
     Acquire the lock on the terminal device by calling the Acquire_Terminal() function
     in the Resource Manager module;
@@ -242,7 +248,7 @@
     return;
 </pre>
 
-
+Called by the Read system call. <br> <br> <br>
                      <!--end-->   
                     
                                </div>

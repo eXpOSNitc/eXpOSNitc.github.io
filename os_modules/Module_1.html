@@ -91,11 +91,11 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
 	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
@@ -125,28 +125,21 @@
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. 
-			Note that OS blocks only inside the modules. A module is designed to call only another module.
-			It returns using return (RET machine) instruction. 
-                </p>
-                
-                <p>
-         The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
-
+                <p> This module contains functions that manage the different aspects related to processes.
                 </p>
               </div>
 
                  <br> <br> 
 
 
-<h3> Module_1 : Process Manager </h3>
-   <br>
+
 
 <table class="table table-bordered" style="text-align: center;">
     <tr class="success">
         <th style="text-align: center;">Function Number</th>
         <th style="text-align: center;">Function Name</th>
         <th style="text-align: center;">Arguments</th>
+        <th style="text-align: center;">Return Value</th>
     </tr>
 
 
@@ -154,24 +147,29 @@
     <td>1</td>
     <td>Get Pcb Entry</td>
     <td>NIL</td>
+    <td>Index of Free PCB. </td>
   </tr>
 
 <tr>    
     <td>2</td>
     <td>Free User Area Page</td>
     <td>PID</td>
+    <td>NIL</td>
+
   </tr>
 
 <tr>    
     <td>3</td>
     <td>Exit Process</td>
     <td>PID</td>
+    <td>NIL</td>
   </tr>
 
 <tr>    
     <td>4</td>
     <td>Free Page Table</td>
     <td>PID</td>
+    <td>NIL</td>
   </tr>
 
 
@@ -180,7 +178,7 @@
 
                
    <h3> Get PCB entry </h3>
-   <br>
+<i> <b>Description </b></i>: Returns a Free PCB index. Returns -1 if PCB is full.<br><br>
 
 <pre>
   loop through the Process Table{
@@ -191,8 +189,13 @@
     return -1;
 </pre>
 
+Called by Fork system call.
+
+
  <h3> Free User Area Page </h3>
-   <br>
+   
+<i> <b>Description </b></i>: Frees all the resources in the Resource Table inside the User Area page.
+ Also frees the User Area page.<br><br>
 
 <pre>
    Get the User Area Page number from the process table entry
@@ -202,6 +205,7 @@
           if ( the resource table entry is valid )
                  Close the corresponding file by calling the close_file() function 
                  in the Resource Manager module;
+                 // Add for Semaphore
     }
     
     Free the User Area page by calling the release_page()
@@ -209,10 +213,14 @@
     
     return;
 </pre>
+Called by the exit_process function.
+
+
 
 
 <h3> Exit Process </h3>
-   <br>
+<i> <b>Description </b></i>: Terminate the process whose PID is provided.<br><br>
+
 
 <pre>
     Free the User Area Page corresponding to the process by calling
@@ -226,8 +234,12 @@
     return;
 </pre>
 
+Called by exit system call, exception handler. Maybe called from logout also.
+
+
+
 <h3> Free Page Table </h3>
-   <br>
+<i> <b>Description </b></i>: Free the page table entry and the used pages.<br><br>
 
 <pre>
     Invalidate the page table entries corresponding to the shared library pages;
@@ -243,8 +255,15 @@
     return;
 </pre>
 
-
+Called by the exit_process function.
                      <!--end-->   
+
+
+<!-- 
+
+****  NOTE - If necessary add a duplicate_process function to copy the stack and open resources and stack. 
+            This will make the fork sm call less lenghty.
+-->
                     
                                </div>
               </div>
