@@ -84,22 +84,22 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
 	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
         </nav>  
       </div>
-      <!-- END MENU -->
+      <!-- END MENU 
 
       <style type="text/css">
       	h3 a{
       		color: black;
-      	}
+      	} -->
 
       </style>
       
@@ -124,7 +124,7 @@
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. 
+                <p> These routines are invoked from within system calls/interrupts/exception handler. A user program is not allowed to call a kernel module directly.  
 			Note that OS blocks only inside the modules. A module is designed to call only another module.
 			It returns using return (RET machine) instruction. 
                 </p>
@@ -132,6 +132,10 @@
                 <p>
          The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
 
+                </p>
+
+                <p>
+          The kernel modules and the functions present in each module is described below. The modules 6 and 7 are reserved for future use.      
                 </p>
               </div>
 
@@ -178,7 +182,7 @@
 <tr>
     <td>5</td>
     <td>Close File</td>
-    <td>File Descriptor</td>
+    <td>File Descriptor, PID</td>
   </tr>
 
 <tr>

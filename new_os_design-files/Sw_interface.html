@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Resource Manager</title>
+     <title>System Call Interface</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -48,14 +48,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   
- <style type="text/css">
    
-   pre{
-    font-family: Times new Roman; 
-    font-size: 15px;"
-   }
-
- </style>>   
 
   </head>
   <body> 
@@ -63,7 +56,7 @@
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
-     END PRELOADER -->
+    <!-- END PRELOADER -->
 
   
     <!--=========== BEGIN HEADER SECTION ================-->
@@ -90,19 +83,25 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
-	      <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
-               <li><a href="Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
-               <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
+	      <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
             </ul>           
           </div>
           </div>     
         </nav>  
       </div>
-      <!-- END MENU -->
+      <!-- END MENU 
 
+      <style type="text/css">
+      	h3 a{
+      		color: black;
+      	} -->
+
+      </style>
       
     </header>
 		
@@ -121,233 +120,204 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 > Resource Manager</h2>
+                <h2 >System Call Interface</h2>
                 <br/>
                 <br/>
                 
-                <p> This module is responsible for allocating and releasing the different resources. Note that the Terminal and Disk devices are freed by the corresponding interrupt handlers. </p>.
+                <p> INT 4 to INT 18 are software interrupt handlers. They are used by the user program to access kernel services (e.g. Read from a file, fork a child process etc). </p>
+                <p>
+                The OS design is fixed such that only the user program can call the software interrupts. They should not be called from inside another interrupt handler or kernel module. 
+                </p>
+
+                <p>
+          The system call interface is presented below.
+
+                                      <table class="table table-bordered" style="text-align: center;">
+                                    <tr class="success">
+                                        <th style="text-align: center;">System Call</th>
+                                        <th style="text-align: center;">System Call Number</th>
+                                        <th style="text-align: center;">Interrupt Routine Number</th>
+                                    </tr>
+                                        
+  <tr>
+    <td>Create</td>
+    <td>1</td>  
+    <td>4</td>
+  </tr>
+
+  <tr>
+    <td>Delete</td>
+    <td>4</td>  
+    <td>4</td>      
+  </tr>
+
+  <tr>
+    <td>Seek</td>
+    <td>6</td>
+          <td>4</td>  
+  </tr>
+
+  <tr>
+    <td>Open</td>
+    <td>2</td>    
+    <td>5</td>  
+  </tr>
+
+  <tr>
+    <td>Close</td>
+    <td>3</td>
+          <td>5</td>  
+  </tr>
+
+
+  <tr>
+    <td>Read</td>
+    <td>7</td>
+          <td>6</td>  
+  </tr>
+
+  <tr>
+    <td>Write</td>
+    <td>5</td>
+          <td>7</td>  
+  </tr>
+
+  <tr>
+    <td>Fork</td>
+    <td>8</td>
+    <td>8</td>  
+  </tr>   
+  <tr>
+    <td>Exec</td>
+    <td>9</td>
+    <td>9</td>  
+    
+  </tr>
+
+  <tr>
+    <td>Exit</td>
+    <td>10</td>   
+    <td>10</td> 
+  </tr>
+
+  <tr>
+    <td>Getpid</td>
+    <td>11</td>
+          <td>11</td> 
+  </tr>
+
+  <tr>
+    <td>Getppid</td>
+    <td>12</td>
+          <td>11</td> 
+  </tr>
+
+<tr>
+    <td>Wait</td>
+    <td>13</td> 
+    <td>11</td>     
+  </tr>
+
+  <tr>
+    <td>Signal</td>
+    <td>14</td> 
+    <td>11</td> 
+  </tr>
+
+  <tr>
+    <td>Semget</td>
+    <td>17</td>
+      <td>13</td> 
+  </tr>
+
+  <tr>
+    <td>Semrelease</td>
+    <td>18</td>
+      <td>13</td> 
+  </tr>
+
+  <tr>
+    <td>SemLock</td>
+    <td>19 </td>
+          <td>14</td> 
+  </tr>
+  <tr>
+    <td>SemUnLock</td>
+    <td>20</td>
+      <td>14</td> 
+  </tr>
+  
+  <tr>
+    <td>Shutdown</td>
+    <td>21</td>   
+    <td>15</td> 
+  </tr>
+    
+    <tr>
+    <td style="color:red">Newusr</td>
+    <td>22</td>   
+      <td>16</td>
+  </tr>
+        <tr>
+    <td style="color:red">Remusr</td>
+    <td>23</td>   
+      <td>16</td>
+  </tr>
+        <tr>
+    <td style="color:red">Setpwd</td>
+    <td>24</td>   
+      <td>16</td>
+  </tr>
+        <tr>
+    <td style="color:red">Getuname</td>
+    <td>25</td>   
+      <td>16</td>
+  </tr>
+     <tr>
+    <td style="color:red">Getuid</td>
+    <td>26</td>   
+      <td>16</td>
+  </tr>
+        <tr>
+    <td style="color:red">Login</td>
+    <td>27</td>   
+      <td>17</td>
+  </tr>
+  
+   <tr>
+    <td>Test</td>
+    <td>15</td>
+      <td>12</td> 
+  </tr>
+        
+   <tr>
+    <td>Test1</td>
+    <td>97</td>
+      <td>16</td> 
+  </tr>      
+  
+   <tr>
+    <td>Test2</td>
+    <td>98</td>
+      <td>17</td> 
+  </tr>      
+   
+   <tr>
+    <td>Test3</td>
+    <td>99</td>
+      <td>18</td> 
+  </tr>
+                              
+</table>
                 </p>
               </div>
 
                  <br> <br> 
-  
-
-<table class="table table-bordered" style="text-align: center;">
-    <tr class="success">
-        <th style="text-align: center;">Function Number</th>
-        <th style="text-align: center;">Function Name</th>
-        <th style="text-align: center;">Arguments</th>
-        <th style="text-align: center;">Return Value</th>
-    </tr>
-
-
-  <tr>
-    
-    <td>1</td>
-    <td>Acquire Disk</td>
-    <td>NIL</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-  	
-    <td>2</td>
-    <td>Acquire Inode</td>
-    <td>Inodeindex</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-   	
-    <td>3</td>
-    <td>Acquire Terminal</td>
-    <td>NIL</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>4</td>
-    <td>Release Inode</td>
-    <td>Inodeindex</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>5</td>
-    <td>Close File</td>
-    <td>File Descriptor, PID</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>6</td>
-    <td>Acquire Buffer</td>
-    <td>Buffer Number</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>7</td>
-    <td>Release Buffer</td>
-    <td>Buffer Number</td>
-    <td>NIL</td>
-  </tr>
-
-</table>  
-                     
-
-
-               
-   <h3> Acquire Disk </h3>
+                 
    
-<i> <b>Description </b></i>: Locks the disk device. <br><br>
-
-<pre>
-while ( disk is locked ){
-        Set state of the process as ( WAIT_DISK , - );
-        Invoke the scheduler;
-        }
-
-Lock the disk;
-return;
-</pre>
-Called by DiskRead and DiskWrite functions.
-Called by Bufread, Bufwrite, Exec ( To load first code page) and during Shutdown. 
 
 
 
-
-
- <h3> Acquire Inode </h3>
-
-<i> <b>Description </b></i>: Locks the Inode entry corresponding to the inodeindex provided.<br><br>
-
-<pre>
-while ( inode is locked ){
-    Set state of the process as ( WAIT_INODE , Inode Index );
-    Invoke the scheduler;
-    }
-
-Lock the Inode;
-return;
-</pre>
-
-Called by Read,Write and Seek system calls.
-
-
-
-
-
-<h3> Acquire Terminal </h3>
-<i> <b>Description </b></i>: Locks the Terminal device.<br><br>
-
-<pre>
-while ( Terminal device is locked ){
-    Set state of the process as ( WAIT_TERMINAL , - );
-    Invoke the scheduler;
-    }
-    
-Lock the Terminal device;
-return;
-</pre>
-
-Called by the Terminal Read and Termnal Write functions.
-
-
-
-
-
-<h3> Release Inode </h3>
-<i> <b>Description </b></i>: Frees the lock of the inode entry corresponding to the inodeindex provided.<br><br>
-
-<pre>
-Free the lock in the inode table entry corresponding to the inode index;
-
-loop through the process table{ 
-       if (the process state is ( WAIT_INODE , Inode Index ) ){
-             Set state of process as (READY , _ )
-         } 
-}
-return;
-</pre>
-
-Called by Read,Write and Seek system calls.
-
-
-
-
-
-
-<h3> Close File</h3>
-<!-- Move to Another module if necessary -->
-
-<i> <b>Description </b></i>: Closes the file and frees the file descriptor.<br><br>
-
-<pre>
-Get the User Area page number of the process from the Process Table;
-
-Get the Resource table entry corresponding to the 
-file descriptor;
-
-Get the Open File Table index form the Resource table entry;
-
-Get the Inode index corresponding to the file from the 
-Open File Table entry;
-
-Decrement file open count in File status table entry 
-corresponding to the Inode index;
-
-Decrement file open count in Open File Table entry;
-
-if ( the file open count == 0){
-    Invalidate the Open File Table entry;
-}
-
-Invalidate the Resource Table entry;
-
-return;
-</pre>
-
-Called by the exit process function and close syatem call.
-
-
-
-
-
-<h3> Acquire Buffer</h3>
-<!-- Move to Another module if necessary -->
-<i> <b>Description </b></i>: Acquire the buffer corresponding to buffer number provided.<br><br>
-<pre>
-while ( Buffer is locked ){
-    Set state of the process as ( WAIT_BUFFER , Buffer Number );
-    Invoke the scheduler;
-    }
-
-Lock the Buffer;
-return;
-</pre>
-
-Called by BufRead and BufWrite functions.
-
-
-
-
-
-
-<h3> Release Buffer </h3>
- <i> <b>Description </b></i>: Release the buffer corresponding to buffer number provided.<br><br>
-
-<pre>
-Free the lock in the buffer table entry corresponding to the buffer Number;
-
-loop through the process table{ 
-       if (the process state is ( WAIT_BUFFER , Buffer Number ) ){
-             Set state of process as (READY , _ )
-         } 
-}
-return;
-</pre>
-Called by BufRead and BufWrite functions.
                      <!--end-->   
                     
                                </div>
