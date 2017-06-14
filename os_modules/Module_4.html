@@ -234,7 +234,7 @@ Called by the Write system call.
 
 <h3> Terminal Read</h3>
    <br>
-  <i> <b>Description </b></i>: Loads the contents of the disk block to the page.<br><br>   
+  <i> <b>Description </b></i>: Reads a word from the terminal and stores it to the memory address provided.<br><br>   
 <pre>
     Acquire the lock on the terminal device by calling the Acquire_Terminal() function
     in the Resource Manager module;
@@ -244,9 +244,13 @@ Called by the Write system call.
     Set the state as (WAIT_TERMINAL, - );
     
     Invoke the scheduler module;
+
+    Copy the word from the Input Buffer of the Process Table 
+    to the memory address provided.
     
     return;
 </pre>
+Note: The Terminal Interrupt Handler will transfer the Contents of the 
 
 Called by the Read system call. <br> <br> <br>
                      <!--end-->   

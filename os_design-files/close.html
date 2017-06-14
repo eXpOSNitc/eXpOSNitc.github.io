@@ -126,31 +126,44 @@
                                                     </tr> 
                                                    
                                                 </table>
-            <p><i>Description</i> :  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if the file was locked by the process which invoked the system call. </p>
+            <p><i><b>Description</b></i> :  After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. </p>
             <!--
             <p>Data structures modified are <a href="mem_ds.html#file_table"target="_blank">Open File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>   
              -->
                                                 <br>
-             <div><h4>Algorithm:</h4></div>
+             <div><h4><b>Algorithm</b>:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>
-                      <p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the current process.</p>
-  
-	<p>If Per Process Resource Table entry corresponding to file descriptor is invalid, return -1.  &nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
+
+            <p></p>
+
+ <p ><a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a></p>
+             <div id="collapse5a" class="panel-collapse collapse">
+
+                <p style=" text-indent: 6em;"> Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+                <p style=" text-indent: 6em;"> Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table </a>entry.</p>
+
+                  <p style=" text-indent: 6em;"> The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.</p>
+
+              </div>
+        
+
+	<p>If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
 
             
 <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from Per-Process Resource Table entry.</p>
-<p>If file is locked by the current process, return -2. &nbsp;&nbsp;/* check the <a href="mem_ds.html#file_table"target="_blank">Ulock field</a>. */</p>
+
+<p>Get the index of the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from Open File Table entry.</p>
             
-                <p>
-                    In the Open File Table Entry found above, decrement the File Open Count. If the count becomes 0, invalidate the entry.&nbsp;&nbsp; /* set to -1 */</p>        
+                <p>In the Open File Table Entry found above, decrement the Open Instance Count. </p>
+                    <p  style=" text-indent: 8em;"> If the count becomes 0, invalidate the entry.&nbsp;&nbsp; /* set to -1 */</p>        
                                            
-  
+                <p> Decrement the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>.</p>
              
-                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp; /* set to -1 */</p> 
+                <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p> 
              <p>Return from system call with 0. &nbsp;&nbsp; /* success */</p>
         <br>
         <h4>Questions</h4>
-        <p>1. Why does it return error if the file is locked by the process invoking Close System Call?</p>
+        <p>1. Why did we not check if the file is locked?</p>
                       
          </div>
 		</div>
