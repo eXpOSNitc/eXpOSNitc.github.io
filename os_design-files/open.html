@@ -135,45 +135,51 @@
      </tr>
                                                    
         </table>
-                                                <p><i>Description</i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
+                                                <p><i><b>Description</b></i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
+                                                <!--
                                                 <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
                                                 <br>
-             <div><h4>Algorithm:</h4></div>
-             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is of type EXEC, return -1.</p>
+                                                --> <br>
+
+             <div><h4><b>Algorithm</b>:</h4></div>
             
              <p>Find the index of the Inode Table entry of the file.
 
-             <br><p><a data-toggle="collapse"   href="#collapse1">Allocate entry in Per Process Resource Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
-                 <p style="text-indent: 4em;">
-                    1. Find the PID  of the currently running process from the <a href="process_table.html" target="_blank">Process Table</a>. &nbsp;&nbsp; /* This will be the PID of unique process in the state (<a href="constants.html" target="_blank">RUNNING</a>, _). */</p>
-                 <p style="text-indent: 4em;">  2. Find a free entry in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the process.  &nbsp;&nbsp;/* The index of this entry is the File Descriptor of the file. */</p>    
-                 <p style="text-indent: 4em;">3. If there is no free entry, return -2.&nbsp;&nbsp;/* Maximum number of open files per process has reached. */</p>                      
-            </div>
-             <p><b>If</b> file is already open &nbsp;&nbsp;/* Check for a <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry having the index of the Inode Table entry for the file */</p>
-             <p style=" text-indent: 4em;"> Get the Open File Table entry of the file.</p>
-             <p style=" text-indent: 4em;">Increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry. </p>
-             <p><b>else</b></p>
+              <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is of type EXEC, return -1.</p>
 
-               <p style=" text-indent: 4em;">Find a free entry in the Open File Table. If there are no free entries, return -3.&nbsp;&nbsp;/* Reached maximum number of open files in the system. */</p>
- <p style=" text-indent: 4em;"><a data-toggle="collapse"   href="#collapse5">Update the Open File Table entry</a></p>
+              <p> Find a free entry in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> of the process.  &nbsp;&nbsp;/* The index of this entry is the File Descriptor of the file. */</p>    
+
+                      <p style=" text-indent: 6em;"> If there is no free entry, return -2. </p>
+
+             
+
+               <p>Find a free entry in the Open File Table. </p>
+
+               <p style=" text-indent: 6em;">If there are no free entries, return -3.&nbsp;&nbsp;/* Reached maximum number of open files in the system. */</p>
+
+ <p ><a data-toggle="collapse"   href="#collapse5">Set the Open File Table entry</a></p>
              <div id="collapse5" class="panel-collapse collapse">
 
-<p style=" text-indent: 8em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
-<p style=" text-indent: 8em;">Set the File Open Count to 1, Ulock to -1 and Klock to -1 in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.&nbsp;&nbsp;/* file is not locked */</p>
+<p style=" text-indent: 6em;">Set the Inode Index field to the index of the file's <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry. </p>
+<p style=" text-indent: 6em;">Set the Open Instance Count to 1 and Lseek Position to 0.</p>
 
 </div>
 
+ <p ><a data-toggle="collapse"   href="#collapse6">Set the Per-Process Resource Table entry</a></p>
+             <div id="collapse6" class="panel-collapse collapse">
 
-<p>In the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry, set the first field (Index of Open File Table) to the Open File Table index found above and set LSEEK Position to 0.</p>
-  
+<p style=" text-indent: 6em;">Set the Resource Identifier field to <a href="./constants.html" target="_blank">FILE </a>. </p>
+<p style=" text-indent: 6em;">Set the Open File Table index field to the free Open File Table entry found.</p>
+
+</div>
      
-<p>Return from system call with the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */</p>
+     <p>Increment the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a></p>
+<p>Return the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */</p>
         
           
           <br>
           <h4>Questions</h4>
-          <p>1. If the Open File Table entry is allocated before the Per Process Resource Table entry, does any error arise?</p>            
+          <p>1. Why must the Per Process Resource Table entry be set only after a free Open File Table entry is allocated (and vice versa) ?</p>            
          </div>
 		</div>
 		</div>

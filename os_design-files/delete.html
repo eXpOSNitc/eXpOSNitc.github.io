@@ -125,21 +125,24 @@
                                                         <td>File is open</td>
                                                     </tr> 
                                              </table>
-                                                <p><i>Description</i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   
-                                                <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
-                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
-             <div><h4>Algorithm:</h4></div>
-             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is not a DATA file, return -1.</p>
+                                                <p><i><b>Description</b></i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   <br>
+                                                <!--   Include if necessary ( When Swap comes in)
 
-             
+                                                <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
+                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p> -->
+             <div><h4><b>Algorithm </b> :</h4></div>
+            
              <p>Find the index of the file in the Inode Table.</p>
-             <p>If <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry exists with the same index as found above, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */</p>
-                <p><a data-toggle="collapse"   href="#collapse1">Update Inode Table</a></p>
-             <div id="collapse1" class="panel-collapse collapse">
-                                          <p style="text-indent: 4em;"> For each disk block of the file, decrement its entry in the memory copy of <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. &nbsp;&nbsp; /* release the disk blocks */</p>        
-                    <p style="text-indent: 4em;">Invalidate (set to -1) the Inode Table entry.</p>
+            
+             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is not a <a href="./constants.html" target="_blank">DATA </a> file, return -1.</p>
+
+             <p>Check if the the file open count is 0 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */</p>
+                
+             <p > For each used disk block of the file, decrement its entry in the memory copy of <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. &nbsp;&nbsp; /* Release the disk blocks */</p>        
+             
+             <p >Invalidate (set to -1) the Inode Table entry of the file.</p>
                        
-            </div>
+            
              
              <p> Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by invalidating the root entry for the file.</p>
              

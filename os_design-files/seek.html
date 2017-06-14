@@ -126,11 +126,17 @@
                                                         <td>Offset value moves the file pointer to a position outside the file</td>
                                                     </tr> 
                                                 </table>
-                                                <p><i>Description</i> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>   
+                                                <p><b><i>Description</i></b> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>
+
+                                                <p>Seek system call fails if the seek position requested exceeds the file size.</p>
+                                                <br>
+                                                <!--   Include if necessary ( When Swap comes in)
+
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
-                                                
-             <div><h4>Algorithm:</h4></div>
+                                                --> 
+
+             <div><h4><b>Algorithm</b>:</h4></div>
              <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value must lie within the range from 0 to 7 (both included). */</p>
              
 			<p>Using the PID of the current process, locate the <a href="process_table.html#per_process_table"target="_blank">Per-Process Resource Table</a> of the current process.</p>
@@ -145,16 +151,22 @@
 <p style=" text-indent: 4em;">2. <b>If</b> (lseek + the given offset) does not lie in the range 0 to (file size - 1), return -2.&nbsp;&nbsp;/* the new lseek position is outside the file */</p>
 
 </div>
+
+<p> Call the <i>Acquire Inode </i> function in the resource manager.&nbsp;&nbsp; /* Lock the inode */</p>
+
 <p><b>If</b> the given offset is 0</p>
 <p style=" text-indent: 4em;">Set lseek value in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry to 0.</p>
 <p>else</p>
 <p style=" text-indent: 4em;">Change the lseek value in the Per-Process Resource Table entry to lseek+offset.</p>
 
+<p> Call the <i>Release Inode</i> function in the resource manager.&nbsp;&nbsp; /* Free the inode */</p>
 
 <p>Return with 0. &nbsp;&nbsp;/* success */</p>
-
+<br>
         
-                      
+        <h4>Questions</h4>
+        <p>1. What concurrency issue can occur if the inode is not locked?</p>
+               <br>       
          </div>
 		</div>
 		</div>
