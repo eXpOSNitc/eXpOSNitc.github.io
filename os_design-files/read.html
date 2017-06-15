@@ -162,125 +162,53 @@
 
       <p>Get the Lseek position from the Open File Table entry.</p>
       
+      <p>Translate the Memory Buffer address given as input.</p>
+
       <a data-toggle="collapse"   href="#collapse_root"> <p>If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT) </p> </a>
         
             <div id="collapse_root" class="panel-collapse collapse">
                   <p style=" text-indent: 4em;"> Check for EOF ??</p> 
-                  <p style=" text-indent: 4em;"> Read from the word at lseek position in memory copy of root file to given memory address</p>
-                  <p style=" text-indent: 4em;"> Increment Lseek position.</p>        
+                  <p style=" text-indent: 4em;"> Read from the word at lseek position in memory copy of root file to the translated memory address.</p>
+                  <p style=" text-indent: 4em;"> Increment the Lseek position in the Open File Table.</p>        
+                  <p style=" text-indent: 4em;"> Return 0.&nbsp;&nbsp;/* Success */ </p>
             </div>
 
 			<p><a data-toggle="collapse"   href="#collapse2">Check for EOF </a></p>
       <div id="collapse2" class="panel-collapse collapse">
 	
-      <p style=" text-indent: 4em;"><b>If</b> lseek position is same as the file size, return -2.&nbsp;&nbsp;/* End of file reached*/</p>
+                 <p style=" text-indent: 4em;"><b>If</b> lseek position is same as the file size, return -2.&nbsp;&nbsp;/* End of file reached*/</p>
       </div>
 
-      <p>If the file descriptor corresponds to Root file &nbsp;&nbsp;/* Check the file type from Inode table.*/ </a></p>
 
-      <p style=" text-indent: 4em;">Copy the word at the offset position of the page (see <a href="">Memory Organization</a>) into the buffer passed as argument.</p>
+      <p><a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a></p>
+      <div id="collapse8" class="panel-collapse collapse">
 
-      <p style=" text-indent: 4em;">Increment lseek position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
+              <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/</p>
+              <p style=" text-indent: 4em;">Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
+              <p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/</p>
 
-      <p style=" text-indent: 4em;">Return 0. &nbsp;&nbsp;/* success */</p>
+      </div>
 
+      <p>Acquire the Lock on the File by calling the <i>Acquire Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>
 
+      <p>Read the data from the File Buffer by calling the <i>Buffer Read</i> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.</p>
 
-<p><a data-toggle="collapse"   href="#collapse8">Find the block and the position in the block from which input is read.</a></p>
-<div id="collapse8" class="panel-collapse collapse">
-<p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the index of the block to be read*/</p>
-<p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
-<p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the position to be read from.*/</p>
-</div>
+      <p>Increment the Lseek position in the Open File Table.</p>
 
-<p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>*/</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> index of the locked file. </p>
-              <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
-             <p> <b>endwhile</b> &nbsp;&nbsp;/* Wait for the file to be unlocked */</p>
-<p> Change the KLock field of the Open File Table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
+      <p>Release the Lock on the File by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>
 
-
-
- <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % <a href="constants.html" target="_blank">MAX_BUFFER</a> gives the index of the buffer to which the block is mapped.*/ </p>
-<p><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
-
-        <p style=" text-indent: 4em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_BUFFER</a>, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-           
-<p><b>endwhile</b>&nbsp;&nbsp;/* Wait for the buffer to be free */ </p>
-           
-
-<p>Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Lock the buffer */</p>
-<p><b>If</b> the buffer contains a block other than the required block. &nbsp;&nbsp;/* Check Block number of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
-<div class="boxed" style="border:1px solid green">
-
-<p  style=" text-indent: 4em;"><a data-toggle="collapse"   href="#collapse9">Bring the block to the buffer from the disk .</a>&nbsp;&nbsp;/* This step captures the main idea of disk access */</p>
-<div id="collapse9" class="panel-collapse collapse">
-
-
-
-<p style=" text-indent: 8em;"><b>If</b> Dirty bit of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> is set &nbsp;&nbsp;/* Write back the dirty page before loading the required block */ </p>
-<p style=" text-indent: 12em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 16em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-<p style=" text-indent: 12em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the disk to be free. */</p>
-<p style=" text-indent: 12em;"><a href="load_store.html" target="_blank">Store the block in buffer to disk.</a> </p>  
-
-<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 12em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-
-<p style=" text-indent: 8em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the store operation to complete and acquire the disk for the next operation */</p>
-   <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a> </p>  
-   
-   <p style=" text-indent: 8em;"> Change the state of the process to (WAIT_DISK, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
-   <p style=" text-indent: 8em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
-</div>
-
-</div>
-   <p>Copy the word at the offset position of the block into the buffer passed as argument.</p>
-<p>Increment lseek position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
-<p><a data-toggle="collapse"   href="#collapse16">Unlock the buffer and wake up all processes waiting for the buffer</a></p>
-<div id="collapse16" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. Change the state to (<a href="constants.html" target="_blank">READY</a>, __ ) for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a></p>
-
-</div>
-<p><a data-toggle="collapse"   href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
-<div id="collapse6" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. <b>If</b> the ULock is not acquired by the current PID &nbsp;&nbsp;/* Do not wake up the processes if the current process has locked the file. */</p> 
-<p style=" text-indent: 8em;">Change the state to (READY, __ ) for the processes in the state (WAIT_FILE, index of the Open File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-
-</div>
-<p>Return 0. &nbsp;&nbsp;/* success */</p>
- 
+  <p>Return 0. &nbsp;&nbsp;/* success */</p>
+ <br>
 <h4>Questions:</h4>
 <div class="panel-body">
-        <p><a data-toggle="collapse" href="#collapse101">1. What is the significance of two types of Locking systems: User Lock (ULock) and Kernel Lock (KLock)?</a></p>
-                     <div id="collapse101" class="panel-collapse collapse">
-             <p>ULock is set/reset when the application programmer does FLock/FUnlock.  Locking and Unlocking the file using FLock and FUnlock depends on application programmer and thus, is transparent.</p> 
-             <p>KLock is set/reset by the System call in kernel mode and is unknown to the application programmer. This was introduced because system call can call the scheduler while waiting for buffer/disk to be free. Meanwhile it cannot give access to the same file to another process.</p>                    
-         </div>
-       </div>
-
-<div class="panel-body">
-        <p><a data-toggle="collapse" href="#collapse102">2. What if ULock is acquired by some other process?</a></p>
-                     <div id="collapse102" class="panel-collapse collapse">
-             <p>Ans: This is not possible because :
-<p>(1) If ULock is acquired by some other process before this process executes read, then this process would be waiting until ULock is freed.</p>
-<p>(2) If it was acquired during Read, which is impossible because FLock checks KLock before ULocking it. </p>
-<p>Thus only 2 cases can arise : ULock is acquired by this process or it is -1.</p>               
-         </div>
-               <p>3. If the file locking is done rigth after file descriptor validation, does any error arise?</p>
-       </div>
+        
        
  
 
 
 
 
-
+<br>
 
                       
          </div>

@@ -84,7 +84,7 @@
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
               <li><a href="../index.html">Home</a></li>
               <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
                <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
                <li><a href="../faq.html" target="_blank">FAQ</a></li>
               <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
@@ -99,24 +99,25 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
 
-	 <!--=========== BEGIN Write================-->
-	<section id="write">
+	 <!--=========== BEGIN Read================-->
+	<section id="seek">
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2>Write System Call</h2>
+              <h2>Read System Call</h2>
                <br>
                <br>                                      
-             <p>Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written</p>
-                                                <p>Return Value:</p>
+            <p>Arguments: File Descriptor(Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file</p>
+            <p>Return Value:</p>
             <table class="table table-bordered">
-            <tr>
+            <table class="table table-bordered">
+                                                    <tr>
                                                         <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                    <tr>
+                                                   <tr>
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
@@ -128,114 +129,92 @@
                                                         <td>-3</td>
                                                         <td>File is the Root file</td>
                                                     </tr> 
-                                                    
                                                 </table>
-                                                <p><i>Description</i> :  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file. Root and Executable files cannot be written.</p>  
-                                                <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> and <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
+                                                <p><i><b>Description</b></i> : The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file. Root and Executable files cannot be written.</p> <br>
+
+                                                <!--
+                                                <p>The data structures modified are <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
 
-                                                <br>
-                                                
-             <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> word is to be written to standard output &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */</p>
-             <p style=" text-indent: 4em;">Issue the machine instruction to output the given word.&nbsp;&nbsp; /* This is hardware dependent therefore left out from the description.*/</p>
-             <p style=" text-indent: 4em;">Return 0.&nbsp;&nbsp; /* success; Don't forget to change mode flag */</p>
-             <p><b>If</b> file descriptor does not correspond to valid entry in <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a>, return -1.</p>
+                                                -->
+             <div><h4><b>Algorithm</b>:</h4></div>
+             <p><b>If</b> the word is to be written to STDOUT (terminal device) &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */</p>
              
-             <p><a data-toggle="collapse"   href="#collapse100">If the file descriptor corresponds to Root file, return -3.</a></p>
-<div id="collapse100" class="panel-collapse collapse">
-  
+             <p style=" text-indent: 4em;">Call the <i>Terminal Write </i>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .</p>
+			 
+			<p>/* If not terminal, write to file. */</p>
 
-<p style=" text-indent: 4em;">Using the file descriptor, get the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry. </p>
- <p style=" text-indent: 4em;">Using Open File Table entry, get the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  entry. Check for the file type. </p>
-<br>
-</div>
-<p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry and lseek position from the Per Process Resource Table entry.</p>
- <p> <b>If</b> lseek is equal to <a href="constants.html" target="_blank">MAX_FILE_SIZE</a> - 1, return -2. &nbsp;&nbsp;/* File size limit exceeded; Don't forget to change mode flag */</p>
- <p><a data-toggle="collapse"   href="#collapse8">Find the block and position in the block to which data has to be written.</a></p>
-<div id="collapse8" class="panel-collapse collapse">
-  
+      <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>
 
-<p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek / <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the index of the block to be read*/</p>
- <p style=" text-indent: 4em;">Get the index of <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry.</p>
-<p style=" text-indent: 4em;">Get the block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
-<p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek % <a href="constants.html" target="_blank">XFS_MAXBSIZE</a> gives the position to be read from.*/</p>
+       <p ><a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a></p>
+             <div id="collapse5a" class="panel-collapse collapse">
 
-<p style=" text-indent: 4em;"><b>If</b> block number found above is -1 &nbsp;&nbsp;/* New block has to be allocated */ </p>
-<p style=" text-indent: 8em;"><b>If</b> there are no free blocks in the disk return -2. &nbsp;&nbsp;/* Don't forget to change the mode flag */</p>
-<p style=" text-indent: 8em;">Find a free disk block and increment its <a href="mem_ds.html#disk_free_list" target="_blank">Disk Free List</a> entry.</p>
-<p style=" text-indent: 8em;">Add the above block number to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry of the file.&nbsp;&nbsp;/* Attach the block to the file */</p>
-<br>
-</div>
+                <p style=" text-indent: 6em;"> Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+                <p style=" text-indent: 6em;"> Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table</a> entry.</p>
 
-<p><b>while</b> the file is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of KLock and ULock fields in <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>*/</p>
-              <p style=" text-indent: 4em;">Change the <a href="process_table.html#state" target="_blank">state</a> to (<a href="constants.html" target="_blank">WAIT_FILE</a>, ftindex) where ftindex is the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> index of the locked file. </p>
-              <p style=" text-indent: 4em;">Invoke the Scheduler.</p>
-             <p> <b>endwhile</b>&nbsp;&nbsp;/* Waiting for the file to be unlocked */</p>
-<p> Change the KLock field of the Open File Table to PID of current process.   &nbsp; &nbsp; /* Lock the file.  */</p>   
+                 <p style=" text-indent: 6em;"> The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.</p>
 
- <p>Get the buffer page number from block number.&nbsp;&nbsp;/* block number % <a href="constants.html" target="_blank">MAX_BUFFER </a>gives the index of the buffer to which the block is mapped.*/ </p>
-<p><b>while</b> the buffer is locked by a process other than the current process <b>do</b> &nbsp;&nbsp;/* Check the value of Locking PID in <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/</p>
+              </div>
 
-        <p style=" text-indent: 4em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_BUFFER</a>, index of Buffer Table entry ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-           
-<p><b>endwhile</b>&nbsp;&nbsp;/* Wait for the buffer to be free */ </p>
-           
-
-<p>Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to the PID of the current process.&nbsp;&nbsp;/* Lock the buffer */</p>
-<p><b>If</b> the buffer contains a block other than the required block. &nbsp;&nbsp;/* Check Block number of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>*/ </p>
-
-<div class="boxed" style="border:1px solid green">
-
-<p  style=" text-indent: 4em;"><a data-toggle="collapse"   href="#collapse9">Bring the block to the buffer from the disk .</a>&nbsp;&nbsp;/* This step captures the main idea of disk access */</p>
-<div id="collapse9" class="panel-collapse collapse">
-
-<p style=" text-indent: 8em;"><b>If</b> Dirty bit of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> is set &nbsp;&nbsp;/* Write back the dirty page before loading the required block */ </p>
-<p style=" text-indent: 12em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 16em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
-
-<p style=" text-indent: 12em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the disk to be free. */</p>
-<p style=" text-indent: 12em;"><a href="load_store.html" target="_blank">Store the block in buffer to disk.</a> </p>  
-
-<p style=" text-indent: 8em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 12em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
+             <p>If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
 
 
-<p style=" text-indent: 8em;"><b>endwhile</b>&nbsp;&nbsp;/* Wait for the store operation to complete and acquire the disk for the next operation */</p>
-   <p style=" text-indent: 8em;"><a href="load_store.html" target="_blank">Load the block from disk to buffer.</a> </p>  
-   
-   
-   <p style=" text-indent: 8em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler. &nbsp;&nbsp;/* Wait for the block transfer to finish */</p> 
-   <p style=" text-indent: 8em;">Set the Block number field of the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> to the number of the loaded block and set the Dirty Bit to 0.</p>  
-</div>
-</div>
 
-   <p>Copy the word passed as argument to the offset position in the buffer. &nbsp;&nbsp;/* The buffer contains the required block */</p>
-  <p>Set dirty bit to 1 in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry .</p>
-<p>Increment LSEEK Position in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p>
-<p>Increment file size in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> entry and <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry.</p>
-<p><a data-toggle="collapse"   href="#collapse16">Unlock the buffer and wake up all processes waiting for buffer</a></p>
-<div id="collapse16" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the Locking PID in the <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. Change the state to (<a href="constants.html" target="_blank">READY</a>, __ ) for the processes in the state (WAIT_BUFFER, index of the Buffer Table entry) in the <a href="process_table.html" target="_blank">Process Table</a></p>
+      <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.</p>
 
-</div>
-<p><a data-toggle="collapse"   href="#collapse6">Unlock the file and wake up all processes waiting for the file</a></p>
-<div id="collapse6" class="panel-collapse collapse">
-<p style=" text-indent: 4em;">1. Set the KLock field in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry to -1.</p>
-<p style=" text-indent: 4em;">2. <b>If</b> the ULock is not acquired by the current PID &nbsp;&nbsp;/* Do not wake up the processes if the current process has locked the file. */</p> 
-<p style=" text-indent: 8em;">Change the state to (<a href="constants.html" target="_blank">READY</a>, __ ) for the processes in the state (WAIT_FILE, index of the Open File Table entry) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
-</div>
-<p>Return 0. &nbsp;&nbsp;/* success */</p>
+      <p>Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. </p>
+
+      <p>If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT), return -3. </p>
+
+      <p>Get the Lseek position from the Open File Table entry.</p>
+
+       <p><b>If</b> lseek position is same as the maximum file size, return -2.&nbsp;&nbsp;/* Maximum file size reached*/</p>
+
+       <p>Acquire the Lock on the File by calling the <i>Acquire Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>  
+
+       <p> <a data-toggle="collapse"   href="#collapse8a">If the Lseek position is the same as File size </a></p>
+          <div id="collapse8a" class="panel-collapse collapse">
+              <p style=" text-indent: 4em;"> Find a free disk block by searching in the <a href="disk_ds.html#disk_free_list" target="_blank">Disk free list </a>.</p>
+
+              <p style=" text-indent: 4em;"> If no free disk block is found</p> 
+                   <p style=" text-indent: 6em;">Release the Lock on the file  by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>   
+                   <p style=" text-indent: 6em;"> Return -2.</p>
+
+              <p style=" text-indent: 4em;">Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.</p> 
+                  
+              <p style=" text-indent: 4em;">Update the file size ( ++ 512) in the corresponding field in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.</p> 
+                  
+          </div>  
+
+      <p><a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a></p>
+      <div id="collapse8" class="panel-collapse collapse">
+
+              <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/</p>
+              <p style=" text-indent: 4em;">Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
+              <p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/</p>
+
+      </div>
+
+     
+
+      <p>Write the word to the File Buffer by calling the <i>Buffer Write</i> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.</p>
+
+      <p>Increment the Lseek position in the Open File Table entry.</p>
+
+      <p>Release the Lock on the File by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>
+
+  <p>Return 0. &nbsp;&nbsp;/* success */</p>
+ <br>
+<h4>Questions:</h4>
+<div class="panel-body">
+        
+       
  
 
 
 
 
-
-
-
+<br>
 
                       
          </div>
@@ -284,7 +263,6 @@
     <script src="../js/custom.js"></script>
   </body>
 </html>
-
 
 
 
