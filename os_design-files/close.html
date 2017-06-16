@@ -157,7 +157,7 @@
                 <p>In the Open File Table Entry found above, decrement the Open Instance Count. </p>
                     <p  style=" text-indent: 8em;"> If the count becomes 0, invalidate the entry.&nbsp;&nbsp; /* set to -1 */</p>        
                                            
-                <p> Decrement the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>.</p>
+                <p> Decrement the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a> ( Only if Inode index is not "INODE_ROOT").</p>
              
                 <p> Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.</p> 
              <p>Return from system call with 0. &nbsp;&nbsp; /* success */</p>
