@@ -124,18 +124,18 @@
                 <br/>
                 <br/>
                 
-                <p> These routines are invoked from within system calls/interrupts/exception handler. A user program is not allowed to call a kernel module directly.  
-			Note that OS blocks only inside the modules. A module is designed to call only another module.
-			It returns using return (RET machine) instruction. 
+                <p> These routines are invoked from within system calls/interrupts/exception handler. A user program is not allowed to call a kernel module directly.  </p>
+
+				 <p>While executing a blocking system call, a process may block inside a module.  In that case, the module will invoke the scheduler to execute other processes.  The OS, in fact, is designed in such a way that blocking can happen only inside modules.  Each module may contain calls to other modules (made through the CALL instruction).  A module returns to its caller using the RET instruction.  Modules may also be called from interrupt/exception handlers.  Note that a process remains in the kernel mode through out the execution (as well as entry and exit) of a module.    
+
                 </p>
                 
                 <p>
-         The function number is passed by R1 and arguments are passed by registers R2, R3 etc in order. The return value (if any) is passed by R0.
-
+        A module may implement several functions.   Each function within a module is identified by a function number which must be passed as an argument to the module through register R1.  Other arguments must be passed through registers R2, R3 etc. in that order.  The return value from a module must be passed through register R0.  (See SPL documentation on module calling conventions <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank"> here. </a>)  
                 </p>
 
                 <p>
-          The kernel modules and the functions present in each module is described below. The modules 6 and 7 are reserved for future use.      
+          The kernel modules and the functions present in each module are described below. The modules 6 and 7 are reserved for future use.      
                 </p>
               </div>
 
