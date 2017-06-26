@@ -8,7 +8,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Exec</title>
+     <title>Exit</title>
 
  <!-- Mobile Specific Metas
     ================================================== -->
@@ -106,71 +106,51 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 >Exec System Call</h2>
+              <h2 >Exit system call</h2>
                <br>
                <br>                                      
              
-              <p>Arguments: File Name (String) of the executable file (which must be of <a href="../abi.html#xexe" target="_blank">XEXE format</a>)</p>
-              <p>Return Value:</p>
-                    <table class="table table-bordered">
-                            <tr>
-                               <td>-1</td>
-                               <td>File not found or file is of invalid type</td>
-                            </tr> 
-                                                                                                        
-                    </table>
-            <p><i>Description</i>: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking process and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
-            <p> The data structures that are modified in this system call are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
-             <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
-              
+              <p>Arguments: None</p>
+                                                <p>Return Value: None</p>
+                                                
+                                                <p><i>Description</i>: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
+                                                <p>Data structures modified are <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+                                               
               <br>
+              
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> filename is invalid, return -1.</p>     
-             <p><b>If</b> file not found in system or file type is not EXEC, return -1 &nbsp; &nbsp; 
-             /* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode 
-             Table</a>. */</p>
+            <p><b>If</b> no more processes to schedule, shutdown the machine &nbsp; &nbsp; /* If no process in <a href="process_table.html" target="_blank">(<a href="constants.html" target="_blank">READY</a>, _ )</a> state, invoke  <a href="shutdown.html" target="_blank">Shutdown system call</a> */</p>
              
-    
-    
-    
-	<p ><a data-toggle="collapse"   href="#collapse11" >Deallocate resources of the current process.</a></p>
-			<div id="collapse11" class="panel-collapse collapse">
-			<p style="text-indent: 4em;">Deallocate the User Area Page by invoking the free_user_area_page( )
-			in the process manager module.</p>
-			<p style="text-indent: 4em;">Deallocate the Page Table entries by invoking the free_page_table( )
-			in the process manager module.</p>
+                <p>Unlock all files opened by the current process.&nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html" target="_blank">FunLock system call</a> */ </p>
+                <p>Close all files opened by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="close.html" target="_blank">Close system call</a> */</p> 
+                <p>Release all the semaphores used by the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="semaphore_algos.html#semrelease" target="_blank">Semrelease system call</a> */</p>
+				<p>Wake up all processes waiting for the current process. &nbsp; &nbsp; /* Follow the procedures in <a href="synchronization_algos.html#signal" target="_blank">Signal system call</a> */</p>
 
-  
-</div>
+            
+<p><a data-toggle="collapse"   href="#collapse3">Invalidate the page table entries of the current process</a></p>
+<div id="collapse3" class="panel-collapse collapse">
+	<p style="text-indent: 4em;">Scan the page table. For <b>each</b> page do : </p>
+	<p style="text-indent: 8em;"><b>If</b> the page is valid </p>
+	<p style="text-indent: 12em;">
+                    In the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, decrement the value corresponding to the page.</p>
+                <p style="text-indent: 12em;"> If the value becomes 0, then increment MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>  
+	 <div class="boxed" style="border:1px solid green">
+    <p style="text-indent: 4em;"><a data-toggle="collapse"   href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
+                     <div id="collapse14" class="panel-collapse collapse">
+    <p style="text-indent: 8em;"><b>else</b>&nbsp;&nbsp;/* action required if the page is swapped out*/</p>
+     
+     <p style="text-indent: 12em;">If the block number in Page Table lies in the swap area, decrement its entry in the <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. </p>
+   
+     <p style="color: darkgreen;text-indent: 4em;">/* The code for swapper module and demand paging ends here. */</p>
+      </div>
+             </div>
+	</div>
 
-	<p>Acquire two memory pages for user stack, one for User Area and one for code by invoking the 
-	get_mem_page( ) function in the memory manager module.</p>
-	<p>Obtain the disk block number of the first code page from the inode entry of the file passed as argument.</p>
-	<p>Load the first code page into memory by invoking the DRead() function in the Device Manager module.</p>
-	
-<p><a data-toggle="collapse"   href="#collapse1">Set the Process Table and Page Table entries of the process.</a></p>
-<div id="collapse1" class="panel-collapse collapse">
-                <p style="text-indent: 4em;">Set the Page Table entries for library.
-                    </p>
-                <p style="text-indent: 4em;">Invalidate the page table entries for heap. &nbsp;&nbsp; 
-                /* Memory will be allocated when page fault occurs */
-                    </p>
-                <p style="text-indent: 4em;">Set the page table entry for the first code page to the 
-                page found eariler. Set the valid bit to 1.</p>
-                <p style="text-indent: 4em;">Set the code page entries of the other code pages to the 
-                code block numbers obtained from the Inode Table entry of the file and set the auxilary
-                information to invalid and unreferenced.</p>
-                <p style="text-indent: 4em;">Set the page table entry for the stack page to the 
-                pages found eariler. Set the valid bit and write bit to 1.</p>
-                <p style="text-indent: 4em;">In the Process Table entry of the current process, 
-                set the Inode Index field to the index of Inode Table entry for the file and User Area Page Number
-                to User Area Page found earlier.</p>
-                <p style="text-indent: 4em;">Set the kernel stack pointer to 0 indicating the index of beginning of
-                kernel stack.</p>
-                </div>
-   <p>Obtain the entry point IP value from the header of the new process and set it to top of user stack.</p>
-   <p>Set SP to the start of the user stack region.</p>
-   <p>Return from system call to newly loaded process.</p>   
+<p>Invalidate the Process Table entry.&nbsp;&nbsp;/*Set the PID field to -1.*/</p>
+<p>Invoke the scheduler to schedule the next process. &nbsp;&nbsp;/*Scheduler never returns.*/</p> 
+    
+                              
+                      
          </div>
 		</div>
 		</div>
