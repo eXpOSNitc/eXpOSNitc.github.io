@@ -156,16 +156,31 @@
     <td>NIL</td>
   </tr>
 
+<tr>    
+    <td>3</td>
+    <td>Get Free Block</td>
+    <td>NIL</td>
+    <td>Free Block Number or -1</td>
+  </tr>
+
+<tr>    
+    <td>4</td>
+    <td>Release Block</td>
+    <td>Block Number</td>
+    <td>0 or -1</td>
+  </tr>
+
+
 
    </table>    
                      
 
                
    <h3> Get Free Page </h3>
-   <i> <b>Description </b></i>: Returns the page number of a free page. Returns -1 if memory is full.<br><br>
+   <i> <b>Description </b></i>: Returns the page number of a free page (and updates the MFL). Returns -1 if memory is full.<br><br>
 
 <pre>
-    loop through entries in the Memory Free List{
+    loop through entries in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>{
         if ( a free entry is found ){
               Set the Memory Free List entry as 1;
               Return the corresponding page number;
@@ -188,7 +203,34 @@ Called by fork and exec system calls. Also called by exception handler on demand
 Called by the Free page table and Free UArea Page functions.
 
 <br><br>
-Note : Do not Clear the contents of the page. This may lead to unexpected behaviour.<br> <br><br>
+Note : Do not Clear the contents of the page. This may lead to unexpected behaviour.
+               
+   <h3> Get Free Block</h3>
+   <i> <b>Description </b></i>: Returns the block number of a free disk block. Returns -1 if disk is full.<br><br>
+
+<pre>
+    loop through entries in the <a href="../os_design-files/disk_ds.html#disk_free_list">Disk Free List</a>{
+        if ( a free entry is found ){
+              Set the Disk Free List entry as 1;
+              Return the corresponding block number;
+        }
+    }
+    return -1;
+</pre>
+
+ <h3> Release Block</h3>
+ <i> <b>Description </b></i>: Decrements the entry corresponding to the disk block in the disk free list. (Returns -1 if trying to free an already free block?)<br><br>
+
+
+<pre>
+    Decrement the entry corresponding to the disk block in the Disk Free List;
+    
+    return;
+</pre>
+
+<br><br>
+
+
 
 
                      <!--end-->   
