@@ -147,7 +147,7 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2 >File Status Table / Inode Status Table</h2>
+              <h2 >File (Inode) Status Table</h2>
                <br>
                <br>
               <p>The File Status Table contains details about lock status and file open count of each file in the inode table. 
@@ -242,7 +242,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>STATUS </b>(1 word) - specifies whether the disk is free (indicated by 0) or busy (indicated by 1) handling a memory-disk transfer.</li>
-                   <li><b>SCHEDULER FLAG</b> (1 word) - this field is set to 1 if the disk transfer is intitated by the scheduler, else is set to 0.</li>                   
+                   <li><b>SCHEDULER FLAG</b> (1 word) - this field is set to 1 if the disk is locked by the scheduler, else is set to 0. Processes are blocked from acquiring the disk when this flag is set.</li>                   
                    <li><b>LOAD/STORE BIT </b>(1 word) - specifies whether the operation being done on the device is a load (indicated by 0) or store (indicated by 1).</li>
                    <li><b>PAGE NUMBER</b> (1 word) - specifies the memory page number involved in the disk transfer.</li>
                    <li><b>BLOCK NUMBER</b> (1 word) - specifies the disk block number involved in the disk transfer.</li>
