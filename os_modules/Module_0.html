@@ -139,200 +139,71 @@
         <th style="text-align: center;">Arguments</th>
         <th style="text-align: center;">Return Value</th>
     </tr>
+<tr>
+    <td>1</td>
+    <td>Acquire Buffer</td>
+    <td>Buffer Number, PID</td>
+    <td>NIL</td>
+  </tr>
+
+<tr>
+    <td>2</td>
+    <td>Release Buffer</td>
+    <td>Buffer Number, PID</td>
+    <td>0 or -1</td>
+  </tr>
 
 
   <tr>
     
-    <td>1</td>
-    <td>Acquire Disk</td>
-    <td>NIL</td>
+    <td>3</td>
+    <td>Acquire Disk*</td>
+    <td>PID</td>
     <td>NIL</td>
   </tr>
 
 <tr>
   	
-    <td>2</td>
-    <td>Acquire Inode</td>
-    <td>Inodeindex</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-   	
-    <td>3</td>
-    <td>Acquire Terminal</td>
-    <td>NIL</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
     <td>4</td>
-    <td>Release Inode</td>
-    <td>Inodeindex</td>
-    <td>NIL</td>
+    <td>Acquire Inode</td>
+    <td>Inodeindex, PID</td>
+    <td>0 or -1</td>
   </tr>
 
 <tr>
     <td>5</td>
-    <td>Close File</td>
-    <td>File Descriptor, PID</td>
-    <td>NIL</td>
+    <td>Release Inode</td>
+    <td>Inodeindex, PID</td>
+    <td>0 or -1</td>
   </tr>
 
 <tr>
     <td>6</td>
-    <td>Acquire Buffer</td>
-    <td>Buffer Number</td>
+    <td>Acquire Terminal*</td>
+    <td>PID</td>
     <td>NIL</td>
   </tr>
 
 <tr>
     <td>7</td>
-    <td>Release Buffer</td>
-    <td>Buffer Number</td>
-    <td>NIL</td>
+    <td>Acquire Semaphore</td>
+    <td>PID</td>
+    <td>Semaphore Table Index or -1</td>
   </tr>
-
+<tr>
+    <td>8</td>
+    <td>Release Semaphore</td>
+    <td>Semaphore Table Index, PID</td>
+    <td>0 or -1</td>
+  </tr>
 </table>  
                      
-
-
-               
-   <h3> Acquire Disk </h3>
-   
-<i> <b>Description </b></i>: Locks the disk device. <br><br>
-
-<pre>
-Get the PID of the current process from the <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table.</a>
-
-while ( disk is locked ){        /* Check the <i>Status</i> field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */
-        Set state of the process as ( WAIT_DISK , - );
-        Invoke the scheduler;
-        }
-
-Lock the disk by setting status field to <b>1</b> in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table.</a>
-
-return;
-</pre>
-Called by DiskRead and DiskWrite functions.
-<!--Called by Bufread, Bufwrite, Exec ( To load first code page) and during Shutdown. 
--->
-
-
-
-
- <h3> Acquire Inode </h3>
-
-<i> <b>Description </b></i>: Locks the Inode entry corresponding to the inodeindex given as input.<br><br>
-
-<pre>
-Get the PID of the current process from the <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table.</a>
-
-while ( inode is locked ){   /* Check the Lock field in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>. */
-        Set state of the process as ( WAIT_FILE , Inode Index );
-        Invoke the scheduler;
-    }
-
-Lock the Inode by setting the Lock field in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a> 
-to the PID of the current process.;
-
-return;
-</pre>
-
-Called by Read,Write and Seek system calls.
-
-
-
-
-
-<h3> Acquire Terminal </h3>
-<i> <b>Description </b></i>: Locks the Terminal device.<br><br>
-
-<pre>
-Get the PID of the current process from the <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table.</a>
-
-while ( Terminal device is locked ){    /* Check the Status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> */
-    Set state of the process as ( WAIT_TERMINAL , - );
-    Invoke the scheduler;
-    }
-    
-Lock the Terminal device by setting the Status field to 1 and the PID to the 
-PID of the current process in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.
-
-return;
-</pre>
-
-Called by the Terminal Read and Termnal Write functions.
-
-
-
-
-
-<h3> Release Inode </h3>
-<i> <b>Description </b></i>: Frees the lock of the inode entry corresponding to the inodeindex given as input.<br><br>
-
-<pre>
-Free the lock in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a> corresponding to the inode index;       /* Set the Lock field to -1 */
-
-loop through the process table{ 
-       if (the process state is ( WAIT_INODE , Inode Index ) ){
-             Set state of process as (READY , _ )
-         } 
-}
-return;
-</pre>
-
-Called by Read,Write and Seek system calls.
-
-
-
-
-
-
-<h3> Close File</h3>
-<!-- Move to Another module if necessary -->
-
-<i> <b>Description </b></i>: Closes the file and frees the file descriptor.<br>
-<i> <b style="color: red">Note</b></i>: This function is not to be called if the file is locked.<br><br>
-
-<pre>
-Get the PID of the current process from the <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table.</a>
-
-Get the <a href="../os_design-files/process_table.html#user_area" target="_blank">User Area </a> page number of the process from the <a href="../os_design-files/process_table.html" target="_blank">Process Table</a> entry
-of the current process;
-
-Get the <a href="../os_design-files/process_table.html#per_process_table" target="_blank">Resource table</a> entry corresponding to the file descriptor;
-
-Get the <a href="../os_design-files/process_table.html#per_process_table#file_table" target="_blank">Open File Table</a> index form the Resource table entry;
-
-Get the <a href="../os_design-files/disk_ds.html#inode_table" target="_blank">Inode index</a> corresponding to the file from the 
-Open File Table entry;
-
-Decrement file open count in  <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File status table</a> entry 
-corresponding to the Inode index;
-
-Decrement file open count in Open File Table entry;
-
-if ( the file open count == 0){
-    Invalidate the Open File Table entry;     /*  Set Inode Index field to -1*/
-}
-
-Invalidate the Resource Table entry;
-
-return;
-</pre>
-
-Called by the exit process function and close system call.
-
-
-
-
+<p>*The release functions for disk/terminal are implimented by the respective interrupt handlers.</p>
 
 <h3> Acquire Buffer</h3>
 <!-- Move to Another module if necessary -->
-<i> <b>Description </b></i>: Acquire the buffer corresponding to buffer number given as input.<br><br>
+<i> <b>Description </b></i>: Acquire the buffer corresponding to buffer number given as input. Assumes a valid PID and a valid buffer  number are given.<br><br>
 <pre>
-Get the PID of the current process from the <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table.</a>
 
 while ( Buffer is locked ){   /* Check the Locking PID field in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> */
     Set state of the process as ( WAIT_BUFFER , Buffer Number );
@@ -344,8 +215,8 @@ in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffe
 
 return;
 </pre>
+Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Manager</a>.
 
-Called by BufRead and BufWrite functions.
 
 
 
@@ -353,9 +224,12 @@ Called by BufRead and BufWrite functions.
 
 
 <h3> Release Buffer </h3>
- <i> <b>Description </b></i>: Release the buffer corresponding to buffer number given as input.<br><br>
+ <i> <b>Description </b></i>: Release the buffer corresponding to buffer number given as input. Assumes a valid PID and a valid buffer  number are given.<br><br>
 
 <pre>
+
+If PID given as input is not equal to the LOCKING PID in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a>, return -1.
+
 Free the lock in the the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> entry corresponding to
 the buffer Number; /* Set Locking PID field to -1 */
 
@@ -364,9 +238,129 @@ loop through the process table{
              Set state of process as (READY , _ )
          } 
 }
+return 0;
+</pre>
+Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Manager</a>.
+
+
+               
+   <h3> Acquire Disk </h3>
+   
+<i> <b>Description </b></i>: Locks the disk device. Assumes that a valid PID is given as input.<br><br>
+
+<pre>
+
+while ( disk is locked or scheduler has locked the disk ){        /* Check the <i>Status</i> and <i>Scheduler Flag</i> fields in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */
+        Set state of the process as ( WAIT_DISK , - );
+        Invoke the scheduler;
+        }
+
+Lock the disk by setting PID and the status field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table.</a>
+
 return;
 </pre>
-Called by BufRead and BufWrite functions.
+Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Manager</a> and the exception handler for swap-in.
+<!--Called by Bufread, Bufwrite, Exec ( To load first code page) and during Shutdown. 
+-->
+
+
+
+
+ <h3> Acquire Inode </h3>
+
+<i> <b>Description </b></i>: Locks the Inode entry corresponding to the inodeindex given as input. Assumes a valid PID and a valid inode index are given.<br><br>
+
+<pre>
+
+while ( inode is locked ){   /* Check the Lock field in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>. */
+        Set state of the process as ( WAIT_FILE , Inode Index );
+        Invoke the scheduler;
+    }
+
+If inode becomes invalid, return -1. /* File was deleted by the time the inode was acquired */
+
+Lock the Inode by setting the Lock field in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a> 
+to the PID of the current process.;
+
+return 0;
+</pre>
+
+Called by Read, Write and Seek system calls.
+
+
+
+
+
+<h3> Release Inode </h3>
+<i> <b>Description </b></i>: Frees the lock of the inode entry corresponding to the inodeindex given as input. Assumes a valid PID and a valid inode index are given.<br><br>
+
+<pre>
+If PID given as input is not equal to the LOCKING PID in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>, return -1.
+
+Free the lock in the File Status Table corresponding to the inode index;       /* Set the Lock field to -1 */
+
+loop through the process table{ 
+       if (the process state is ( WAIT_INODE , Inode Index ) ){
+             Set state of process as (READY , _ )
+         } 
+}
+return 0;
+</pre>
+
+Called by Read, Write and Seek system calls.
+
+<h3> Acquire Terminal </h3>
+<i> <b>Description </b></i>: Locks the Terminal device. Assumes a valid PID is given as input.<br><br>
+
+<pre>
+
+while ( Terminal device is locked ){    /* Check the Status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> */
+    Set state of the process as ( WAIT_TERMINAL , - );
+    Invoke the scheduler;
+    }
+    
+Lock the Terminal device by setting the Status and PID fields in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.
+
+return;
+</pre>
+
+Called by the Terminal Read and Terimnal Write functions of the <a href="Module_4.html">Device Manager Module</a>.
+
+
+
+
+
+
+<h3> Acquire Semaphore </h3>
+ <i> <b>Description </b></i>: Acquires a semaphore and returns it's semaphore number. Assumes a valid PID is given as input. Returns -1 upon failure.<br><br>
+
+<pre> 
+
+Find the index of a free entry in <a href="../os_design-files/mem_ds.html#sem_table" target="_blank">Semaphore table</a> and increment the process count. If no free entry, return -1.
+/* Free entry is indicated by a Process Count of 0. */ 
+
+Return the Semaphore table index. &nbsp;&nbsp;/* success */
+</pre>
+
+Called by the <a href=../os_design-files/semaphore_algos.html#semget">Semget system call</a>.
+ 
+<h3> Release Semaphore </h3>
+ <i> <b>Description </b></i>: Releases a semaphore. Assumes a valid PID and semaphore table index are given as input.<br><br>
+
+<pre> 
+If ( semaphore is locked by the current process) &nbsp;&nbsp;/*Check the Locking PID in the <a href="../os_design-files/mem_ds.html#sem_table" target="_blank">Semaphore table</a>*/
+	Set the Locking PID to -1.&nbsp;&nbsp;/* Unlock the semaphore before release */
+	loop through the process table{ /*wake up processes blocked by the semaphore */
+       		if (the process state is ( WAIT_SEMAPHORE, SEMTABLEINDEX ) ){
+             	Set state of process as (READY , _ )
+         	} 
+	}
+
+Decrement the process count of the semaphore in the semaphore table.
+	     
+</pre>
+
+Called by the <a href=../os_design-files/semaphore_algos.html#semrelease">Semrelease</a> and exit system call</a>.
                      <!--end-->   
                     <br>
                                </div>

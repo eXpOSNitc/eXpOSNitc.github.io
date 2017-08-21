@@ -146,14 +146,14 @@
   <tr>    
     <td>1</td>
     <td>Disk Store</td>
-    <td>Page Number, Block Number</td>
+    <td>PID, Page Number, Block Number</td>
     <td>NIL</td>
   </tr>
 
 <tr>    
     <td>2</td>
     <td>Disk Load</td>
-    <td>Page Number, Block Number</td>
+    <td>PID, Page Number, Block Number</td>
     <td>NIL</td>
   </tr>
 
@@ -161,7 +161,7 @@
 <tr>    
     <td>3</td>
     <td>Terminal Write</td>
-    <td> Word</td>
+    <td>PID, Word</td>
     <td>NIL</td>
   </tr>
 
@@ -169,7 +169,7 @@
   <tr>    
     <td>4</td>
     <td>Terminal Read</td>
-    <td> Memory Address</td>
+    <td>PID, Memory Address</td>
     <td>NIL</td>
   </tr>
 
@@ -177,12 +177,14 @@
 
                
    <h3>Disk Store</h3>
-   <i> <b>Description </b></i>: Stores the contents of the page into the disk block.<br><br>
+   <i> <b>Description </b></i>: Stores the contents of the page into the disk block. A valid PID as input is assumed.<br><br>
 
 <pre>
     Acquire the lock on the disk device by calling the Acquire_Disk() function
-    in the Resource Manager module;
+    in the <a href="Module_0.html">Resource Manager</a> module;
     
+    Set the LOAD/STORE BIT, PAGE NUMBER and BLOCK NUMBER in the <a href="../os_design-files/mem_ds.html#ds_table">Disk Status Table</a>.
+
     Use the store statement to store the memory page to disk;
     
     Set the state as (WAIT_DISK, - );
@@ -192,16 +194,17 @@
     return;
 </pre>
 
-Called by the Buffer Read, Buffer Write functions.<br>
-Also called by the Shutdown system call ( to commit disk data structures).
+Called by the Buffer Read and Buffer Write.<br>
 
  <h3> Disk Load </h3>
-   <i> <b>Description </b></i>: Loads the contents of the disk block to the page.<br><br>   
+   <i> <b>Description </b></i>: Loads the contents of the disk block to the page. A valid PID as input is assumed.<br><br> 
 
 <pre>
-    Acquire the lock on the disk device by calling the 
-    Acquire_Disk() function in the Resource Manager module;
+    Acquire the lock on the disk device by calling the Acquire_Disk() function
+    in the <a href="Module_0.html">Resource Manager</a> module;
     
+    Reset the LOAD/STORE BIT, set PAGE NUMBER and BLOCK NUMBER in the <a href="../os_design-files/mem_ds.html#ds_table">Disk Status Table</a>.
+
     Use the load statement to load the disk block to memory;
     
     Set the state as (WAIT_DISK, - );
@@ -211,22 +214,22 @@ Also called by the Shutdown system call ( to commit disk data structures).
     return;
 </pre>
 
-Called by the Buffer Read, Buffer Write functions, exec sm call (to load the first code page) 
-and the exception handler(demand paging). <br> <br>
+Called by the Buffer Read, Buffer Write functions, exec system call (to load the first code page) 
+and the exception handler (demand paging). <br> <br>
 
 Note: The bootstrap code must use <i>loadi</i> statement and not this function.
 
 <h3> Terminal Write </h3>
-<i> <b>Description </b></i>: Reads a word from the Terminal to the Memory address provided.<br><br>      
+<i> <b>Description </b></i>: Reads a word from the Terminal to the Memory address provided. Assumes a valid PID is given.<br><br>      
 
 <pre>
-    Acquire the lock on the terminal device by calling the 
-    Acquire_Terminal() function in the Resource Manager module;
+    Acquire the lock on the disk device by calling the Acquire_Disk() function
+    in the <a href="Module_0.html">Resource Manager</a> module;
     
     Use the print statement to print the contents of the word
     to the terminal;
   
-    Release the lock on the Terminal;
+    Release the lock on the Terminal by updating the <a href="../os_design-files/mem_ds.html#ts_table">Teminal Status Table</a>.;
     
     return;
 </pre>
@@ -234,10 +237,10 @@ Called by the Write system call.
 
 <h3> Terminal Read</h3>
    <br>
-  <i> <b>Description </b></i>: Reads a word from the terminal and stores it to the memory address provided.<br><br>   
+  <i> <b>Description </b></i>: Reads a word from the terminal and stores it to the memory address provided. Assumes a valid PID is given.<br><br>   
 <pre>
-    Acquire the lock on the terminal device by calling the Acquire_Terminal() function
-    in the Resource Manager module;
+    Acquire the lock on the disk device by calling the Acquire_Disk() function
+    in the <a href="Module_0.html">Resource Manager</a> module;
     
     Use the read statement to read the word from the terminal;
     
@@ -245,13 +248,12 @@ Called by the Write system call.
     
     Invoke the scheduler module;
 
-    Copy the word from the Input Buffer of the Process Table 
+    Copy the word from the Input Buffer of the Process Table of the process corresponding to PID
     to the memory address provided.
     
     return;
 </pre>
-Note: The Terminal Interrupt Handler will transfer the Contents of the 
-
+Note: The Terminal Interrupt Handler will transfer the contents of the input port P0 to the Input Buffer of the process.<br>
 Called by the Read system call. <br> <br> <br>
                      <!--end-->   
                     
