@@ -128,7 +128,7 @@
 		<!--=========== End HEADER SECTION ================--> 
       
     <!--=========== Intoduction Section Begining ===============-->
-    <!--heading of the page---->
+    <!--heading of the page-->
     <div class="container" style="margin-top: 80px;">
       
       <h1>Roadmap</h1>
@@ -966,7 +966,7 @@ _L1:
 
 // Exit loop if n > 5
 MOV R2, 5
-GT R2, R0
+GE R2, R0
 JZ R2, _L2
 
 // Computing n^2 in R1
@@ -1015,9 +1015,9 @@ The code is given in bold and the corresponding addresses are added for referenc
 
 <br> <br>
 		<pre>
-0<b>   MOV R0, 0 </b>
+0<b>   MOV R0, 1 </b>
 2<b>   MOV R2, 5</b>
-4<b>   GT R2, R0</b>
+4<b>   GE R2, R0</b>
 6<b>   JZ R2, 18</b>
 8<b>   MOV R1, R0</b>
 10<b>  MUL R1, R0</b>
@@ -1302,9 +1302,9 @@ You will have to modify the user program as well as the os startup code.
 2053<b>  0</b>
 2054<b>  0</b>
 2055<b>  0</b>         
-2056<b>  MOV R0, 0</b>
+2056<b>  MOV R0, 1</b>
 2058<b>  MOV R2, 5</b>
-2060<b>  GT R2, R0</b>
+2060<b>  GE R2, R0</b>
 2062<b>  JZ R2, 2076</b>
 2064<b>  MOV R1, R0</b>
 2066<b>  MUL R1, R0</b>
@@ -1576,16 +1576,16 @@ ireturn;
 	    this will be done.</p> 
 
 <p>To isolate the kernel from the user stack, the OS kernel must maintain two stacks for
- a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <b>user area page</b> is 
+ a program - <b>a user stack and a kernel stack</b>.   In eXpOS, one page called the <a href="os_design-files/process_table.html#user_area">user area page</a></b> is 
  allocated for each process.  A part of the space in this page will be used for the kernel stack 
  (some other process information also will be stored in this page).  
 </p>
 
 <p>Whenever there is a transfer of program control from the user mode to kernel during interrupts 
 (or exceptions), the interrupt handler will change the stack to the kernel stack of the program 
-(that is, the SP register must point to the top of the kernel stack).  Before the machine returns to user mode 
+(that is, the SP register must point to the top of the kernel stack of the program).  Before the machine returns to user mode 
 from the interrupt, the user stack must be restored (that is, the SP register must point to the top of the user 
-stack).
+stack of the program).
 </p>
 
 <p>Once we have two stacks for a user program, we need to design some data structure in memory to store 
@@ -1646,8 +1646,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 [SYSTEM_STATUS_TABLE + 1] = 0;</pre></div>
 	</li>
 	<li>
-	The kernel stack pointer for the process need not be set now as all interrupt handlers assume that the kernel stack is 
-	empty when the handler is entered from user mode. Thus whenever an interrupt handler is entered from user mode, the kernel 
+	The kernel stack pointer for the process need not be set now as <b>all interrupt handlers assume that the kernel stack is 
+	empty when the handler is entered from user mode</b>. Thus whenever an interrupt handler is entered from user mode, the kernel 
 	stack pointer will be initialized assuming that the stack is empty. (See <a href="os_design-files/stack_interrupt.html" target="_blank">
 		Kernel Stack Management during hardware interrupts and exceptions</a>).
 	 The KPTR value will be used in later stages when kernel modules invoke each other.
@@ -1761,7 +1761,7 @@ ireturn;
  	In Stage 7, we wrote a user program and used the BRKP instruction to view the result in debug mode.
 
  	In this stage, we will modify the program such that the result is printed directly to the terminal. 
-	The terminal print is acheived by issuing a a write system call from the user program. 
+	The terminal print is acheived by issuing a write system call from the user program. 
  	The write system call is serviced by interrupt routine 7. 
 
  	  
@@ -1774,34 +1774,63 @@ ireturn;
  	
 <b style="font-size:18px">Modifications to the user program</b>
 <br> <br>
+
+ <p>A system call is an OS routine that can be invoked from a user program.  The OS provides system call routines for various
+ services like writing to a file/console, forking a process etc.   Each system call routine is written inside
+ some software interrupt handler.  For example, the write system call of eXpOS is coded inside the INT 7 handler.  
+ An interrupt handler may contain code for several system calls. 
+ (For example, in the eXpOS implementation on XSM, the routines for create, delete and seek system calls 
+ are coded inside the INT 4 handler.see  <a href="os_design-files/Sw_interface.html" target="_blank">here </a> for details).  To identify the correct routine,the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program,the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
+ software interrupt using the INT instruction.  The arguments and the system call number are passed through the user 
+ program's stack.</p>  
+
+ <p>When a program invokes a system call, the system switches from user mode to kernel mode.  Hence, system calls run in 
+ kernel mode and hence have access to all the hardware resources.  Upon completing the call, the system call places
+ return value of the call into designated position in the user program's stack and returns
+ to the calling program using the IRET.  Since the IRET instruction switches mode back to user mode, the user program
+ resumes execution after the call in user mode.  The user program extracts the return values of the call from the 
+ user stack.</p>  
+
+<p>In this stage, we will write a small kernel routine for handling console write. This is part of the functionality of the 
+write system call (system call number 5) programmed inside the INT 7 handler.  You will implement the full functionality
+of the write system call in later stages.</p>  
+
+
 <p>The user program of Stage 7 is modified such that a write system call is issued to print the contents of
- register R1 to the terminal. The BRKP instruction for the user program in Stage 7 is replaced by instructions
-  for the following:
-</p>
+ register R1 to the terminal. You will no longer need to run the program in debug mode.  
+ This is because once we implement the system call service for console output, this system call can be used
+ by the user program to print the output to the console.    
+ A user program must execute the following steps to invoke the system call:
+ </p>
 
 <ol style="list-style-type:decimal;margin-left:2px">
 
-<li>Save the registers in use to the user stack. As per specification, since the user program has control 
-over transfer to the system call routine , the OS expects that it saves its own context before issuing the system call.  
+<li>Save the registers in use to the user stack (in the program below R0, R1, R2 are saved). As per the specification, since the user program calls system call routine , the OS expects that it saves its own context (registers in use) before issuing the system call.  
 </li>
 
 <br>
 
-<li> Push the system call number and arguments to the stack. For the Write system call,  the sytem call number is 5. Argument 1 is the file descritor which is -2 for the terminal. Argument 2 is the word to be written which is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. 
+<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the word to be written which is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.)
 </li> <br>
 
 <li> Push any register, say R0 to allocate space for the return value. </li> <br>
 
-<li>Invoke the interrupt by "INT7" instruction. </li> <br>
+<li>Invoke the interrupt by "INT 7" instruction. </li> <br>
 
 //The following code will be executed after return from the system call.<br><br>
-<li> Pop out all the system call number and arguments which were pushed on the stack prior to the system call. </li>
+  
+
+<p>Normally, the return value of a system call gives information regarding whether the system call succeeded or 
+whether there was an error etc.  In some cases, the system call returns a value which is to be used later in program (for instance, the open system call returns a file descriptor). In the present case, since console write never fails, we ignore the return
+value.</p>  
+
+<li> Pop out the return value, the system call number and arguments which were pushed on the stack prior to the system call. </li>
 <br>
-<li> Restore the register context from the stack. </li>
+<li> Restore the register context from the stack (in the following program  R0,R1,R2 are restored).</li>
 <br>
 </ol>
 	<p>The resulting program is given below. 
-	<div>
+	<div>	
 	<pre>
 0
 2056
@@ -1811,36 +1840,42 @@ over transfer to the system call routine , the OS expects that it saves its own 
 0
 0
 0					
-MOV R0, 0
+MOV R0, 1
 MOV R1, 0
-MOV R2, 20
+MOV R2, 5
 GE R2, R0
-JZ R2, 2076
+JZ R2, 2112
 MOV R1, R0
 MUL R1, R0
 
-
-PUSH R0
+// saving register context
+PUSH R0  
 PUSH R1
 PUSH R2
 
 MOV R0, 5
 MOV R2, -2
 
+// pushing system call number and arguments 
 PUSH R0	
 PUSH R2
 PUSH R1
 PUSH R0
-PUSH R0
 
+//  pushing space for return value
+PUSH R0
 INT 7
 
+// poping out return value and ignore 
 POP R1
+
+// pop out argumnets and system call number and ignore 
 POP R1
 POP R1
 POP R1
 POP R1
 
+//  restoring the register context
 POP R2
 POP R1
 POP R0
@@ -1858,7 +1893,7 @@ INT 10
 	
 	<br>
 	Now, you will write the system call handler for processing the write request.<br>
-	<b style="font-size:20px">INT 7</b>
+	<b style="font-size:20px">INT 7</b><br>
 	<p>The write operation is handled by Interrupt 7.
 	The word to be printed is passed from the user program through its user stack as the 
 	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
@@ -1995,6 +2030,7 @@ loadi(17,30);
                             <div id="lo11" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the use of ExpL for writing application programs</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the ExpL high level library interface</li>
       
                             </ul>                                  
                                      
@@ -2004,22 +2040,43 @@ loadi(17,30);
                         </div>
                       </div>
 		<!-- End Learning Objectives-->  
-		<p>ExpL is a high level language in which you can write high application programs.
+		<p>ExpL is a high level language in which you can write high level application programs.
 		A compiler for ExpL supplied to you along with the eXpOS package will generate
-		target code compatible with the eXpOS ABI.  ExpL provides you with a function
+		target code compatible with the eXpOS ABI.  The eXpOS package also contains the code that
+		implements the eXpOS library in the file library.lib.   
+
+
+		ExpL permits application programs to call the function 
 		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface to the OS</a>, through
 		which eXpOS system calls and other library routines can be invoked.  
 		Note that the only way to make system calls from
-		a high level ExpL program is to use the exposcall() function.  However, ExpL provides read() and
-		write() statements that permit console input and output to be performed directly, without using the 
-		exposcall() function.  
+		a high level ExpL program is to use the exposcall() function.  
 		</p>
+
+        <p>The ExpL library contains assembly code that occupies two pages of memory.  The library code is supplied to
+        you along with the eXpOS package (the file library.lib contains the library code).  
+        The OS design stipulates that this library code must be pre-loaded
+        to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface.  (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
+        Your OS start up code is supposed to load this code into
+        memory pages 63 and 64 from disk blocks 13 and 14.</p>  
+
+        
+        <p>An ExpL program written by a programmer will contain library calls using the exposcall() function.  
+        The ExpL compiler will translate these calls to assembly instructions calling the library as specified
+        <a href="abi.html" target="_blank">here</a> (see low level runtime library interface). The compiler expects that the library will be loaded to the logical address 0 of the address space of the program.  The target code generated by the compiler will not contain the code for the library.  Instead, the OS is expcted to link this code (at physical pages 63 and 64)
+        into logical pages 0 and 1 when the program is loaded for execution.</p>   
+
+        <p>Hence, when the OS loads a program for execution, the library code must be linked to the logical pages
+        0 and 1 by setting the page table entries for the first two logical pages to 63 and 64.  An ExpL program will contains
+        calls to the library and hence the library linkage must be done correctly for ExpL program to run properly.</p>   
+       
+
         <p>In the previous stages, you wrote and executed application programs in assembly language. 
         Now, you will write application programs in EXPL and compile it to generate the assembly program.
         This compiled code is loaded into the XSM disk as done in previous stages.</p>
         <p><b>
         Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">EXPL Specification</a>
-        before proceeding further.</b> </p>
+        before proceeding further.(WARNING :</b> Read only the specification to understand the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
 			<li>Write an EXPL program to print all numbers below 50. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
@@ -2079,7 +2136,7 @@ loadi(17,30);
                       </div>
 		<!-- End Learning Objectives-->    
 		<p>This stage introduces you to multi-programming.  You will load two processes
-into memory during OS boostrap and put them on concurrent execution.  
+into memory during OS bootstrap and put them on concurrent execution.  
 For this, you need to modify the timer interrupt
 handler to switch between the two processes.</p>
 
