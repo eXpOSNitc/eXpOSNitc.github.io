@@ -314,7 +314,7 @@
                                         <div id="collapse6" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written</p>
+                                                <p>Arguments: File Descriptor(Integer) and Address where word to be written is present</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -825,7 +825,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. This system call can be executed only by processes whose user is either root or kernel.</p>
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by processes whose user is either root or kernel.</p>
                                                 
                                             </div>
                                         </div>
@@ -862,7 +862,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed. This system call can be executed only by processes whose user is either root or kernel.</p>
+                                                <p>Description: This system call is used to remove an existing user. This system call can be executed only by processes whose user is either root or kernel. The root user and kernel cannot be removed. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -883,6 +883,10 @@
                                                 <p>Arguments: User name, New Password</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
+                                                    <tr>
+                                                      <td>0</td>
+                                                      <td>Success</td>
+                                                    </tr>
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>Unauthorised attempt to change password</td>
@@ -912,13 +916,14 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>-1</td>
-                                                        <td>Invalid Username</td>
-                                                    </tr> 
-						    <tr>
                                                         <td>User Identifier</td>
                                                         <td>Success</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid Username</td>
+                                                    </tr> 
+						                                       
                                                                                                         
                                                 </table>
                                                 
@@ -944,13 +949,14 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>User Name</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>Invalid UserID</td>
                                                     </tr> 
-						    <tr>
-                                                        <td>User Name</td>
-                                                        <td>Success</td>
-                                                    </tr> 
+						                                          
                                                                                                         
                                                 </table>
                                                 
