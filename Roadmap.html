@@ -1810,7 +1810,7 @@ of the write system call in later stages.</p>
 
 <br>
 
-<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the word to be written which is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.)
+<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP-1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
 </li> <br>
 
 <li> Push any register, say R0 to allocate space for the return value. </li> <br>
@@ -1844,7 +1844,7 @@ MOV R0, 1
 MOV R1, 0
 MOV R2, 5
 GE R2, R0
-JZ R2, 2112
+JZ R2, 2116
 MOV R1, R0
 MUL R1, R0
 
@@ -1855,6 +1855,10 @@ PUSH R2
 
 MOV R0, 5
 MOV R2, -2
+
+// storing address of the word in R1
+MOV R1, SP
+SUB R1, 1
 
 // pushing system call number and arguments 
 PUSH R0	
@@ -1895,9 +1899,9 @@ INT 10
 	Now, you will write the system call handler for processing the write request.<br>
 	<b style="font-size:20px">INT 7</b><br>
 	<p>The write operation is handled by Interrupt 7.
-	The word to be printed is passed from the user program through its user stack as the 
-	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
-	and writes it to the terminal using the OUT instruction. </p>
+	The address of the word to be printed is passed from the user program through its user stack as the 
+	second argument to the interrupt routine. The interrupt routine retrieves this address from the stack
+	and writes the word stored in this address to the terminal using the OUT instruction. </p>
 	<p>Detailed instructions for doing so are given below</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li> Store the value of user SP in a register as we need it for further computations.
@@ -1914,28 +1918,59 @@ userSP = SP;</pre>
 Details can be found at <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a>.
 	</li>
 	<br>
-	<li>In user mode, logical addresses are translated to physical address by the machine using its
+	<li>First we have to access argument 1 which is file descriptor to check whether it is valid or not. In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
 	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
-	  locations. Hence to access the word to be printed we must 
-	  calculate the physical address of the memory location where the word is stored.
-		According to the system call conventions, userSP - 3 is the location of the word to be printed.
-	  So we will manually address translate UserSP - 3.
+	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4.
 	<div>
-	<pre>alias physicalAddrWord R1;
-alias physicalPageAddr R2;
-alias offset R3;
-physicalPageAddr = [PTBR + 2 * (userSP - 3)/ 512];
-offset = (userSP - 3) % 512;
-physicalAddrWord = (physicalPageAddr * 512) + offset;</pre>
+	<pre>alias physicalPageNum R1;
+alias offset R2;
+alias fileDescPhysicalAddr R3;
+physicalPageNum = [PTBR + 2 * ((userSP - 4)/ 512)];
+offset = (userSP - 4) % 512;
+fileDescPhysicalAddr = (physicalPageNum * 512) + offset;
+alias fileDescriptor R4;
+fileDescriptor=[fileDescPhysicalAddr];</pre>
+	</div>
+	</li>
+	<br>
+	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2. Write an IF condition to check whether file descriptor is -2 or not.  
+	<div>
+	<pre>if (fileDescriptor != -2) 
+then
+	 //code when argument 1 is not valid
+else
+	 //code when argument 1 is valid
+endif;</pre>
+	</div>
+	</li>
+	<br>
+	<li>If the file descriptor is not -2, store -1 as a return value. According to system call convention, return value is stored at memory location userSP -1 in the user stack. Calculate physical address of the return value corresponding to userSP - 1 using address translation mechanism.  
+	<div>
+	<pre>if (fileDescriptor != -2) 
+then
+	 alias physicalAddrRetVal R5;
+	 physicalAddrRetVal = ([PTBR + 2 * ((userSP - 1) / 512)] * 512) + ((userSP - 1) % 512);
+	 [physicalAddrRetVal] = -1;
+else
+	 //code when argument 1 is valid
+endif;</pre>
+	</div>
+	</li>
+	<br>
+	<p>The following four steps has to be included in the else block.</p>
+	<li> Calculate physical address of the argument 2 and extract the value from it , which is logical address where the word is located.
+	<div>
+	<pre>alias wordAddr R5;
+wordAddr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];</pre>
 	</div>
 	</li>
 	<br>
 	<li>
-	Extract the word to be printed and store it in a register.
+	The word address we have calculated in the above step was pushed in user mode which uses only logical addresses. Therefore, first translate this logical addresss to corresponding physical address and then extract the word to be printed from it.
 	<div>
-	<pre>alias word R4;
-word = [physicalAddrWord];</pre>
+	<pre>alias word R6;
+word = [[PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512)];</pre>
 	</div>
 	</li>
 	<br>
@@ -1948,7 +1983,7 @@ word = [physicalAddrWord];</pre>
 	<li>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
-	<div><pre>alias physicalAddrRetVal R5;
+	<div><pre>alias physicalAddrRetVal R7;
 physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 512);
 [physicalAddrRetVal] = 0;</pre></div></li>
 
