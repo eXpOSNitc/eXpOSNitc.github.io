@@ -442,24 +442,24 @@
                   <p>Examples to use above mentioned Library functions/system calls : </p> 
                   <ol style="list-style-type: decimal;">
                   <li>
-                  <p >To open a file named example.dat, ExpL call is </p> 
+                  <p >To open a file named example.dat, ExpL library interface call is </p> 
                   <pre>
    fd=exposcall("Open","example.dat");</pre>
                   
                     <p>Here return value is stored in variable fd, which is file descriptor for file example.dat on success.</p> </li>
                   <li>
-                    <p>From above example, variable 'fd' contains file descriptor for file example.dat. To write the value stored in variable 'num' to this file, ExpL call is</p>
+                    <p>From above example, variable 'fd' contains file descriptor for file example.dat. To write the value stored in variable 'num' to this file, ExpL library interface call is</p>
                     <pre>
    temp=exposcall("Write",fd,num);     //return value stored in temp</pre>
-                    <p>To write to terminal use -2 as first argument. Note that expressions such as 2 + 3, num + 34 are not valid as second argument for write system call.</p>
+                    <p>To write to terminal, use -2 as first argument. Note that expressions such as 2 + 3, num * 34 are not valid as second argument for write system call.</p>
                     <pre>
-   temp=exposcall("Write",fd,num+2); //Invalid call</pre>
+   temp=exposcall("Write",fd,num+2); //Invalid library interface call</pre>
                    </li>
                    <li>
-                     <p>Alloc is a library function, which is predefined in ExpL library.It is a dynamic memory management routine. It allocates memory for variables of user defined type in ExpL. ExpL call to allocate memory for variable 'data' ,and suppose this variable requires 3 words of memory is  </p>
+                     <p>Alloc is a library function, which is predefined in ExpL library. It is a dynamic memory management routine. It allocates memory for variables of user defined type in ExpL. ExpL library interface call to allocate memory for variable 'data', which requires 3 words of memory is  </p>
                      <pre>
    data=exposcall("Alloc",3);</pre>
-                      <p>Remember to call library function Intialize before using first alloc in any ExpL program.</p>
+                      <p><b>Remember to call library function Intialize using exposcall() once before invoking first alloc in any ExpL program.</b></p>
                    </li>
                   </ol>
                   <p>The description of the system calls can be seen <a href = "../os_spec-files/systemcallinterface.html" target="_blank">here</a>. The dynamic memory management routines are described below.

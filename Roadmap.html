@@ -2081,14 +2081,14 @@ loadi(17,30);
 
 		ExpL permits application programs to call the function 
 		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface to the OS</a>.  Application programs must use this library interface to invoke 
-		eXpOS system calls.  Certain built in functions of the ExpL languge (Alloc, Free and Initialize - these
+		eXpOS system calls.  Certain built-in functions of the ExpL language (Alloc, Free and Initialize - these
 		functions handle ExpL dynamic memory management) are also implemented as ExpL library routines.    
-		Note that the only way to invoke an eXpOS system calls from
+		Note that the only way to invoke an eXpOS system call from
 		a high level ExpL program is to use the exposcall() function.  
 		</p>
 
         <p>The ExpL library file library.lib supplied to you along with the eXpOS package contains 
-        assembly languge implementaion of the library and occupies two pages of memory.   
+        assembly language implementation of the library and occupies two pages of memory.   
         The OS design stipulates that this library code must be pre-loaded
         to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface.  (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
         Your OS start up code is supposed to load this code into
@@ -2113,9 +2113,24 @@ loadi(17,30);
         before proceeding further.(WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
-			<li>Write an ExpL program to print all numbers below 50. See <a href="http://silcnitc.github.io/testprograms.html" target="_blank">examples</a> of
-			ExpL programs. The path to this file is assumed to be $HOME/myexpos/eXpl/samples/numbers.expl.
-			This will be the init program in this stage. </li>
+			<li>Below is the ExpL program to print numbers upto 50. Save this program as numbers.expl in $HOME/myexpos/eXpl/samples.
+			This will be the init program in this stage. 
+			<div><pre>int main()
+{
+decl
+    int temp,num;
+enddecl
+begin
+    num=1;
+    while ( num < = 50 ) do
+         temp = exposcall ( "Write" , -2, num );
+         num = num + 1;
+    endwhile;
+    return 0;
+end
+}</pre></div>
+ Refer <a href="http://silcnitc.github.io/testprograms.html" target="_blank">here</a> for  more examples of
+			ExpL programs.</li><br>
 			
 			<li>Compile this program using the command
 			<div><pre>cd $HOME/myexpos/eXpl
@@ -2126,7 +2141,7 @@ save the file to a different name before compiling the next ExpL program).</p>
  
 
 
-			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li>
+			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li><br>
 			<li>Run the XSM machine.</li>
 			</ol>
 			
@@ -2142,8 +2157,15 @@ save the file to a different name before compiling the next ExpL program).</p>
 								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
 								of calls in debug mode.  
 		</div>
-				<p><b style="color:#26A65B">Assignment 1 : </b> Write an EXPL program to print all odd numbers from
+				<p><b style="color:#26A65B">Assignment 1 : </b> Write an ExpL program to print all odd numbers from
 				1-100 and run the machine with this program loaded as the init.</p>
+				<p><b style="color:#26A65B">Assignment 2 : </b> Write an ExpL program to include a user defined type <b>Student</b> as follows
+				<div><pre>Student
+{
+    str name;
+    int marks;
+}</pre></div>
+Declare a variable of type Student, assign values "John", 89 for name and marks respectively and print the values to the terminal.  Run the machine with this as an init program. Don't forget to intialize the heap and allocate the memory for a variable before assigning values to its attributes.</p>
 			
         </div>
         </div>
@@ -2206,7 +2228,7 @@ scheduler will be taken up in later stages.
 		<div><pre>while(1) do
 endwhile</pre></div>
 		<br>
-		An EXPL program for idle is given below.
+		An ExpL program for idle is given below.
 		<div><pre>int main()
 {
 	decl
