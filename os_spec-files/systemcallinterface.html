@@ -256,12 +256,12 @@
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
-                                                    <tr>
+                                                   <!-- <tr>
                                                         <td>-2</td>
                                                         <td>File is locked by the calling process.</td>
-                                                    </tr> 
+                                                    </tr> -->
                                                 </table>
-                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if file was locked by the process which invoked the system call.</p>
+                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. <!--  Close system call fails if file was locked by the process which invoked the system call.--></p>
                                             </div>
                                         </div>
                                     </div>
@@ -550,7 +550,14 @@
                                             <div class="panel-body">
                                                 
                                                 <p>Arguments: None</p>
-                                                <p>Return Value:None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                     
+                                                </table>
                                                 
                                                 <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
                                                 

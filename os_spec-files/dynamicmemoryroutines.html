@@ -147,14 +147,14 @@
 
 
   <tr>
-   <td rowspan="3">Close</td>
-   <td rowspan="3">"Close"</td>
-   <td rowspan="3">File Descriptor</td>
-   <td rowspan="3">-</td>
-   <td rowspan="3">-</td>
+   <td rowspan="2">Close</td>
+   <td rowspan="2">"Close"</td>
+   <td rowspan="2">File Descriptor</td>
+   <td rowspan="2">-</td>
+   <td rowspan="2">-</td>
   <td>0 - Success</tr>
     <td>-1 - File Descriptor is invalid</tr>
-    <td>-2 - File is locked by calling process</tr>
+   <!-- <td>-2 - File is locked by calling process</tr>-->
   </tr>
                                    
 <tr>
@@ -169,13 +169,15 @@
     <td>-3 - permission denied</td> 
   </tr>
   <tr>
-	  <td rowspan="2">Write</td>
-	  <td rowspan="2">"Write"</td>
-      <td rowspan="2">File Descriptor</td>
-      <td rowspan="2">Variable/Constant</td>
-      <td rowspan="2">-</td>
+	  <td rowspan="4">Write</td>
+	  <td rowspan="4">"Write"</td>
+      <td rowspan="4">File Descriptor</td>
+      <td rowspan="4">Variable/Constant</td>
+      <td rowspan="4">-</td>
       <td>0 - Success </tr>
-    <td>-1 - File Descriptor given is invalid</tr>
+      <td>-1 - File Descriptor given is invalid</tr>
+      <td>-2 - No disk space</tr>
+      <td>-3 - Permission denied</tr>
   </tr>
 
   <tr>
@@ -197,7 +199,7 @@
     <td rowspan="3">-</td>
     <td>0 - Success</tr>
     <td>-1 - File Descriptor given is invalid</tr>
-    <td>-2 - Read Error</tr> 
+   <td>-2 - File pointer has reached the end of file</tr> 
   </tr>
 <!--- -->
 
@@ -314,7 +316,7 @@
     <td>-</td>
     <td>-</td>
     <td>-</td>
-    <td>-</td> 
+    <td>-1 - Permission denied</td> 
   </tr>
      <tr>
     <td style="color:red" rowspan="3">Newusr</td>
@@ -439,6 +441,7 @@
 
   </tr>
 				</table>
+				  <p><b style="color:#26A65B">Note : </b> According to syntax of exposcall(), it needs four arguments. These arguments are func_code, arg1, arg2, arg3. func_code is necessary for every exposcall() to recognize the Library function/System call. The remaining number of arguments varies according to Library interface specification of the corresponding func_code. Even if exposcall() is invoked with more number of arguments than required for a particular Library function/System call, they are ignored.</p>
                   <p>Examples to use above mentioned Library functions/system calls : </p> 
                   <ol style="list-style-type: decimal;">
                   <li>
@@ -459,7 +462,8 @@
                      <p>Alloc is a library function, which is predefined in ExpL library. It is a dynamic memory management routine. It allocates memory for variables of user defined type in ExpL. ExpL library interface call to allocate memory for variable 'data', which requires 3 words of memory is  </p>
                      <pre>
    data=exposcall("Alloc",3);</pre>
-                      <p><b>Remember to call library function Intialize using exposcall() once before invoking first alloc in any ExpL program.</b></p>
+                       
+                      <p><b>The present library routine alloc allocates 8 words for any variable irrespective of the size mentioned in its alloc exposcall(). So, do not define a user defined type having more than 8 fields. Remember to call library function Intialize using exposcall() once before invoking first alloc in any ExpL program.</b></p>
                    </li>
                   </ol>
                   <p>The description of the system calls can be seen <a href = "../os_spec-files/systemcallinterface.html" target="_blank">here</a>. The dynamic memory management routines are described below.
@@ -531,7 +535,7 @@ reclaimed for future allocation. </p>
                                                         <td>No allocation</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Alloc operation takes size (integer) as an input and when successful, allocates contiguous words (in the heap) equal to the size specified and returns the address of the allocated memory.</p>  
+                                                <p>Description: The Alloc operation takes size (integer) as an input and when successful, allocates contiguous words (in the heap) equal to the size specified and returns the address of the allocated memory.The present implementation of library routine alloc allocates 8 words for any variable irrespective of the size mentioned in its alloc exposcall(). So, do not define a user defined type having more than 8 fields.</p>  
   
                                             </div>
                                         </div>
