@@ -143,12 +143,12 @@
                   <li><b>USER AREA PAGE NUMBER</b> (1 word) - Page number allocated for the user area of the process. </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the top of the kernel stack of the process. The <b>offset of this address within the user area</b> is stored in this field.</li>
                   <li><b>USER STACK POINTER</b> (1 word) - Logical address of the top of the user stack of the process. This is used when the process is running in kernel mode and the machine's stack pointer is pointing to the top of the kernel stack.</li>
-                  <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER PROCESS PAGE TABLE</a>.</li>
+                  <li><b>PTBR</b> (1 word) - pointer to <a href="#per_page_table">PER-PROCESS PAGE TABLE</a>.</li>
 		  <li><b>PTLR</b> (1 word) - PAGE TABLE LENGTH REGISTER of the process</a>.</li>	
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
-              <p>Note: In this version of eXpOS, the <a href="#per_process_table">Per-Process Resource Table</a> and <a href="#disk_map_table">Disk Map Table</a> are stored in the user area of each process. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
+              <p>Note: In this version of eXpOS, the <a href="#per_process_table">Per-Process Resource Table</a> is stored in the user area of each process. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
               
               <!-- START ITEM #1 -->
                         <div class="panel panel-default" id="state">
@@ -214,7 +214,37 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                              </div>
                         </div>
               <br>
-             
+
+              <!-- START ITEM #3 -->
+              <br>
+                        <div class="panel panel-default " id="disk_map_table">
+                            <br>
+                            <br>
+                            <br>
+                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS DISK MAP TABLE</h4>                          
+                          <div class="panel-body">
+                              <p>The Disk Map Table has 10 entries and each entry is of size 2 words. It stores the disk block number corresponding to the code pages of the process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
+                              <p>The per-process Disk Map Table stores the disk block number corresponding to the pages of each process. The Disk Map Table has 10 entries for a single process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
+ 
+ 
+ <p>The entry in the disk map table entry has the following format: </p>
+               <table class="table table-bordered" >
+                  <tr>
+                      <td style="border: 1px solid black">User Area in disk</td>
+                      <td style="border: 1px solid black">Unused</td>
+                      <td style="border: 1px solid black">Heap 1 in disk</td>
+                      <td style="border: 1px solid black">Heap 2 in disk</td>
+                      <td style="border: 1px solid black">Code 1 in disk</td>
+                      <td style="border: 1px solid black">Code 2 in disk</td>
+                      <td style="border: 1px solid black">Code 3 in disk</td>
+                      <td style="border: 1px solid black">Code 4 in disk</td>
+                      <td style="border: 1px solid black">Stack Page 1 in disk</td>
+                      <td style="border: 1px solid black">Stack Page 2 in disk</td>
+                  </tr>
+              </table>
+                             </div>
+                        </div> 
+              
               
               <!-- START ITEM #5 -->
               <br>
@@ -226,7 +256,7 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                           <div class="panel-body">
 
                               <p>Corresponding to each user process, the kernel maintains a seperate memory region (called the user area) for its own purposes.  The present version of eXpOS allocates one memory page per process as the user area.   A part of this space is 
-used to store the disk map table and the per process resource table of the process.  The rest of the memory is alloted for the kernel stack of the process.  
+used to store the per process resource table of the process.  The rest of the memory is alloted for the kernel stack of the process.  
 
 Hence in eXpOS, each process has a kernel stack in addition to user stack. We maintain a seperate stack for the kernel operations to prevent user-level "hacks" into kernel. 
 
@@ -236,28 +266,7 @@ Hence in eXpOS, each process has a kernel stack in addition to user stack. We ma
  
                              </div>
                         </div> 
-              <!-- START ITEM #3 -->
-              <br>
-                        <div class="panel panel-default " id="disk_map_table">
-                            <br>
-                            <br>
-                            <br>
-                            <h4 class="panel-title" style="padding-top: 20px">DISK MAP TABLE</h4>                          
-                          <div class="panel-body">
-                              <p>The Disk Map Table has 10 entries and each entry is of size 2 words. It stores the disk block number corresponding to the code pages of the process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
- 
- 
- <p>The disk map table entry has the following format. </p>
-               <table class="table table-bordered" >
-                  <tr>
-                      <td style="border: 1px solid black">Page number (1 word)</td>
-                      <td style="border: 1px solid black">Disk block number (1 word)</td>
-                      
-                  </tr>
-              </table>
-                             </div>
-                        </div> 
-                        
+                       
                                       <!-- START ITEM #5 -->
               <br>
                         <div class="panel panel-default " id="per_process_table">
@@ -288,7 +297,7 @@ Hence in eXpOS, each process has a kernel stack in addition to user stack. We ma
                             <br>
                             <br>
                             <br>
-                            <h4 class="panel-title" style="padding-top: 20px">PER PROCESS KERNEL STACK</h4>                          
+                            <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS KERNEL STACK</h4>                          
                           <div class="panel-body">
                               <p>Control is tranferred from a user program to a kernel module on the occurence of one of the following events : <ol>
          <li> The user program executes a system call </li>
