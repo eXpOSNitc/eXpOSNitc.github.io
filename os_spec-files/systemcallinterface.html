@@ -149,7 +149,9 @@
                                                     </tr> 
                                                 </table>
                                                 <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
-                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is exclusive or open respectively.</p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is  open or exclusive respectively.  If the exclusive flag is set, write 
+                                                and delete system calls will fail except when made by the owner or the
+                                                root.</p>
                                             </div>
                                         </div>
                                     </div>

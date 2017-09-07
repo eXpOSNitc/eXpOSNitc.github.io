@@ -126,7 +126,7 @@
     <td rowspan="3">Create</td>
     <td rowspan="3">"Create"</td>	
     <td rowspan="3">File Name</td>
-    <td rowspan="3">Permission</td>
+    <td rowspan="3">Permission <font style="color: red" >*</font></td>
     <td rowspan="3">-</td>
     <td>0 - Success</tr>
     <td>-1 - No space for file</tr>
@@ -171,13 +171,23 @@
   <tr>
 	  <td rowspan="4">Write</td>
 	  <td rowspan="4">"Write"</td>
-      <td rowspan="4">File Descriptor</td>
-      <td rowspan="4">Variable/Constant</td>
+      <td rowspan="4">File Descriptor (-2 for terminal)</td>
+      <td rowspan="4">Variable</td>
       <td rowspan="4">-</td>
       <td>0 - Success </tr>
       <td>-1 - File Descriptor given is invalid</tr>
       <td>-2 - No disk space</tr>
       <td>-3 - Permission denied</tr>
+  </tr>
+ <tr>
+    <td rowspan="3">Read</td>
+    <td rowspan="3">"Read"</td>
+    <td rowspan="3">File Descriptor (-1 for terminal)</td>
+    <td rowspan="3">Variable</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - File Descriptor given is invalid</tr>
+   <td>-2 - File pointer has reached the end of file</tr> 
   </tr>
 
   <tr>
@@ -191,16 +201,7 @@
     <td>-2 - Offset moves File pointer outside file</tr>
   </tr>
 
-  <tr>
-	  <td rowspan="3">Read</td>
-	  <td rowspan="3">"Read"</td>
-    <td rowspan="3">File Descriptor</td>
-    <td rowspan="3">Variable</td>
-    <td rowspan="3">-</td>
-    <td>0 - Success</tr>
-    <td>-1 - File Descriptor given is invalid</tr>
-   <td>-2 - File pointer has reached the end of file</tr> 
-  </tr>
+ 
 <!--- -->
 
   <tr>
@@ -441,6 +442,11 @@
 
   </tr>
 				</table>
+
+        <p><font color="red">*</font>Permission = 1 for exclusive and permission = 0 for open.  If the file
+is created with exclusive flag set, then write and delete system calls will fail when executed by any
+user other than the owner or the root (see <a href="../os_spec-files/multiuser.html" target="_blank">here</a>).</p>
+
 				  <p><b style="color:#26A65B">Note : </b> According to syntax of exposcall(), it needs four arguments. These arguments are func_code, arg1, arg2, arg3. func_code is necessary for every exposcall() to recognize the Library function/System call. The remaining number of arguments varies according to Library interface specification of the corresponding func_code. Even if exposcall() is invoked with more number of arguments than required for a particular Library function/System call, they are ignored.</p>
                   <p>Examples to use above mentioned Library functions/system calls : </p> 
                   <ol style="list-style-type: decimal;">
