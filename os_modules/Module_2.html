@@ -167,7 +167,7 @@
     <td>4</td>
     <td>Release Block</td>
     <td>Block Number</td>
-    <td>0 or -1</td>
+    <td>NIL</td>
   </tr>
 
 
@@ -177,33 +177,44 @@
 
                
    <h3> Get Free Page </h3>
-   <i> <b>Description </b></i>: Returns the page number of a free page (and updates the MFL). Returns -1 if memory is full.<br><br>
+   <i> <b>Description </b></i>: Returns the page number of a free page.<br><br>
 
 <pre>
-    loop through entries in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>{
+	Increment WAIT_MEM_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
+
+	while ( memory is full ){   /* Check the MEM_FREE_COUNT in the System Status Table */
+    		Set state of the process as ( WAIT_MEM , ____);
+    	Invoke the scheduler;
+    	}
+
+	// There is a free page available for use.
+	Decrement the WAIT_MEM_COUNT field and decrement the MEM_FREE_COUNT field in the System Status Table.
+    
+	loop through entries in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>{
         if ( a free entry is found ){
               Set the Memory Free List entry as 1;
               Return the corresponding page number;
         }
     }
-    return -1;
 </pre>
 
-Called by fork and exec system calls. Also called by exception handler on demand paging. 
+Called by fork and exec system calls. Also called by exception handler on page fault. 
 
  <h3> Release Page </h3>
  <i> <b>Description </b></i>: Decrements the entry corresponding to page in memory free list. <br><br>
 
 
 <pre>
-    Decrement the entry corresponding to the page in the Memory free list;
+    Decrement the entry corresponding to the page in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>;
+
+    Decrement the MEM_FREE_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
     
     return;
 </pre>
 Called by the Free page table and Free UArea Page functions.
 
 <br><br>
-Note : Do not Clear the contents of the page. This may lead to unexpected behaviour.
+Note : Do not clear the contents of the page. A page may be shared by multiple processes and a call to release may not make the page free.
                
    <h3> Get Free Block</h3>
    <i> <b>Description </b></i>: Returns the block number of a free disk block. Returns -1 if disk is full.<br><br>
@@ -219,7 +230,7 @@ Note : Do not Clear the contents of the page. This may lead to unexpected behavi
 </pre>
 
  <h3> Release Block</h3>
- <i> <b>Description </b></i>: Decrements the entry corresponding to the disk block in the disk free list. (Returns -1 if trying to free an already free block?)<br><br>
+ <i> <b>Description </b></i>: Decrements the entry corresponding to the disk block in the disk free list.<br><br>
 
 
 <pre>
@@ -227,6 +238,8 @@ Note : Do not Clear the contents of the page. This may lead to unexpected behavi
     
     return;
 </pre>
+
+Note: A block may be shared by multiple processes and a call to release may not make the block free.
 
 <br><br>
 

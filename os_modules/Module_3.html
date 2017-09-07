@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title> File Buffer Manager</title>
+     <title> File Manager</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -121,13 +121,14 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 >  File Buffer Manager </h2>
+                <h2 >  File Manager </h2>
                 <br/>
                 <br/>
                 
-                <p> This module contains the functions that handle read/write from/to the buffer.
+                <p> This module contains the functions that manages files.
 
                 </p>
+		<p><b>Important Note:</b> All functions in this module expect that the <b>inode is locked</b> before they are called.</p>
               </div>
 
                  <br> <br> 
@@ -144,7 +145,7 @@
 
   <tr>    
     <td>1</td>
-    <td>Buffer Write</td>
+    <td>Buffered Write</td>
     <td>Disk Number, Offset, Word </td>
     <td>NIL</td>
   </tr>
@@ -152,34 +153,51 @@
 
  <tr>    
     <td>2</td>
-    <td>Buffer Read</td>
+    <td>Buffered Read</td>
     <td>Disk Number, Offset, Memory Address</td>
     <td>NIL</td>
   </tr>
+
+ <tr>    
+    <td>3</td>
+    <td>Open</td>
+    <td>File Name</td>
+    <td>File Table Index, -1 or -2</td>
+  </tr>
+
+ <tr>    
+    <td>4</td>
+    <td>Close</td>
+    <td>File Table Index</td>
+    <td>NIL</td>
+  </tr>
+
 
    </table>
                      
 
                
-   <h3> Buffer Write </h3>
+   <h3> Buffered Write </h3>
    <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word provided is written into the offset position of the buffer.<br> Buffer managemnet is handled by this function internally.<br><br>
 
 <pre>
-    Calculate buffer Number as Disk Number % 4;
+    Identify the buffer ; 			
+    /* Buffer Number = (Disk Number % 4) is a simple scheme, 
+    good enough for our purposes. More efficient schemes are used in real systems */
     
-    Acquire the buffer by calling the Acquire_Buffer() function
-    in the Resource Manager module;
+    Acquire the buffer by calling the Acquire_Buffer() function	
+    in the <a href="Module_0.html">Resource Manager module</a>;
     
-    if (the buffer contains a different disk block){
+    if (the buffer contains a different disk block){  			/* check block number in <a href="../os_design-files/mem_ds.html#buffer_table">Buffer Table</a>. */
         
-        if( the buffer contents are dirty){
+        if (the buffer contents are dirty){					/* check DIRTY BIT of buffer table */
               Write back the contents of the buffer
               to the disk by invoking disk_store() 
-              function in the device manager module;
+              function in the <a href="Module_4.html">device manager module</a>;
         }
         
         Load the required disk block into the buffer by invoking
-        the disk_load() function in the device manager module;
+        the disk_load() function in the <a href="Module_4.html">device manager module</a>;
 
         Set the new Disk block number in the Buffer table entry;
     }
@@ -200,21 +218,23 @@ Called by the Write system call.
 
 
 
- <h3> Buffer Read </h3>
- <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word present at the offset position of the buffer is copied to the Memory address provided. <br> Buffer managemnet is handled by this function internally.<br> <br>
+ <h3> Buffered Read </h3>
+ <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word present at the offset position of the buffer is copied to the Memory address provided as input. Buffer management is handled by this function internally.<br> <br>
 NOTE: Physical memory address must be provided. <br> <br>
 <pre>
-    Calculate buffer Number as Disk Number % 4;
+    Identify the buffer ; 			
+    /* Buffer Number = (Disk Number % 4) is a simple scheme, 
+    good enough for our purposes. More efficient schemes are used in real systems */
     
     Acquire the buffer by calling the Acquire_Buffer() function
-    in the Resource Manager module;
+    in the <a href="Module_0.html">Resource Manager module</a>;
     
-    if (the buffer contains a different disk block){
+    if (the buffer contains a different disk block){  			/* check block number in <a href="../os_design-files/mem_ds.html#buffer_table">Buffer Table</a>. */
         
-        if( the buffer contents are dirty){
+        if (the buffer contents are dirty){					/* check DIRTY BIT of buffer table */
               Write back the contents of the buffer
               to the disk by invoking disk_store() 
-              function in the device manager module;
+              function in the <a href="Module_4.html">device manager module</a>;
               
               Mark the buffer as clean in the 
               corresponding buffer table entry;
@@ -237,6 +257,48 @@ NOTE: Physical memory address must be provided. <br> <br>
 </pre>
 
 Called by the Read system call. <br> <br><br>
+           
+   <h3> Open </h3>
+   <i> <b>Description </b></i>: Locates the file in the inode table and makes an entry in the Open File Table. Returns the Open File Table index or an error code if file does not exist or the table is full.<br><br>
+
+<pre>
+
+Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file.
+
+If file is not present in Inode Table or if it is of type EXEC, return -1. 	/* Only data files can be opened */
+
+Find a free entry in the <a href="../os_design-files/mem_ds.html#file_table">Open File Table</a> and set the INODE INDEX to the inode table index of the file. Set LSEEK to 0.
+
+If there are no free entries, return -2.  /* Reached maximum number of open files in the system. */
+
+Increment the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a> 
+
+return the Open File Table Index.
+
+</pre>
+
+Called by the open system call.
+
+<h3> Close </h3>
+   <i> <b>Description </b></i>: Closes the open instance of a file. Assumes a valid Open File Table index is given as input. <br><br> 
+
+<pre>
+
+Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file from the Open File Table.
+
+In the <a href="../os_design-files/mem_ds.html#file_table">Open File Table Entry</a>, decrement the Open Instance Count.
+
+If the count becomes 0, invalidate the entry by setting all fields to -1.
+
+Decrement the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a>.
+
+return;
+</pre>
+
+Called by the close, exit system call.
+
+
+
 
                      <!--end-->   
                     
