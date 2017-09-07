@@ -1780,19 +1780,19 @@ ireturn;
  some software interrupt handler.  For example, the write system call of eXpOS is coded inside the INT 7 handler.  
  An interrupt handler may contain code for several system calls. 
  (For example, in the eXpOS implementation on XSM, the routines for create, delete and seek system calls 
- are coded inside the INT 4 handler.see  <a href="os_design-files/Sw_interface.html" target="_blank">here </a> for details).  To identify the correct routine,the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program,the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
+ are coded inside the INT 4 handler - find details<a href="os_design-files/Sw_interface.html" target="_blank"> here</a>. To identify the correct routine, the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program, the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
  software interrupt using the INT instruction.  The arguments and the system call number are passed through the user 
  program's stack.</p>  
 
  <p>When a program invokes a system call, the system switches from user mode to kernel mode.  Hence, system calls run in 
- kernel mode and hence have access to all the hardware resources.  Upon completing the call, the system call places
+ kernel mode and thus have access to all the hardware resources.  Upon completing the call, the system call places
  return value of the call into designated position in the user program's stack and returns
  to the calling program using the IRET.  Since the IRET instruction switches mode back to user mode, the user program
  resumes execution after the call in user mode.  The user program extracts the return values of the call from the 
  user stack.</p>  
 
 <p>In this stage, we will write a small kernel routine for handling console write. This is part of the functionality of the 
-write system call (system call number 5) programmed inside the INT 7 handler.  You will implement the full functionality
+write system call (system call number 5) programmed inside the INT 7 handler. You will implement the full functionality
 of the write system call in later stages.</p>  
 
 
@@ -1810,7 +1810,7 @@ of the write system call in later stages.</p>
 
 <br>
 
-<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP-1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
+<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP - 1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
 </li> <br>
 
 <li> Push any register, say R0 to allocate space for the return value. </li> <br>
@@ -1891,12 +1891,15 @@ INT 10
 	</pre>
 	</div>
 	</p>
-	
-	
-	<br>
-	
-	<br>
-	Now, you will write the system call handler for processing the write request.<br>
+ <br>
+  <br>
+  <div style=" width: 100%">
+     <p style="font-size:18px">Contents of the stack before and after the INT instruction</p>
+     <img src="img/system_call_stack1.png" width="350px" height="350px" style="float:left; margin-right: 100px; margin-left:75px;">
+     <img src="img/system_call_stack2.png" width="350px" height="350px" style="float:right; margin-left: 100px; margin-right:75px;">
+  </div>
+  
+	Now, you will write the system call handler for processing the write request.<br><br>
 	<b style="font-size:20px">INT 7</b><br>
 	<p>The write operation is handled by Interrupt 7.
 	The address of the word to be printed is passed from the user program through its user stack as the 
@@ -1921,7 +1924,7 @@ Details can be found at <a href="os_design-files/stack_smcall.html" target="_bla
 	<li>First we have to access argument 1 which is file descriptor to check whether it is valid or not. In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
 	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
-	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4.
+	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4 (See contents of the stack after INT instruction in above image for reference).
 	<div>
 	<pre>alias physicalPageNum R1;
 alias offset R2;
@@ -1934,7 +1937,7 @@ fileDescriptor=[fileDescPhysicalAddr];</pre>
 	</div>
 	</li>
 	<br>
-	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2. Write an IF condition to check whether file descriptor is -2 or not.  
+	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2 - see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>. Write an IF condition to check whether file descriptor is -2 or not.  
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -2030,6 +2033,11 @@ loadi(17,30);
 	</li>
 	</ol>
  	<br>
+  <p><code>Note:</code>Starting from the next stage, you will be writing user programs using a high level language called
+  ExpL.  ExpL allows you to write programs that invoke system calls using the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank"> exposcall() function </a>.
+  The ExpL compiler will automatically generate code to translate your high level function call to a call to the <a href="abi.html" target="_blank"> eXpOS
+  library</a> and the library contains code to translate the call to an INT invocation as done by you
+  in this stage.  The next stage will introduce you to ExpL.</p>
 	<a data-toggle="collapse"  href="#collapseq3"><b>Q1.</b> Why should we calculate the physical address of userSP-3 and userSP-1
 	seperately instead of calculating one and adding/subtracting the difference from the calculated value?</a>
                             <div id="collapseq3" class="panel-collapse collapse">
@@ -2080,7 +2088,7 @@ loadi(17,30);
 		target code compatible with the eXpOS specification.  
 
 		ExpL permits application programs to call the function 
-		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface to the OS</a>.  Application programs must use this library interface to invoke 
+		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface </a>to the OS.  Application programs must use this library interface to invoke 
 		eXpOS system calls.  Certain built-in functions of the ExpL language (Alloc, Free and Initialize - these
 		functions handle ExpL dynamic memory management) are also implemented as ExpL library routines.    
 		Note that the only way to invoke an eXpOS system call from
@@ -2090,7 +2098,7 @@ loadi(17,30);
         <p>The ExpL library file library.lib supplied to you along with the eXpOS package contains 
         assembly language implementation of the library and occupies two pages of memory.   
         The OS design stipulates that this library code must be pre-loaded
-        to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface.  (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
+        to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
         Your OS start up code is supposed to load this code into
         memory pages 63 and 64 from disk blocks 13 and 14.</p>  
 
@@ -2110,7 +2118,7 @@ loadi(17,30);
         This compiled code is loaded into the XSM disk as done in previous stages.</p>
         <p><b>
         Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
-        before proceeding further.(WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
+        before proceeding further. (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
 			<li>Below is the ExpL program to print numbers upto 50. Save this program as numbers.expl in $HOME/myexpos/eXpl/samples.
@@ -2157,6 +2165,7 @@ save the file to a different name before compiling the next ExpL program).</p>
 								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
 								of calls in debug mode.  
 		</div>
+    <br>
 				<p><b style="color:#26A65B">Assignment 1 : </b> Write an ExpL program to print all odd numbers from
 				1-100 and run the machine with this program loaded as the init.</p>
 				<p><b style="color:#26A65B">Assignment 2 : </b> Write an ExpL program to include a user defined type <b>Student</b> as follows
@@ -2166,6 +2175,13 @@ save the file to a different name before compiling the next ExpL program).</p>
     int marks;
 }</pre></div>
 Declare a variable of type Student, assign values "John", 89 for name and marks respectively and print the values to the terminal.  Run the machine with this as an init program. Don't forget to intialize the heap and allocate the memory for a variable before assigning values to its attributes.</p>
+ <p><b style="color:#26A65B">Assignment 3 : 
+ </b> <b>[Writing your own library]</b> Instead of using the library implementation library.lib, write
+ your own library (in assembly language) to support only the write system call to console.  Your library code must extract
+ arguments from the stack, check whether the request is for a console write, if so call INT 7 after supplying
+ proper arguments in the stack as done in the previous stage.  Upon return from the system call, your library
+ routine must set the return value through the stack (setting return value in the proper location of
+ the stack -see details here) and return control back to the application.</p>
 			
         </div>
         </div>
