@@ -256,12 +256,12 @@
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
-                                                    <tr>
+                                                   <!-- <tr>
                                                         <td>-2</td>
                                                         <td>File is locked by the calling process.</td>
-                                                    </tr> 
+                                                    </tr> -->
                                                 </table>
-                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked.  Close system call fails if file was locked by the process which invoked the system call.</p>
+                                                <p>Description: After all the operations are done, the user closes the file using the Close system call. The file descriptor ceases to be valid once the close system call is invoked. <!--  Close system call fails if file was locked by the process which invoked the system call.--></p>
                                             </div>
                                         </div>
                                     </div>
@@ -314,7 +314,7 @@
                                         <div id="collapse6" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: File Descriptor(Integer) and a Word (String/Integer) to be written</p>
+                                                <p>Arguments: File Descriptor(Integer) and Address where word to be written is present</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
@@ -550,7 +550,14 @@
                                             <div class="panel-body">
                                                 
                                                 <p>Arguments: None</p>
-                                                <p>Return Value:None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Permission denied</td>
+                                                    </tr> 
+                                                     
+                                                </table>
                                                 
                                                 <p>Description: Shutdown system call terminates all processes and halts the machine. </p>
                                                 
@@ -825,7 +832,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel. This system call can be executed only by processes whose user is either root or kernel.</p>
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by processes whose user is either root or kernel.</p>
                                                 
                                             </div>
                                         </div>
@@ -862,7 +869,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed. This system call can be executed only by processes whose user is either root or kernel.</p>
+                                                <p>Description: This system call is used to remove an existing user. This system call can be executed only by processes whose user is either root or kernel. The root user and kernel cannot be removed. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -883,6 +890,10 @@
                                                 <p>Arguments: User name, New Password</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
+                                                    <tr>
+                                                      <td>0</td>
+                                                      <td>Success</td>
+                                                    </tr>
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>Unauthorised attempt to change password</td>
@@ -912,13 +923,14 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>-1</td>
-                                                        <td>Invalid Username</td>
-                                                    </tr> 
-						    <tr>
                                                         <td>User Identifier</td>
                                                         <td>Success</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-1</td>
+                                                        <td>Invalid Username</td>
+                                                    </tr> 
+						                                       
                                                                                                         
                                                 </table>
                                                 
@@ -944,13 +956,14 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>User Name</td>
+                                                        <td>Success</td>
+                                                    </tr>
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>Invalid UserID</td>
                                                     </tr> 
-						    <tr>
-                                                        <td>User Name</td>
-                                                        <td>Success</td>
-                                                    </tr> 
+						                                          
                                                                                                         
                                                 </table>
                                                 

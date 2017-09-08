@@ -119,78 +119,108 @@
         <th style="text-align: center;">Argument 1</th>
         <th style="text-align: center;">Argument 2</th>
         <th style="text-align: center;">Argument 3</th>
+        <th style="text-align: center;"> Return value </th>
     </tr>
 
 <tr>
-    <td>Create</td>
-    <td>"Create"</td>	
-    <td>File Name</td>
-    <td>Permission</td>
-    <td>-</td>
+    <td rowspan="3">Create</td>
+    <td rowspan="3">"Create"</td>	
+    <td rowspan="3">File Name</td>
+    <td rowspan="3">Permission</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - No space for file</tr>
+    <td>-2 - File already exists</tr>
   </tr>
 
   <tr>
-    <td>Open</td>
-    <td>"Open"</td>		
-    <td>File Name</td>
-    <td>-</td>
-      <td>-</td>
+    <td rowspan="4">Open</td>
+    <td rowspan="4">"Open"</td>		
+    <td rowspan="4">File Name</td>
+    <td rowspan="4">-</td>
+    <td rowspan="4">-</td>
+    <td> File Descriptor - Success</tr>
+    <td> -1 - File Not found or file is not data or root file</tr>
+    <td>-2 - Process has reached its limit of resources</tr>
+    <td>-3 - System has reached its limit of open files</tr> 
   </tr>
 
 
   <tr>
-   <td>Close</td>
-   <td>"Close"</td>
-   <td>File Descriptor</td>
-   <td>-</td>
-   <td>-</td>
+   <td rowspan="2">Close</td>
+   <td rowspan="2">"Close"</td>
+   <td rowspan="2">File Descriptor</td>
+   <td rowspan="2">-</td>
+   <td rowspan="2">-</td>
+  <td>0 - Success</tr>
+    <td>-1 - File Descriptor is invalid</tr>
+   <!-- <td>-2 - File is locked by calling process</tr>-->
   </tr>
                                    
 <tr>
-    <td>Delete</td>
-    <td>"Delete"</td>	
-    <td>File Name</td>
-    <td>-</td>
-    <td>-</td>
+    <td rowspan="4">Delete</td>
+    <td rowspan="4">"Delete"</td>	
+    <td rowspan="4">File Name</td>
+    <td rowspan="4">-</td>
+    <td rowspan="4">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - File not found or file is not a data file</tr>
+    <td>-2 - File is open</tr>
+    <td>-3 - permission denied</td> 
   </tr>
   <tr>
-	  <td>Write</td>
-	  <td>"Write"</td>
-      <td>File Descriptor</td>
-      <td>Word</td>
-      <td>-</td>
+	  <td rowspan="4">Write</td>
+	  <td rowspan="4">"Write"</td>
+      <td rowspan="4">File Descriptor</td>
+      <td rowspan="4">Variable/Constant</td>
+      <td rowspan="4">-</td>
+      <td>0 - Success </tr>
+      <td>-1 - File Descriptor given is invalid</tr>
+      <td>-2 - No disk space</tr>
+      <td>-3 - Permission denied</tr>
   </tr>
 
   <tr>
-	  <td>Seek</td>
-	  <td>"Seek"</td>
-      <td>File Descriptor</td>
-      <td>Offset</td>
-      <td>-</td>
+	  <td rowspan="3">Seek</td>
+	  <td rowspan="3">"Seek"</td>
+      <td rowspan="3">File Descriptor</td>
+      <td rowspan="3">Offset</td>
+      <td rowspan="3">-</td>
+      <td>0 - Success</tr>
+    <td>-1 - File Descriptor is invalid</tr>
+    <td>-2 - Offset moves File pointer outside file</tr>
   </tr>
 
   <tr>
-	  <td>Read</td>
-	  <td>"Read"</td>
-      <td>File Descriptor</td>
-      <td>Buffer</td>
-      <td>-</td>
+	  <td rowspan="3">Read</td>
+	  <td rowspan="3">"Read"</td>
+    <td rowspan="3">File Descriptor</td>
+    <td rowspan="3">Variable</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - File Descriptor given is invalid</tr>
+   <td>-2 - File pointer has reached the end of file</tr> 
   </tr>
 <!--- -->
 
   <tr>
-    <td>Fork</td>
-    <td>"Fork"</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>  
+    <td rowspan="3">Fork</td>
+    <td rowspan="3">"Fork"</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>PID - Success (in parent process)</tr>
+    <td>0 - Success (in child process)</tr>
+    <td>-1 - Failure (in parent process), Number of processes has reached maximum limit </tr> 
   </tr>		
   <tr>
-    <td>Exec</td>
-    <td>"Exec"</td>
-    <td>File Name</td>	
-    <td>-</td>
-    <td>-</td>  
+    <td rowspan="2">Exec</td>
+    <td rowspan="2">"Exec"</td>
+    <td rowspan="2">File Name</td>	
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>-1 - File not found or file is not executable</tr> 
+    <td>-2 - Out of memory or disk swap space</td>  
   </tr>
 
   <tr>
@@ -198,31 +228,36 @@
     <td>"Exit"</td>		
     <td>-</td>
     <td>-</td>
-    <td>-</td>  
+    <td>-</td> 
+    <td>-</td> 
   </tr>
 
   <tr>
 	  <td>Getpid</td>
 	  <td>"Getpid"</td>
     <td>-</td>
-      <td>-</td>
-      <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>current PID - Success</td> 
   </tr>
 
   <tr>
 	  <td>Getppid</td>
 	  <td>"Getppid"</td>
-          <td>-</td>
-            <td>-</td>
-      <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>parent PID - Success</td> 
   </tr>
 
 <tr>
-    <td>Wait</td>
-    <td>"Wait"</td>	
-    <td>Process Identifier</td>
-    <td>-</td>
-    <td>-</td>
+    <td rowspan="2">Wait</td>
+    <td rowspan="2">"Wait"</td>	
+    <td rowspan="2">Process Identifier</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - Given PID is invalid or it is PID of invoking process</tr>
   </tr>
 
   <tr>
@@ -230,38 +265,49 @@
     <td>"Signal"</td>	
     <td>-</td>
     <td>-</td>
-    <td>-</td>  
+    <td>-</td> 
+    <td>0 - Success</td>  
   </tr>
 
   <tr>
-	  <td>Semget</td>
-	  <td>"Semget"</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+	  <td rowspan="3">Semget</td>
+	  <td rowspan="3">"Semget"</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td>SEMID - Success</tr>
+    <td>-1 - Process has reached its limit of resources</tr>
+    <td>-2 - Number of semaphores has reached its maximum</td>
   </tr>
 
   <tr>
-	  <td>Semrelease</td>
-	  <td>"Semrelease"</td>
-      <td>Semaphore Descriptor</td>
-      <td>-</td>
-      <td>-</td>
+	  <td rowspan="2">Semrelease</td>
+	  <td rowspan="2">"Semrelease"</td>
+    <td rowspan="2">Semaphore Descriptor</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success</tr> 
+    <td>-1 - Invalid SEMID</tr> 
   </tr>
 
   <tr>
-	  <td>SemLock</td>
-	  <td>"SemLock"</td>
-      <td>Semaphore Descriptor</td>
-      <td>-</td>
-      <td>-</td>
+	  <td rowspan="2">SemLock</td>
+	  <td rowspan="2">"SemLock"</td>
+    <td rowspan="2">Semaphore Descriptor</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success or semaphore is already locked by the current process</tr>  
+    <td>-1 - invalid SEMID </tr> 
   </tr>
   <tr>
-	  <td>SemUnLock</td>
-	  <td>"SemUnLock"</td>
-      <td>Semaphore Descriptor</td>
-      <td>-</td>
-      <td>-</td>
+	  <td rowspan="3">SemUnLock</td>
+	  <td rowspan="3">"SemUnLock"</td>
+    <td rowspan="3">Semaphore Descriptor</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - Invalid SEMID</tr>
+    <td>-2 - Semaphore was not locked by the calling process</tr>
   </tr>
   
   <tr>
@@ -269,106 +315,160 @@
     <td>"Shutdown"</td>		
     <td>-</td>
     <td>-</td>
-      <td>-</td>
+    <td>-</td>
+    <td>-1 - Permission denied</td> 
   </tr>
      <tr>
-    <td style="color:red">Newusr</td>
-    <td>"Newusr"</td>		
-    <td>User name</td>
-    <td>Password</td>
-      <td>-</td>
+    <td style="color:red" rowspan="3">Newusr</td>
+    <td rowspan="3">"Newusr"</td>		
+    <td rowspan="3">User name</td>
+    <td rowspan="3">Password</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - User already exists</tr>
+    <td>-2 - Permission denied</tr>
   </tr>
         <tr>
-    <td style="color:red">Remusr</td>
-    <td>"Remusr"</td>		
-    <td>User name</td>
-    <td>-</td>
-      <td>-</td>
+    <td rowspan="3" style="color:red">Remusr</td>
+    <td rowspan="3">"Remusr"</td>		
+    <td rowspan="3">User name</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - User does not exist</tr> 
+    <td>-2 - Permission denied</tr>
   </tr>
         <tr>
-    <td style="color:red">Setpwd</td>
-    <td>"Setpwd"</td>		
-    <td>User name</td>
-    <td>New Password</td>
-      <td>-</td>
+    <td rowspan="2" style="color:red">Setpwd</td>
+    <td rowspan="2">"Setpwd"</td>		
+    <td rowspan="2">User name</td>
+    <td rowspan="2">New Password</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - Unauthorised attempt to change password</tr> 
   </tr>
         <tr>
-    <td style="color:red">Getuname</td>
-    <td>"Getuname"</td>		
-    <td>User ID</td>
-    <td>-</td>
-      <td>-</td>
+    <td rowspan="2" style="color:red">Getuname</td>
+    <td rowspan="2">"Getuname"</td>		
+    <td rowspan="2">User ID</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>User Name - Success</tr>
+    <td>-1 - Invalid User ID</td> 
   </tr>
      <tr>
-    <td style="color:red">Getuid</td>
-    <td>"Getuid"</td>		
-    <td>User name</td>
-    <td>-</td>
-      <td>-</td>
+    <td rowspan="2" style="color:red">Getuid</td>
+    <td rowspan="2">"Getuid"</td>		
+    <td rowspan="2">User name</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>User ID - Success</tr>
+    <td>-1 - Invalid username</td>
   </tr>
         <tr>
-    <td style="color:red">Login</td>
-    <td>"Login"</td>		
-    <td>User name</td>
-    <td>Password</td>
-      <td>-</td>
+    <td rowspan="2" style="color:red">Login</td>
+    <td rowspan="2">"Login"</td>		
+    <td rowspan="2">User name</td>
+    <td rowspan="2">Password</td>
+    <td rowspan="2">-</td>
+    <td>-1 - Invalid username or password</tr>
+    <td>-2 - Permission denied</tr> 
   </tr>
                             
     <tr>
 	  <td>Test</td>
 	  <td>"Test"</td>
-      <td>Unspecified</td>
-        <td>Unspecified</td>
-        <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>-</td>
   </tr>
   
    <tr>
 	  <td>Test1</td>
 	  <td>"Test1"</td>
-      <td>Unspecified</td>
-        <td>Unspecified</td>
-        <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>-</td>
   </tr>
   
    <tr>
 	  <td>Test2</td>
 	  <td>"Test2"</td>
-      <td>Unspecified</td>
-        <td>Unspecified</td>
-        <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>-</td>
   </tr>
   
    <tr>
 	  <td>Test3</td>
 	  <td>"Test3"</td>
-      <td>Unspecified</td>
-        <td>Unspecified</td>
-        <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>Unspecified</td>
+    <td>-</td>
   </tr>
   
   <tr class = "active">
-	  <td>Initialize</td>
-	  <td>"Heapset"</td>
-      <td>-</td>
-        <td>-</td>
-        <td>-</td>
+	  <td rowspan="2">Initialize</td>
+	  <td rowspan="2">"Heapset"</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success</tr>
+    <td style="background-color: rgb(245,245,245);" >-1 - Failure</tr>
   </tr>
   <tr class = "active">
-	  <td>Alloc</td>
-	  <td>"Alloc"</td>
-      <td>Size</td>
-        <td>Buffer</td>
-        <td>-</td>
+	  <td rowspan="2">Alloc</td>
+	  <td rowspan="2">"Alloc"</td>
+    <td rowspan="2">Size</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>Allocated address in Heap - Success</tr>
+    <td style="background-color: rgb(245,245,245);">-1 - No allocation</tr>
+
   </tr>
   <tr class = "active">
-	  <td>Free</td>
-	  <td>"Free"</td>
-      <td>Pointer</td>
-        <td>-</td>
-        <td>-</td>
+	  <td rowspan="2">Free</td>
+	  <td rowspan="2">"Free"</td>
+    <td rowspan="2">Pointer</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td>
+    <td>0 - Success</tr>
+    <td style="background-color: rgb(245,245,245);">-1 - Failure</tr>
+
   </tr>
-				</table>   
-                  <p>The description of the system calls can be seen <a href = "../os_spec-files/systemcallinterface.html" target="_blank">here</a>. The dynamic memory management routines are described below.</p>
+				</table>
+				  <p><b style="color:#26A65B">Note : </b> According to syntax of exposcall(), it needs four arguments. These arguments are func_code, arg1, arg2, arg3. func_code is necessary for every exposcall() to recognize the Library function/System call. The remaining number of arguments varies according to Library interface specification of the corresponding func_code. Even if exposcall() is invoked with more number of arguments than required for a particular Library function/System call, they are ignored.</p>
+                  <p>Examples to use above mentioned Library functions/system calls : </p> 
+                  <ol style="list-style-type: decimal;">
+                  <li>
+                  <p >To open a file named example.dat, ExpL library interface call is </p> 
+                  <pre>
+   fd=exposcall("Open","example.dat");</pre>
+                  
+                    <p>Here return value is stored in variable fd, which is file descriptor for file example.dat on success.</p> </li>
+                  <li>
+                    <p>From above example, variable 'fd' contains file descriptor for file example.dat. To write the value stored in variable 'num' to this file, ExpL library interface call is</p>
+                    <pre>
+   temp=exposcall("Write",fd,num);     //return value stored in temp</pre>
+                    <p>To write to terminal, use -2 as first argument. Note that expressions such as 2 + 3, num * 34 are not valid as second argument for write system call.</p>
+                    <pre>
+   temp=exposcall("Write",fd,num+2); //Invalid library interface call</pre>
+                   </li>
+                   <li>
+                     <p>Alloc is a library function, which is predefined in ExpL library. It is a dynamic memory management routine. It allocates memory for variables of user defined type in ExpL. ExpL library interface call to allocate memory for variable 'data', which requires 3 words of memory is  </p>
+                     <pre>
+   data=exposcall("Alloc",3);</pre>
+                       
+                      <p><b>The present library routine alloc allocates 8 words for any variable irrespective of the size mentioned in its alloc exposcall(). So, do not define a user defined type having more than 8 fields. Remember to call library function Intialize using exposcall() once before invoking first alloc in any ExpL program.</b></p>
+                   </li>
+                  </ol>
+                  <p>The description of the system calls can be seen <a href = "../os_spec-files/systemcallinterface.html" target="_blank">here</a>. The dynamic memory management routines are described below.
+                  </p>
+
       
      <!-- START SINGLE FEATURED ITEM #1 -->
                           	
@@ -379,7 +479,7 @@
                           <div class="panel-body">
                           
                          <!--start file system calls --->
-                            <!-- create system call-->
+                            <!-- Intialize system call-->
                                 <div class="panel-group" id="accordion">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -410,9 +510,9 @@ reclaimed for future allocation. </p>
                                         </div>
                                     </div>
                                 </div>
-                         <!--end create system call-->
+                         <!--end Intialize system call-->
                            
-                         <!-- create system call-->
+                         <!-- Alloc system call-->
                                 <div class="panel-group" id="accordion">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -423,11 +523,11 @@ reclaimed for future allocation. </p>
                                         <div id="collapsealloc" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 
-                                                <p>Arguments: Size (Integer), Buffer</p>
+                                                <p>Arguments: Size (Integer)</p>
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td>0</td>
+                                                        <td>Allocated address in Heap</td>
                                                         <td>Success</td>
                                                     </tr> 
                                                     <tr>
@@ -435,7 +535,7 @@ reclaimed for future allocation. </p>
                                                         <td>No allocation</td>
                                                     </tr> 
                                                 </table>
-                                                <p>Description: The Alloc operation takes an integer (size) and a buffer as input and when successful, allocates contiguous words (in the heap) equal to the size specified and stores the address of the allocated memory into the buffer passed as argument.</p>  
+                                                <p>Description: The Alloc operation takes size (integer) as an input and when successful, allocates contiguous words (in the heap) equal to the size specified and returns the address of the allocated memory.The present implementation of library routine alloc allocates 8 words for any variable irrespective of the size mentioned in its alloc exposcall(). So, do not define a user defined type having more than 8 fields.</p>  
   
                                             </div>
                                         </div>

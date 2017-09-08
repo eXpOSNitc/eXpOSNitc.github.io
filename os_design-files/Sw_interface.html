@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>System Call Interface</title>
+     <title>Low Level System Call Interface</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -120,7 +120,7 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 >System Call Interface</h2>
+                <h2 >Low Level System Call Interface</h2>
                 <br/>
                 <br/>
                 
@@ -137,175 +137,331 @@
                                         <th style="text-align: center;">System Call</th>
                                         <th style="text-align: center;">System Call Number</th>
                                         <th style="text-align: center;">Interrupt Routine Number</th>
+                                        <th style="text-align: center;">Argument 1</th>
+                                        <th style="text-align: center;">Argument 2</th>
+                                        <th style="text-align: center;">Argument 3</th>
+                                        <th style="text-align: center;">Return Value</th>
+
                                     </tr>
                                         
   <tr>
-    <td>Create</td>
-    <td>1</td>  
-    <td>4</td>
+    <td rowspan="3">Create</td>
+    <td rowspan="3">1</td>  
+    <td rowspan="3">4</td>
+    <td rowspan="3">File Name (String)</td>
+    <td rowspan="3">Permission (Integer)</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
+    <td>-1 - No space for file</tr>
+    <td>-2 - File already exists</tr>
+
   </tr>
 
   <tr>
-    <td>Delete</td>
-    <td>4</td>  
-    <td>4</td>      
+    <td rowspan="4">Delete</td>
+    <td rowspan="4">4</td>  
+    <td rowspan="4">4</td>
+    <td rowspan="4">File Name (String)</td>
+    <td rowspan="4">-</td>
+    <td rowspan="4">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - File not found or file is not a data file</tr>
+    <td>-2 - File is open</tr>
+    <td>-3 - permission denied</td>     
   </tr>
 
   <tr>
-    <td>Seek</td>
-    <td>6</td>
-          <td>4</td>  
+    <td rowspan="3">Seek</td>
+    <td rowspan="3">6</td>
+    <td rowspan="3">4</td> 
+    <td rowspan="3">File Descriptor</td>
+    <td rowspan="3">Offset</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - File Descriptor is invalid</tr>
+    <td>-2 - Offset moves File pointer outside file</tr> 
   </tr>
 
   <tr>
-    <td>Open</td>
-    <td>2</td>    
-    <td>5</td>  
+    <td rowspan="4">Open</td>
+    <td rowspan="4">2</td>    
+    <td rowspan="4">5</td>
+    <td rowspan="4">File Name</td>
+    <td rowspan="4">-</td>
+    <td rowspan="4">-</td> 
+    <td> File Descriptor - Success</tr>
+    <td> -1 - File Not found or file is not data or root file</tr>
+    <td>-2 - Process has reached its limit of resources</tr>
+    <td>-3 - System has reached its limit of open files</tr>   
   </tr>
 
   <tr>
-    <td>Close</td>
-    <td>3</td>
-          <td>5</td>  
+    <td rowspan="3">Close</td>
+    <td rowspan="3">3</td>
+    <td rowspan="3">5</td> 
+    <td rowspan="3">File Descriptor</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - File Descriptor is invalid</tr>
+    <td>-2 - File is locked by calling process</tr> 
   </tr>
 
 
   <tr>
-    <td>Read</td>
-    <td>7</td>
-          <td>6</td>  
+    <td rowspan="3">Read</td>
+    <td rowspan="3">7</td>
+    <td rowspan="3">6</td>
+    <td rowspan="3"> File Descriptor (-1 for terminal read)</td>
+    <td rowspan="3"> Word Address (Buffer)</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - File Descriptor given is invalid</tr>
+    <td>-2 - File pointer has reached the end of file</tr>   
   </tr>
 
   <tr>
-    <td>Write</td>
-    <td>5</td>
-          <td>7</td>  
+    <td rowspan="4">Write</td>
+    <td rowspan="4">5</td>
+    <td rowspan="4">7</td>
+    <td rowspan="4">File Descriptor(-2 for terminal write)</td>
+    <td rowspan="4">Word Address</td>
+    <td rowspan="4">-</td> 
+    <td>0 - Success </tr>
+    <td>-1 - File Descriptor given is invalid</tr> 
+    <td>-2 - No disk space</tr>
+    <td>-3 - Permission denied</tr>  
   </tr>
 
   <tr>
-    <td>Fork</td>
-    <td>8</td>
-    <td>8</td>  
+    <td rowspan="3">Fork</td>
+    <td rowspan="3">8</td>
+    <td rowspan="3">8</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>PID - Success (in parent process)</tr>
+    <td>0 - Success (in child process)</tr>
+    <td>-1 - Failure (in parent process), Number of processes has reached maximum limit </tr>   
   </tr>   
   <tr>
-    <td>Exec</td>
-    <td>9</td>
-    <td>9</td>  
-    
+    <td rowspan="2">Exec</td>
+    <td rowspan="2">9</td>
+    <td rowspan="2">9</td>  
+    <td rowspan="2">File Name</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>-1 - File not found or file is not executable</tr> 
+    <td>-2 - Out of memory or disk swap space</td>
   </tr>
 
   <tr>
     <td>Exit</td>
     <td>10</td>   
-    <td>10</td> 
+    <td>10</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-</td>  
   </tr>
 
   <tr>
     <td>Getpid</td>
     <td>11</td>
-          <td>11</td> 
+    <td>11</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>current PID - Success</td>  
   </tr>
 
   <tr>
     <td>Getppid</td>
     <td>12</td>
-          <td>11</td> 
+    <td>11</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>parent PID - Success</td>  
   </tr>
 
 <tr>
-    <td>Wait</td>
-    <td>13</td> 
-    <td>11</td>     
+    <td rowspan="2">Wait</td>
+    <td rowspan="2">13</td> 
+    <td rowspan="2">11</td>
+    <td rowspan="2">PID</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - Given PID is invalid or it is PID of invoking process</tr>      
   </tr>
 
   <tr>
     <td>Signal</td>
     <td>14</td> 
-    <td>11</td> 
+    <td>11</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>0 - Success</td>  
   </tr>
 
   <tr>
-    <td>Semget</td>
-    <td>17</td>
-      <td>13</td> 
+    <td rowspan="3">Semget</td>
+    <td rowspan="3">17</td>
+    <td rowspan="3">13</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>SEMID - Success</tr>
+    <td>-1 - Process has reached its limit of resources</tr>
+    <td>-2 - Number of semaphores has reached its maximum</td>  
   </tr>
 
   <tr>
-    <td>Semrelease</td>
-    <td>18</td>
-      <td>13</td> 
+    <td rowspan="2">Semrelease</td>
+    <td rowspan="2">18</td>
+    <td rowspan="2">13</td>
+    <td rowspan="2">SEMID</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>0 - Success</tr> 
+    <td>-1 - Invalid SEMID</tr> 
   </tr>
 
   <tr>
-    <td>SemLock</td>
-    <td>19 </td>
-          <td>14</td> 
+    <td rowspan="2">SemLock</td>
+    <td rowspan="2">19 </td>
+    <td rowspan="2">14</td>
+    <td rowspan="2">SEMID</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>0 - Success or semaphore is already locked by the current process</tr>  
+    <td>-1 - invalid SEMID </tr> 
   </tr>
   <tr>
-    <td>SemUnLock</td>
-    <td>20</td>
-      <td>14</td> 
+    <td rowspan="3">SemUnLock</td>
+    <td rowspan="3">20</td>
+    <td rowspan="3">14</td> 
+    <td rowspan="3">SEMID</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - Invalid SEMID</tr>
+    <td>-2 - Semaphore was not locked by the calling process</tr> 
   </tr>
   
   <tr>
     <td>Shutdown</td>
     <td>21</td>   
-    <td>15</td> 
+    <td>15</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-1 - Permission denied</td>  
   </tr>
     
     <tr>
-    <td style="color:red">Newusr</td>
-    <td>22</td>   
-      <td>16</td>
+    <td rowspan="3" style="color:red">Newusr</td>
+    <td rowspan="3">22</td>   
+    <td rowspan="3">16</td>
+    <td rowspan="3">User Name</td>
+    <td rowspan="3">Password</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - User already exists</tr>
+    <td>-2 - Permission denied</tr> 
   </tr>
         <tr>
-    <td style="color:red">Remusr</td>
-    <td>23</td>   
-      <td>16</td>
+    <td rowspan="3" style="color:red">Remusr</td>
+    <td rowspan="3">23</td>   
+    <td rowspan="3">16</td>
+    <td rowspan="3">User Name</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - User does not exist</tr> 
+    <td>-2 - Permission denied</tr>
   </tr>
         <tr>
-    <td style="color:red">Setpwd</td>
-    <td>24</td>   
-      <td>16</td>
+    <td rowspan="2" style="color:red">Setpwd</td>
+    <td rowspan="2">24</td>   
+    <td rowspan="2">16</td>
+    <td rowspan="2">User Name</td>
+    <td rowspan="2">New password</td>
+    <td rowspan="2">-</td> 
+    <td>0 - Success</tr>
+    <td>-1 - Unauthorised attempt to change password</tr> 
   </tr>
         <tr>
-    <td style="color:red">Getuname</td>
-    <td>25</td>   
-      <td>16</td>
+    <td  rowspan="2" style="color:red">Getuname</td>
+    <td rowspan="2">25</td>   
+    <td rowspan="2">16</td>
+    <td rowspan="2">User ID</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>User Name - Success</tr>
+    <td>-1 - Invalid User ID</td> 
   </tr>
      <tr>
-    <td style="color:red">Getuid</td>
-    <td>26</td>   
-      <td>16</td>
+    <td rowspan="2" style="color:red">Getuid</td>
+    <td rowspan="2">26</td>   
+    <td rowspan="2">16</td>
+    <td rowspan="2">User Name</td>
+    <td rowspan="2">-</td>
+    <td rowspan="2">-</td> 
+    <td>User ID - Success</tr>
+    <td>-1 - Invalid username</td> 
   </tr>
         <tr>
-    <td style="color:red">Login</td>
-    <td>27</td>   
-      <td>17</td>
+    <td rowspan="2" style="color:red">Login</td>
+    <td rowspan="2">27</td>   
+    <td rowspan="2">17</td>
+    <td rowspan="2">User Name</td>
+    <td rowspan="2">Password</td>
+    <td rowspan="2">-</td> 
+    <td>-1 - Invalid username or password</tr>
+    <td>-2 - Permission denied</tr> 
   </tr>
   
    <tr>
     <td>Test</td>
     <td>15</td>
-      <td>12</td> 
+    <td>12</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-</td>  
   </tr>
         
    <tr>
     <td>Test1</td>
     <td>97</td>
-      <td>16</td> 
+    <td>16</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-</td>  
   </tr>      
   
    <tr>
     <td>Test2</td>
     <td>98</td>
-      <td>17</td> 
+    <td>17</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-</td>  
   </tr>      
    
    <tr>
     <td>Test3</td>
     <td>99</td>
-      <td>18</td> 
+    <td>18</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td> 
+    <td>-</td>  
   </tr>
                               
 </table>
