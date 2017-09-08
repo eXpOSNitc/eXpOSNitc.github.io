@@ -105,7 +105,7 @@
               <p>The Inode table is stored in the disk and has an entry for each file present in the disk (A copy of the Inode table is maintained in the memory when the OS is running). It consists of MAX_FILE_NUM entries. Thus <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS</a> permits a maximum of MAX_FILE_NUM files.  This version of eXpOS sets MAX_FILE_NUM = 60. </p>
               
              <p> Each Inode table entry stores the name, size, type and data block numbers of a file stored in the disk ( <font color="red">*</font> In <a href="http://exposnitc.github.io/os_spec-files/multiuser.html">Multiuser</a> extension of eXpOS, userid and permission are also included in the inode table entry). The current version of eXpOS limits the maximum number of blocks in an eXpFS file to MAX_BLOCK_NUM = 4.   Each Inode table entry consists of 16 words of which the 7 are unused in the present version of eXpOS. </p> 
-              
+             <p> eXpoS reserves the first entry in the Inode table for the <a href="disk_ds.html#root_file">root file</a>. The root file is a special file containing details about other files stored in the system. </p>
               <p>The entry of an Inode table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -137,7 +137,8 @@
               
               <p>All unused entries are set to -1.</p>
               
-               <p><b>Note </b> : A Free inode entry is denoted by <b> -1 </b> in the <b> FILENAME </b> field.</p>  
+               <p><b>Note 1</b> : fdisk command of XFS Interface initilizes the inode table entry of the root file with values FILE TYPE = 1, FILE SIZE = 512, and DATA BLOCK = 5 (Root file is stored in block 5 of disk. See <a href="../os_implementation.html">Disk Organisation</a>).</p>
+               <p><b>Note 2</b> : A Free inode entry is denoted by <b> -1 </b> in the <b> FILENAME </b> field.</p>  
 
                <p><b> Importanat Note:</b>  eXpOS requires that the index of the inode table entry of a file and the 
                index of its root file entry must match.  For example, suppose the 5th entry of the inode table holds

@@ -179,26 +179,34 @@
 
 <tr>
     <td>6</td>
-    <td>Acquire Terminal*</td>
-    <td>PID</td>
-    <td>NIL</td>
-  </tr>
-
-<tr>
-    <td>7</td>
     <td>Acquire Semaphore</td>
     <td>PID</td>
     <td>Semaphore Table Index or -1</td>
   </tr>
 <tr>
-    <td>8</td>
+    <td>7</td>
     <td>Release Semaphore</td>
     <td>Semaphore Table Index, PID</td>
     <td>0 or -1</td>
   </tr>
+
+<tr>
+    <td>8</td>
+    <td>Acquire Terminal</td>
+    <td>PID</td>
+    <td>NIL</td>
+  </tr>
+
+<tr>
+    <td>9</td>
+    <td>Release Terminal</td>
+    <td>PID</td>
+    <td>0 or -1</td>
+  </tr>
+
 </table>  
                      
-<p>*The release functions for disk/terminal are implimented by the respective interrupt handlers.</p>
+<p>*Release function for the disk is implimented in the disk interrupt handler.</p>
 
 <h3> Acquire Buffer</h3>
 <!-- Move to Another module if necessary -->
@@ -288,9 +296,6 @@ return 0;
 Called by Read, Write and Seek system calls.
 
 
-
-
-
 <h3> Release Inode </h3>
 <i> <b>Description </b></i>: Frees the lock of the inode entry corresponding to the inodeindex given as input. Assumes a valid PID and a valid inode index are given.<br><br>
 
@@ -308,27 +313,6 @@ return 0;
 </pre>
 
 Called by Read, Write and Seek system calls.
-
-<h3> Acquire Terminal </h3>
-<i> <b>Description </b></i>: Locks the Terminal device. Assumes a valid PID is given as input.<br><br>
-
-<pre>
-
-while ( Terminal device is locked ){    /* Check the Status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> */
-    Set state of the process as ( WAIT_TERMINAL , - );
-    Invoke the scheduler;
-    }
-    
-Lock the Terminal device by setting the Status and PID fields in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.
-
-return;
-</pre>
-
-Called by the Terminal Read and Terimnal Write functions of the <a href="Module_4.html">Device Manager Module</a>.
-
-
-
-
 
 
 <h3> Acquire Semaphore </h3>
@@ -361,6 +345,39 @@ Decrement the process count of the semaphore in the semaphore table.
 </pre>
 
 Called by the <a href=../os_design-files/semaphore_algos.html#semrelease">Semrelease</a> and exit system call</a>.
+
+<h3> Acquire Terminal </h3>
+<i> <b>Description </b></i>: Locks the Terminal device. Assumes a valid PID is given as input.<br><br>
+
+<pre>
+
+while ( Terminal device is locked ){    /* Check the Status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> */
+    Set state of the process as ( WAIT_TERMINAL , - );
+    Invoke the scheduler;
+    }
+    
+Lock the Terminal device by setting the Status and PID fields in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.
+
+return;
+</pre>
+
+Called by the Terminal Read and Terimnal Write functions of the <a href="Module_4.html">Device Manager Module</a>.
+
+<h3> Release Terminal </h3>
+<i> <b>Description </b></i>: Frees the Terminal device. Assumes a valid PID is given as input.<br><br>
+
+<pre>
+    If PID given as input is not equal to the LOCKING PID in the <a href="../os_design-files/mem_ds.html#ts_table">Teminal Status Table</a>, return -1.
+
+    Release the lock on the Terminal by updating the Terminal Status Table.;
+
+    Return 0
+ 
+</pre>
+
+Called by the Terimnal Write function in the <a href="Module_4.html">Device Manager Module</a>.
+
+
                      <!--end-->   
                     <br>
                                </div>

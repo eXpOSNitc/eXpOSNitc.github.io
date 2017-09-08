@@ -169,7 +169,7 @@
   <tr>    
     <td>4</td>
     <td>Terminal Read</td>
-    <td>PID, Memory Address</td>
+    <td>PID</td>
     <td>NIL</td>
   </tr>
 
@@ -220,17 +220,18 @@ and the exception handler (demand paging). <br> <br>
 Note: The bootstrap code must use <i>loadi</i> statement and not this function.
 
 <h3> Terminal Write </h3>
-<i> <b>Description </b></i>: Reads a word from the Terminal to the Memory address provided. Assumes a valid PID is given.<br><br>      
+<i> <b>Description </b></i>: Reads a word from the Memory address provided to the terminal. Assumes a valid PID is given.<br><br>      
 
 <pre>
-    Acquire the lock on the disk device by calling the Acquire_Disk() function
+    Acquire the lock on the terminal device by calling the Acquire_Terminal() function
     in the <a href="Module_0.html">Resource Manager</a> module;
     
     Use the print statement to print the contents of the word
     to the terminal;
+
+    Release the lock on the terminal device by calling the Release_Terminal() function
+    in the <a href="Module_0.html">Resource Manager</a> module;
   
-    Release the lock on the Terminal by updating the <a href="../os_design-files/mem_ds.html#ts_table">Teminal Status Table</a>.;
-    
     return;
 </pre>
 Called by the Write system call.
@@ -239,7 +240,7 @@ Called by the Write system call.
    <br>
   <i> <b>Description </b></i>: Reads a word from the terminal and stores it to the memory address provided. Assumes a valid PID is given.<br><br>   
 <pre>
-    Acquire the lock on the disk device by calling the Acquire_Disk() function
+    Acquire the lock on the disk device by calling the Acquire_Terminal() function
     in the <a href="Module_0.html">Resource Manager</a> module;
     
     Use the read statement to read the word from the terminal;
@@ -248,7 +249,7 @@ Called by the Write system call.
     
     Invoke the scheduler module;
 
-    Copy the word from the Input Buffer of the Process Table of the process corresponding to PID
+    Copy the word from the <b>Input Buffer</b> of the <a href="../os_design-files/process_table.html">Process Table</a> of the process corresponding to PID
     to the memory address provided.
     
     return;
