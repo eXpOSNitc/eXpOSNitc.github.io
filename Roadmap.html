@@ -2130,7 +2130,7 @@ decl
 enddecl
 begin
     num=1;
-    while ( num < = 50 ) do
+    while ( num <= 50 ) do
          temp = exposcall ( "Write" , -2, num );
          num = num + 1;
     endwhile;
@@ -2203,6 +2203,7 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
                             <div id="lo12" class="panel-collapse expand">
                             <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the idle process.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Program the timer interrupt handler to concurrently schedule two processes.</li>
       
                             </ul>                                  
@@ -2213,7 +2214,7 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
                         </div>
                       </div>
 		<!-- End Learning Objectives-->    
-		<p>This stage introduces you to multi-programming.  You will load two processes
+		<p>This stage introduces you to multi-programming. You will load two processes
 into memory during OS bootstrap and put them on concurrent execution.  
 For this, you need to modify the timer interrupt
 handler to switch between the two processes.</p>
@@ -2224,7 +2225,7 @@ for execution during OS startup.
 The idle process simply contains an infinite loop.  
 </p>
 
-		<p>You will modify the timer to implement a very primitive scheduler that time shares
+		<p>You will modify the timer to implement a very primitive scheduler which shares
 the machine between the two processes.  More detailed implementation of the OS
 scheduler will be taken up in later stages.
 </p>
@@ -2234,17 +2235,14 @@ scheduler will be taken up in later stages.
 		<br>
 		<p>Idle is a user program which is loaded for execution during OS bootstrap.
          Before OS bootstrap, it must be stored in the disk blocks 11 and 12.  
-         The OS bootstrap loader must load this program to memory pages 69 and 70.  (See 
-         <a href="os_implementation.html" target="_blank">eXpOS Disk and Memory layout</a> for details)  
-         
-         The Page Table and Process Table for the idle process must be set up by the bootstrap loader. 
-         The PID of the idle process is fixed to be 0.</p>
+         The OS bootstrap loader must load this program to memory pages 69 and 70 (See 
+         <a href="os_implementation.html" target="_blank">eXpOS Disk and Memory layout</a> for details). The Page Table and Process Table for the idle process must be set up by the bootstrap loader. The PID of the idle process is fixed to be 0.</p>
          
 		Idle program runs an infinite loop. The algorithm for the idle is as follows.
 		<div><pre>while(1) do
 endwhile</pre></div>
 		<br>
-		An ExpL program for idle is given below.
+		An ExpL program for idle process is given below.
 		<div><pre>int main()
 {
 	decl
@@ -2274,7 +2272,7 @@ the page table for the process with PID=0 will be
 stored in 20 words starting at address PAGE_TABLE_BASE, page table for PID=1 will start at 
 PAGE_TABLE_BASE+20 and so on.  The <a href="os_implementation.html" target="_blank">memory layout design</a> 
 permits space for process/page table
-entries for a maximum of 16 processes.  Thus, the OS can run at most 16 proceses 
+entries for a maximum of 16 processes.  Thus, the OS can run at most 16 processes 
 concurrently.  
 </p>
 <p>At present, we will run just two processes - the idle process with PID=0 and the init process with PID=1.
@@ -2297,7 +2295,9 @@ loadi(70,12);</pre></div>
 			 76-80 will be used by the init process. 
 			 <br><br>
 			 
-			 <div><pre>//Library
+			 <div><pre>PTBR=PAGE_TABLE_BASE;  //as PID of idle process is 0
+
+//Library
 [PTBR+0] = -1;
 [PTBR+1] = "0000";
 [PTBR+2] = -1;
@@ -2329,17 +2329,17 @@ loadi(70,12);</pre></div>
 	Set the Page Table entries for init as done in previous stages with PTBR as PAGE_TABLE_BASE+20.</li>
 
 
-<li> As noted earlier, set up Process Table entries for idle from address PROCESS_TABLE and 
+<li> As noted earlier, set up <a href="os_design-files/process_table.html" target="_blank"> Process Table </a>entries for idle from address PROCESS_TABLE and 
      init from PROCESS_TABLE + 16.  Set the PID field in the Process Table entry to 0 for idle 
      and 1 for init.</li>
 	
 <li>	
 The process being currently scheduled is said to be in <a href="support_tools-files/constants.html" target="_blank">RUNNING</a> state.
 The bootstrap loader will schedule the init process first. 
-Thus, in the OS start up code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
+Thus, in the OS startup code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
 The CREATED state indicates that the process had never been scheduled for execution
 previously.  The need for a separate CREATED state will be explained later.    
-Subsequent "re-scheduling" will be done by the timer interrupt handler. See <a href="os_design-files/process_table.html#state" target="_blank">process
+Subsequent "re-scheduling" will be done by the timer interrupt handler. According to process table, STATE field occupies 2 words. In case of RUNNING and CREATED states, second word is not required. See <a href="os_design-files/process_table.html#state" target="_blank">process
 states</a>. 
 
 </li>
@@ -2386,6 +2386,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<li> Initialise the machine's PTBR and PTLR registers for scheduling the INIT process. 
 		(You have alreay gone through the steps in Stage 7). </li>
 		<li> Set the Entry point address for INIT process in the beginning of Stack page of INIT. Also set the SP register accordingly.</li>
+		<li>Set the currentPID field in <a href="os_design-files/mem_ds.html#ss_table" >system status table</a> to 1, as PID for INIT is 1.</li>
 		<li>Transfer control to INIT using ireturn instruction.</li>
 
 		</ol>
@@ -2405,7 +2406,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<b>Modifications to timer interrupt handler</b>
 		<br><br>
 		In the previous stage you made the timer interrupt display "TIMER" at fixed intervals. However, the actual
-        function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
+        function of timer interrupt routine is to preempt the current running process and to transfer execution to another 
 		ready processes. 
 		<br><br>
 		In this stage, you will write a sample scheduler which will schedule just two processes.
@@ -2417,7 +2418,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		Detailed intructions for scheduling are given below.<br><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
-			 using the backup instructions as done in stage 9</li>
+			 using the backup instructions as done in stage 9.</li>
 			
 			<li>Obtain the PID of currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table </a>.
 
@@ -2482,7 +2483,7 @@ has to be restored before the process is scheduled again for correct resumption 
 	ireturn;
 endif;
 </pre></div>
-Note:  In this experiment, the only situation where the timer finds the next process in CREATED state is when
+<code>Note:</code>  In this experiment, the only situation where the timer finds the next process in CREATED state is when
 the IDLE process is to be scheduled for the first time.  Since INIT is scheduled directly from the OS startup code,
 the INIT process never goes through the CREATED state.  INIT is the only process in eXpOS that begins 
 in the CREATED state.  
@@ -2498,7 +2499,7 @@ in the CREATED state.
 		<br>
 		<b>Making Things Work</b>
 		<ol style="list-style-type:decimal;margin-left:2px">
-			<li>Load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
+			<li>Compile and load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
 			<li>Compile and load the idle program into the XSM disk.</li>
 			<li>Run the machine with timer enabled.</li>
 			
@@ -2516,9 +2517,9 @@ in the CREATED state.
 		</div>
 <br> <br>
 
-<!--
-<b style="color:#26A65B">Assignment 1: </b> Write Expl programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently.
--->
+
+<b style="color:#26A65B">Assignment 1: </b> Write Expl programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using round robin algorithm.
+
 
 		</div>
 		</div>
