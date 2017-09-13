@@ -286,6 +286,17 @@ is done by the allocator routines in the shared library (for example, memory all
                           <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <p>The <b>Low level system call interface</b> describes the conventions to be followed by application programs that invoke <a href="os_spec-files/systemcallinterface.html" target="_blank" >eXpOS system calls</a> on the XSM architecture.  The interface describes the software interrupt instruction (trap) corresponding to each system call  and the calling conventions for passing arguments and extracting return values of the system call through the application program's stack. This part is architecture dependent.</p>
+
+
+<p> <code>Note:</code>  If a high level language like <a href="silcnitc.github.io" target="_blank">ExpL </a> is used for writing application programs, then the application 
+programs will be using the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface </a> for invoking system calls.  
+The ExpL compiler is responsible for generating assembly language code to translate the call to a
+corresponding library call using the <a href="abi.html" target="_blank">low level library interface</a>.  The ExpL library which is pre-loaded into
+the system memory during eXpOS boot up contains assembly language code that redirects
+the library call to the corresponding eXpOS system call using the low level system call interface described
+here.  If you write assembly language application programs as user programs, then you can use the low 
+level system call interface directly bye-passing the library.</p>      
+
                                 <h3>System Calls</h3>
                                 <p>For an application program, there are two stages in executing a system call:</p>
                                 <ul style="text-indent: 5em;">
@@ -413,6 +424,14 @@ Associated with each system call, there is a system call number and interrupt ro
 
 The machine code to the left pops the values from the stack. The function code and arguments were inputs to the library module and hence they may be discarded now. The return value which is stored in the stack by the system call is fetched and used by the user program by popping out to some register.   </p>
 </div>
+<p><code>Note:</code>If application programs are written in a high level language like
+  ExpL, the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank"> exposcall() function </a> will be
+  used to make system calls/invoke dynamic memory routines. The programmer does not have to worry about the library interface
+  specified here because the ExpL compiler will automatically generate assembly code that
+  translate the high level call to a low level call to the library using the above interface and retrieve return
+  values from the call. eXpOS pre-loads the library into the memory at boot time. The library re-directs system
+  call requests to the OS through the low level system call interface.  Dynamic memory mangement functions are
+  implemented as part of the library itself.</p>
 
 
 

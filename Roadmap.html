@@ -1780,19 +1780,19 @@ ireturn;
  some software interrupt handler.  For example, the write system call of eXpOS is coded inside the INT 7 handler.  
  An interrupt handler may contain code for several system calls. 
  (For example, in the eXpOS implementation on XSM, the routines for create, delete and seek system calls 
- are coded inside the INT 4 handler.see  <a href="os_design-files/Sw_interface.html" target="_blank">here </a> for details).  To identify the correct routine,the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program,the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
+ are coded inside the INT 4 handler - find details<a href="os_design-files/Sw_interface.html" target="_blank"> here</a>). To identify the correct routine, the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program, the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
  software interrupt using the INT instruction.  The arguments and the system call number are passed through the user 
  program's stack.</p>  
 
  <p>When a program invokes a system call, the system switches from user mode to kernel mode.  Hence, system calls run in 
- kernel mode and hence have access to all the hardware resources.  Upon completing the call, the system call places
+ kernel mode and thus have access to all the hardware resources.  Upon completing the call, the system call places
  return value of the call into designated position in the user program's stack and returns
  to the calling program using the IRET.  Since the IRET instruction switches mode back to user mode, the user program
  resumes execution after the call in user mode.  The user program extracts the return values of the call from the 
  user stack.</p>  
 
 <p>In this stage, we will write a small kernel routine for handling console write. This is part of the functionality of the 
-write system call (system call number 5) programmed inside the INT 7 handler.  You will implement the full functionality
+write system call (system call number 5) programmed inside the INT 7 handler. You will implement the full functionality
 of the write system call in later stages.</p>  
 
 
@@ -1810,7 +1810,7 @@ of the write system call in later stages.</p>
 
 <br>
 
-<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP-1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
+<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP - 1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
 </li> <br>
 
 <li> Push any register, say R0 to allocate space for the return value. </li> <br>
@@ -1891,12 +1891,15 @@ INT 10
 	</pre>
 	</div>
 	</p>
-	
-	
-	<br>
-	
-	<br>
-	Now, you will write the system call handler for processing the write request.<br>
+ <br>
+  <br>
+  <div style=" width: 100%">
+     <p style="font-size:18px">Contents of the stack before and after the INT instruction</p>
+     <img src="img/system_call_stack1.png" width="350px" height="350px" style="float:left; margin-right: 100px; margin-left:75px;">
+     <img src="img/system_call_stack2.png" width="350px" height="350px" style="float:right; margin-left: 100px; margin-right:75px;">
+  </div>
+  
+	Now, you will write the system call handler for processing the write request.<br><br>
 	<b style="font-size:20px">INT 7</b><br>
 	<p>The write operation is handled by Interrupt 7.
 	The address of the word to be printed is passed from the user program through its user stack as the 
@@ -1921,7 +1924,7 @@ Details can be found at <a href="os_design-files/stack_smcall.html" target="_bla
 	<li>First we have to access argument 1 which is file descriptor to check whether it is valid or not. In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
 	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
-	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4.
+	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4 (See contents of the stack after INT instruction in above image for reference).
 	<div>
 	<pre>alias physicalPageNum R1;
 alias offset R2;
@@ -1934,7 +1937,7 @@ fileDescriptor=[fileDescPhysicalAddr];</pre>
 	</div>
 	</li>
 	<br>
-	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2. Write an IF condition to check whether file descriptor is -2 or not.  
+	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2 - see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>. Write an IF condition to check whether file descriptor is -2 or not.  
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -2030,6 +2033,11 @@ loadi(17,30);
 	</li>
 	</ol>
  	<br>
+  <p><code>Note:</code>Starting from the next stage, you will be writing user programs using a high level language called
+  ExpL.  ExpL allows you to write programs that invoke system calls using the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank"> exposcall() function </a>.
+  The ExpL compiler will automatically generate code to translate your high level function call to a call to the <a href="abi.html" target="_blank"> eXpOS
+  library</a> and the library contains code to translate the call to an INT invocation as done by you
+  in this stage.  The next stage will introduce you to ExpL.</p>
 	<a data-toggle="collapse"  href="#collapseq3"><b>Q1.</b> Why should we calculate the physical address of userSP-3 and userSP-1
 	seperately instead of calculating one and adding/subtracting the difference from the calculated value?</a>
                             <div id="collapseq3" class="panel-collapse collapse">
@@ -2050,7 +2058,7 @@ loadi(17,30);
 
                       <div class="panel-heading" id="list_stage11">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse11"><span class="fa fa-check-square-o"></span>Stage 11 : Introduction to ExPL</a>
+                          <a data-toggle="collapse"  href="#collapse11"><span class="fa fa-check-square-o"></span>Stage 11 : Introduction to ExpL</a>
                         </h4>
                       </div>
 
@@ -2080,7 +2088,7 @@ loadi(17,30);
 		target code compatible with the eXpOS specification.  
 
 		ExpL permits application programs to call the function 
-		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface to the OS</a>.  Application programs must use this library interface to invoke 
+		exposcall() that implements the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface </a>to the OS.  Application programs must use this library interface to invoke 
 		eXpOS system calls.  Certain built-in functions of the ExpL language (Alloc, Free and Initialize - these
 		functions handle ExpL dynamic memory management) are also implemented as ExpL library routines.    
 		Note that the only way to invoke an eXpOS system call from
@@ -2090,7 +2098,7 @@ loadi(17,30);
         <p>The ExpL library file library.lib supplied to you along with the eXpOS package contains 
         assembly language implementation of the library and occupies two pages of memory.   
         The OS design stipulates that this library code must be pre-loaded
-        to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface.  (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
+        to the XSM disk blocks 13 and 14 before OS bootstrap using XFS interface (see <a href="os_implementation.html" target="_blank">disk layout</a>).  
         Your OS start up code is supposed to load this code into
         memory pages 63 and 64 from disk blocks 13 and 14.</p>  
 
@@ -2110,7 +2118,7 @@ loadi(17,30);
         This compiled code is loaded into the XSM disk as done in previous stages.</p>
         <p><b>
         Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
-        before proceeding further.(WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
+        before proceeding further. (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
 			<li>Below is the ExpL program to print numbers upto 50. Save this program as numbers.expl in $HOME/myexpos/eXpl/samples.
@@ -2122,7 +2130,7 @@ decl
 enddecl
 begin
     num=1;
-    while ( num < = 50 ) do
+    while ( num <= 50 ) do
          temp = exposcall ( "Write" , -2, num );
          num = num + 1;
     endwhile;
@@ -2157,6 +2165,7 @@ save the file to a different name before compiling the next ExpL program).</p>
 								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
 								of calls in debug mode.  
 		</div>
+    <br>
 				<p><b style="color:#26A65B">Assignment 1 : </b> Write an ExpL program to print all odd numbers from
 				1-100 and run the machine with this program loaded as the init.</p>
 				<p><b style="color:#26A65B">Assignment 2 : </b> Write an ExpL program to include a user defined type <b>Student</b> as follows
@@ -2165,7 +2174,14 @@ save the file to a different name before compiling the next ExpL program).</p>
     str name;
     int marks;
 }</pre></div>
-Declare a variable of type Student, assign values "John", 89 for name and marks respectively and print the values to the terminal.  Run the machine with this as an init program. Don't forget to intialize the heap and allocate the memory for a variable before assigning values to its attributes.</p>
+Declare a variable of type Student, assign values "John", 89 for name and marks respectively and print the values to the terminal.  Run the machine with this as an init program. Don't forget to initialize the heap and allocate the memory for a variable before assigning values to its attributes.</p>
+ <p><b style="color:#26A65B">Assignment 3 : 
+ </b> <b>[Writing your own library]</b> Instead of using the library implementation library.lib, write
+ your own library (in assembly language) to support only the write system call to console.  Your library code must extract
+ arguments from the stack, check whether the request is for a console write, if so call INT 7 after supplying
+ proper arguments in the stack as done in the previous stage.  Upon return from the system call, your library
+ routine must set the return value through the stack (setting return value in the proper location of
+ the stack -see details <a href="abi.html#library" target="_blank">here</a>) and return control back to the application.</p>
 			
         </div>
         </div>
@@ -2187,6 +2203,7 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
                             <div id="lo12" class="panel-collapse expand">
                             <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the idle process.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Program the timer interrupt handler to concurrently schedule two processes.</li>
       
                             </ul>                                  
@@ -2197,7 +2214,7 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
                         </div>
                       </div>
 		<!-- End Learning Objectives-->    
-		<p>This stage introduces you to multi-programming.  You will load two processes
+		<p>This stage introduces you to multi-programming. You will load two processes
 into memory during OS bootstrap and put them on concurrent execution.  
 For this, you need to modify the timer interrupt
 handler to switch between the two processes.</p>
@@ -2208,7 +2225,7 @@ for execution during OS startup.
 The idle process simply contains an infinite loop.  
 </p>
 
-		<p>You will modify the timer to implement a very primitive scheduler that time shares
+		<p>You will modify the timer to implement a very primitive scheduler which shares
 the machine between the two processes.  More detailed implementation of the OS
 scheduler will be taken up in later stages.
 </p>
@@ -2218,17 +2235,14 @@ scheduler will be taken up in later stages.
 		<br>
 		<p>Idle is a user program which is loaded for execution during OS bootstrap.
          Before OS bootstrap, it must be stored in the disk blocks 11 and 12.  
-         The OS bootstrap loader must load this program to memory pages 69 and 70.  (See 
-         <a href="os_implementation.html" target="_blank">eXpOS Disk and Memory layout</a> for details)  
-         
-         The Page Table and Process Table for the idle process must be set up by the bootstrap loader. 
-         The PID of the idle process is fixed to be 0.</p>
+         The OS bootstrap loader must load this program to memory pages 69 and 70 (See 
+         <a href="os_implementation.html" target="_blank">eXpOS Disk and Memory layout</a> for details). The Page Table and Process Table for the idle process must be set up by the bootstrap loader. The PID of the idle process is fixed to be 0.</p>
          
 		Idle program runs an infinite loop. The algorithm for the idle is as follows.
 		<div><pre>while(1) do
 endwhile</pre></div>
 		<br>
-		An ExpL program for idle is given below.
+		An ExpL program for idle process is given below.
 		<div><pre>int main()
 {
 	decl
@@ -2258,7 +2272,7 @@ the page table for the process with PID=0 will be
 stored in 20 words starting at address PAGE_TABLE_BASE, page table for PID=1 will start at 
 PAGE_TABLE_BASE+20 and so on.  The <a href="os_implementation.html" target="_blank">memory layout design</a> 
 permits space for process/page table
-entries for a maximum of 16 processes.  Thus, the OS can run at most 16 proceses 
+entries for a maximum of 16 processes.  Thus, the OS can run at most 16 processes 
 concurrently.  
 </p>
 <p>At present, we will run just two processes - the idle process with PID=0 and the init process with PID=1.
@@ -2281,7 +2295,9 @@ loadi(70,12);</pre></div>
 			 76-80 will be used by the init process. 
 			 <br><br>
 			 
-			 <div><pre>//Library
+			 <div><pre>PTBR=PAGE_TABLE_BASE;  //as PID of idle process is 0
+
+//Library
 [PTBR+0] = -1;
 [PTBR+1] = "0000";
 [PTBR+2] = -1;
@@ -2313,17 +2329,17 @@ loadi(70,12);</pre></div>
 	Set the Page Table entries for init as done in previous stages with PTBR as PAGE_TABLE_BASE+20.</li>
 
 
-<li> As noted earlier, set up Process Table entries for idle from address PROCESS_TABLE and 
+<li> As noted earlier, set up <a href="os_design-files/process_table.html" target="_blank"> Process Table </a>entries for idle from address PROCESS_TABLE and 
      init from PROCESS_TABLE + 16.  Set the PID field in the Process Table entry to 0 for idle 
      and 1 for init.</li>
 	
 <li>	
 The process being currently scheduled is said to be in <a href="support_tools-files/constants.html" target="_blank">RUNNING</a> state.
 The bootstrap loader will schedule the init process first. 
-Thus, in the OS start up code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
+Thus, in the OS startup code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
 The CREATED state indicates that the process had never been scheduled for execution
 previously.  The need for a separate CREATED state will be explained later.    
-Subsequent "re-scheduling" will be done by the timer interrupt handler. See <a href="os_design-files/process_table.html#state" target="_blank">process
+Subsequent "re-scheduling" will be done by the timer interrupt handler. According to process table, STATE field occupies 2 words. In case of RUNNING and CREATED states, second word is not required. See <a href="os_design-files/process_table.html#state" target="_blank">process
 states</a>. 
 
 </li>
@@ -2370,6 +2386,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<li> Initialise the machine's PTBR and PTLR registers for scheduling the INIT process. 
 		(You have alreay gone through the steps in Stage 7). </li>
 		<li> Set the Entry point address for INIT process in the beginning of Stack page of INIT. Also set the SP register accordingly.</li>
+		<li>Set the currentPID field in <a href="os_design-files/mem_ds.html#ss_table" >system status table</a> to 1, as PID for INIT is 1.</li>
 		<li>Transfer control to INIT using ireturn instruction.</li>
 
 		</ol>
@@ -2389,7 +2406,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<b>Modifications to timer interrupt handler</b>
 		<br><br>
 		In the previous stage you made the timer interrupt display "TIMER" at fixed intervals. However, the actual
-        function of timer interrupt routine is to preemt the current running process and to transfer execution to another 
+        function of timer interrupt routine is to preempt the current running process and to transfer execution to another 
 		ready processes. 
 		<br><br>
 		In this stage, you will write a sample scheduler which will schedule just two processes.
@@ -2401,7 +2418,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		Detailed intructions for scheduling are given below.<br><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
-			 using the backup instructions as done in stage 9</li>
+			 using the backup instructions as done in stage 9.</li>
 			
 			<li>Obtain the PID of currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table </a>.
 
@@ -2466,7 +2483,7 @@ has to be restored before the process is scheduled again for correct resumption 
 	ireturn;
 endif;
 </pre></div>
-Note:  In this experiment, the only situation where the timer finds the next process in CREATED state is when
+<code>Note:</code>  In this experiment, the only situation where the timer finds the next process in CREATED state is when
 the IDLE process is to be scheduled for the first time.  Since INIT is scheduled directly from the OS startup code,
 the INIT process never goes through the CREATED state.  INIT is the only process in eXpOS that begins 
 in the CREATED state.  
@@ -2482,7 +2499,7 @@ in the CREATED state.
 		<br>
 		<b>Making Things Work</b>
 		<ol style="list-style-type:decimal;margin-left:2px">
-			<li>Load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
+			<li>Compile and load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
 			<li>Compile and load the idle program into the XSM disk.</li>
 			<li>Run the machine with timer enabled.</li>
 			
@@ -2500,9 +2517,9 @@ in the CREATED state.
 		</div>
 <br> <br>
 
-<!--
-<b style="color:#26A65B">Assignment 1: </b> Write Expl programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently.
--->
+
+<b style="color:#26A65B">Assignment 1: </b> Write ExpL programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using round robin scheduling algorithm.
+
 
 		</div>
 		</div>
@@ -2544,16 +2561,17 @@ in the CREATED state.
 
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
-				<li>Write an eXpL program to print the odd numbers from 1-100. Load this odd program as init.  				
+				<li>Write an ExpL program to print the odd numbers from 1-100. Load this odd program as init.  				
 				<pre>load --init < path to odd.xsm ></pre>
-				</li>Using the --exec option of XFSinterface, you can load an executable program into the XFS disk.  
-				XFSinterface will load the executable into the disk and create <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table </a> entry for the file.  
-				XFSinterface will also create a  <a href="os_design-files/disk_ds.html#root_file" target="_blank"> root entry </a> for the loaded file.  From the Inode Table Entry,
-				you will be able to find out the disk blocks where the contents of the file are loaded by XFSinterface.  
-				Recall that these were discussed in detail in Stage 2 :<a href="#collapse2" target="_blank">Understanding the File System </a>)
-				<li>Write an eXpL program to print the even numbers from 1-100. Load this even program as an executable.
+				</li>
+				<p>Using the --exec option of XFS interface, you can load an executable program into the XFS disk.  
+				XFS interface will load the executable into the disk and create <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table </a> entry for the file.  
+				XFS interface will also create a  <a href="os_design-files/disk_ds.html#root_file" target="_blank"> root entry </a> for the loaded file.  From the Inode Table Entry,
+				you will be able to find out the disk blocks where the contents of the file are loaded by XFS interface.  
+				Recall that these were discussed in detail in Stage 2 :<a href="#collapse2" target="_blank">Understanding the File System </a>)</p>
+				<li>Write an ExpL program to print the even numbers from 1-100. Load this even program as an executable.
 				<pre>load --exec < path to even.xsm > </pre> 
-				Dump the <a href="os_design-files/disk_ds.html#inode_table" target="_blank"> inodetable </a> using 
+				Dump the <a href="os_design-files/disk_ds.html#inode_table" target="_blank"> inode table </a> using 
 				<i>dump --inodetable</i> command in xfs-interface. 
 				Check the disk address of code blocks of even.xsm. 
 				</li>
@@ -2564,17 +2582,18 @@ in the CREATED state.
 		<br>
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
-			<li>Load the code pages of the even program from disk to memeory.</li>
+			<li>Load the code pages of the even program from disk to memory.</li>
 			<li>Set the Process Table entry and Page Table entries for setting up a process for the 
-			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialise the process state as CREATED in the process table entry for the even process.</li>
+			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialize the process state as CREATED in the process table entry for the even process. Set the PID field in the process table entry to 2.</li>
 			<li>Set the starting IP of the new process on top of its user stack.</li>
-			<li>We will implement the scheduler as a seperate subroutine that can be invoked from the timer ISR.  
+			<li>We will implement the scheduler as a seperate subroutine that can be invoked from the timer ISR (Interrupt Service Routine).  
 			Such stand alone subroutines are implemented as <a href="os_modules/Module_Design.html" target="_blank"> kernel modules </a> in eXpOS.   The eXpOS design stipulates that 
 			the scheduler is implemented as MODULE_5, and loaded in <a href="os_implementation.html" target="_blank">disk blocks </a> 63 and 64 of the 
 			XFS disk. The OS startup code must load this module from disk to <a href="os_implementation.html" target="_blank"> memory pages </a> 50 and 51. (We will take up
 			the implementation of the module soon below). 
 			<div><pre>loadi(50,63);
 loadi(51,64);</pre></div> </li>
+			<li>First 3 process table entries are occupied. Initialize PID field of all other process table entries to -1. This will be useful while finding the next process to schedule using round robin scheduling algorithm.</li>
 			</ol>
 			
 			<br>
@@ -2582,20 +2601,20 @@ loadi(51,64);</pre></div> </li>
 
         	 <p>  XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction.
         	We must write the scheduler code in MOD_5 and change the timer ISR to call this module to affect
-        	a context switch.  Hence, We will modify the timer interrupt routine so that it calls the scheduler module. </p>
+        	a context switch.  Hence, we will modify the timer interrupt routine so that it calls the scheduler module. </p>
 
         	<p>
         	When the timer ISR calls the scheduler, the currently active kernel stack will be that of the currently RUNNING
         	process.  The scheduler assumes that the timer handler would have saved the user context of the current process (values of R0-R19 and BP registers) into 
-        	the kernel stack before the call.  It also assumes that the state of the process has been changed to READY.  
-        	However, the machine's SP register will still point to the top of the stack of the currently
+        	the kernel stack before the call. It also assumes that the state of the process has been changed to READY.  
+        	However, the machine's SP register will still point to the top of the kernel stack of the currently
         	running process at the time of the call.  </p>
 
         	<p>	
         	The scheduler first saves the values of the registers SP, PTBR and PTLR to the process table entry of the current
         	process.  Next, it must decide which process to run next.   This is done using the <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">Round Robin Scheduling
-        	algorithm </a>.  Having decided on the new process,  the scheduler loads new values into SP, PTBR and PTLR registers
-        	from the process table entry of the new process.  If the state of the new process is READY, then the scheduler
+        	algorithm</a>.  Having decided on the new process,  the scheduler loads new values into SP, PTBR and PTLR registers
+        	from the process table entry of the new process. It also updates system status table to store pid of new process. If the state of the new process is READY, then the scheduler
         	changes the state to RUNNING.  Now, the scheduler returns to the timer ISR.  
 			</p>
 
@@ -2607,14 +2626,14 @@ loadi(51,64);</pre></div> </li>
 
             <p> An exception to this situation occurs when the scheduler finds that the new process is in state CREATED and not 
             READY.  This means that the process has never been executed previously.  Thus, the timer ISR would not have set
-            any retrun address in its kernel stack previously because the process was never run before.  In this case, the 
+            any return address in its kernel stack previously because the process was never run before.  In this case, the 
             scheduler must not return to the timer ISR.  Instead the scheduler will set the state of the process to RUNNING
-            and intialize machine registers PTLR and PTBR.  Now, the scheduler proceeds to run the process in user mode.  
-            Hence, SP is set to the top of the user stack The scheduler then 
+            and initialize machine registers PTLR and PTBR.  Now, the scheduler proceeds to run the process in user mode.  
+            Hence, SP is set to the top of the user stack. The scheduler then 
             "kick starts" execution of the new process by tranferring control to user mode through the IRET instruction. 
             </p>
 
-            <p>	The scheduler expects that When a process is set up in the CREATED state by the OS startup code, the following
+            <p>	The scheduler expects that when a process is set up in the CREATED state by the OS startup code, the following
             actions are done. </p> 
             
             <p> 1. The state of the process is set to CREATED.</p>
@@ -2629,44 +2648,124 @@ loadi(51,64);</pre></div> </li>
 
 
 
-        	<p>	Modify timer interrupt routine to set the state of the current process to ready 
-        		and call the scheduler module (Module 5). <br> 
-        		See the full algorithm <a href="os_design-files/timer.html" target="_blank">here</a>.
+        	<p>	Modify timer interrupt routine as explained above using full algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>.
         	</p>
 
 
 		<b> Scheduler Module </b>
-
+             <p>Scheduler module(module 5) saves the context of current process in its process table entry. It finds a new process to schedule which is in READY or CREATED state and has a valid PID (PID not equal to -1). Initialize the registers SP, PTBR, PTLR according to the values present in process table entry of new process selected to schedule. Also update System status table.</p>
 			<p>
-				See the full algorithm <a href="os_design-files/context_switch_module.html" target="_blank">here</a>.
+				Write a SPL program for Scheduler module(module 5) according to the full algorithm given <a href="os_design-files/context_switch_module.html" target="_blank">here</a>.
 			</p>    
 
-			Modification to INT 10 handler. 
-			Terminated state.
-			halt if no process other than idle in TERMINATED state.
-
-			Exercise: Run with odd, even ,idle and primes. 
+			<b>Modification to INT 10 handler </b>
+			 <p>At the end of a user program, it calls the exit system call to terminate the process gracefully. This is achieved by INT 10 instruction. In previous stages we have interrupt 10 routine with just halt instruction as there is only one process present in OS. Now there are more than one process present, so when interrupt 10 is called it should change the state of invoked process to TERMINATED. If all processes except idle are in TERMINATED state, then interrupt 10 routine must halt the system else invoke the scheduler to schedule some other process. </p>
+			 <p>Write INT 10 program in SPL following below steps </p>
+			 <ol style="list-style-type: decimal;margin-left: 2px">
+			  <li>Change the state to <a href="support_tools-files/constants.html">TERMINATED</a> state in process table entry of invoked process.</li> 
+			  <li>Find out if all processes are terminated except idle. If this is the case, halt the system using halt statement in SPL.</li>
+			  Follow below steps if above case is not true.
+			  <li>Invoke scheduler using call statement.
+			  <div>
+			  <pre>call MOD_5;</pre>
+			  </div></li>
+			  <li>When you return from scheduler, SP will be pointing to kernel stack of the newly scheduled process. We have to restore user context of this process from its kernel stack before switching to user mode. Restore the user context from kernel stack using restore statement and set SP to UPTR saved in process table.</li>
+			  <li>Use ireturn statement to return to user mode.</li>
+			  </ol>
+			  <br>
+ 
+ <b>Making things work </b>
+  <ol style="list-style-type: decimal;margin-left: 2px">
+  	<li>Compile and load OS startup code, timer interrupt routine, scheduler module(module 5) and interrupt 10 routine into disk using XFS interface.</li>
+  	<li>Run XSM machine with timer enabled.</li>
+  </ol>
+ <br>
+<b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers, prime numbers till 100. Modify OS startup code accordingly and run the machine with these 3 processes along with idle process. 
 
         </div>
         </div>
+<!--==========stage 14==============-->
 
-					<!-- Stage 13 -->
-
-                      <div class="panel-heading" id="list_stage14">
+                    <div class="panel-heading" id="list_stage14">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse14"><span class="fa fa-check-square-o"></span>Stage 14 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse14">
+							  <span class="fa fa-check-square-o"></span>Stage 14 : Console output with module </a>
                         </h4>
                       </div>
 
                       <div id="collapse14" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <!-- Begin Learning Objectives-->
+
+                          <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo14">Learning Objectives</a>
                             <div id="lo14" class="panel-collapse expand">
+                             <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS Resource Management.</li>
+                            
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Acquire Terminal and Release Terminal module functions.</li>
+      						  </ul>                                      
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                          </div>
+                          </div>
+                          <!-- End Learning Objectives-->
+                          <p>eXpOS resource management explanation</p>
+                          
+							<b>Modifying OS startup code</b>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Load module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
+							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">terminal status table</a> as 0. This will indicate that terminal is free at the starting of INIT process.</li>
+							  </ol>
+
+							<br><b>Modifying INT 7 routine</b><br>
+							    <p>Write system call is implemented in INT 7 interrupt. We have implemented INT 7 in stage 10. We will modify the same code to call acquire terminal function and release terminal function implemented in module 0 before and after printing the word to terminal respectively.</p>  
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							    <p>Calling Acquire Terminal (Before print statement)</p>
+							  	<li>Push all registers used till now in this interrupt routine using multipush statement in <a href="support_tools-files/spl.html" >SPL</a>.</li>
+							  	<li>Store the function number and arguments required for <a href="os_modules/Module_0.html">acquire terminal</a> in registers.</li>
+							  	<li>Call module 0 using call statement.</li>
+							  	<li>After returing from the module, pop the registers pushed before using multipop statement.</li><br>
+							  	<p>Calling Release Terminal (After print statement)</p>
+							  	<li>Push all registers used till now using multipush statement.</li>
+							  	<li>Store the function number and arguments in corresponding registers for release terminal.</li>
+							  	<li>Call module 0.</li>
+							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
+							  	<li>Pop the registers pushed before using multipop.</li>
+							  </ol>
+							<br><b>Implementation of module 0</b><br>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  <li>According to the function number present in R1, decide whether the module 0 is invoked for acquire ternimal or release terminal.</li>
+							  <li>Implement Acquire Terminal according to the algorithm given <a href="os_modules/Module_0.html#Acquire_Terminal">here</a>.</li>
+							  <li>Implement Release Terminal according to the algorithm given <a href="os_modules/Module_0.html#Release_Terminal">here</a>.</li>
+							  </ol>
+                          </div>
+                      </div>
+
+
+
+					<!-- Stage 15 -->
+
+                      <div class="panel-heading" id="list_stage15">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse15"><span class="fa fa-check-square-o"></span>Stage 15 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse15" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
+                            <div id="lo15" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
@@ -2763,23 +2862,23 @@ loadi(51,64);</pre></div> </li>
 </div>
 
 
- <!-- =========Stage 15 ===========-->
+ <!-- =========Stage 16 ===========-->
 
-                      <div class="panel-heading" id="list_stage15">
+                      <div class="panel-heading" id="list_stage16">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse15"><span class="fa fa-check-square-o"></span>Stage 15 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 15 : File system calls </a>
                         </h4>
                       </div>
 
-                      <div id="collapse15" class="panel-collapse collapse">
+                      <div id="collapse16" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
-                            <div id="lo15" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
+                            <div id="lo16" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
@@ -2796,23 +2895,23 @@ loadi(51,64);</pre></div> </li>
 		</div>
 
 
- <!-- =========Stage 16 ===========-->
+ <!-- =========Stage 17 ===========-->
 
-                      <div class="panel-heading" id="list_stage16">
+                      <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 16 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Multiuser Modification </a>
                         </h4>
                       </div>
 
-                      <div id="collapse16" class="panel-collapse collapse">
+                      <div id="collapse17" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
-                            <div id="lo16" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
+                            <div id="lo17" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
                             </ul>                                  
