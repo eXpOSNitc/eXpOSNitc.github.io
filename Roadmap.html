@@ -1780,7 +1780,7 @@ ireturn;
  some software interrupt handler.  For example, the write system call of eXpOS is coded inside the INT 7 handler.  
  An interrupt handler may contain code for several system calls. 
  (For example, in the eXpOS implementation on XSM, the routines for create, delete and seek system calls 
- are coded inside the INT 4 handler - find details<a href="os_design-files/Sw_interface.html" target="_blank"> here</a>. To identify the correct routine, the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program, the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
+ are coded inside the INT 4 handler - find details<a href="os_design-files/Sw_interface.html" target="_blank"> here</a>). To identify the correct routine, the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program, the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
  software interrupt using the INT instruction.  The arguments and the system call number are passed through the user 
  program's stack.</p>  
 
@@ -2181,7 +2181,7 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
  arguments from the stack, check whether the request is for a console write, if so call INT 7 after supplying
  proper arguments in the stack as done in the previous stage.  Upon return from the system call, your library
  routine must set the return value through the stack (setting return value in the proper location of
- the stack -see details here) and return control back to the application.</p>
+ the stack -see details <a href="abi.html#library" target="_blank">here</a>) and return control back to the application.</p>
 			
         </div>
         </div>
@@ -2684,24 +2684,88 @@ loadi(51,64);</pre></div> </li>
 
         </div>
         </div>
+<!--==========stage 14==============-->
 
-					<!-- Stage 13 -->
-
-                      <div class="panel-heading" id="list_stage14">
+                    <div class="panel-heading" id="list_stage14">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse14"><span class="fa fa-check-square-o"></span>Stage 14 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse14">
+							  <span class="fa fa-check-square-o"></span>Stage 14 : Console output with module </a>
                         </h4>
                       </div>
 
                       <div id="collapse14" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <!-- Begin Learning Objectives-->
+
+                          <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo14">Learning Objectives</a>
                             <div id="lo14" class="panel-collapse expand">
+                             <ul>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS Resource Management.</li>
+                            
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Acquire Terminal and Release Terminal module functions.</li>
+      						  </ul>                                      
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                          </div>
+                          </div>
+                          <!-- End Learning Objectives-->
+                          <p>eXpOS resource management explanation</p>
+                          
+							<b>Modifying OS startup code</b>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Load module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
+							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">terminal status table</a> as 0. This will indicate that terminal is free at the starting of INIT process.</li>
+							  </ol>
+
+							<br><b>Modifying INT 7 routine</b><br>
+							    <p>Write system call is implemented in INT 7 interrupt. We have implemented INT 7 in stage 10. We will modify the same code to call acquire terminal function and release terminal function implemented in module 0 before and after printing the word to terminal respectively.</p>  
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							    <p>Calling Acquire Terminal (Before print statement)</p>
+							  	<li>Push all registers used till now in this interrupt routine using multipush statement in <a href="support_tools-files/spl.html" >SPL</a>.</li>
+							  	<li>Store the function number and arguments required for <a href="os_modules/Module_0.html">acquire terminal</a> in registers.</li>
+							  	<li>Call module 0 using call statement.</li>
+							  	<li>After returing from the module, pop the registers pushed before using multipop statement.</li><br>
+							  	<p>Calling Release Terminal (After print statement)</p>
+							  	<li>Push all registers used till now using multipush statement.</li>
+							  	<li>Store the function number and arguments in corresponding registers for release terminal.</li>
+							  	<li>Call module 0.</li>
+							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
+							  	<li>Pop the registers pushed before using multipop.</li>
+							  </ol>
+							<br><b>Implementation of module 0</b><br>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  <li>According to the function number present in R1, decide whether the module 0 is invoked for acquire ternimal or release terminal.</li>
+							  <li>Implement Acquire Terminal according to the algorithm given <a href="os_modules/Module_0.html#Acquire_Terminal">here</a>.</li>
+							  <li>Implement Release Terminal according to the algorithm given <a href="os_modules/Module_0.html#Release_Terminal">here</a>.</li>
+							  </ol>
+                          </div>
+                      </div>
+
+
+
+					<!-- Stage 15 -->
+
+                      <div class="panel-heading" id="list_stage15">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse15"><span class="fa fa-check-square-o"></span>Stage 15 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse15" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
+                            <div id="lo15" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
@@ -2798,23 +2862,23 @@ loadi(51,64);</pre></div> </li>
 </div>
 
 
- <!-- =========Stage 15 ===========-->
+ <!-- =========Stage 16 ===========-->
 
-                      <div class="panel-heading" id="list_stage15">
+                      <div class="panel-heading" id="list_stage16">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse15"><span class="fa fa-check-square-o"></span>Stage 15 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 15 : File system calls </a>
                         </h4>
                       </div>
 
-                      <div id="collapse15" class="panel-collapse collapse">
+                      <div id="collapse16" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
-                            <div id="lo15" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
+                            <div id="lo16" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
@@ -2831,23 +2895,23 @@ loadi(51,64);</pre></div> </li>
 		</div>
 
 
- <!-- =========Stage 16 ===========-->
+ <!-- =========Stage 17 ===========-->
 
-                      <div class="panel-heading" id="list_stage16">
+                      <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 16 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Multiuser Modification </a>
                         </h4>
                       </div>
 
-                      <div id="collapse16" class="panel-collapse collapse">
+                      <div id="collapse17" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
-                            <div id="lo16" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
+                            <div id="lo17" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
                             </ul>                                  
