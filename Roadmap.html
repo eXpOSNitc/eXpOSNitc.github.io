@@ -2386,7 +2386,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<li> Initialise the machine's PTBR and PTLR registers for scheduling the INIT process. 
 		(You have alreay gone through the steps in Stage 7). </li>
 		<li> Set the Entry point address for INIT process in the beginning of Stack page of INIT. Also set the SP register accordingly.</li>
-		<li>Set the currentPID field in <a href="os_design-files/mem_ds.html#ss_table" >system status table</a> to 1, as PID for INIT is 1.</li>
+		<li>Set the current PID field in <a href="os_design-files/mem_ds.html#ss_table" >system status table</a> to 1, as PID for INIT is 1.</li>
 		<li>Transfer control to INIT using ireturn instruction.</li>
 
 		</ol>
@@ -2542,9 +2542,9 @@ in the CREATED state.
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
                             <div id="lo13" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS module programming.</li>
+                            <!-- <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS module programming.</li>-->
                             
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Round Robin scheduling algorithm as an eXpOS module.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement a preliminary version of the Round Robin scheduling algorithm as an eXpOS module.</li>
       						  </ul>                                  
                                      
                             </div>
@@ -2555,8 +2555,8 @@ in the CREATED state.
 		<!-- End Learning Objectives-->    
         
         	<p> Multiprogramming refers to running more than one process simultaneously. 
-        	In this stage, you will implement the actual scheduler used in eXpOS which uses Round Robin scheduling
-        	technique. You will hand create another user process
+        	In this stage, you will implement an initial version of the Round Robin scheduler used 
+        	in eXpOS.  You will hand create another user process
         	(apart from idle and init) and schedule its execution using the timer interrupt.</p> 
 
 		
@@ -2577,17 +2577,17 @@ in the CREATED state.
 				</li>
 
 		</ol>
-					<br>
-        	 		<b> Modifications to OS Startup code </b>
 		<br>
+        	 		<b> Modifications to the boot module code </b>
+		<br><br>
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Load the code pages of the even program from disk to memory.</li>
 			<li>Set the Process Table entry and Page Table entries for setting up a process for the 
 			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialize the process state as CREATED in the process table entry for the even process. Set the PID field in the process table entry to 2.</li>
 			<li>Set the starting IP of the new process on top of its user stack.</li>
-			<li>We will implement the scheduler as a seperate subroutine that can be invoked from the timer ISR (Interrupt Service Routine).  
-			Such stand alone subroutines are implemented as <a href="os_modules/Module_Design.html" target="_blank"> kernel modules </a> in eXpOS.   The eXpOS design stipulates that 
+			<li>We will implement the scheduler as a seperate module that can be invoked from the timer ISR (Interrupt Service Routine).  
+			<!--Such stand alone subroutines are implemented as <a href="os_modules/Module_Design.html" target="_blank"> kernel modules </a> in eXpOS.-->   The eXpOS design stipulates that 
 			the scheduler is implemented as MODULE_5, and loaded in <a href="os_implementation.html" target="_blank">disk blocks </a> 63 and 64 of the 
 			XFS disk. The OS startup code must load this module from disk to <a href="os_implementation.html" target="_blank"> memory pages </a> 50 and 51. (We will take up
 			the implementation of the module soon below). 
@@ -2597,14 +2597,14 @@ loadi(51,64);</pre></div> </li>
 			</ol>
 			
 			<br>
-        	 <b>Modification to Timer Interrupt Routine</b>
+        	 <b>Modifications to Timer Interrupt Routine</b>
 
-        	 <p>  XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction.
-        	We must write the scheduler code in MOD_5 and change the timer ISR to call this module to affect
-        	a context switch.  Hence, we will modify the timer interrupt routine so that it calls the scheduler module. </p>
+        <p> <!-- XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction.-->
+        
+        	As we are going to write the scheduler code as a separate module (MOD_5), we will modify the  timer interrupt routine so that it calls that module. </p>
 
         	<p>
-        	When the timer ISR calls the scheduler, the currently active kernel stack will be that of the currently RUNNING
+        	When the timer ISR calls the scheduler, the active kernel stack will be that of the currently RUNNING
         	process.  The scheduler assumes that the timer handler would have saved the user context of the current process (values of R0-R19 and BP registers) into 
         	the kernel stack before the call. It also assumes that the state of the process has been changed to READY.  
         	However, the machine's SP register will still point to the top of the kernel stack of the currently
@@ -2614,53 +2614,91 @@ loadi(51,64);</pre></div> </li>
         	The scheduler first saves the values of the registers SP, PTBR and PTLR to the process table entry of the current
         	process.  Next, it must decide which process to run next.   This is done using the <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling" target="_blank">Round Robin Scheduling
         	algorithm</a>.  Having decided on the new process,  the scheduler loads new values into SP, PTBR and PTLR registers
-        	from the process table entry of the new process. It also updates system status table to store pid of new process. If the state of the new process is READY, then the scheduler
-        	changes the state to RUNNING.  Now, the scheduler returns to the timer ISR.  
+        	from the process table entry of the new process. It also updates the system status table to store PID of new process. If the state of the new process is READY, then the scheduler
+        	changes the state to RUNNING.  Now, the scheduler returns using the return instruction.    
 			</p>
-
+			<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px" >
+			<p>The control flow at this point is tricky and must be carefully understood.  The key point
+			to note here is that although the scheduler module was called by one process 
+			(from the timer ISR),
+			since the stack was changed inside the scheduler, <b> the return is to a program instruction
+			in some other process! (determined by the value on top of the kernel stack of the newly scheduled process)</b>.  The return is to that instruction which immediately follows 
+			the <i> call scheduler </i> instruction in the newly selected process. (why? - ensure that you 
+			understand this point clearly.) An exception to 
+			this rule happens only when the newly selected process to be scheduled is in the CREATED state.
+			Here, the process was never run and hence there is no return address in the kernel stack.
+			Hence, the scheduler directly kick-starts execution of the process by initiating user mode
+			execution of the process (using the ireturn instruction).  The design of eXpOS
+			guarantees that a process can invoke the scheduler module only from the kernel mode.  
+			Consequently, the return address will be always stored on top of the kernel stack of the process.  
+			</p>   
+            
+            <p>The round robin scheduling algorithm generally schedules the "next process" in the process table that is in CREATED/READY state. (There are exceptions to this rule, which we will encounter in later stages.)  Moreover, in the present stage, a process will invoke the scheduler only from the timer interrupt.  We will see other situations in later stages. </p> 
+            </div>
+            <br>
 			<p>
-        	Since the stack has been changed, the timer resumes execution from the return address stored on the top of the 
-        	kernel stack of the new process.  The timer will restore the user context of the new process from the stack and 
-        	return to the user mode, resulting in the new process being executed.  
+        	As noted above, the timer resumes execution from the return address stored on the top of the 
+        	kernel stack of the new process.  The timer will restore the user context of the new process from the stack and return to the user mode, resulting in the new process being executed.  
         	</p>
 
-            <p> An exception to this situation occurs when the scheduler finds that the new process is in state CREATED and not 
-            READY.  This means that the process has never been executed previously.  Thus, the timer ISR would not have set
-            any return address in its kernel stack previously because the process was never run before.  In this case, the 
-            scheduler must not return to the timer ISR.  Instead the scheduler will set the state of the process to RUNNING
+            <p> If the scheduler finds that the new process is in state CREATED and not 
+            READY, then as noted above, the timer ISR would not have set
+            any return address in its kernel stack previously. In this case,
+            the scheduler will set the state of the process to RUNNING
             and initialize machine registers PTLR and PTBR.  Now, the scheduler proceeds to run the process in user mode.  
             Hence, SP is set to the top of the user stack. The scheduler then 
-            "kick starts" execution of the new process by tranferring control to user mode through the IRET instruction. 
+            starts the execution of the new process by transferring control to user mode using the IRET instruction. 
             </p>
 
-            <p>	The scheduler expects that when a process is set up in the CREATED state by the OS startup code, the following
-            actions are done. </p> 
+            <p>	The scheduler expects that when a process is in the CREATED state, the following
+            values have been already set in the process table. (In the present stage, the OS 
+            startup code/Boot module is responsible for setting up these values.)</p> 
             
-            <p> 1. The state of the process is set to CREATED.</p>
+            <p> 1. The state of the process has been set to CREATED.</p>
             
-            <p> 2. The UPTR field of the process table entry has been set to the top of the user stack and the (stack-top contains the address of the instruction to be fetched next when the process is run in the user mode). </p>   
-            
+            <p> 2. The UPTR field of the process table entry has been set to the top of the user stack (and the stack-top contains the address of the instruction to be fetched next when the process is run in the user mode). </p>   
+       
             <p> 3. PTBR, PTLR, User Area Page Number and KPTR fields in the process table entry has been set up. </p>
             
-        	<p><b>It is absolutely neccesary to read and understand 
+        	<p><b>It is absolutely necessary to be clear about  
         	<a href="os_design-files/stack_module.html" target="_blank">Kernel Stack Management during Module calls </a> and <a href="os_design-files/timer_stack_management.html" target="_blank">Kernel Stack Management during Context Switch</a> before proceeding further. </b></p> 
 
 
 
 
-        	<p>	Modify timer interrupt routine as explained above using full algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>.
+        	<p>	Modify timer interrupt routine as explained above using the algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>. 
         	</p>
 
 
 		<b> Scheduler Module </b>
-             <p>Scheduler module(module 5) saves the context of current process in its process table entry. It finds a new process to schedule which is in READY or CREATED state and has a valid PID (PID not equal to -1). Initialize the registers SP, PTBR, PTLR according to the values present in process table entry of new process selected to schedule. Also update System status table.</p>
+             <p>Scheduler module (module 5) saves the values of  SP, PTBR and PTLR registers of current process in its process table entry. It finds a new process to schedule which is in READY or CREATED state and has a valid PID (PID not equal to -1). Initialize the registers SP, PTBR, PTLR according to the values present in process table entry of new process selected to schedule. Also update System status table.</p>
 			<p>
-				Write a SPL program for Scheduler module(module 5) according to the full algorithm given <a href="os_design-files/context_switch_module.html" target="_blank">here</a>.
+				Write a SPL program for Scheduler module (module 5) according to the full algorithm given below:  
+				<ol style="list-style-type: decimal; margin-left: 2px">
+					<li>Obtain the PID of the current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
+					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry as PROCESS_TABLE + currentPID * 16.</li>
+					<li>Save SP % 512 in the kernel stack pointer field, also PTBR and PTLR into the corresponding fields in the Process Table entry.</li>
+					<li>Iterate through the Process Table entries, starting from the succeeding entry of current process to find a process in READY or CREATED state.</li>
+					<li>If no such process can be found, select the idle process as the new process to be scheduled. Save PID of new process to be scheduled as newPID.</li>
+					<li>Obtain User Area Page number and kernel stack pointer value from Process Table entry of the new process and set SP as User Area Page number * 512 + Kernel Stack pointer value.</li>
+					<li>Restore PTBR and PTLR from the corresponding fields in the Process Table entry of the new process.</li>
+					<li>Set the PID of the new process in the current PID field of System Status Table.</li>
+					<li>If the new process is in CREATED state, follow below steps. 
+					   <ul style="list-style-type: disc;margin-left: 20px"> 
+					   	<li>Set SP to value in UPTR field of process table entry.</li>
+						<li>Set state of newly scheduled process as RUNNING.</li>
+						<li>Return to user mode using ireturn statement.</li></ul>
+					  </li>
+					<li>Set the state of new process as RUNNING.</li>
+					<li>Return using return statement.</li>
+				</ol>
+
+             <code>Note: </code>In later stages you will modify the scheduler module to the final form given  <a href="os_modules/Module_5.html" target="_blank">here</a>.
 			</p>    
 
-			<b>Modification to INT 10 handler </b>
-			 <p>At the end of a user program, it calls the exit system call to terminate the process gracefully. This is achieved by INT 10 instruction. In previous stages we have interrupt 10 routine with just halt instruction as there is only one process present in OS. Now there are more than one process present, so when interrupt 10 is called it should change the state of invoked process to TERMINATED. If all processes except idle are in TERMINATED state, then interrupt 10 routine must halt the system else invoke the scheduler to schedule some other process. </p>
-			 <p>Write INT 10 program in SPL following below steps </p>
+			<b>Modifications to INT 10 handler </b>
+			 <p> The ExpL compiler sets the last instruction to be executed in every user program to the INT 10 instruction (exit system call) to terminate the process gracefully. In previous stages, we have interrupt 10 routine with just halt instruction as there is only one process present in OS. Now there are more than one process present, so when interrupt 10 is called it should change the state of invoked process to TERMINATED. If all processes except idle are in TERMINATED state, then interrupt 10 routine must halt the system else invoke the scheduler to schedule other processes. </p>
+			 <p>Write INT 10 program in SPL following below steps :</p>
 			 <ol style="list-style-type: decimal;margin-left: 2px">
 			  <li>Change the state to <a href="support_tools-files/constants.html">TERMINATED</a> state in process table entry of invoked process.</li> 
 			  <li>Find out if all processes are terminated except idle. If this is the case, halt the system using halt statement in SPL.</li>
@@ -2669,18 +2707,24 @@ loadi(51,64);</pre></div> </li>
 			  <div>
 			  <pre>call MOD_5;</pre>
 			  </div></li>
-			  <li>When you return from scheduler, SP will be pointing to kernel stack of the newly scheduled process. We have to restore user context of this process from its kernel stack before switching to user mode. Restore the user context from kernel stack using restore statement and set SP to UPTR saved in process table.</li>
-			  <li>Use ireturn statement to return to user mode.</li>
+              There will be no return to this process as the scheduler will never schedule this process again.  
 			  </ol>
 			  <br>
  
  <b>Making things work </b>
   <ol style="list-style-type: decimal;margin-left: 2px">
-  	<li>Compile and load OS startup code, timer interrupt routine, scheduler module(module 5) and interrupt 10 routine into disk using XFS interface.</li>
+  	<li>Compile and load OS startup code, timer interrupt routine, scheduler module (module 5) and interrupt 10 routine into disk using XFS interface.</li>
   	<li>Run XSM machine with timer enabled.</li>
   </ol>
  <br>
-<b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers, prime numbers till 100. Modify OS startup code accordingly and run the machine with these 3 processes along with idle process. 
+
+
+<a data-toggle="collapse"  href="#collapseq6"><b>Q1.</b> Is it always the case that scheduler module is invoked only from the timer interrupt routine?</a>
+                            <div id="collapseq6" class="panel-collapse collapse">
+	    In the present stage - YES.  However, in later stages, if a process gets blocked inside a kernel module (waiting for some resource), then the process will set its state to "WAITING" and will invoke the scheduler.  Later when the process is back in READY state (as the resource becomes free) and the scheduler selects the process for running, execution returns to the instruction following the call to the scheduler in the kernel module.      
+		</div>
+<br>
+<b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers, prime numbers from 1-100. Modify OS startup code accordingly and run the machine with these 3 processes along with idle process. 
 
         </div>
         </div>
@@ -2866,7 +2910,7 @@ loadi(51,64);</pre></div> </li>
 
                       <div class="panel-heading" id="list_stage16">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 15 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 16 : File system calls </a>
                         </h4>
                       </div>
 
