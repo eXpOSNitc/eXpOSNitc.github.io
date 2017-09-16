@@ -2373,7 +2373,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 
 
 		
-		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process as done in the pervious stage.
+		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process as done in the previous stage.
 		<div><pre>[81 * 512] = [69*512 + 1];</pre></div></li>
 		
 		The values of PTBR, PTLR, User Area Page Number, UPTR, KPTR etc. stored in the process table entry for a process
@@ -2518,34 +2518,113 @@ in the CREATED state.
 <br> <br>
 
 
-<b style="color:#26A65B">Assignment 1: </b> Write ExpL programs to print even and odd numbers below 100. Modify the OS startup code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using round robin scheduling algorithm.
 
 
 		</div>
 		</div>
-		
-     <!-- Stage 13 -->
+
+<!-- =========Stage 13 ===========-->
 
                       <div class="panel-heading" id="list_stage13">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : Round robin scheduler</a>
+                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : Introducing to Boot Module </a>
                         </h4>
                       </div>
 
                       <div id="collapse13" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
-                          <div class="container col-md-13">
+                          <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
                             <div id="lo13" class="panel-collapse expand">
                             <ul>
-                            <!-- <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS module programming.</li>-->
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Boot Module.</li>
                             
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement a preliminary version of the Round Robin scheduling algorithm as an eXpOS module.</li>
-      						  </ul>                                  
+                            </ul>                                  
+                            </div>
+                          </li>
+                          </ul>
+                          <p>Modules in eXpOS are used to perform some logical tasks, which are needed to be done frequently. eXpOS modules serve various purposes like scheduling new process, acquiring and releasing the resources etc. These modules runs in kernel mode and invoked only from kernel mode. A user program can never call a module. Modules can be invoked from interrupt routines, other modules and OS startup code.</p>   
+                          <p>As modules execute in kernel mode, the kernel stack of currently scheduled process is used for module execution. XSM supports 8 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. While switching to module, CALL instruction pushes the IP address of instruction after the CALL instruction on top of the kernel stack and starts execution of corresponding module. A module returns to the caller using RET instruction (return statement in SPL) which restores the IP value present on top of kernel stack pushed by CALL instruction. Note that we are using return statement to return to caller instead of ireturn. IRET instruction (ireturn statement) changes mode from  kernel to user as it assumes that SP is logical address. RET instruction (return statement) on the other hand just returns to the caller using IP value present on top of SP in kernel mode. Read about kernel stack management during kernel modules <a href="os_design-files/stack_module.html" target="_blank">here</a>.</p> 
+
+                          <p>A module in eXpOS may implement several functions each for a particular task ( eg- <a href="os_modules/Module_0.html" target="_blank">resource manager module </a> -module 1) or whole module may perform a single task (eg- scheduler, boot module). For module with different functions, each function is given a function number to distinguish them within a module. This function number should be passed as argument in register R1 along with other arguments in R2, R3 etc. Register R0 is reserved for return value. For details about functions in different modules refer <a href="os_modules/Module_Design.html" target="_blank">here</a>.</p>
+
+
+                          <p>According to memory organization of eXpOS, OS startup code is provided with only one memory page, but in later stages OS startup code may exceed one page due to initialization of several data structures. So a module is used for this purpose which is called <b>Boot module</b> (module 7). Boot module written in module 7 is invoked from OS startup code. OS startup code hand-creates the idle process, loads module 7 in memory then calls the boot module and after returning from the boot module initiates user mode execution of idle process. Note that till last stage we first scheduled INIT process but from this stage idle process will be scheduled first. All other processes will be scheduled by timer interrupt routine. Boot module is responsible for initialization of all eXpOS data structures, user processes and also loading of interrupt routines and modules required. As OS grows, changes to OS startup code is not required, only boot module code is modified according to need.</p>  
+
+                         <!-- <p>OS startup code loads module 7 and idle process. It intializes page table and process table entry for idle process. It sets SP to kernel stack pointer of idle process and invokes boot module (module 7).</p>-->
+                          
+                          <b>Modifications to OS startup code</b><br><br>
+                          	<ol style="list-style-type: decimal;margin-left: 2px">
+                          		<li>Load module 7 from disk blocks 67 and 68 to memory pages 54 and 55 respectively, also load idle process from <a href="os_implementation.html#accordion" target="_blank">disk blocks</a> to corresponding <a href="os_implementation.html#accordion">memory pages</a>.</li>
+                          		<li>Set the page table entries of idle process as done in previous stage with PTBR as PAGE_TABLE_BASE.</li>
+                          		<li>Initialize PID, UPTR, KPTR, PTBR, PTLR and user area page number fields in <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry for the idle process as done earlier.</li>
+                          		<li>As the idle process is scheduled first, initialize the STATE field in process table entry of idle process as RUNNING and current PID field <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>  to 0 (PID of the idle process).</li>
+                          		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process as done in the previous stage.
+		                          <div><pre>[81 * 512] = [69*512 + 1];</pre></div></li>
+								<li>Set SP to user area page number * 512 -1. This is done to initialize the kernel stack pointer before calling boot module.
+								<div><pre>SP = 82 * 512 - 1;</pre></div></li>
+								<li>Call module 7 (boot module) using call statement in SPL.
+								<div><pre>call MOD_7;</pre></div></li>
+								<li>After returning from boot module, initialize registers PTBR and PTLR to PAGE_TABLE_BASE and 10 respectively as these values may have changed in boot module.</li>
+								<li>Set the SP to 8*512 to change from kernel stack to user stack.</li>
+								<li>Return to user mode using ireturn statement.</li>
+								</ol>
+                                    <br>
+                                  <b>Boot module</b><br><br>
+                                  <ol style="list-style-type: decimal; margin-left: 2px">
+                                  	<li>Load required interrupts routines, eXpOS library, exception handler, INIT process as done in OS startup code of previous stage from disk blocks to memory pages.</li>
+                                  	<li>Set the page table entries for INIT process as done in previous stage with PTBR as PAGE_TABLE_BASE+20.</li>
+                                  	<li>Initialize process table entry for the INIT process as done in previous stage.</li>
+                                  	<li>Set the STATE field in process table entry of INIT to CREATED.</li>
+                                  	<li>Store the entry point IP value from header of code page to top of user stack of INIT process.</li>
+                                  	<li>Return from module to OS startup code using return statement in SPL. </li>
+                                  </ol><br>
+                   <b>Making things work</b>                   	
+                   <p>Compile and load module 7 and modified OS startup code to disk using XFS interface. Run the XSM machine with timer enabled.</p>
+                   
+
+
+
+   <br>                       
+<b style="color:#26A65B">Assignment 1: </b> Write ExpL programs to print even and odd numbers below 100. Modify the boot module code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using round robin scheduling algorithm.
+
+                        </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+
+		</div>
+		</div>
+<!-- =========end Stage 13 ===========-->
+
+
+     <!-- Stage 14 -->
+
+                      <div class="panel-heading" id="list_stage14">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse14"><span class="fa fa-check-square-o"></span>Stage 14 : Round robin scheduler</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse14" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo14">Learning Objectives</a>
+                            <div id="lo14" class="panel-collapse expand">
+                           
+                            <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS module programming.</li>-->
+                            
+                              <span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement a preliminary version of the Round Robin scheduling algorithm as an eXpOS module.
+      						                                    
                                      
                             </div>
                           </li>
@@ -2599,7 +2678,7 @@ loadi(51,64);</pre></div> </li>
 			<br>
         	 <b>Modifications to Timer Interrupt Routine</b>
 
-        <p> <!-- XSM supports 7 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction.-->
+        <p> 
         
         	As we are going to write the scheduler code as a separate module (MOD_5), we will modify the  timer interrupt routine so that it calls that module. </p>
 
@@ -2724,20 +2803,23 @@ loadi(51,64);</pre></div> </li>
 	    In the present stage - YES.  However, in later stages, if a process gets blocked inside a kernel module (waiting for some resource), then the process will set its state to "WAITING" and will invoke the scheduler.  Later when the process is back in READY state (as the resource becomes free) and the scheduler selects the process for running, execution returns to the instruction following the call to the scheduler in the kernel module.      
 		</div>
 <br>
+<br>
 <b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers, prime numbers from 1-100. Modify OS startup code accordingly and run the machine with these 3 processes along with idle process. 
 
         </div>
         </div>
-<!--==========stage 14==============-->
+        <!--==========end stage 14==============-->
 
-                    <div class="panel-heading" id="list_stage14">
+<!--==========stage 15==============-->
+
+                    <div class="panel-heading" id="list_stage15">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse14">
-							  <span class="fa fa-check-square-o"></span>Stage 14 : Console output with module </a>
+                          <a data-toggle="collapse"  href="#collapse15">
+							  <span class="fa fa-check-square-o"></span>Stage 15 : Console output with module </a>
                         </h4>
                       </div>
 
-                      <div id="collapse14" class="panel-collapse collapse">
+                      <div id="collapse15" class="panel-collapse collapse">
                         <div class="panel-body">
 
                           <!-- Begin Learning Objectives-->
@@ -2745,15 +2827,12 @@ loadi(51,64);</pre></div> </li>
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo14">Learning Objectives</a>
-                            <div id="lo14" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
+                            <div id="lo15" class="panel-collapse expand">
                              <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with eXpOS Resource Management.</li>
-                            
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Acquire Terminal and Release Terminal module functions.</li>
-      						  </ul>                                      
-                                     
-                            </div>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with module interface and parameter passing.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Resource Management module for terminal output. </li>
+                               </div>
                           </li>
                           </ul>
                           </div>
@@ -2791,25 +2870,62 @@ loadi(51,64);</pre></div> </li>
                           </div>
                       </div>
 
+<!--==========end stage 15==============-->
 
 
-					<!-- Stage 15 -->
+<!-- =========Stage 16 ===========-->
 
-                      <div class="panel-heading" id="list_stage15">
+                      <div class="panel-heading" id="list_stage16">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse15"><span class="fa fa-check-square-o"></span>Stage 15 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 16 : Console Input </a>
                         </h4>
                       </div>
 
-                      <div id="collapse15" class="panel-collapse collapse">
+                      <div id="collapse16" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
-                            <div id="lo15" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
+                            <div id="lo16" class="panel-collapse expand">
+                            <ul>
+                              <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Console Interrupt Routine and Read system call.</li>
+                            
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+
+		</div>
+		</div>
+<!-- =========end Stage 16 ===========-->
+
+
+					<!-- Stage 17 -->
+
+                      <div class="panel-heading" id="list_stage17">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse17" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
+                            <div id="lo17" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
@@ -2905,24 +3021,26 @@ loadi(51,64);</pre></div> </li>
    	</ol>
 </div>
 
+ <!-- =========end Stage 17 ===========-->
 
- <!-- =========Stage 16 ===========-->
 
-                      <div class="panel-heading" id="list_stage16">
+ <!-- =========Stage 18 ===========-->
+
+                      <div class="panel-heading" id="list_stage18">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse16"><span class="fa fa-check-square-o"></span>Stage 16 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : File system calls </a>
                         </h4>
                       </div>
 
-                      <div id="collapse16" class="panel-collapse collapse">
+                      <div id="collapse18" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
-                            <div id="lo16" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
+                            <div id="lo18" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
@@ -2938,24 +3056,26 @@ loadi(51,64);</pre></div> </li>
 		</div>
 		</div>
 
+ <!-- =========end Stage 18 ===========-->
 
- <!-- =========Stage 17 ===========-->
 
-                      <div class="panel-heading" id="list_stage17">
+ <!-- =========Stage 19 ===========-->
+
+                      <div class="panel-heading" id="list_stage19">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : Multiuser Modification </a>
                         </h4>
                       </div>
 
-                      <div id="collapse17" class="panel-collapse collapse">
+                      <div id="collapse19" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
-                            <div id="lo17" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
+                            <div id="lo19" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
                             </ul>                                  
@@ -2970,6 +3090,9 @@ loadi(51,64);</pre></div> </li>
 
 		</div>
 		</div>
+
+	 <!-- =========end Stage 19 ===========-->
+	
 <!--=========== Intoduction Section Ending ===============-->
 
 </section>
