@@ -2549,7 +2549,7 @@ in the CREATED state.
                           </li>
                           </ul>
                           <p>Modules in eXpOS are used to perform some logical tasks, which are needed to be done frequently. eXpOS modules serve various purposes like scheduling new process, acquiring and releasing the resources etc. These modules runs in kernel mode and invoked only from kernel mode. A user program can never call a module. Modules can be invoked from interrupt routines, other modules and OS startup code.</p>   
-                          <p>As modules execute in kernel mode, the kernel stack of currently scheduled process is used for module execution. XSM supports 8 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. While switching to module, CALL instruction pushes the IP address of instruction after the CALL instruction on top of the kernel stack and starts execution of corresponding module. A module returns to the caller using RET instruction (return statement in SPL) which restores the IP value present on top of kernel stack pushed by CALL instruction. Note that we are using return statement to return to caller instead of ireturn. IRET instruction (ireturn statement) changes mode from  kernel to user as it assumes that SP is logical address. RET instruction (return statement) on the other hand just returns to the caller using IP value present on top of SP in kernel mode. Read about kernel stack management during kernel modules <a href="os_design-files/stack_module.html" target="_blank">here</a>.</p> 
+                          <p>As modules execute in kernel mode, the kernel stack of currently scheduled process is used for module execution. XSM supports 8 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. While switching to module, CALL instruction pushes the IP address of instruction after the CALL instruction on top of the kernel stack and starts execution of corresponding module. A module returns to the caller using RET instruction (return statement in SPL) which restores the IP value present on top of kernel stack pushed by CALL instruction. Note that we are using return statement to return to caller instead of ireturn. IRET instruction (ireturn statement) changes mode from  kernel to user as it assumes that SP is logical address. RET instruction (return statement) on the other hand just returns to the caller using IP value present on top of SP in kernel mode. Read about kernel stack management during kernel module calls <a href="os_design-files/stack_module.html" target="_blank">here</a>.</p> 
 
                           <p>A module in eXpOS may implement several functions each for a particular task ( eg- <a href="os_modules/Module_0.html" target="_blank">resource manager module </a> -module 1) or whole module may perform a single task (eg- scheduler, boot module). For module with different functions, each function is given a function number to distinguish them within a module. This function number should be passed as argument in register R1 along with other arguments in R2, R3 etc. Register R0 is reserved for return value. For details about functions in different modules refer <a href="os_modules/Module_Design.html" target="_blank">here</a>.</p>
 
@@ -2838,37 +2838,66 @@ loadi(51,64);</pre></div> </li>
                           </div>
                           </div>
                           <!-- End Learning Objectives-->
-                          <p>eXpOS resource management explanation</p>
                           
-							<b>Modifying OS startup code</b>
+
+                          <p>Processes in eXpOS requires different resources like terminal, disk, inode(file) etc. To manage these resources among different processes eXpOS provides resource manager module which is module 0. For a process to use a resource first the process has to acquire required resource, if it is available i.e. no other process is using it. If the resource required by a process is not available, then that process will be blocked by the module until the resource is free. Meanwhile, the module will invoke scheduler to schedule other processes.  After using acquired resource the process releases it and also changes the state of the processes those are waiting for this resource to READY. The resource manager module implements two functions for each resource, one to acquire the resource and other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
+
+                          <p>In this stage, you will learn how the terminal is shared by the processes for writing a word to terminal. For this purpose, a table called <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> is maintained. Terminal Status table keeps track of whether the terminal is available or not using a flag named STATUS. It also stores the PID of the process which is currently using the terminal. </p>
+
+                          <p>In write system call before printing the word to terminal you have to allocate terminal resource for currently running process and after printing the word deallocate the terminal resource. There are two functions related to terminal management in module 0, those are Acquire Terminal and Release Terminal for allocating and deallocating the terminal resource respectively.  Each function in a module has a function number to identify them within a module. Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively. Function number is stored in register R1 and passed as an argument to the module. The other arguments are passed through registers R2, R3 etc. For both Acquire Terminal and Release Terminal PID of the currently running process should be passed as an argument through register R2. In this stage, Module 0 is called from interrupt 7(write system call) and the values in registers used till now in interrupt 7 may change in module 0 as same register set R0-R19 are used in both. So before setting the argument values in registers for invoking the module, you have to push the registers used till now in interrupt 7 into kernel stack. After returning from module 0 and retriving the return value from R0, you have to pop back the values of registers stored in kernel stack. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+
+                           <p><code>Note:</code> We haven't used multipush and multipop statements while invoking boot module from OS startup code and scheduler module from timer interrupt routine as it was not required. But to invoke scheduler module in future from any other module or interrupt routine, it's necessary to push registers into the stack.</p>
+                          
+							<b>Modifying Boot Module code</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							  	<li>Load module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
-							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">terminal status table</a> as 0. This will indicate that terminal is free at the starting of INIT process.</li>
+							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that terminal is free before scheduling the first process.</li>
 							  </ol>
 
-							<br><b>Modifying INT 7 routine</b><br>
-							    <p>Write system call is implemented in INT 7 interrupt. We have implemented INT 7 in stage 10. We will modify the same code to call acquire terminal function and release terminal function implemented in module 0 before and after printing the word to terminal respectively.</p>  
+							<br><b>Modifying INT 7 routine</b><br><br>
+							    <p style="text-indent: 0px">Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Acquire Terminal and Release Terminal functions.</p>  
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							    <p>Calling Acquire Terminal (Before print statement)</p>
-							  	<li>Push all registers used till now in this interrupt routine using multipush statement in <a href="support_tools-files/spl.html" >SPL</a>.</li>
-							  	<li>Store the function number and arguments required for <a href="os_modules/Module_0.html">acquire terminal</a> in registers.</li>
+							    <p style="text-indent: 0px">Calling Acquire Terminal (Before print statement)</p>
+							  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL.
+							  	<div><pre>multipush(R0, R1, R2, R3,...);</pre></div></li>
+							  	<li>Store the function number 8 in register R1 and PID of current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 .</li>
 							  	<li>Call module 0 using call statement.</li>
-							  	<li>After returing from the module, pop the registers pushed before using multipop statement.</li><br>
-							  	<p>Calling Release Terminal (After print statement)</p>
-							  	<li>Push all registers used till now using multipush statement.</li>
-							  	<li>Store the function number and arguments in corresponding registers for release terminal.</li>
-							  	<li>Call module 0.</li>
+							  	<p style="text-indent: 0px">Ignore value present in R0 as Acquire Terminal does not have return value.</p>
+							  	<li>Use multipop statement to pop the registers pushed before calling the module. Specify the same order of registers used in multipush as registers are popped in the reverse order in which they are specified in the multipop statement.   
+							  	<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li><br>
+							  	<p style="text-indent: 0px">Calling Release Terminal (After print statement)</p>
+							  	<li>Push all registers used till now using multipush statement as before.</li>
+							  	<li>Store the function number 9 in register R1 and PID of current process from System Status table in register R2.</li>
+							  	<li>Call module 0 using call statement in SPL.</li>
 							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
-							  	<li>Pop the registers pushed before using multipop.</li>
+							  	<li>Pop the registers pushed before using multipop statement.</li>
 							  </ol>
-							<br><b>Implementation of module 0</b><br>
+
+							<br><b>Implementation of module 0</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  <li>According to the function number present in R1, decide whether the module 0 is invoked for acquire ternimal or release terminal.</li>
-							  <li>Implement Acquire Terminal according to the algorithm given <a href="os_modules/Module_0.html#Acquire_Terminal">here</a>.</li>
-							  <li>Implement Release Terminal according to the algorithm given <a href="os_modules/Module_0.html#Release_Terminal">here</a>.</li>
+							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningfull names to these registers to use them further.
+							  <div><pre>alias functionNum R1;
+alias currentPID R2;</pre></div></li>
+							  <li>Implement Acquire Terminal from below 3 steps if functionNum is 8.</li>
+							  <li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in Terminal Status table is 1(terminal is allocated to other process). 
+							     <ul style="list-style-type: disc;margin-left: 20px">
+							     	<li>Change the state of current process in its process table entry to WAIT_TERMINAL.</li>
+							     	<li>Push the registers used till now using multipush statement.</li>
+							     	<li>Call the scheduler to schedule other process as this process is waiting for terminal.</li>
+							     	<li>Pop the registers pushed before.</li>
+							     </ul></li>
+							   <li>Change the STATUS field to 1 and PID field to currentPID in the Terminal Status Table.</li>
+							   <li>Return using return statement.</li>
+							  <li>Implement Release Terminal from below steps if functionNum is 9.</li>
+							  <li>currentPID and PID stored in Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as return value in register R1 and return from module using return statement.</li>
+							  <li>Change STATE field in Terminal Status table to 0, indicating terminal is released.</li>
+							  <li>Update the STATUS to READY for all processes which have STATUS as WAIT_TERMINAL with valid PID.</li>
+							  <li>Save 0 in register R0 indicating success.</li>
+							  <li>Return to caller using return statement.</li>
 							  </ol>
                           </div>
                       </div>
+
 
 <!--==========end stage 15==============-->
 
