@@ -117,13 +117,15 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Save user SP in Process Table entry of the current process. </p>
+             <p>Save the SP register to User SP field of Process Table entry of the current process. </p>
 			 
-             <p>Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the user Area page of the process).</p>
+             <p>Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the <a href="../os_design-files/process_table.html#user_area">User Area</a> page of the process).</p>
 
       			 <p>Backup the context of the current process using BACKUP instruction.</p>
       			 <p>Change the state of the current process in its Process Table entry from RUNNING to READY.</p>
       			 <p>Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a> using the call MOD_5 instruction.</p>
+
+			 <p>// swap module will be invoked whenever necessary </p>
           
       			 <p>Restore the context of the new process using RESTORE instruction.</p>
       			 <p>Set SP as the user SP saved in the Process Table entry of the new process.</p>

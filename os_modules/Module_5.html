@@ -121,7 +121,7 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 > Context Switch Module</h2>
+                <h2 > Context Switch Module (Scheduler Module)</h2>
                 <br/>
                 <br/>
                 
@@ -156,7 +156,8 @@
 <pre>
     Get the pid of the current process from System Status Table;
     
-    Save the SP, PTBR and PTLR registers to the Process Table entry of the current process;
+    Save the SP%512, PTBR and PTLR to the Kernel SP, PTBR and PTLR fields of the 
+    Process Table entry of the current process;  
     
     Find the next process to schedule using the Round Robin scheduling technique;
     
@@ -167,13 +168,13 @@
     
     Set the new PID in the System Status Table;
     
-    Set the state of the new process as (RUNNING, - );
-    
     if (the new Process is in CREATED state){
           Set SP to the value of UserSP field in the Process table entry of the new process;
-        
+    	  Set the state of the new process as (RUNNING, - );
           Use ireturn statement to transfer control back to user mode;
     }
+    
+    Set the state of the new process as (RUNNING, - );
     
     Read the KPTR field and the UArea Page number from the Process table entry of the
     new process;

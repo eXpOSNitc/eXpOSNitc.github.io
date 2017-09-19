@@ -195,8 +195,8 @@ Called by Fork system call.
  <h3> Free User Area Page </h3>
    
 <i> <b>Description </b></i>: Frees all the resources in the Resource Table inside the User Area page.
- Also frees the User Area page.<br>
-<i> <b style="color:red">Note </b></i>: The function should be called only if no "file" resource is locked.<br><br>
+ Also   frees the User Area page.<br>
+ <i> <b style="color:red">Note </b></i>: The function should be called only if no "file" resource is locked.<br><br>
 
 <pre>
    Get the User Area Page number from the <a href="../os_design-files/process_table.html">process table</a> entry
@@ -204,15 +204,16 @@ Called by Fork system call.
     
     loop through the <a href="../os_design-files/process_table.html#per_process_table">Resource Table</a>{
           if ( the resource table entry is valid )
-		 if ( the resource is a file AND the recource is locked)
-			 unlock the file
-                 Close the corresponding file by calling the close_file() function 
-                 in the Resource Manager module;
-                 // Add for Semaphore
+		 if (the resource is a file)
+                 	Close the corresponding file by calling the Close() function in the 
+		 	<a href="Module_3.html">File Manager</a> Module.
+		 if (the resource is a semaphore)
+                 	Release the semaphore by calling the Release Semaphore() function in the 
+		 	<a href="Module_0.html">Resource Manager</a> Module.
     }
     
     Free the User Area page by calling the release_page()
-    function in the memory manager module;
+    function in the <a href="Module_2.html">Memory Manager</a> module;
     
     return;
 </pre>
@@ -221,7 +222,7 @@ Called by the exit_process function.
 
 
 
-<h3> Exit Process </h3>
+<h3> Exit Process TO REVIEW FROM HERE</h3>
 <i> <b>Description </b></i>: Terminate the process whose PID is provided.<br><br>
 
 
