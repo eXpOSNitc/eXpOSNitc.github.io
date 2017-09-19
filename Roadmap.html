@@ -929,7 +929,7 @@ endwhile; </pre>
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-    <p> The first user program which is executed is called the INIT program. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
+    <p> The first user program which is executed is called the INIT program *. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
 
     In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
 
@@ -940,7 +940,8 @@ endwhile; </pre>
     </p>
 
 <p>
-    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion.  
+    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion. 
+    <b>* Note:</b> In later stags, you will see that eXpOS actually schedules the idle process once before the INIT process is scheduled for the first time. This is done to ensure that the idle process is scheduled for execution at least once, so that the OS data structures associated with the idle process are not left un-initialized.          
 
 </p> 
     <br> <br>
@@ -2527,7 +2528,7 @@ in the CREATED state.
 
                       <div class="panel-heading" id="list_stage13">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : Introducing Boot Module </a>
+                          <a data-toggle="collapse"  href="#collapse13"><span class="fa fa-check-square-o"></span>Stage 13 : Boot Module </a>
                         </h4>
                       </div>
 
@@ -2541,57 +2542,62 @@ in the CREATED state.
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
                             <div id="lo13" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to XSM Module Programming.</li>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Boot Module.</li>
                             
                             </ul>                                  
                             </div>
                           </li>
                           </ul>
-                          <p>Modules in eXpOS are used to perform some logical tasks, which are needed to be done frequently. eXpOS modules serve various purposes like scheduling new process, acquiring and releasing the resources etc. These modules runs in kernel mode and invoked only from kernel mode. A user program can never call a module. Modules can be invoked from interrupt routines, other modules and OS startup code.</p>   
-                          <p>As modules execute in kernel mode, the kernel stack of currently scheduled process is used for module execution. XSM supports 8 modules MOD_0 to MOD_7 which can be called by the CALL MOD_n instruction. While switching to module, CALL instruction pushes the IP address of instruction after the CALL instruction on top of the kernel stack and starts execution of corresponding module. A module returns to the caller using RET instruction (return statement in SPL) which restores the IP value present on top of kernel stack pushed by CALL instruction. Note that we are using return statement to return to caller instead of ireturn. IRET instruction (ireturn statement) changes mode from  kernel to user as it assumes that SP is logical address. RET instruction (return statement) on the other hand just returns to the caller using IP value present on top of SP in kernel mode. Read about kernel stack management during kernel module calls <a href="os_design-files/stack_module.html" target="_blank">here</a>.</p> 
+                          <p>Modules in eXpOS are used to perform certain logical tasks, which are performed frequently. eXpOS modules serve various purposes like scheduling new process, acquiring and releasing resources etc. These modules run in kernel mode and are invoked only from the kernel mode. A user program can never invoke a module directly. Modules can be invoked from interrupt routines, other modules or the OS startup code.</p>   
+                          <p>As modules execute in kernel mode, the kernel stack of the currently scheduled process is used as the caller-stack for module invocation. XSM supports eight modules - MOD_0 to MOD_7 - which can be invoked using the CALL MOD_n instruction. While switching to module, the CALL instruction pushes the IP address of the instruction following the CALL instruction on the top of the kernel stack and starts execution of the corresponding module. A module returns to the caller using the RET instruction (return statement in SPL) which restores the IP value present on the top of the kernel stack, pushed earlier by the CALL instruction. Note that we use the return statement, instead of the ireturn statement, to return to the caller. The IRET instruction (ireturn statement) changes mode from  kernel to user as it assumes that SP contains a logical address. The RET instruction (return statement) on the other hand just returns to the caller in kernel mode, using the IP value pointed by SP. Read about kernel stack management during kernel module calls <a href="os_design-files/stack_module.html" target="_blank">here</a>.</p> 
 
-                          <p>A module in eXpOS may implement several functions each for a particular task ( eg- <a href="os_modules/Module_0.html" target="_blank">resource manager module </a> -module 1) or whole module may perform a single task (eg- scheduler, boot module). For module with different functions, each function is given a function number to distinguish them within a module. This function number should be passed as argument in register R1 along with other arguments in R2, R3 etc. Register R0 is reserved for return value. For details about functions in different modules refer <a href="os_modules/Module_Design.html" target="_blank">here</a>.</p>
+                          <p>A module in eXpOS may implement several functions, each for a particular task ( eg- <a href="os_modules/Module_0.html" target="_blank">resource manager module </a> -module 0).  Some modules may perform a single task (eg- scheduler, boot module). For a module with several functions, each function is given a function number to distinguish them within the module. This function number should be passed as argument in the register R1 along with other arguments in R2, R3 etc. Register R0 is reserved for return value.  See <a href="support_tools-files/spl.html" target="_blank">SPL module calling conventions</a> for details.  
+                          For details about the OS functions implemented in various eXpOS modules, see <a href="os_modules/Module_Design.html" target="_blank">here</a>.</p>
 
 
-                          <p>According to memory organization of eXpOS, OS startup code is provided with only one memory page, but in later stages OS startup code may exceed one page due to initialization of several data structures. So a module is used for this purpose which is called <b>Boot module</b> (module 7). Boot module written in module 7 is invoked from OS startup code. OS startup code hand-creates the idle process, loads module 7 in memory then calls the boot module and after returning from the boot module initiates user mode execution of idle process. Note that till last stage we first scheduled INIT process but from this stage idle process will be scheduled first. All other processes will be scheduled by timer interrupt routine. Boot module is responsible for initialization of all eXpOS data structures, user processes and also loading of interrupt routines and modules required. As OS grows, changes to OS startup code is not required, only boot module code is modified according to need.</p>  
+                          <p>According to the <a href="os_implementation" target="_blank">memory organization </a> of eXpOS, the OS startup code is provided with only one memory page (page numer 1).  However, the code for OS startup may exceed one page due to initialization of several OS data structures. So we design a module for the purpose of OS initialization.  This module will be called the <b>Boot module</b> (module 7). The Boot module is invoked from the OS startup code. The OS startup code hand-creates the idle process, initializes the SP register to the kernel stack of the idle process, loads module 7 in memory and then invokes the boot module (using the stack of the IDLE process).  Upon  return from the boot module, the OS startup code initiates user mode execution of the idle process. Note that in the previous stage, we had scheduled the INIT process first, before executing the IDLE pocess.  Starting from the present stage, the idle process will be scheduled first. All further scheduling of processes will be controlled by the timer interrupt routine and a scheduler module, which will be discussed in the next stage. The Boot module is responsible for initialization of all eXpOS data structures, user processes and also loading of all interrupt routines and modules. You will not modify the OS startup code written in this stage in subsequent stages.  However, you will add more code to the boot module as you go through various stages of the roadmap.</p>  
 
                          <!-- <p>OS startup code loads module 7 and idle process. It intializes page table and process table entry for idle process. It sets SP to kernel stack pointer of idle process and invokes boot module (module 7).</p>-->
+
+                         <p>The idle process is run first to ensure that this process is scheduled at least once, so that its context gets initialized.  This useful because in later stages, certain kernel operations (like disk swap) are performed from the context of the IDLE process. For now, we skip over this matter. </p>
                           
                           <b>Modifications to OS startup code</b><br><br>
                           	<ol style="list-style-type: decimal;margin-left: 2px">
-                          		<li>Load module 7 from disk blocks 67 and 68 to memory pages 54 and 55 respectively, also load idle process from <a href="os_implementation.html#accordion" target="_blank">disk blocks</a> to corresponding <a href="os_implementation.html#accordion">memory pages</a>.</li>
-                          		<li>Set the page table entries of idle process as done in previous stage with PTBR as PAGE_TABLE_BASE.</li>
-                          		<li>Initialize PID, UPTR, KPTR, PTBR, PTLR and user area page number fields in <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry for the idle process as done earlier.</li>
-                          		<li>As the idle process is scheduled first, initialize the STATE field in process table entry of idle process as RUNNING and current PID field <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>  to 0 (PID of the idle process).</li>
-                          		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process as done in the previous stage.
-		                          <div><pre>[81 * 512] = [69*512 + 1];</pre></div></li>
-								<li>Set SP to user area page number * 512 -1. This is done to initialize the kernel stack pointer before calling boot module.
-								<div><pre>SP = 82 * 512 - 1;</pre></div></li>
+                          		<li>Load module 7 from disk blocks 67 and 68 to memory pages 54 and 55 respectively, also load idle process from the <a href="os_implementation.html#accordion" target="_blank">disk </a> to the corresponding <a href="os_implementation.html#accordion">memory pages</a>.</li>
+                          		<li>Set SP to (user area page number) * 512 -1.  The user area page number for the idle process is 82 (as decided in the previous stage).   This sets up a stack for calling the boot module.
+								</li>
 								<li>Call module 7 (boot module) using call statement in SPL.
 								<div><pre>call MOD_7;</pre></div></li>
-								<li>After returning from boot module, initialize registers PTBR and PTLR to PAGE_TABLE_BASE and 10 respectively as these values may have changed in boot module.</li>
-								<li>Set the SP to 8*512 to change from kernel stack to user stack.</li>
-								<li>Return to user mode using ireturn statement.</li>
+								<p>/*The following code is executed after return from the boot module*/</p>
+								<li>Setup the page table entries for the idle process as was done in the previous stage.  Also set up PTBR to the page table base of the idle process. (The SPL constant PAGE_TABLE_BASE will point to the start of the page table of the idle process - figure out why.) Initialize PTLR (all user process in eXpOS must have PTLR=10). </li>
+								<li>Initialize PID, UPTR, KPTR, PTBR, PTLR and user area page number fields in the <a href="os_design-files/process_table.html" target="_blank">Process Table</a> entry for the idle process as was done in the previous stage.</li>
+								<li>As the idle process is scheduled first, initialize the STATE field in the process table entry of the idle process as RUNNING and current PID field in the  <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>  to 0 (PID of the idle process).</li>
+								<li>Transfer the entry point value from the header of the idle process to the top of the user stack of the idle process, as was done in the previous stage.
+		                         </li>
+								<li>Set the SP to the logical address of the user stack (8*512).</li>
+								<li>Switch to the user mode using the ireturn statement.</li>
 								</ol>
                                     <br>
                                   <b>Boot module</b><br><br>
                                   <ol style="list-style-type: decimal; margin-left: 2px">
-                                  	<li>Load required interrupts routines, eXpOS library, exception handler, INIT process as done in OS startup code of previous stage from disk blocks to memory pages.</li>
-                                  	<li>Set the page table entries for INIT process as done in previous stage with PTBR as PAGE_TABLE_BASE+20.</li>
-                                  	<li>Initialize process table entry for the INIT process as done in previous stage.</li>
-                                  	<li>Set the STATE field in process table entry of INIT to CREATED.</li>
-                                  	<li>Store the entry point IP value from header of code page to top of user stack of INIT process.</li>
+                                  	<li>Load all the required interrupts routines, eXpOS library, exception handler and the INIT process from the disk to the memory as was done in the OS startup code of the  previous stage.  </li>
+                                  	<li>Set the page table entries for INIT process as was done in the previous stage. </li>
+                                  	<li>Initialize the process table entry for the INIT process (setting PID, UPTR, KPTR, PTLR, PTBR, user area page number etc.) as was done in the previous stage.</li>
+                                  	<li>Set the STATE field in the process table entry of INIT to CREATED. (INIT will not be scheduled immedietely, as the idle process is going to be scheduled first.) </li>
+                                  	<li>Transfer the entry point value from the header of the INIT process to the top of the user stack of the INIT process, as was done in the previous stage.
+		                         </li>
+                                  
                                   	<li>Return from module to OS startup code using return statement in SPL. </li>
                                   </ol><br>
                    <b>Making things work</b>                   	
-                   <p>Compile and load module 7 and modified OS startup code to disk using XFS interface. Run the XSM machine with timer enabled.</p>
+                   <p>Compile and load module 7 and the modified OS startup code to the disk using XFS interface. Run the XSM machine with timer enabled.</p>
                    
 
 
 
    <br>                       
-<b style="color:#26A65B">Assignment 1: </b> Write ExpL programs to print even and odd numbers below 100. Modify the boot module code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using round robin scheduling algorithm.
+<b style="color:#26A65B">Assignment 1: </b> Write ExpL programs to print even and odd numbers below 100. Modify the boot module code and the timer interrupt handler to schedule the two processes along with the idle process concurrently using the Round Robin scheduling algorithm.
 
                         </div>
                       </div>
@@ -2745,30 +2751,30 @@ loadi(51,64);</pre></div> </li>
 
 
 
-        	<p>	Modify timer interrupt routine as explained above using the algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>. 
+        	<p>	Modify the timer interrupt routine as explained above using the algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>. 
         	</p>
 
 
-		<b> Scheduler Module </b>
-             <p>Scheduler module (module 5) saves the values of  SP, PTBR and PTLR registers of current process in its process table entry. It finds a new process to schedule which is in READY or CREATED state and has a valid PID (PID not equal to -1). Initialize the registers SP, PTBR, PTLR according to the values present in process table entry of new process selected to schedule. Also update System status table.</p>
+		<b> Context Switch Module (Scheduler Module) </b><br><br>
+             <p>The scheduler module (module 5) saves the values of SP, PTBR and PTLR registers of the current process in its process table entry. It finds a new process to schedule which is in READY or CREATED state and has a valid PID (PID not equal to -1). Initialize the registers SP, PTBR, PTLR according to the values present in the process table entry of the new process selected for scheduling. Also update the System status table.</p>
 			<p>
-				Write a SPL program for Scheduler module (module 5) according to the full algorithm given below:  
+				Write an SPL program for the scheduler module (module 5) as given below:  
 				<ol style="list-style-type: decimal; margin-left: 2px">
-					<li>Obtain the PID of the current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
-					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry as PROCESS_TABLE + currentPID * 16.</li>
+					<li>Obtain the PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
+					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry corresponding to the current PID.</li>
 					<li>Save SP % 512 in the kernel stack pointer field, also PTBR and PTLR into the corresponding fields in the Process Table entry.</li>
-					<li>Iterate through the Process Table entries, starting from the succeeding entry of current process to find a process in READY or CREATED state.</li>
+					<li>Iterate through the Process Table entries, starting from the succeeding entry of the current process to find a process in READY or CREATED state.</li>
 					<li>If no such process can be found, select the idle process as the new process to be scheduled. Save PID of new process to be scheduled as newPID.</li>
-					<li>Obtain User Area Page number and kernel stack pointer value from Process Table entry of the new process and set SP as User Area Page number * 512 + Kernel Stack pointer value.</li>
+					<li>Obtain User Area Page number and kernel stack pointer value from Process Table entry of the new process and set SP as (User Area Page number) * 512 + (Kernel Stack pointer value).</li>
 					<li>Restore PTBR and PTLR from the corresponding fields in the Process Table entry of the new process.</li>
-					<li>Set the PID of the new process in the current PID field of System Status Table.</li>
-					<li>If the new process is in CREATED state, follow below steps. 
+					<li>Set the PID of the new process in the current PID field of the System Status Table.</li>
+					<li>If the new process is in CREATED state, then do the following steps. 
 					   <ul style="list-style-type: disc;margin-left: 20px"> 
-					   	<li>Set SP to value in UPTR field of process table entry.</li>
-						<li>Set state of newly scheduled process as RUNNING.</li>
-						<li>Return to user mode using ireturn statement.</li></ul>
+					   	<li>Set SP to the value in the UPTR field of the process table entry.</li>
+						<li>Set state of the newly scheduled process as RUNNING.</li>
+						<li>Switch to the user mode using the ireturn statement.</li></ul>
 					  </li>
-					<li>Set the state of new process as RUNNING.</li>
+					<li>Set the state of the new process as RUNNING.</li>
 					<li>Return using return statement.</li>
 				</ol>
 
@@ -2776,23 +2782,20 @@ loadi(51,64);</pre></div> </li>
 			</p>    
 
 			<b>Modifications to INT 10 handler </b>
-			 <p> The ExpL compiler sets the last instruction to be executed in every user program to the INT 10 instruction (exit system call) to terminate the process gracefully. In previous stages, we have interrupt 10 routine with just halt instruction as there is only one process present in OS. Now there are more than one process present, so when interrupt 10 is called it should change the state of invoked process to TERMINATED. If all processes except idle are in TERMINATED state, then interrupt 10 routine must halt the system else invoke the scheduler to schedule other processes. </p>
+			 <p> The ExpL compiler sets every user program to execute the INT 10 instruction (exit system call) at the end of execution to terminate the process gracefully. In previous stages, we wrote an INT 10 routine containing just a halt instruction.  Hence, if any process invoked INT 10 upon exit, the machine would halt and no other process would execute further.  However, to allow multiple processes to run till completion, INT 10 must terminate only the process which invoked it, and schedule other surviving processes.  (INT 10 shall set the state of the dying process to TERMINATED).  If all processes except idle are in TERMINATED state, then INT 10 routine can halt the system.   </p>
 			 <p>Write INT 10 program in SPL following below steps :</p>
 			 <ol style="list-style-type: decimal;margin-left: 2px">
-			  <li>Change the state to <a href="support_tools-files/constants.html">TERMINATED</a> state in process table entry of invoked process.</li> 
-			  <li>Find out if all processes are terminated except idle. If this is the case, halt the system using halt statement in SPL.</li>
-			  Follow below steps if above case is not true.
-			  <li>Invoke scheduler using call statement.
-			  <div>
-			  <pre>call MOD_5;</pre>
-			  </div></li>
+			  <li>Change the state of the invoking process to <a href="support_tools-files/constants.html">TERMINATED</a>.</li> 
+			  <li>Find out whether all processes except idle are terminated.  In that case, halt the system. Otherwise invoke the scheduler</li>
+			  
+			 </li><br>
               There will be no return to this process as the scheduler will never schedule this process again.  
 			  </ol>
 			  <br>
  
  <b>Making things work </b>
   <ol style="list-style-type: decimal;margin-left: 2px">
-  	<li>Compile and load OS startup code, timer interrupt routine, scheduler module (module 5) and interrupt 10 routine into disk using XFS interface.</li>
+  	<li>Compile and load the Boot module code, timer interrupt routine, scheduler module (module 5) and interrupt 10 routine into disk using XFS interface.</li>
   	<li>Run XSM machine with timer enabled.</li>
   </ol>
  <br>
@@ -2804,7 +2807,7 @@ loadi(51,64);</pre></div> </li>
 		</div>
 <br>
 <br>
-<b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers, prime numbers from 1-100. Modify OS startup code accordingly and run the machine with these 3 processes along with idle process. 
+<b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers and prime numbers between 1 and 100. Modify the boot module code accordingly and run the machine with these 3 processes along with idle process. 
 
         </div>
         </div>
@@ -2815,7 +2818,7 @@ loadi(51,64);</pre></div> </li>
                     <div class="panel-heading" id="list_stage15">
                         <h4 class="panel-title">
                           <a data-toggle="collapse"  href="#collapse15">
-							  <span class="fa fa-check-square-o"></span>Stage 15 : Console output with module </a>
+							  <span class="fa fa-check-square-o"></span>Stage 15 : Resource Manager Module </a>
                         </h4>
                       </div>
 
@@ -2830,8 +2833,8 @@ loadi(51,64);</pre></div> </li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
                             <div id="lo15" class="panel-collapse expand">
                              <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with module interface and parameter passing.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Resource Management module for terminal output. </li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with passing of parameters to modules.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Resource Manager module for terminal output handling. </li>
                                </div>
                           </li>
                           </ul>
@@ -2840,13 +2843,18 @@ loadi(51,64);</pre></div> </li>
                           <!-- End Learning Objectives-->
                           
 
-                          <p>Processes in eXpOS requires different resources like terminal, disk, inode(file) etc. To manage these resources among different processes eXpOS provides resource manager module which is module 0. For a process to use a resource first the process has to acquire required resource, if it is available i.e. no other process is using it. If the resource required by a process is not available, then that process will be blocked by the module until the resource is free. Meanwhile, the module will invoke scheduler to schedule other processes.  After using acquired resource the process releases it and also changes the state of the processes those are waiting for this resource to READY. The resource manager module implements two functions for each resource, one to acquire the resource and other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
+                          <p>Processes in eXpOS require various resources like terminal, disk, inode etc. To manage these resources among different processes eXpOS implements a resource manager module (Module 0).  Before the use of a resource, a process has to first acquire the required resource by invoking the resource manager.  A process can acquire a resource if the resource is not already acquired by some other process.  If the resource requested by a process is not available, then that process has to be blocked until the resource becomes free. In the meanwhile, other processes may be scheduled.  A blocked process must wake up when the requested resource is released by the process which had acquired the resource.  For this, when a process releases a resource, the state of other processes waiting for the resource must be set to READY. 
 
-                          <p>In this stage, you will learn how the terminal is shared by the processes for writing a word to terminal. For this purpose, a table called <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> is maintained. Terminal Status table keeps track of whether the terminal is available or not using a flag named STATUS. It also stores the PID of the process which is currently using the terminal. </p>
+                          The resource manager module handles acquisition and release of system resources.  A process must invoke the resource manager to acquire or release any system resource.  The resource manager implements two functions for each resource - one to acquire the resource and the other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
 
-                          <p>In write system call before printing the word to terminal you have to allocate terminal resource for currently running process and after printing the word deallocate the terminal resource. There are two functions related to terminal management in module 0, those are Acquire Terminal and Release Terminal for allocating and deallocating the terminal resource respectively.  Each function in a module has a function number to identify them within a module. Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively. Function number is stored in register R1 and passed as an argument to the module. The other arguments are passed through registers R2, R3 etc. For both Acquire Terminal and Release Terminal PID of the currently running process should be passed as an argument through register R2. In this stage, Module 0 is called from interrupt 7(write system call) and the values in registers used till now in interrupt 7 may change in module 0 as same register set R0-R19 are used in both. So before setting the argument values in registers for invoking the module, you have to push the registers used till now in interrupt 7 into kernel stack. After returning from module 0 and retriving the return value from R0, you have to pop back the values of registers stored in kernel stack. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+                          <p>In this stage, you will learn how the terminal is shared by the processes for writing.  The OS maintains a data structure called the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.  The Terminal Status table contains details of the process that has acquired the terminal. (Since there is only one terminal in the system, only one process is allowed to acquire the terminal at a time.)  A flag named STATUS in the terminal status table indicates whether the terminal is available or not.  When a process acquires the terminal, the PID of the process is updated in the terminal status table.  </p>
 
-                           <p><code>Note:</code> We haven't used multipush and multipop statements while invoking boot module from OS startup code and scheduler module from timer interrupt routine as it was not required. But to invoke scheduler module in future from any other module or interrupt routine, it's necessary to push registers into the stack.</p>
+                          <p>In the write system call, before printing a word to the terminal, you have to acquire the terminal resource for currently running process.  After printing to the console, the write system call must release the terminal. There are two functions related to terminal management in module 0.   These are the Acquire Terminal function and the Release Terminal function.   Each function has a function number to identify the function within the module. In the Resource Manager module, Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively. 
+
+                          When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc
+                        For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as argument through the register R2. In this stage, Module 0 will be called from interrupt 7(write system call).  Since the module will be modifying the contents of the machine registers during its execution, Write system call must save the registers in use into the (kernel) stack of the process before invoking the module.   The module sets its return value in register R0 before returning to the caller.  The write system call must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+
+                           <p><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it will be necessary to save the register context into the stack for proper resumption of execution.</p>
                           
 							<b>Modifying Boot Module code</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
