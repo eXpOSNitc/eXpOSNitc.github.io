@@ -924,12 +924,12 @@ endwhile; </pre>
                       </div>
 		<!-- End Learning Objectives-->
 
-<b> Before proceeding further, it is absolutely neccesary to completely understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
+<b> Before proceeding further, it is absolutely necessary to completely understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
 
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-    <p> The first user program which is executed is called the INIT program *. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
+    <p> The first user program which is executed is called the INIT program <font color="red">*</font>. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
 
     In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
 
@@ -940,13 +940,15 @@ endwhile; </pre>
     </p>
 
 <p>
-    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion. 
-    <b>* Note:</b> In later stags, you will see that eXpOS actually schedules the idle process once before the INIT process is scheduled for the first time. This is done to ensure that the idle process is scheduled for execution at least once, so that the OS data structures associated with the idle process are not left un-initialized.          
+    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion. <br>
+ </p>
+ <p>
+    <b><font color="red">*</font> Note:</b> In later stages, you will see that eXpOS actually schedules the idle process once before the INIT process is scheduled for the first time. This is done to ensure that the idle process is scheduled for execution at least once, so that the OS data structures associated with the idle process are not left un-initialized.          
 
 </p> 
-    <br> <br>
+    <br> 
 		
-    <b> User Program  </b> <br> 
+    <b> User Program  </b> <br> <br>
 		
    
 	<ol style="list-style-type:decimal;margin-left:2px">
@@ -1340,9 +1342,9 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 
 <ol style="list-style-type:lower-alpha;margin-left:20px">
 <li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup. 
-The library code can be found in the eXpl folder in eXpOs package. 
+The library code can be found in the expl folder in eXpOs package. 
 Load it into the XSM disk using the command
-<div><pre>load --library ../eXpl/library.lib</pre></div> </li>
+<div><pre>load --library ../expl/library.lib</pre></div> </li>
 <li> During OS start-up, this code must be loaded to memory pages 63 and 64.  </li>
 <li> When each application is loaded for execution,  the logical pages 0 and 1 must be mapped to physical pages 63 and 64.</li>
 <li> Two physical pages must be allocated for the application's heap and attached to logical pages 2 and 3.  </li>
@@ -1369,8 +1371,8 @@ The ABI stipulates that two pages must be allocated for the stack at logical pag
 The following code sets page table entries for logical page 4 and 5(for code area), logical page
 8 and 9(for user stack), logical pages 3 and 4(for heap) and logical pages 0 and 1(for library).
 Since pages 0 to 75 are reserved for the use of the OS kernel, the first four free pages (76,77,78 and 79) 
-will be allocated for stack and heap area. See <a href="os_implementation.html" target="_blank">Memory Organisatiion.</a>
-Note that the code and library pages must be kept read only whereas stack and heap must be read-write.
+will be allocated for stack and heap area. See <a href="os_implementation.html" target="_blank">Memory Organisation.</a>
+Note that the code and library pages must be kept read only where as stack and heap must be read-write.
 (see <a href="arch_spec-files/paging_hardware.html" target="_blank" >page table </a> settings for details).     
 
         <!-- Remove if too spoonfeeding -->
@@ -1429,11 +1431,11 @@ SP = 8*512;
   <b>Making Things Work </b><br><br>
             <ol style="list-style-type:decimal;margin-left:10px">
         <li>
-          Compile and load the modified OS startup Code
+          Compile and load the modified OS startup Code.
         </li>
         
         <li>
-          Load the modified user program
+          Load the modified user program.
         </li>
         
         <li>
@@ -1492,7 +1494,7 @@ In this stage, we will run the machine with timer on and write a simple timer in
 
 <b style="font-size:20px">Modifications to OS Startup Code </b>
  	
- 	<p>OS Startupt code used in the previous stage has to be modified to 
+ 	<p>OS Startup code used in the previous stage has to be modified to 
 	load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5. </p>
 	<div>
 	<pre>loadi(4, 17);
@@ -2902,7 +2904,17 @@ alias currentPID R2;</pre></div></li>
 							  <li>Update the STATUS to READY for all processes which have STATUS as WAIT_TERMINAL with valid PID.</li>
 							  <li>Save 0 in register R0 indicating success.</li>
 							  <li>Return to caller using return statement.</li>
-							  </ol>
+							  </ol><br>
+							  <b>Making things work</b>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Compile and load boot module code, module 0, modified INT 7 routine using XFS-interface.</li>
+							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with idle process.</li>
+							  </ol><br>
+
+<a data-toggle="collapse"  href="#collapseq7"><b>Q1.</b> According to eXpOS resource management system introduced here, will Deadlock occur? If yes, explain it with a situation. If no, which of the four conditions of Deadlock are not satisfied?</a>
+                            <div id="collapseq7" class="panel-collapse collapse">
+	     Deadlock will not occur according to the resource management system implemented here. As hold and wait, circular wait conditions are not satisfied. A process can wait for a resource only when it is not holding any resource.         
+		</div>
                           </div>
                       </div>
 
