@@ -867,7 +867,7 @@ endwhile; </pre>
 		Enter the following command
 		<pre>mem 1</pre>
 		
-		This will write the contents of memory page 1 to the file mem inside the xsm folder.
+		This will write the contents of memory page 1 to the file mem inside the xsm folder (if xsm is run from any other directory then the file mem will be created in that directory).
 		Open this file and view the contents.
 		<br> <br>
 		
@@ -1077,6 +1077,16 @@ Since we have only one user process for now, we will write the interrupt 10 hand
 
 </ol>
 	<br>
+
+<b> Exception handler</b> <br> 
+
+<p>
+We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical page not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
+</p>
+
+<p> Load the haltprog.xsm used above as the exception handler using XFS-interface </p>
+<pre>load --exhandler ../spl/progs/haltprog.xsm</pre><br>
+
 <b> OS Startup Code </b> <br> 
     <p> The OS startup code will load the init process and set the OS data structures necessary
       to run the program. Finally, it transfers control to the init program using the IRET instruction. 
@@ -1918,7 +1928,7 @@ userSP = SP;</pre>
 	<br>
 	<li>Switch the stack from user stack to kernel stack. 
 <ol style="margin-left:20px;list-style-type:circle;">
-	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
+	<li>Save the value of SP in the user SP field of <a href="os_design-files/process_table.html" target="_blank">Process Table </a> entry of the process.</li>
 	<li>Set the value of SP to beginning of the kernel stack.</li>
 </ol>
 Details can be found at <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a>.
@@ -2120,8 +2130,9 @@ loadi(17,30);
         Now, you will write application programs in ExpL and compile it to generate the assembly program.
         This compiled code is loaded into the XSM disk as done in previous stages.</p>
         <p><b>
-        Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
-        before proceeding further. (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
+        Read and understand the 1) <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
+        2) <a href="os_spec-files/dynamicmemoryroutines.html">ExpL high level library interface </a> 
+        before proceeding further . (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
 			<li>Below is the ExpL program to print numbers upto 50. Save this program as numbers.expl in $HOME/myexpos/eXpl/samples.
@@ -2845,77 +2856,89 @@ loadi(51,64);</pre></div> </li>
                           <!-- End Learning Objectives-->
                           
 
-                          <p>Processes in eXpOS require various resources like terminal, disk, inode etc. To manage these resources among different processes eXpOS implements a resource manager module (Module 0).  Before the use of a resource, a process has to first acquire the required resource by invoking the resource manager.  A process can acquire a resource if the resource is not already acquired by some other process.  If the resource requested by a process is not available, then that process has to be blocked until the resource becomes free. In the meanwhile, other processes may be scheduled.  A blocked process must wake up when the requested resource is released by the process which had acquired the resource.  For this, when a process releases a resource, the state of other processes waiting for the resource must be set to READY. 
+                          <p>Processes in eXpOS require various resources like terminal, disk, inode etc. To manage these resources among different processes eXpOS implements a <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> (Module 0).  <b>Before the use of a resource, a process has to first acquire the required resource by invoking the resource manager.  A process can acquire a resource if the resource is not already acquired by some other process.  If the resource requested by a process is not available, then that process has to be blocked until the resource becomes free.</b> In the meanwhile, other processes may be scheduled.  
 
-                          The resource manager module handles acquisition and release of system resources.  A process must invoke the resource manager to acquire or release any system resource.  The resource manager implements two functions for each resource - one to acquire the resource and the other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
+                          <p>A blocked process must wake up when the requested resource is released by the process which had acquired the resource.  For this,<b> when a process releases a resource, the state of other processes waiting for the resource must be set to READY</b>.</p> 
+
+                          <p>The resource manager module handles acquisition and release of system resources.  A process must invoke the resource manager to acquire or release any system resource.  The resource manager implements two functions for each resource - one to acquire the resource and the other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
 
                           <p>In this stage, you will learn how the terminal is shared by the processes for writing.  The OS maintains a data structure called the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.  The Terminal Status table contains details of the process that has acquired the terminal. (Since there is only one terminal in the system, only one process is allowed to acquire the terminal at a time.)  A flag named STATUS in the terminal status table indicates whether the terminal is available or not.  When a process acquires the terminal, the PID of the process is updated in the terminal status table.  </p>
 
-                          <p>In the write system call, before printing a word to the terminal, you have to acquire the terminal resource for currently running process.  After printing to the console, the write system call must release the terminal. There are two functions related to terminal management in module 0.   These are the Acquire Terminal function and the Release Terminal function.   Each function has a function number to identify the function within the module. In the Resource Manager module, Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively. 
+                          <p>In the write system call, before printing a word to the terminal, you have to acquire the terminal resource for currently running process.  After printing to the console, the write system call must release the terminal. There are two functions related to terminal management in module 0. These are the Acquire Terminal function and the Release Terminal function.  Each function has a function number to identify the function within the module. In the Resource Manager module, <b>Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively</b>. 
 
-                          When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc
-                        For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as argument through the register R2. In this stage, Module 0 will be called from interrupt 7(write system call).  Since the module will be modifying the contents of the machine registers during its execution, Write system call must save the registers in use into the (kernel) stack of the process before invoking the module.   The module sets its return value in register R0 before returning to the caller.  The write system call must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+                          When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc. See <a href="support_tools-files/spl.html#con" target="_blank">SPL module calling convention</a>.
+                        For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as argument through the register R2. In this stage, Module 0 will be called from interrupt 7 (write system call). Since the module will be modifying the contents of the machine registers during its execution, Write system call must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The write system call must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
 
                            <p><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it will be necessary to save the register context into the stack for proper resumption of execution.</p>
                           
-							<b>Modifying Boot Module code</b><br><br>
-							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  	<li>Load module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
-							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that terminal is free before scheduling the first process.</li>
-							  </ol>
-
-							<br><b>Modifying INT 7 routine</b><br><br>
+							<b>Modifying INT 7 routine</b><br><br>
 							    <p style="text-indent: 0px">Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Acquire Terminal and Release Terminal functions.</p>  
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							    <p style="text-indent: 0px">Calling Acquire Terminal (Before print statement)</p>
-							  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL.
-							  	<div><pre>multipush(R0, R1, R2, R3,...);</pre></div></li>
+							  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL. 
+							  	<div><pre>multipush(R0, R1, R2, R3,...); // number of registers will depend on your code</pre></div></li>
 							  	<li>Store the function number 8 in register R1 and PID of current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 .</li>
 							  	<li>Call module 0 using call statement.</li>
 							  	<p style="text-indent: 0px">Ignore value present in R0 as Acquire Terminal does not have return value.</p>
-							  	<li>Use multipop statement to pop the registers pushed before calling the module. Specify the same order of registers used in multipush as registers are popped in the reverse order in which they are specified in the multipop statement.   
+							  	<li>Use multipop statement to pop the registers pushed before calling the module. Specify the same order of registers used in multipush as registers are popped in the <b>reverse order</b> in which they are specified in the multipop statement.   
 							  	<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li><br>
 							  	<p style="text-indent: 0px">Calling Release Terminal (After print statement)</p>
 							  	<li>Push all registers used till now using multipush statement as before.</li>
 							  	<li>Store the function number 9 in register R1 and PID of current process from System Status table in register R2.</li>
 							  	<li>Call module 0 using call statement in SPL.</li>
 							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
-							  	<li>Pop the registers pushed before using multipop statement.</li>
+							  	<li>Restore registers using multipop statement.</li>
 							  </ol>
 
-							<br><b>Implementation of module 0</b><br><br>
+							<br><b>Implementation of Module 0 code for terminal handing</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningfull names to these registers to use them further.
+							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningful names to these registers to use them further.
 							  <div><pre>alias functionNum R1;
 alias currentPID R2;</pre></div></li>
-							  <li>Implement Acquire Terminal from below 3 steps if functionNum is 8.</li>
-							  <li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in Terminal Status table is 1(terminal is allocated to other process). 
+<br>
+							  <li>In Module 0, for the Acquire Terminal function (functionNum = 8) implement the following steps.</li>
+							    
+							  <ol style="list-style-type: lower-roman; margin-left: 10px" ><li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in Terminal Status table is 1(terminal is allocated to other process). 
 							     <ul style="list-style-type: disc;margin-left: 20px">
 							     	<li>Change the state of current process in its process table entry to WAIT_TERMINAL.</li>
 							     	<li>Push the registers used till now using multipush statement.</li>
 							     	<li>Call the scheduler to schedule other process as this process is waiting for terminal.</li>
-							     	<li>Pop the registers pushed before.</li>
+							     	<li>Pop the registers pushed before. (Note that this code will be executed only after the scheduler schedules the process again, which in turn occurs only after the terminal was released by the holding process by invoking the release terminal function.)</li>
 							     </ul></li>
 							   <li>Change the STATUS field to 1 and PID field to currentPID in the Terminal Status Table.</li>
 							   <li>Return using return statement.</li>
-							  <li>Implement Release Terminal from below steps if functionNum is 9.</li>
+							   </ol>
+							   <br>
+							  <li>for the Release Terminal function (functionNum = 9) implement the following steps.</li>
+							  <ol style="list-style-type: lower-roman; margin-left: 10px">
 							  <li>currentPID and PID stored in Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as return value in register R1 and return from module using return statement.</li>
 							  <li>Change STATE field in Terminal Status table to 0, indicating terminal is released.</li>
 							  <li>Update the STATUS to READY for all processes which have STATUS as WAIT_TERMINAL with valid PID.</li>
 							  <li>Save 0 in register R0 indicating success.</li>
 							  <li>Return to caller using return statement.</li>
+							  </ol>
 							  </ol><br>
+                             <b>Modifying Boot Module code</b><br><br>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Load Module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
+							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that terminal is free before scheduling the first process.</li>
+							  </ol>
+
+							<br>
+
 							  <b>Making things work</b>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							  	<li>Compile and load boot module code, module 0, modified INT 7 routine using XFS-interface.</li>
 							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with idle process.</li>
 							  </ol><br>
 
-<a data-toggle="collapse"  href="#collapseq7"><b>Q1.</b> According to eXpOS resource management system introduced here, will Deadlock occur? If yes, explain it with a situation. If no, which of the four conditions of Deadlock are not satisfied?</a>
+
+<a data-toggle="collapse"  href="#collapseq7"><b>Q1.</b> According to eXpOS resource management system introduced here, will Deadlock occur? If yes, explain it with a situation. If no, which of the four conditions of Deadlock are not satisfied? </a>
                             <div id="collapseq7" class="panel-collapse collapse">
-	     Deadlock will not occur according to the resource management system implemented here. As hold and wait, circular wait conditions are not satisfied. A process can wait for a resource only when it is not holding any resource.         
+	     Deadlock will not occur according to the resource management system implemented here. As hold and wait, circular wait conditions are not satisfied (there is only one resource - the terminal - now). 
 		</div>
-                          </div>
+		<br><p>See <a href="https://en.wikipedia.org/wiki/Deadlock#Necessary_conditions" target="_blank">link</a> for a set of neccessary conditions for deadlock.</p>
+            </div>
                       </div>
 
 
@@ -2941,14 +2964,50 @@ alias currentPID R2;</pre></div></li>
                             <div id="lo16" class="panel-collapse expand">
                             <ul>
                               <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Console Interrupt Routine and Read system call.</li>
-                            
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Console Interrupt handling in XSM.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of console input using the read system call.</li>
                             </ul>                                  
-                                     
-                            </div>
+                             </div>
                           </li>
                           </ul>
-                        </div>
+
+                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the XSM instructon <a href="arch_spec-files/instruction_set.html">IN </a> to <b>read data from the console into the input port P0</b>.  IN is a previliged instruction and can be executed only inside a system call/module.  Hence, to read data from the console, a user process uses the read system call (LINK) with a request for terminal read.  The IN instruction will be executed within the read system call.</p> 
+
+                          <p>  The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead,the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.  </p>
+
+                           <p> When does data arrive in P0?  This happens when some string/number is entered from the key-board and ENTER is pressed.  At this time, <b>the XSM machine will raise the console interrupt</b>. Thus the console interrupt is the hardware mechanism that helps the OS to infer that the IN instruction execution is complete.  </p>   
+
+                           <p> As noted above, the IN instruction is typically executed from the read system call. Since it is generally not useful for the read system call to continue execution till data arrives in P0, <b>a process executing the IN instruction will sets it's state to WAIT_TERMINAL and invoke the scheduler</b>. The process must resume execution only after the console device sends an interrupt upon data arrival.</p>  
+
+                          <p> When the console interrupt occurs, the machine interrupts the current process (note that some other process would be running) and executes the console interrupt handler. (The interrupt mechanism is similar to the timer interrupt.  The current value of IP+2 is pushed into the stack and control transfers to the interrupt handler - see <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM machine execution tutorial</a> for details). <b>It is the responsibility of the interrupt handler to wake up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state also will be set to READY by the console interrupt handler.) </p>
+                          
+                           <p> The OS will maintain a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The read system call, while doing terminal read must 1) acquire the terminal 2) Issue an IN instruction 3) Set its state WAIT_TERMINAL and 4) Invoke the scheduler. </p> 
+
+
+                           <p> When the data finally arrives, <b>the console interrupt handler must transfer the data (in port P0) into the input buffer of the process</b> in the <a href="os_design-files/process_table.html" target="_blank">process table</a>. Then the handler wakes up process waiting for the terminal.</p>
+
+                          <p>  Finally, the read system call, after waking up from the WAIT_TERMINAL state, returns the input data in the buffer and passes this data to the user program that invoked the system call.  </p>    
+      Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceding further.
+<br><br>
+                         
+<b>Implementation of INT 6</b>
+
+<br><br>
+   <b>Implementation of Console Interrupt Routine</b>
+   <ol style="list-style-type: decimal; margin-left: 2px">
+   	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
+   	<li>Intialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
+   	<li>Backup the user context of the currently running process in the kernel stack as done in timer interrupt routine.</li>
+   	<li>Get the PID of the process that has aqcuired the terminal from the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a>, Save this as reqPID.</li>
+   	<li>Using the reqPID obtained in the above step, get the corresponding process table entry.</li>
+   	<li>The input entered in the console is saved in register P0 by the XSM machine. Copy this value present in P0 in the input buffer field of the process table entry obtained in above step.</li>
+   	<li>Change the state of the process with PID as reqPID to READY.</li>
+   	<li>Restore the user context from the kernel stack as done in the timer interrupt routine.</li>
+   	<li>Change SP to UPTR field from the process table entry of the currently running process and return to the user mode.</li>
+
+   </ol>
+
+                            </div>
                       </div>
 
 	<!-- End Learning Objectives--> 
@@ -2958,11 +3017,13 @@ alias currentPID R2;</pre></div></li>
 <!-- =========end Stage 16 ===========-->
 
 
-					<!-- Stage 17 -->
+
+
+<!-- =========Stage 17 ===========-->
 
                       <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Exec System Call </a>
                         </h4>
                       </div>
 
@@ -2975,6 +3036,63 @@ alias currentPID R2;</pre></div></li>
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
                             <div id="lo17" class="panel-collapse expand">
+                            <ul>
+                              <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
+                              
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of  Exec system call.</li>
+                            </ul>                                  
+                             </div>
+                          </li>
+                          </ul>
+                          <p></p>
+
+<b>Exec System Call</b>
+        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
+        address space. A successful Exec operation results in the extinction of the invoking process and hence
+        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Retrieve the filename of the new process from the user stack.</li>
+			<li>Return -1 if the filename is NULL.</li>
+			<li>Iterate through the Inode Table to find the inode index of the file.</li>
+			<li>If file is not found, return -1.</li>
+			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
+			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
+			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
+			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
+			1 for User Area Page and 1 for code.</li>
+          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
+          from disk to memory. </li>
+          <li>Set up the page table entries of the new process. The first code page must be </li>
+          <li>Set up the Process Table entries.</li>
+          <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
+          <li>Set the value of SP as 4096.</li>
+       </ol>
+        </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+
+		</div>
+		</div>
+<!-- =========end Stage 17 ===========-->
+
+					<!-- Stage 18 -->
+
+                      <div class="panel-heading" id="list_stage18">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse18" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
+                            <div id="lo18" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
@@ -3065,31 +3183,32 @@ alias currentPID R2;</pre></div></li>
           <li>Set up the Process Table entries.</li>
           <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
           <li>Set the value of SP as 4096.</li>
-      </div>   
+       
       
    	</ol>
+   	 </div> 
 </div>
 
- <!-- =========end Stage 17 ===========-->
+ <!-- =========end Stage 18 ===========-->
 
 
- <!-- =========Stage 18 ===========-->
+ <!-- =========Stage 19 ===========-->
 
-                      <div class="panel-heading" id="list_stage18">
+                      <div class="panel-heading" id="list_stage19">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : File system calls </a>
                         </h4>
                       </div>
 
-                      <div id="collapse18" class="panel-collapse collapse">
+                      <div id="collapse19" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
-                            <div id="lo18" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
+                            <div id="lo19" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
@@ -3105,26 +3224,26 @@ alias currentPID R2;</pre></div></li>
 		</div>
 		</div>
 
- <!-- =========end Stage 18 ===========-->
+ <!-- =========end Stage 19 ===========-->
 
 
- <!-- =========Stage 19 ===========-->
+ <!-- =========Stage 20 ===========-->
 
-                      <div class="panel-heading" id="list_stage19">
+                      <div class="panel-heading" id="list_stage20">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Multiuser Modification </a>
                         </h4>
                       </div>
 
-                      <div id="collapse19" class="panel-collapse collapse">
+                      <div id="collapse20" class="panel-collapse collapse">
                         <div class="panel-body">
                             <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
-                            <div id="lo19" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
+                            <div id="lo20" class="panel-collapse expand">
                             <ul>
                               <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
                             </ul>                                  
@@ -3140,7 +3259,7 @@ alias currentPID R2;</pre></div></li>
 		</div>
 		</div>
 
-	 <!-- =========end Stage 19 ===========-->
+	 <!-- =========end Stage 20 ===========-->
 	
 <!--=========== Intoduction Section Ending ===============-->
 
