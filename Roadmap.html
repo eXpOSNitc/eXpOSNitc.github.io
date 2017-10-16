@@ -264,8 +264,8 @@
                           </div>
                           <!-- End Learning Objectives-->
 
-		<div style="font-size:15px">
-                  <ol><br>
+		<div>
+                  <ol style="list-style-type: decimal;margin-left: 2px"><br>
                     <li> Download the complete eXpOS package from <a href="https://github.com/eXpOSNitc/eXpOSNitc.github.io/raw/master/package/expos.tar.gz" download>here</a>.</li>
                     <li> Copy the tar file to your home directory. 
                     <pre>cp expos.tar.gz $HOME/<br>cd $HOME</pre></li>
@@ -3006,6 +3006,30 @@ alias currentPID R2;</pre></div></li>
                          
 <b>Implementation of INT 6</b>
 
+<ol style="list-style-type: decimal;margin-left: 2px">
+	<li>Save the value in the user stack pointer as userSP.</li>
+	<li>Store the value of user stack pointer in <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the current process</li>
+	<li>Intialize register SP with the kernel stack pointer using user area page present in process table of current process.</li>
+	Calling Aquire Terminal function
+	<li>Push all registers used till now using multipush.</li>
+	<li>Intialize regiters R1, R2 with function number of Aquire Terminal and PID of current process.</li>
+	<li>Call module 0.</li>
+	<li>Restore registers using multipop statement.</li>
+	<li>Using read statement, request to read from the terminal.
+     <div><pre>read;</pre></div>
+	</li>
+	<li>Change the state of the current process to WAIT_TERMINAL.</li>
+	 Invoking the Context Switch Module
+	 <li>Push all registers used till now using multipush.</li>
+	 <li>Invoke scheduler by calling module 5.</li>
+	<li>Restore registers using multipop statement.</li>
+	<li>Obtain the logical address where the word has to be stored from user stack (userSP-3).</li>
+	<li>Convert the logical address to physical address.</li>
+	<li>Store the value present in input buffer field of process table to obtained physical address of the word.</li>
+	<li>Store 0 for the return value in the user stack (userSP-1) to indicate success.</li>
+	<li>Change SP to userSP to point SP to user stack.</li>
+	<li>Return to user mode using ireturn statement.</li>
+</ol>
 <br><br>
    <b>Implementation of Console Interrupt Routine</b><br><br>
    <ol style="list-style-type: decimal; margin-left: 2px">
