@@ -264,8 +264,8 @@
                           </div>
                           <!-- End Learning Objectives-->
 
-		<div style="font-size:15px">
-                  <ol><br>
+		<div>
+                  <ol style="list-style-type: decimal;margin-left: 2px"><br>
                     <li> Download the complete eXpOS package from <a href="https://github.com/eXpOSNitc/eXpOSNitc.github.io/raw/master/package/expos.tar.gz" download>here</a>.</li>
                     <li> Copy the tar file to your home directory. 
                     <pre>cp expos.tar.gz $HOME/<br>cd $HOME</pre></li>
@@ -314,9 +314,9 @@
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo2">Learning Objectives</a>
                             <div id="lo2" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load/retrieve data and executable files from/to your host (Unix) system into the XSM disk.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Explain the disk data structures of the XFS file system - INODE table, disk free list and root file.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Find out the data blocks into which a data/executable file is stored in the XSM disk by examining  the INODE table and root file.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load/retrieve data and executable files from/to your host (Unix) system into the XSM disk.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Explain the disk data structures of the XFS file system - INODE table, disk free list and root file.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Find out the data blocks into which a data/executable file is stored in the XSM disk by examining  the INODE table and root file.</li>
                             </ul>                                  
                                      
                             </div>
@@ -342,34 +342,28 @@
 			
                           <ol style="list-style-type:decimal;margin-left:2px">
                             <li>
-                              Run the XFS Interface<br><br>
+                              Run the XFS Interface
                               <div>
                                 <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
                               This will take you to the xfs-interface prompt. 
                             </li>
-                            <br/>
-                      
                             <li>
-                              Start by formatting the disk to the eXpOS file system format in the XFS interface using <b>fdisk</b> command. <br/> <br/> 
-                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="http://exposnitc.github.io/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/></br>
+                              Start by formatting the disk to the eXpOS file system format in the XFS interface using <b>fdisk</b> command.<br/> 
+                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="http://exposnitc.github.io/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/>
                               Type the following commands in the xfs-interface prompt.
-                              <br><br>
-                              <div> 
+                                <div> 
                                 <pre># fdisk 
 # exit</pre>
                               </div>
 
-                              You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk of the XSM machine. The disk is formatted to eXperimental File System (eXpFS) (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>). <br/> <br/>
-
+                              <p>You will be back in the UNIX shell and a file named <b>disk.xfs</b> is created in the location <b>$HOME/myexpos/xfs-interface/</b>. This UNIX file simulates the hard disk of the XSM machine. The disk is formatted to eXperimental File System (eXpFS) (see <a href="os_spec-files/eXpFS.html" target="_blank"> eXpFS Specification</a>). <br/> 
                               The XSM machine's disk is a sequence of 512 blocks, each block capable of holding
-                              512 words (see <a href="os_implementation.html" target="_blank">Disk Organization</a>).  The second block of the formatted disk contains a disk free list which is explained below.
+                              512 words (see <a href="os_implementation.html" target="_blank">Disk Organization</a>).  The second block of the formatted disk contains a disk free list which is explained below.</p>
                             </li>
-                            <br/>
                             <li>
                               The <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> in XFS is a data structure which keeps track of used and unused blocks in the disk. An unused block is indicated by 0 and a used block is indicated by 1. Check the contents of the Disk Free List after formatting the disk. Use the <b>df</b> command to view the Disk Free List (stored in disk block number 2). The output will be as follows: 
-                              <br><br>
                               <div>   
                                 <pre>
 0    -   1  
@@ -406,9 +400,9 @@ Total No of Blocks = 512</pre>
                               The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and <a href="http://exposnitc.github.io/os_design-files/misc.html#login" target="_blank">INIT program</a> (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
-                            <br>
+                            
                             <li>Create a file in your UNIX machine with sample data. A sample data file is given below:
-                              <br><br>
+                              
                               <div>
                                 <pre>There is a place where the sidewalk ends
 And before the street begins,
@@ -420,15 +414,15 @@ To cool in the peppermint wind.</pre>
                               Save the file as <b>$HOME/myexpos/sample.dat</b>
                             </li>
 
-                            <br>
+                            
                             <li> Load this data file <tt>($HOME/myexpos/sample.dat)</tt> to the XFS disk from your UNIX machine.  This can be done by the following commands:
-                              <br><br>
+                              
                               <div> 
                                 <pre>cd $HOME/myexpos/xfs-interface
 ./xfs-interface</pre>
                               </div>
                               This will take you to the xfs-interface prompt. Type the following commands.
-                              <br><br>
+                              
                               <div> 
                                 <pre># load --data $HOME/myexpos/sample.dat</pre>
                               </div>
@@ -448,9 +442,9 @@ To cool in the peppermint wind.</pre>
                               Before proceeding further you must be clear about  <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXpFS (eXperimental File System)</b></a>. In the following steps we will see the above mentioned updations.
                             </li> 
 
-                            <br>
+                            
                             <li> Find out the block numbers of the Data Blocks corresponding to the loaded file. Use the <b>copy</b> command to copy the <i>Inode Table</i>(Inode Table is stored in disk blocks 3 and 4) to a UNIX file (say <tt>$HOME/myexpos/inode_table.txt</tt>).
-                            <br><br>
+                            
                             <div>
                               <pre># copy 3 4 $HOME/myexpos/inode_table.txt
 # exit</pre>
@@ -514,11 +508,11 @@ sample.dat
 
                             </li>
 
-                            <br>
+                            
                             <li> Now check the contents of the disk free list and verify that the entry for the 69<sup>th</sup> block is marked as used. This corresponds to the Data Block 1 of <tt>sample.dat</tt>. 
                             </li>
                             
-                            <br>
+                            
                             <li>
                               Copy the data blocks from the XFS disk and display it as a UNIX file <tt>$HOME/myexpos/data.txt</tt>. 
                               <br><br>
@@ -603,8 +597,8 @@ peppermint wind</pre></div>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo3">Learning Objectives</a>
                             <div id="lo3" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the XSM Instruction set to write a small <i>OS startup</i> code.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your <i>OS startup code</i> into the <i>boot block</i> of the disk and get this code executed on bootstrap.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the XSM Instruction set to write a small <i>OS startup</i> code.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Load your <i>OS startup code</i> into the <i>boot block</i> of the disk and get this code executed on bootstrap.</li>
                             </ul>                                  
                                      
                             </div>
@@ -645,7 +639,7 @@ HALT </pre>
                               </div>  
                           </li>
                             
-                            <br>
+                            
                             <li>
                             Load the file as OS Startup code to <tt>disk.xfs</tt> using XFS-Interface. Invoke the XFS interface and use the following command to load the OS Startup Code
                               <br><br>
@@ -659,7 +653,7 @@ HALT </pre>
                           </div>
                           <i> Note that the <tt>--os</tt> option loads the file to Block 0 of the XFS disk. </i>
 			      </li>
-                            <br/>
+                            
                             <li> Run the machine 
                               <br><br>
                               <div>
@@ -714,7 +708,7 @@ Machine is halting.</pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
                             <div id="lo4" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small <i>OS startup code</i> and generate target using the SPL compiler.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Use the SPL language to write a small <i>OS startup code</i> and generate target using the SPL compiler.</li>
                  
                             </ul>                                  
                                      
@@ -747,7 +741,7 @@ endwhile; </pre>
                               SPL doesn't support variables. Instead you can directly use XSM registers for storing program data. For convenience, you can <a href="support_tools-files/spl.html" target="_blank">alias</a> the registers with appropriate identifiers to imitate the behaviour of variables. In the above program register R0 is aliased to the identifier <var>counter</var>.
                             </li>
                             
-                            <br>
+                            
                             <li>Save this file as <tt>$HOME/myexpos/spl/spl_progs/oddnos.spl</tt>. Compile this SPL program using the commands
                               <br><br>
                               <div>
@@ -755,7 +749,7 @@ endwhile; </pre>
 ./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
 
-                            <br/>
+                            
                             <li> 
                               Load the file generated by the SPL compiler (<tt>$HOME/myexpos/spl/spl_progs/os_startup.xsm</tt>) as the OS startup code to <tt>disk.xfs</tt> using the XFS Interface.
                               <br>
@@ -763,7 +757,7 @@ endwhile; </pre>
                             </li>
 
 
-                            <br/>
+                            
                             <li> Run the machine. 
                              
                             </li>
@@ -811,7 +805,7 @@ Machine is halting</pre></div>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo5">Learning Objectives</a>
                             <div id="lo5" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Getting familiarised with the XSM Debugger.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Getting familiarised with the XSM Debugger.</li>
                             </ul>                                  
                                      
                             </div>
@@ -848,11 +842,11 @@ endwhile; </pre>
 		<li>
 		Compile the program using the SPL compiler.
 		</li>
-		<br>
+		
 		<li> 
 		Load the compiled xsm code as OS startup code into the XSM disk using the XFS interface.
 		</li>
-		<br>
+		
 		<li> 
 		Run the machine in debug mode.
 		<pre>cd $HOME/myexpos/xsm
@@ -867,7 +861,7 @@ endwhile; </pre>
 		Enter the following command
 		<pre>mem 1</pre>
 		
-		This will write the contents of memory page 1 to the file mem inside the xsm folder.
+		This will write the contents of memory page 1 to the file mem inside the xsm folder (if xsm is run from any other directory then the file mem will be created in that directory).
 		Open this file and view the contents.
 		<br> <br>
 		
@@ -912,9 +906,9 @@ endwhile; </pre>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo4">Learning Objectives</a>
                             <div id="lo4" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Learn how to set up the address space for an application. </li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Learn how to set up the address space for an application. </li>
 
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Run an init program in user mode from the OS startup code.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Run an init program in user mode from the OS startup code.</li>
                             </ul>                     
                                      
                             </div>
@@ -924,12 +918,12 @@ endwhile; </pre>
                       </div>
 		<!-- End Learning Objectives-->
 
-<b> Before proceeding further, it is absolutely neccesary to completely understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
+<b> Before proceeding further, it is absolutely necessary to completely understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
 
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
 		
-    <p> The first user program which is executed is called the INIT program *. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
+    <p> The first user program which is executed is called the INIT program <font color="red">*</font>. The eXpOS design stipulates that the INIT program must be stored in blocks 7 and 8 of the XSM disk. See <a href="os_implementation.html" target="_blank">Disk Organisation</a>.
 
     In this stage, first you will write a user program in assembly language and load it into the disk as the INIT program using XFS-Interface.
 
@@ -940,13 +934,15 @@ endwhile; </pre>
     </p>
 
 <p>
-    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion. 
-    <b>* Note:</b> In later stags, you will see that eXpOS actually schedules the idle process once before the INIT process is scheduled for the first time. This is done to ensure that the idle process is scheduled for execution at least once, so that the OS data structures associated with the idle process are not left un-initialized.          
+    <b>Note: </b>  At many places in this roadmap a process is identified with the underlying program in execution when there can be no scope for confusion. <br>
+ </p>
+ <p>
+    <b><font color="red">*</font> Note:</b> In later stages, you will see that eXpOS actually schedules the idle process once before the INIT process is scheduled for the first time. This is done to ensure that the idle process is scheduled for execution at least once, so that the OS data structures associated with the idle process are not left un-initialized.          
 
 </p> 
-    <br> <br>
+    <br> 
 		
-    <b> User Program  </b> <br> 
+    <b> User Program  </b> <br> <br>
 		
    
 	<ol style="list-style-type:decimal;margin-left:2px">
@@ -1075,7 +1071,17 @@ Since we have only one user process for now, we will write the interrupt 10 hand
 
 </ol>
 	<br>
-<b> OS Startup Code </b> <br> 
+
+<b> Exception handler</b> <br> <br>
+
+<p>
+We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical page not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
+</p>
+
+<p> Load the haltprog.xsm used above as the exception handler using XFS-interface </p>
+<pre>load --exhandler ../spl/progs/haltprog.xsm</pre><br>
+
+<b> OS Startup Code </b> <br><br> 
     <p> The OS startup code will load the init process and set the OS data structures necessary
       to run the program. Finally, it transfers control to the init program using the IRET instruction. 
      </p>
@@ -1132,14 +1138,14 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
       Thus, the first word of each entry must be set to the corresponding physical page number (65 ,66 and 76).
       Set the second word (<a href ="arch_spec-files/paging_hardware.html#aux_info" target="_blank"> Auxiliary information </a>) for pages 65 and 66 to "0100" and page 76 to "0110".  This sets the 
       code pages "read only" and stack "read/write".  (why?)  
-      <br>
+      <br><br>
       
-      <pre>[PTBR+0] = 65;
+      <div><pre>[PTBR+0] = 65;
 [PTBR+1] = "0100";
 [PTBR+2] = 66;
 [PTBR+3] = "0100";
 [PTBR+4] = 76;
-[PTBR+5] = "0110";</pre>
+[PTBR+5] = "0110";</pre></div>
     </li> 
     
     <i> Note: Here we have introduced a simple memory model with 2 page code and 1 page stack memory. <br>
@@ -1151,7 +1157,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
     <li>
     The OS Startup Code transfers control of execution to the user program using an IRET instruction. An IRET performs the following operations
     <br>
-      <ol style="list-style-type:lower-roman;margin-left:20px">
+      <ol style="list-style-type:lower-roman;margin-left:28px">
     
       <li>The privilege mode is changed from KERNEL to USER mode. </li>
     
@@ -1174,7 +1180,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
     
     <pre>[76*512] = 0;
 SP = 2*512;</pre>
-    </li> <br>
+    </li> 
 
     
     <li> Use the <i>ireturn</i> instruction to transfer control to user program. <i>ireturn</i> translates to IRET machine instruction
@@ -1186,34 +1192,24 @@ SP = 2*512;</pre>
     
     
     </ol>
-    <br>
-
-<b> Exception handler</b> <br> 
-
-<p>
-We also load the exception handler routine to memory.  The machine may raise an exception if it encounters any unexpected events like illegal instruction, invalid address, page table entry for a logical page not set valid etc.  Our default action is to halt machine execution in the case of an exception.  In later stages you will learn to handle exceptions in a more elaborate way. 
-</p>
-
-<p> Load the haltprog.xsm used above as the exception handler using XFS-interface </p>
-<pre>load --exhandler ../spl/progs/haltprog.xsm</pre>
-
-<br> <br> 		
+    <br> 		
 		<b> Making Things Work</b> <br> <br>
 	<ol style="list-style-type:decimal;margin-left:2px">
-		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.		<pre> cd $HOME/myxos/spl
-./spl $HOME/myxos/spl/spl_progs/os_startup.spl</pre>		
+		<li> Save the OS startup Code as $HOME/myexpos/spl/spl_progs/os_startup.spl. Compile this file using SPL compiler.		<br><div><pre> cd $HOME/myxos/spl
+./spl $HOME/myxos/spl/spl_progs/os_startup.spl</pre></div>		
 		</li>
 		<li>
 		This will generate a file $HOME/myexpos/spl/spl_progs/os_startup.xsm.	
 		Load this file as the OS startup code to disk.xfs using the XFS Interface.
-		Invoke the XFS interface and use the following command to load the OS Startup Code.
+		Invoke the XFS interface and use the following command to load the OS Startup Code.<br>
+		<div>
 		<pre># load --os $HOME/myxos/spl/spl_progs/os_startup.xsm
-# exit</pre>
+# exit</pre></div>
 		</li>
 		
 		<li>Run the machine in debug mode. (We will disable the timer for now).  
-		<pre>cd $HOME/myxos/xsm/
-./xsm --debug --timer 0</pre>
+		<br><div><pre>cd $HOME/myxos/xsm/
+./xsm --debug --timer 0</pre></div>
 		</li>
 				
 		<li>
@@ -1255,8 +1251,8 @@ You will have to modify the user program as well as the os startup code.
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo7">Learning Objectives</a>
                             <div id="lo7" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Application Binary Interface(ABI) of eXpOS.</li>
-                <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify the INIT program to comply with the eXpOS ABI.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Application Binary Interface(ABI) of eXpOS.</li>
+                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify the INIT program to comply with the eXpOS ABI.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1274,7 +1270,7 @@ You will have to modify the user program as well as the os startup code.
         Read and Understand the eXpOS <b> Virtual Address Space Model </b> 
         and  <b> XEXE Executable File Format </b> from <a href="abi.html#xexe" target="_blank"> eXpOS ABI Documentation </a> before proceeding further.
         <br><br>
-        <b>Modifying INIT</b>
+        <b>Modifying INIT</b><br><br>
         
         <p>The INIT program must be modified to comply with the XEXE executable format. 
         The executable format stipulates that the first 8 words of the file must contain a header.
@@ -1314,7 +1310,7 @@ You will have to modify the user program as well as the os startup code.
 2074<b>  JMP 2058</b>
 2076<b>  INT 10</b></pre>
   <br>      
-            <b>Modifications to OS Startup Code</b><br>
+            <b>Modifications to OS Startup Code</b><br><br>
             <ol style="list-style-type:decimal;margin-left:2px">
         <li> Load Library Code from disk to memory</li>
      
@@ -1340,9 +1336,9 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 
 <ol style="list-style-type:lower-alpha;margin-left:20px">
 <li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup. 
-The library code can be found in the eXpl folder in eXpOs package. 
+The library code can be found in the expl folder in eXpOs package. 
 Load it into the XSM disk using the command
-<div><pre>load --library ../eXpl/library.lib</pre></div> </li>
+<div><pre>load --library ../expl/library.lib</pre></div> </li>
 <li> During OS start-up, this code must be loaded to memory pages 63 and 64.  </li>
 <li> When each application is loaded for execution,  the logical pages 0 and 1 must be mapped to physical pages 63 and 64.</li>
 <li> Two physical pages must be allocated for the application's heap and attached to logical pages 2 and 3.  </li>
@@ -1369,8 +1365,8 @@ The ABI stipulates that two pages must be allocated for the stack at logical pag
 The following code sets page table entries for logical page 4 and 5(for code area), logical page
 8 and 9(for user stack), logical pages 3 and 4(for heap) and logical pages 0 and 1(for library).
 Since pages 0 to 75 are reserved for the use of the OS kernel, the first four free pages (76,77,78 and 79) 
-will be allocated for stack and heap area. See <a href="os_implementation.html" target="_blank">Memory Organisatiion.</a>
-Note that the code and library pages must be kept read only whereas stack and heap must be read-write.
+will be allocated for stack and heap area. See <a href="os_implementation.html" target="_blank">Memory Organisation.</a>
+Note that the code and library pages must be kept read only where as stack and heap must be read-write.
 (see <a href="arch_spec-files/paging_hardware.html" target="_blank" >page table </a> settings for details).     
 
         <!-- Remove if too spoonfeeding -->
@@ -1429,11 +1425,11 @@ SP = 8*512;
   <b>Making Things Work </b><br><br>
             <ol style="list-style-type:decimal;margin-left:10px">
         <li>
-          Compile and load the modified OS startup Code
+          Compile and load the modified OS startup Code.
         </li>
         
         <li>
-          Load the modified user program
+          Load the modified user program.
         </li>
         
         <li>
@@ -1467,8 +1463,8 @@ SP = 8*512;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo8">Learning Objectives</a>
                             <div id="lo8" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Run the XSM machine with Timer enabled.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with timer interrupt handling.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Run the XSM machine with Timer enabled.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with timer interrupt handling.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1490,9 +1486,9 @@ eXpOS design given <a href="os_implementation.html" target="_blank">here</a> req
 In this stage, we will run the machine with timer on and write a simple timer interrupt handler.  
 </p>
 
-<b style="font-size:20px">Modifications to OS Startup Code </b>
+<b >Modifications to OS Startup Code </b><br><br>
  	
- 	<p>OS Startupt code used in the previous stage has to be modified to 
+ 	<p>OS Startup code used in the previous stage has to be modified to 
 	load the timer interrupt routine from disk blocks 17 and 18 to memory pages 4 and 5. </p>
 	<div>
 	<pre>loadi(4, 17);
@@ -1500,7 +1496,7 @@ loadi(5, 18);</pre>
 	</div>	
 	<br>
 
-	 	<b style="font-size:20px">Timer Interrupt</b>
+	 	<b >Timer Interrupt</b><br><br>
 <p>
 We will write the timer interupt routine such that it just prints "TIMER" and returns to the user program.
 </p>
@@ -1515,11 +1511,11 @@ ireturn;
 <li>
 		Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_timer.spl
 		</li>
-		<br>
+		
 		<li> 
 		Compile this program using the SPL compiler.
 		</li>
-		<br>
+		
 		<li> 
 		Load the compiled XSM code as the timer interrupt into the XSM disk using XFS Interface.
 		<div>
@@ -1559,8 +1555,8 @@ ireturn;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo9">Learning Objectives</a>
                             <div id="lo9" class="panel-collapse expand">
                             <ul>
-							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Get introduced to setting up process table entry for a user program. </li> 
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the management of kernel stack in hardware interrupt handlers.</li>
+							  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Get introduced to setting up process table entry for a user program. </li> 
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the management of kernel stack in hardware interrupt handlers.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1614,7 +1610,7 @@ having 16 words.  Each entry holds information pertaining to one user process.  
     <p><b>Read and understand the <a href="os_design-files/stack_interrupt.html" target="_blank"> Kernel Stack Management during Interrupts </a> before proceeding further.</b></p>
 
  	<br>
- 	<b style="font-size:20px">Modifications to the OS Startup Code </b>
+ 	<b >Modifications to the OS Startup Code </b><br><br>
  	
 	
 	<ol style="list-style-type:decimal;margin-left:10px">
@@ -1655,8 +1651,8 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 	</li>
 	</ol>
 	<br>
- 	<b style="font-size:20px">Timer Interrupt</b>
- 	<br>
+ 	<b >Timer Interrupt</b>
+ 	<br><br>
  	 <ol style="list-style-type:decimal;margin-left:2px">
 		 
 		 
@@ -1747,8 +1743,8 @@ ireturn;
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo10">Learning Objectives</a>
                             <div id="lo10" class="panel-collapse expand">
                             <ul>
-							  <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the <a href="abi.html" target="_blank">low level system call interface</a> in eXpOS.</li> 	
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the console output mechanism in eXpOS.</li>
+							  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the <a href="abi.html" target="_blank">low level system call interface</a> in eXpOS.</li> 	
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the console output mechanism in eXpOS.</li>
                             </ul>                                  
                                      
                             </div>
@@ -1771,7 +1767,7 @@ ireturn;
   
 
 
- 	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p>
+ 	<p><b>Read and understand the <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a> before proceeding further.</b></p><br>
  	
 <b style="font-size:18px">Modifications to the user program</b>
 <br> <br>
@@ -1802,21 +1798,21 @@ of the write system call in later stages.</p>
  This is because once we implement the system call service for console output, this system call can be used
  by the user program to print the output to the console.    
  A user program must execute the following steps to invoke the system call:
- </p>
+ </p><br>
 
 <ol style="list-style-type:decimal;margin-left:2px">
 
 <li>Save the registers in use to the user stack (in the program below R0, R1, R2 are saved). As per the specification, since the user program calls system call routine , the OS expects that it saves its own context (registers in use) before issuing the system call.  
 </li>
 
-<br>
+
 
 <li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP - 1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
-</li> <br>
+</li> 
 
-<li> Push any register, say R0 to allocate space for the return value. </li> <br>
+<li> Push any register, say R0 to allocate space for the return value. </li> 
 
-<li>Invoke the interrupt by "INT 7" instruction. </li> <br>
+<li>Invoke the interrupt by "INT 7" instruction. </li> 
 
 //The following code will be executed after return from the system call.<br><br>
   
@@ -1826,9 +1822,9 @@ whether there was an error etc.  In some cases, the system call returns a value 
 value.</p>  
 
 <li> Pop out the return value, the system call number and arguments which were pushed on the stack prior to the system call. </li>
-<br>
+
 <li> Restore the register context from the stack (in the following program  R0,R1,R2 are restored).</li>
-<br>
+
 </ol>
 	<p>The resulting program is given below. 
 	<div>	
@@ -1913,19 +1909,19 @@ INT 10
 userSP = SP;</pre>
 	</div>
 	</li>
-	<br>
+	
 	<li>Switch the stack from user stack to kernel stack. 
 <ol style="margin-left:20px;list-style-type:circle;">
-	<li>Save the value of SP in the user SP field of Process Table entry of the process.</li>
+	<li>Save the value of SP in the user SP field of <a href="os_design-files/process_table.html" target="_blank">Process Table </a> entry of the process.</li>
 	<li>Set the value of SP to beginning of the kernel stack.</li>
 </ol>
 Details can be found at <a href="os_design-files/stack_smcall.html" target="_blank"> Kernel Stack Management during system calls </a>.
 	</li>
-	<br>
+	
 	<li>First we have to access argument 1 which is file descriptor to check whether it is valid or not. In user mode, logical addresses are translated to physical address by the machine using its
 	 <a href="arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a>.
 	 Since interrupts are executed in the kernel mode, the actual physical address is used to access memory 
-	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4 (See contents of the stack after INT instruction in above image for reference).
+	  locations. Hence to access the file descriptor (argument 1) we must  calculate the physical address of the memory location where it is stored. According to system call conventions, userSP - 4 is the location of the argument 1. So we will manually address translate userSP - 4 (See contents of the stack after INT instruction in above image for reference).<br><br>
 	<div>
 	<pre>alias physicalPageNum R1;
 alias offset R2;
@@ -1937,8 +1933,8 @@ alias fileDescriptor R4;
 fileDescriptor=[fileDescPhysicalAddr];</pre>
 	</div>
 	</li>
-	<br>
-	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2 - see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>. Write an IF condition to check whether file descriptor is -2 or not.  
+	
+	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2 - see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>. Write an IF condition to check whether file descriptor is -2 or not.  <br><br>
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -1948,8 +1944,8 @@ else
 endif;</pre>
 	</div>
 	</li>
-	<br>
-	<li>If the file descriptor is not -2, store -1 as a return value. According to system call convention, return value is stored at memory location userSP -1 in the user stack. Calculate physical address of the return value corresponding to userSP - 1 using address translation mechanism.  
+	
+	<li>If the file descriptor is not -2, store -1 as a return value. According to system call convention, return value is stored at memory location userSP -1 in the user stack. Calculate physical address of the return value corresponding to userSP - 1 using address translation mechanism.  <br><br>
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -1969,7 +1965,7 @@ endif;</pre>
 wordAddr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];</pre>
 	</div>
 	</li>
-	<br>
+	
 	<li>
 	The word address we have calculated in the above step was pushed in user mode which uses only logical addresses. Therefore, first translate this logical addresss to corresponding physical address and then extract the word to be printed from it.
 	<div>
@@ -1977,13 +1973,13 @@ wordAddr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];</pr
 word = [[PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512)];</pre>
 	</div>
 	</li>
-	<br>
+	
 	<li>
 	Write the word to the terminal using the print instruction. 	<div>
 	<pre>print word;</pre>
 	</div>
 	</li>
-	<br>
+	
 	<li>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
@@ -1991,12 +1987,12 @@ word = [[PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512)];</pre>
 physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 512);
 [physicalAddrRetVal] = 0;</pre></div></li>
 
-	<br>
+	
 	
 	<li> Set back the value of SP to point to top of user stack.
 	<pre> SP = userSP;</pre>
 	</li>	
-<br>
+
 	<li>
 	Pass control back to the user program using the ireturn statement.
 	</li>
@@ -2005,7 +2001,7 @@ physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 51
 
 	</ol>
 	
-	<b style="font-size:18px">Modifications to the OS startup code</b>
+	<b >Modifications to the OS startup code</b>
 <br> <br>
 <p>Add code in the OS startup code to load  INT7 from disk to memory.
 </p>
@@ -2015,20 +2011,20 @@ loadi(17,30);
 </pre>
 
 	<br>
-	<b>Making Things Work</b>
+	<b>Making Things Work</b><br><br>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>
 	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
 	</li>
-	<br>
+	
 	<li> 
 	Compile this program using the SPL compiler.
 	</li>
-	<br>
+	
 	<li> 
 	Load the compiled XSM code as INT 7 into the XSM disk using XFS Interface.
 	</li>
-	<br>
+	
 	<li> 
 	Run the Machine with timer disabled.
 	</li>
@@ -2039,6 +2035,12 @@ loadi(17,30);
   The ExpL compiler will automatically generate code to translate your high level function call to a call to the <a href="abi.html" target="_blank"> eXpOS
   library</a> and the library contains code to translate the call to an INT invocation as done by you
   in this stage.  The next stage will introduce you to ExpL.</p>
+
+
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
 	<a data-toggle="collapse"  href="#collapseq3"><b>Q1.</b> Why should we calculate the physical address of userSP-3 and userSP-1
 	seperately instead of calculating one and adding/subtracting the difference from the calculated value?</a>
                             <div id="collapseq3" class="panel-collapse collapse">
@@ -2048,7 +2050,12 @@ loadi(17,30);
     is that the stack of a process spreads over two pages and these two physical pages need not be contiguous.
     Hence, logical addresses which are close together may be far separated in physical memory.  
 		</div>
-		
+</li>
+                          </ul>
+                          </div>
+                          </div>
+
+		<br><br>
 		
 		<p><b style="color:#26A65B">Assignment 1 : </b> Write a program to print the first 20 numbers and run the 
 		system with timer enabled.</p>
@@ -2073,8 +2080,8 @@ loadi(17,30);
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo11">Learning Objectives</a>
                             <div id="lo11" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the use of ExpL for writing application programs</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the ExpL high level library interface</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the use of ExpL for writing application programs</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the ExpL high level library interface</li>
       
                             </ul>                                  
                                      
@@ -2118,8 +2125,9 @@ loadi(17,30);
         Now, you will write application programs in ExpL and compile it to generate the assembly program.
         This compiled code is loaded into the XSM disk as done in previous stages.</p>
         <p><b>
-        Read and understand the <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
-        before proceeding further. (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
+        Read and understand the 1) <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL Specification</a>
+        2) <a href="os_spec-files/dynamicmemoryroutines.html">ExpL high level library interface </a> 
+        before proceeding further . (WARNING :</b> Read only the specification just enough to write simple programs in the language. Don't follow the links and waste time! <b>)</b> </p>
         
         <ol style="list-style-type:decimal;margin-left:2px">
 			<li>Below is the ExpL program to print numbers upto 50. Save this program as numbers.expl in $HOME/myexpos/eXpl/samples.
@@ -2150,13 +2158,16 @@ save the file to a different name before compiling the next ExpL program).</p>
  
 
 
-			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li><br>
+			<li>Load the compiled code as the init program into the XSM disk using XFS Interface.</li>
 			<li>Run the XSM machine.</li>
 			</ol>
 			
 			<br>
 			
-			
+			<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
 			<a data-toggle="collapse"  href="#collapseq4"><b>Q1.</b> If your ExpL program contains read() function
 			call, will it work now?</a>
                             <div id="collapseq4" class="panel-collapse collapse">
@@ -2166,7 +2177,11 @@ save the file to a different name before compiling the next ExpL program).</p>
 								the OS will crash in INT 6.  It will be an insightful exercise to trace the sequence
 								of calls in debug mode.  
 		</div>
-    <br>
+		</li>
+                          </ul>
+                          </div>
+                          </div>
+    <br><br>
 				<p><b style="color:#26A65B">Assignment 1 : </b> Write an ExpL program to print all odd numbers from
 				1-100 and run the machine with this program loaded as the init.</p>
 				<p><b style="color:#26A65B">Assignment 2 : </b> Write an ExpL program to include a user defined type <b>Student</b> as follows
@@ -2204,8 +2219,8 @@ Declare a variable of type Student, assign values "John", 89 for name and marks 
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo12">Learning Objectives</a>
                             <div id="lo12" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the idle process.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Program the timer interrupt handler to concurrently schedule two processes.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the idle process.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Program the timer interrupt handler to concurrently schedule two processes.</li>
       
                             </ul>                                  
                                      
@@ -2232,7 +2247,7 @@ scheduler will be taken up in later stages.
 </p>
 
         
-		<b>Idle Program</b>
+		<b>Idle Program</b><br>
 		<br>
 		<p>Idle is a user program which is loaded for execution during OS bootstrap.
          Before OS bootstrap, it must be stored in the disk blocks 11 and 12.  
@@ -2281,7 +2296,7 @@ Since there are two processes, we need to set up several data structures so that
 keep track of the state of each process while in execution.  The steps are described below.  
 </p>
 
-		<ol style="list-style-type:decimal;margin-left:2px">
+		<ol style="list-style-type:decimal;margin-left:2px;">
 			<li>Load the idle code from disk to memory.
 			<div><pre>loadi(69,11);
 loadi(70,12);</pre></div>
@@ -2353,22 +2368,22 @@ states</a>.
 		 to 8*512 which is the logical address of user SP. 
 		(These steps were explained in detail in Stage 7). </li>
 		
-		<li>Set the KPTR field of the process table for idle to 0.
+		<li>Set the KPTR field of the process table for idle to 0.</li>
 
-		<br><br>The User Area Page Number field of a process table entry stores the page number of the user area page allocated
+		<p>The User Area Page Number field of a process table entry stores the page number of the user area page allocated
 to the process.  The KPTR field must store the offset of the kernel stack pointer within this page. The UPTR
-points to the top of the current value of user stack pointer.  <br><br>
+points to the top of the current value of user stack pointer.</p>  <p>
 Some explanation is of the order here.  When a process is executing in user mode, the active stack will be
 the user stack (logical pages 8-9 of the process).  When the process switches to kernel mode, the first action by
 the kernel code will be to save the SP value to UPTR and set the SP register to the physical address of the 
 top of the kernel stack.  When a process enters the kernel mode from user mode, the kernel stack will always
 be empty.  Hence, SP must be set to value (User Area Page Number * 512 - 1) whenever kernel mode is entered
-from the user mode.  <br><br>
+from the user mode.  </p><p>
 Similarly, before a process executes IRET instruction and switch from kernel mode to user mode, the SP
 register must be set to previously stored value in UPTR field of the process table.  The kernel stack
 will be empty when a process returns to user mode as there is no kernel context to be remembered.     
-		<br> <br>
-		</li>
+		</p>
+		
 		
 		<li>Set the PTBR field to PAGE_TABLE_BASE and PTLR field to 10 in the Process Table entry of idle process.</li>
 
@@ -2377,12 +2392,12 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<li>Set the entry point IP value from the header of idle process to top of the user stack of the idle process as done in the previous stage.
 		<div><pre>[81 * 512] = [69*512 + 1];</pre></div></li>
 		
-		The values of PTBR, PTLR, User Area Page Number, UPTR, KPTR etc. stored in the process table entry for a process
+		<p>The values of PTBR, PTLR, User Area Page Number, UPTR, KPTR etc. stored in the process table entry for a process
 		will be used to set up the values of the hardware registers just before the process is scheduled for execution. 
         We will not be scheduling the idle process immediately.  Hence, the hardware registers will not
 		be set based on the above values now.  Instead, we will schedule the INIT process from the OS startup code. 
 		Hence your OS startup code must contain code to set up registers to schedule the INIT process, as outlined below: 
-		<br> <br>
+		</p>
 		<li> Set User Area Page number, UPTR, KPTR, PTBR and PTLR fields in the Process Table entry for init.</li>
 		<li> Initialise the machine's PTBR and PTLR registers for scheduling the INIT process. 
 		(You have alreay gone through the steps in Stage 7). </li>
@@ -2397,26 +2412,15 @@ will be empty when a process returns to user mode as there is no kernel context 
 		<b> Note: </b> You must be clear with <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank"> XSM unprivileged mode execution </a> to understand the decription that follows.
 		</p>
 
-
-
-
-
-
-
-
-		<b>Modifications to timer interrupt handler</b>
+  <b>Modifications to timer interrupt handler</b>
 		<br><br>
+		<p>
 		In the previous stage you made the timer interrupt display "TIMER" at fixed intervals. However, the actual
         function of timer interrupt routine is to preempt the current running process and to transfer execution to another 
 		ready processes. 
-		<br><br>
-		In this stage, you will write a sample scheduler which will schedule just two processes.
-		The scheduler will be implemented in the timer interrupt handler.
-
-		After saving the context of the currently executing process in its kernel stack, the scheduler must
-		switch to the kernel stack to that of the next process to be scheduled.  The context of the next process
-	    has to be loaded to the registers and then control of execution can be transferred to the process. 
-		Detailed intructions for scheduling are given below.<br><br>
+		</p>
+		<p>In this stage, you will write a sample scheduler which will schedule just two processes.
+		The scheduler will be implemented in the timer interrupt handler. After saving the context of the currently executing process in its kernel stack, the scheduler must switch to the kernel stack to that of the next process to be scheduled.  The context of the next process has to be loaded to the registers and then control of execution can be transferred to the process. Detailed intructions for scheduling are given below.</p><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
 			 using the backup instructions as done in stage 9.</li>
@@ -2477,7 +2481,7 @@ has to be restored before the process is scheduled again for correct resumption 
 
 <br>
 		Check if the newly found process is in CREATED state.
-		If so, set SP to top of its user stack and return to user mode.
+		If so, set SP to top of its user stack and return to user mode.<br><br>
 		<div><pre>if([new_process_table + 4] == CREATED) then
 	[new_process_table + 4] = RUNNING;
 	SP = [new_process_table + 13];
@@ -2498,7 +2502,7 @@ in the CREATED state.
 		as done in previous stages. Note that if this is the case, then the process would have been in RUNNING state before.</li>
 		</ol>
 		<br>
-		<b>Making Things Work</b>
+		<b>Making Things Work</b><br><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Compile and load the modified OS statup code and Timer Interrupt handler to XSM disk.</li>
 			<li>Compile and load the idle program into the XSM disk.</li>
@@ -2506,6 +2510,11 @@ in the CREATED state.
 			
 		</ol>
 		
+
+		 <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
 		<a data-toggle="collapse"  href="#collapseq5"><b>Q1.</b>What is the significance of the idle process?</a>
                             <div id="collapseq5" class="panel-collapse collapse">
 				The main purpose of the idle process is to run as a background process in an infinite loop. 
@@ -2516,6 +2525,10 @@ in the CREATED state.
         any other process.
      			
 		</div>
+		</li>
+		</ul>
+        </div>
+        </div>
 <br> <br>
 
 
@@ -2542,8 +2555,8 @@ in the CREATED state.
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo13">Learning Objectives</a>
                             <div id="lo13" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to XSM Module Programming.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Boot Module.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to XSM Module Programming.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Boot Module.</li>
                             
                             </ul>                                  
                             </div>
@@ -2682,7 +2695,7 @@ loadi(51,64);</pre></div> </li>
 			</ol>
 			
 			<br>
-        	 <b>Modifications to Timer Interrupt Routine</b>
+        	 <b>Modifications to Timer Interrupt Routine</b><br><br>
 
         <p> 
         
@@ -2777,34 +2790,40 @@ loadi(51,64);</pre></div> </li>
 					<li>Set the state of the new process as RUNNING.</li>
 					<li>Return using return statement.</li>
 				</ol>
-
+				<br>
              <code>Note: </code>In later stages you will modify the scheduler module to the final form given  <a href="os_modules/Module_5.html" target="_blank">here</a>.
-			</p>    
+			</p><br>
 
-			<b>Modifications to INT 10 handler </b>
+			<b>Modifications to INT 10 handler </b><br><br>
 			 <p> The ExpL compiler sets every user program to execute the INT 10 instruction (exit system call) at the end of execution to terminate the process gracefully. In previous stages, we wrote an INT 10 routine containing just a halt instruction.  Hence, if any process invoked INT 10 upon exit, the machine would halt and no other process would execute further.  However, to allow multiple processes to run till completion, INT 10 must terminate only the process which invoked it, and schedule other surviving processes.  (INT 10 shall set the state of the dying process to TERMINATED).  If all processes except idle are in TERMINATED state, then INT 10 routine can halt the system.   </p>
 			 <p>Write INT 10 program in SPL following below steps :</p>
 			 <ol style="list-style-type: decimal;margin-left: 2px">
 			  <li>Change the state of the invoking process to <a href="support_tools-files/constants.html">TERMINATED</a>.</li> 
 			  <li>Find out whether all processes except idle are terminated.  In that case, halt the system. Otherwise invoke the scheduler</li>
 			  
-			 </li><br>
+			 </li>
               There will be no return to this process as the scheduler will never schedule this process again.  
 			  </ol>
 			  <br>
  
- <b>Making things work </b>
+ <b>Making things work </b><br><br>
   <ol style="list-style-type: decimal;margin-left: 2px">
   	<li>Compile and load the Boot module code, timer interrupt routine, scheduler module (module 5) and interrupt 10 routine into disk using XFS interface.</li>
   	<li>Run XSM machine with timer enabled.</li>
   </ol>
- <br>
-
-
+<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
 <a data-toggle="collapse"  href="#collapseq6"><b>Q1.</b> Is it always the case that scheduler module is invoked only from the timer interrupt routine?</a>
                             <div id="collapseq6" class="panel-collapse collapse">
 	    In the present stage - YES.  However, in later stages, if a process gets blocked inside a kernel module (waiting for some resource), then the process will set its state to "WAITING" and will invoke the scheduler.  Later when the process is back in READY state (as the resource becomes free) and the scheduler selects the process for running, execution returns to the instruction following the call to the scheduler in the kernel module.      
 		</div>
+</li>
+                          </ul>
+                          </div>
+                          </div>
+
 <br>
 <br>
 <b style="color:#26A65B">Assignment 1: </b>Write ExpL programs to print odd numbers, even numbers and prime numbers between 1 and 100. Modify the boot module code accordingly and run the machine with these 3 processes along with idle process. 
@@ -2833,8 +2852,8 @@ loadi(51,64);</pre></div> </li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo15">Learning Objectives</a>
                             <div id="lo15" class="panel-collapse expand">
                              <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with passing of parameters to modules.</li>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Resource Manager module for terminal output handling. </li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with passing of parameters to modules.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Resource Manager and Device Manager modules for terminal output handling. </li>
                                </div>
                           </li>
                           </ul>
@@ -2843,67 +2862,119 @@ loadi(51,64);</pre></div> </li>
                           <!-- End Learning Objectives-->
                           
 
-                          <p>Processes in eXpOS require various resources like terminal, disk, inode etc. To manage these resources among different processes eXpOS implements a resource manager module (Module 0).  Before the use of a resource, a process has to first acquire the required resource by invoking the resource manager.  A process can acquire a resource if the resource is not already acquired by some other process.  If the resource requested by a process is not available, then that process has to be blocked until the resource becomes free. In the meanwhile, other processes may be scheduled.  A blocked process must wake up when the requested resource is released by the process which had acquired the resource.  For this, when a process releases a resource, the state of other processes waiting for the resource must be set to READY. 
+                          <p>Processes in eXpOS require various resources like terminal, disk, inode etc. To manage these resources among different processes eXpOS implements a <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> (Module 0).  <b>Before the use of a resource, a process has to first acquire the required resource by invoking the resource manager.  A process can acquire a resource if the resource is not already acquired by some other process.  If the resource requested by a process is not available, then that process has to be blocked until the resource becomes free.</b> In the meanwhile, other processes may be scheduled.  
 
-                          The resource manager module handles acquisition and release of system resources.  A process must invoke the resource manager to acquire or release any system resource.  The resource manager implements two functions for each resource - one to acquire the resource and the other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
+                          <p>A blocked process must wake up when the requested resource is released by the process which had acquired the resource.  For this,<b> when a process releases a resource, the state of other processes waiting for the resource must be set to READY</b>.</p> 
+
+                          <p>The resource manager module handles acquisition and release of system resources.  A process must invoke the resource manager to acquire or release any system resource.  The resource manager implements two functions for each resource - one to acquire the resource and the other to release the resource by a process. Details about different functions implemented in resource manager module are given <a href="os_modules/Module_0.html" target="_blank">here</a>.</p>
 
                           <p>In this stage, you will learn how the terminal is shared by the processes for writing.  The OS maintains a data structure called the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.  The Terminal Status table contains details of the process that has acquired the terminal. (Since there is only one terminal in the system, only one process is allowed to acquire the terminal at a time.)  A flag named STATUS in the terminal status table indicates whether the terminal is available or not.  When a process acquires the terminal, the PID of the process is updated in the terminal status table.  </p>
 
-                          <p>In the write system call, before printing a word to the terminal, you have to acquire the terminal resource for currently running process.  After printing to the console, the write system call must release the terminal. There are two functions related to terminal management in module 0.   These are the Acquire Terminal function and the Release Terminal function.   Each function has a function number to identify the function within the module. In the Resource Manager module, Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively. 
+                          <p>There are two functions related to terminal management in module 0. These are the Acquire Terminal and the Release Terminal functions. Each function has a function number to identify the function within the module. In the Resource Manager module, <b>Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively</b>. When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc. See <a href="support_tools-files/spl.html#con" target="_blank">SPL module calling convention</a>. For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as an argument through the register R2.</p> 
 
-                          When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc
-                        For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as argument through the register R2. In this stage, Module 0 will be called from interrupt 7(write system call).  Since the module will be modifying the contents of the machine registers during its execution, Write system call must save the registers in use into the (kernel) stack of the process before invoking the module.   The module sets its return value in register R0 before returning to the caller.  The write system call must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+                         <p>Acquire Terminal and Release Terminal are not directly invoked from the write system call. Write system call invokes a function called Terminal Write present in <a href="os_modules/Module_4.html" target="_blank">device manager module</a> (Module 4). Terminal Write function acts as an abstract layer between the write system call and terminal handling functions in resource manager module. The function number for Terminal Write is 3 which is stored in register R1. The other arguments are PID of the current process and the word to be printed which are passed through registers R2 and R3 respectively. Terminal Write first acquires the terminal by calling Acquire Terminal. It prints the word (present in R3) passed as an argument. It then frees the terminal by invoking Release Terminal.</p>
+
+                        <p>Since the invoked module will be modifying the contents of the machine registers during its execution, The invoker must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The invoker must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
 
                            <p><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it will be necessary to save the register context into the stack for proper resumption of execution.</p>
+
+                           
                           
-							<b>Modifying Boot Module code</b><br><br>
+							<b>Modifying INT 7 routine</b><br><br>
+							    <p>Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Terminal Write function present in Device Manager module. Instead of print statement, write code to invoke Terminal Write function. Rest of the code remains intact.
+                                 <ol style="list-style-type: decimal; margin-left: 2px">
+                                 	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL. 
+							  	<div><pre>multipush(R0, R1, R2, R3,...); // number of registers will depend on your code</pre></div></li>
+							  	<li>Store the function number of Terminal Write in register R1, PID of the current process in register R2 and word to be printed to the terminal in register R3.</li>
+							  	<li>Call module 4 using call statement.</li>
+							  	<li>Ignore the value present in R0 as Terminal Write does not have any return value.</li>
+							  	<li>Use multipop statement to restore the registers pushed. Specify the same order of registers used in multipush as registers are popped in the <b>reverse order</b> in which they are specified in the multipop statement.<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li>
+                                 </ol><br>
+
+                               <b>Implementation of Module 4 (Device Manager Module)</b><br><br>
+                                  <p>In this stage, we will implement only Terminal Write function in this module.</p>
+							      
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  	<li>Load module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
-							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that terminal is free before scheduling the first process.</li>
+							    <li>Function number and current PID are stored in registers R1 and R2. Give meaningful names to these arguments.<div><pre>alias functionNum R1;
+alias currentPID R2;</pre></div></li>
+
+							     <li>Terminal write function has a function number 3. If the functionNum is 3, implement the following steps else return using return statement.</li>
+							    <p style="text-indent: 0px">Calling Acquire Terminal :-</p>
+							  	<li>Push all the registers used till now in this module using the multipush statement in SPL as done earlier.</li>
+							  	<li>Store the function number 8 in register R1 and PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 (Can use currentPID, as it already contain current PID value).</li>
+							  	<li>Call module 0.</li>
+							  	<li>Ignore the value present in R0 as Acquire Terminal does not have any return value.</li>
+							  	<li>Use the multipop statement to restore the registers as done earlier. 
+							  	</li>
+							  	<li>Print the word in register R3, using the print statement.</li>
+							  	<p style="text-indent: 0px">Calling Release Terminal :-</p>
+							  	<li>Push all the registers used till now using the multipush statement as done earlier.</li>
+							  	<li>Store the function number 9 in register R1 and PID of the current process from the System Status table in register R2 (Can use currentPID, as it already contain current PID value).</li>
+							  	<li>Call module 0.</li>
+							  	<li>Return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
+							  	<li>Restore the registers using the multipop statement.</li>
+							  	<li>Return using the return statement.</li>
+							  	
 							  </ol>
 
-							<br><b>Modifying INT 7 routine</b><br><br>
-							    <p style="text-indent: 0px">Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Acquire Terminal and Release Terminal functions.</p>  
+							<br><b>Implementation of Module 0 code for terminal handling</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							    <p style="text-indent: 0px">Calling Acquire Terminal (Before print statement)</p>
-							  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL.
-							  	<div><pre>multipush(R0, R1, R2, R3,...);</pre></div></li>
-							  	<li>Store the function number 8 in register R1 and PID of current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 .</li>
-							  	<li>Call module 0 using call statement.</li>
-							  	<p style="text-indent: 0px">Ignore value present in R0 as Acquire Terminal does not have return value.</p>
-							  	<li>Use multipop statement to pop the registers pushed before calling the module. Specify the same order of registers used in multipush as registers are popped in the reverse order in which they are specified in the multipop statement.   
-							  	<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li><br>
-							  	<p style="text-indent: 0px">Calling Release Terminal (After print statement)</p>
-							  	<li>Push all registers used till now using multipush statement as before.</li>
-							  	<li>Store the function number 9 in register R1 and PID of current process from System Status table in register R2.</li>
-							  	<li>Call module 0 using call statement in SPL.</li>
-							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
-							  	<li>Pop the registers pushed before using multipop statement.</li>
-							  </ol>
-
-							<br><b>Implementation of module 0</b><br><br>
-							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningfull names to these registers to use them further.
+							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningful names to these registers to use them further.
 							  <div><pre>alias functionNum R1;
 alias currentPID R2;</pre></div></li>
-							  <li>Implement Acquire Terminal from below 3 steps if functionNum is 8.</li>
-							  <li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in Terminal Status table is 1(terminal is allocated to other process). 
-							     <ul style="list-style-type: disc;margin-left: 20px">
-							     	<li>Change the state of current process in its process table entry to WAIT_TERMINAL.</li>
-							     	<li>Push the registers used till now using multipush statement.</li>
+<br>
+							  <li>In Module 0, for the Acquire Terminal function (functionNum = 8) implement the following steps.</li>
+							    
+							  <ol style="list-style-type: lower-roman; margin-left: 20px" ><li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in the Terminal Status table is 1(terminal is allocated to other process). 
+							     <ul style="list-style-type: disc;margin-left: 24px">
+							     	<li>Change the state of the current process in its process table entry to WAIT_TERMINAL.</li>
+							     	<li>Push the registers used till now using the multipush statement.</li>
 							     	<li>Call the scheduler to schedule other process as this process is waiting for terminal.</li>
-							     	<li>Pop the registers pushed before.</li>
+							     	<li>Pop the registers pushed before. (Note that this code will be executed only after the scheduler schedules the process again, which in turn occurs only after the terminal was released by the holding process by invoking the release terminal function.)</li>
 							     </ul></li>
 							   <li>Change the STATUS field to 1 and PID field to currentPID in the Terminal Status Table.</li>
-							   <li>Return using return statement.</li>
-							  <li>Implement Release Terminal from below steps if functionNum is 9.</li>
-							  <li>currentPID and PID stored in Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as return value in register R1 and return from module using return statement.</li>
-							  <li>Change STATE field in Terminal Status table to 0, indicating terminal is released.</li>
-							  <li>Update the STATUS to READY for all processes which have STATUS as WAIT_TERMINAL with valid PID.</li>
+							   <li>Return using the return statement.</li>
+							   </ol>
+							   <br>
+							  <li>for the Release Terminal function (functionNum = 9) implement the following steps.</li>
+							  <ol style="list-style-type: lower-roman; margin-left: 20px">
+							  <li>currentPID and PID stored in the Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as the return value in register R0 and return from the module.</li>
+							  <li>Change the STATE field in the Terminal Status table to 0, indicating terminal is released.</li>
+							  <li>Update the STATUS to READY for all processes (with valid PID) which have STATUS as WAIT_TERMINAL.</li>
 							  <li>Save 0 in register R0 indicating success.</li>
-							  <li>Return to caller using return statement.</li>
+							  <li>Return to the caller.</li>
 							  </ol>
+							  </ol><br>
+                             <b>Modifying Boot Module code</b><br><br>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Load Module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
+							  	<li>Load Module 4 from disk pages 61 and 62 to memory pages 48 and 49.</li>
+							  	<li>Initialize the STATUS field in the <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that the terminal is free before scheduling the first process.</li>
+							  </ol>
+
+							<br>
+
+							  <b>Making things work</b><br><br>
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							  	<li>Compile and load boot module code, module 0, module 4, modified INT 7 routine using XFS-interface.</li>
+							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with the idle process.</li>
+							  </ol>
+
+<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq7"><b>Q1.</b> According to eXpOS resource management system introduced here, will Deadlock occur? If yes, explain it with a situation. If no, which of the four conditions of Deadlock are not satisfied? </a>
+                            <div id="collapseq7" class="panel-collapse collapse">
+	     Deadlock will not occur according to the resource management system implemented here. As hold and wait, circular wait conditions are not satisfied (there is only one resource - the terminal - now). 
+		</div>
+		</li>
+                          </ul>
                           </div>
+                          </div>
+		<br><p>See <a href="https://en.wikipedia.org/wiki/Deadlock#Necessary_conditions" target="_blank">link</a> for a set of neccessary conditions for deadlock.</p>
+            </div>
                       </div>
 
 
@@ -2929,14 +3000,74 @@ alias currentPID R2;</pre></div></li>
                             <div id="lo16" class="panel-collapse expand">
                             <ul>
                               <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of Console Interrupt Routine and Read system call.</li>
-                            
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Console Interrupt handling in XSM.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of console input using the read system call.</li>
                             </ul>                                  
-                                     
-                            </div>
+                             </div>
                           </li>
                           </ul>
-                        </div>
+
+                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the XSM instructon <a href="arch_spec-files/instruction_set.html">IN </a> to <b>read data from the console into the input port P0</b>.  IN is a previliged instruction and can be executed only inside a system call/module.  Hence, to read data from the console, a user process uses the read system call (LINK) with a request for terminal read.  The IN instruction will be executed within the read system call.</p> 
+
+                          <p>  The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead,the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.  </p>
+
+                           <p> When does data arrive in P0?  This happens when some string/number is entered from the key-board and ENTER is pressed.  At this time, <b>the XSM machine will raise the console interrupt</b>. Thus the console interrupt is the hardware mechanism that helps the OS to infer that the IN instruction execution is complete.  </p>   
+
+                           <p> As noted above, the IN instruction is typically executed from the read system call. Since it is generally not useful for the read system call to continue execution till data arrives in P0, <b>a process executing the IN instruction will sets it's state to WAIT_TERMINAL and invoke the scheduler</b>. The process must resume execution only after the console device sends an interrupt upon data arrival.</p>  
+
+                          <p> When the console interrupt occurs, the machine interrupts the current process (note that some other process would be running) and executes the console interrupt handler. (The interrupt mechanism is similar to the timer interrupt.  The current value of IP+2 is pushed into the stack and control transfers to the interrupt handler - see <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM machine execution tutorial</a> for details). <b>It is the responsibility of the interrupt handler to wake up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state also will be set to READY by the console interrupt handler.) </p>
+                          
+                           <p> The OS will maintain a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The read system call, while doing terminal read must 1) acquire the terminal 2) Issue an IN instruction 3) Set its state WAIT_TERMINAL and 4) Invoke the scheduler. </p> 
+
+
+                           <p> When the data finally arrives, <b>the console interrupt handler must transfer the data (in port P0) into the input buffer of the process</b> in the <a href="os_design-files/process_table.html" target="_blank">process table</a>. Then the handler wakes up process waiting for the terminal.</p>
+
+                          <p>  Finally, the read system call, after waking up from the WAIT_TERMINAL state, returns the input data in the buffer and passes this data to the user program that invoked the system call.  </p>    
+      Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceding further.
+<br><br>
+                         
+<b>Implementation of INT 6</b>
+
+<ol style="list-style-type: decimal;margin-left: 2px">
+	<li>Save the value in the user stack pointer as userSP.</li>
+	<li>Store the value of user stack pointer in <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the current process</li>
+	<li>Intialize register SP with the kernel stack pointer using user area page present in process table of current process.</li>
+	Calling Aquire Terminal function
+	<li>Push all registers used till now using multipush.</li>
+	<li>Intialize regiters R1, R2 with function number of Aquire Terminal and PID of current process.</li>
+	<li>Call module 0.</li>
+	<li>Restore registers using multipop statement.</li>
+	<li>Using read statement, request to read from the terminal.
+     <div><pre>read;</pre></div>
+	</li>
+	<li>Change the state of the current process to WAIT_TERMINAL.</li>
+	 Invoking the Context Switch Module
+	 <li>Push all registers used till now using multipush.</li>
+	 <li>Invoke scheduler by calling module 5.</li>
+	<li>Restore registers using multipop statement.</li>
+	<li>Obtain the logical address where the word has to be stored from user stack (userSP-3).</li>
+	<li>Convert the logical address to physical address.</li>
+	<li>Store the value present in input buffer field of process table to obtained physical address of the word.</li>
+	<li>Store 0 for the return value in the user stack (userSP-1) to indicate success.</li>
+	<li>Change SP to userSP to point SP to user stack.</li>
+	<li>Return to user mode using ireturn statement.</li>
+</ol>
+<br><br>
+   <b>Implementation of Console Interrupt Routine</b><br><br>
+   <ol style="list-style-type: decimal; margin-left: 2px">
+   	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
+   	<li>Intialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
+   	<li>Backup the user context of the currently running process in the kernel stack as done in timer interrupt routine.</li>
+   	<li>Get the PID of the process that has aqcuired the terminal from the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a>, Save this as reqPID.</li>
+   	<li>Using the reqPID obtained in the above step, get the corresponding process table entry.</li>
+   	<li>The input entered in the console is saved in register P0 by the XSM machine. Copy this value present in P0 in the input buffer field of the process table entry obtained in above step.</li>
+   	<li>Change the state of the process with PID as reqPID to READY.</li>
+   	<li>Restore the user context from the kernel stack as done in the timer interrupt routine.</li>
+   	<li>Change SP to UPTR field from the process table entry of the currently running process and return to the user mode.</li>
+
+   </ol>
+
+                            </div>
                       </div>
 
 	<!-- End Learning Objectives--> 
@@ -2946,11 +3077,13 @@ alias currentPID R2;</pre></div></li>
 <!-- =========end Stage 16 ===========-->
 
 
-					<!-- Stage 17 -->
+
+
+<!-- =========Stage 17 ===========-->
 
                       <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Exec System Call </a>
                         </h4>
                       </div>
 
@@ -2964,7 +3097,64 @@ alias currentPID R2;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
                             <div id="lo17" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
+                              <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
+                              
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of  Exec system call.</li>
+                            </ul>                                  
+                             </div>
+                          </li>
+                          </ul>
+                          <p></p>
+
+<b>Exec System Call</b>
+        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
+        address space. A successful Exec operation results in the extinction of the invoking process and hence
+        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
+        <ol style="list-style-type:decimal;margin-left:2px">
+			<li>Retrieve the filename of the new process from the user stack.</li>
+			<li>Return -1 if the filename is NULL.</li>
+			<li>Iterate through the Inode Table to find the inode index of the file.</li>
+			<li>If file is not found, return -1.</li>
+			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
+			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
+			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
+			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
+			1 for User Area Page and 1 for code.</li>
+          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
+          from disk to memory. </li>
+          <li>Set up the page table entries of the new process. The first code page must be </li>
+          <li>Set up the Process Table entries.</li>
+          <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
+          <li>Set the value of SP as 4096.</li>
+       </ol>
+        </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+
+		</div>
+		</div>
+<!-- =========end Stage 17 ===========-->
+
+					<!-- Stage 18 -->
+
+                      <div class="panel-heading" id="list_stage18">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse18" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
+                            <div id="lo18" class="panel-collapse expand">
+                            <ul>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
                                      
                             </div>
@@ -3053,45 +3243,11 @@ alias currentPID R2;</pre></div></li>
           <li>Set up the Process Table entries.</li>
           <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
           <li>Set the value of SP as 4096.</li>
-      </div>   
+       
       
    	</ol>
+   	 </div> 
 </div>
-
- <!-- =========end Stage 17 ===========-->
-
-
- <!-- =========Stage 18 ===========-->
-
-                      <div class="panel-heading" id="list_stage18">
-                        <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : File system calls </a>
-                        </h4>
-                      </div>
-
-                      <div id="collapse18" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <!-- Begin Learning Objectives-->
-                          <div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
-                            <div id="lo18" class="panel-collapse expand">
-                            <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
-                            </ul>                                  
-                                     
-                            </div>
-                          </li>
-                          </ul>
-                        </div>
-                      </div>
-
-	<!-- End Learning Objectives--> 
-
-		</div>
-		</div>
 
  <!-- =========end Stage 18 ===========-->
 
@@ -3100,7 +3256,7 @@ alias currentPID R2;</pre></div></li>
 
                       <div class="panel-heading" id="list_stage19">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : File system calls </a>
                         </h4>
                       </div>
 
@@ -3114,7 +3270,7 @@ alias currentPID R2;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
                             <div id="lo19" class="panel-collapse expand">
                             <ul>
-                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
                                      
                             </div>
@@ -3128,7 +3284,42 @@ alias currentPID R2;</pre></div></li>
 		</div>
 		</div>
 
-	 <!-- =========end Stage 19 ===========-->
+ <!-- =========end Stage 19 ===========-->
+
+
+ <!-- =========Stage 20 ===========-->
+
+                      <div class="panel-heading" id="list_stage20">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Multiuser Modification </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse20" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
+                            <div id="lo20" class="panel-collapse expand">
+                            <ul>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+
+		</div>
+		</div>
+
+	 <!-- =========end Stage 20 ===========-->
 	
 <!--=========== Intoduction Section Ending ===============-->
 
