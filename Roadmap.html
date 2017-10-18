@@ -2853,7 +2853,7 @@ loadi(51,64);</pre></div> </li>
                             <div id="lo15" class="panel-collapse expand">
                              <ul>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with passing of parameters to modules.</li>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Resource Manager module for terminal output handling. </li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement Resource Manager and Device Manager modules for terminal output handling. </li>
                                </div>
                           </li>
                           </ul>
@@ -2870,33 +2870,54 @@ loadi(51,64);</pre></div> </li>
 
                           <p>In this stage, you will learn how the terminal is shared by the processes for writing.  The OS maintains a data structure called the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.  The Terminal Status table contains details of the process that has acquired the terminal. (Since there is only one terminal in the system, only one process is allowed to acquire the terminal at a time.)  A flag named STATUS in the terminal status table indicates whether the terminal is available or not.  When a process acquires the terminal, the PID of the process is updated in the terminal status table.  </p>
 
-                          <p>In the write system call, before printing a word to the terminal, you have to acquire the terminal resource for currently running process.  After printing to the console, the write system call must release the terminal. There are two functions related to terminal management in module 0. These are the Acquire Terminal function and the Release Terminal function.  Each function has a function number to identify the function within the module. In the Resource Manager module, <b>Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively</b>. 
+                          <p>There are two functions related to terminal management in module 0. These are the Acquire Terminal and the Release Terminal functions. Each function has a function number to identify the function within the module. In the Resource Manager module, <b>Acquire Terminal and Release Terminal have function numbers 8 and 9 respectively</b>. When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc. See <a href="support_tools-files/spl.html#con" target="_blank">SPL module calling convention</a>. For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as an argument through the register R2.</p> 
 
-                          When a module function is invoked, the function number (identifying the particular function within the module) is stored in register R1 and passed as argument to the module. The other arguments are passed through registers R2, R3 etc. See <a href="support_tools-files/spl.html#con" target="_blank">SPL module calling convention</a>.
-                        For both Acquire Terminal and Release Terminal,  PID of the currently running process needs to be passed as argument through the register R2. In this stage, Module 0 will be called from interrupt 7 (write system call). Since the module will be modifying the contents of the machine registers during its execution, Write system call must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The write system call must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
+                         <p>Acquire Terminal and Release Terminal are not directly invoked from the write system call. Write system call invokes a function called Terminal Write present in <a href="os_modules/Module_4.html" target="_blank">device manager module</a> (Module 4). Terminal Write function acts as an abstract layer between the write system call and terminal handling functions in resource manager module. The function number for Terminal Write is 3 which is stored in register R1. The other arguments are PID of the current process and the word to be printed which are passed through registers R2 and R3 respectively. Terminal Write first acquires the terminal by calling Acquire Terminal. It prints the word (present in R3) passed as an argument. It then frees the terminal by invoking Release Terminal.</p>
+
+                        <p>Since the invoked module will be modifying the contents of the machine registers during its execution, The invoker must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The invoker must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
 
                            <p><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it will be necessary to save the register context into the stack for proper resumption of execution.</p>
+
+                           
                           
 							<b>Modifying INT 7 routine</b><br><br>
-							    <p style="text-indent: 0px">Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Acquire Terminal and Release Terminal functions.</p>  
-							  <ol style="list-style-type: decimal;margin-left: 2px">
-							    <p style="text-indent: 0px">Calling Acquire Terminal (Before print statement)</p>
-							  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL. 
+							    <p>Interrupt routine 7 implemented in stage 10 is modified as given below to invoke Terminal Write function present in Device Manager module. Instead of print statement, write code to invoke Terminal Write function. Rest of the code remains intact.
+                                 <ol style="list-style-type: decimal; margin-left: 2px">
+                                 	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL. 
 							  	<div><pre>multipush(R0, R1, R2, R3,...); // number of registers will depend on your code</pre></div></li>
-							  	<li>Store the function number 8 in register R1 and PID of current process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 .</li>
-							  	<li>Call module 0 using call statement.</li>
-							  	<p style="text-indent: 0px">Ignore value present in R0 as Acquire Terminal does not have return value.</p>
-							  	<li>Use multipop statement to pop the registers pushed before calling the module. Specify the same order of registers used in multipush as registers are popped in the <b>reverse order</b> in which they are specified in the multipop statement.   
-							  	<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li><br>
-							  	<p style="text-indent: 0px">Calling Release Terminal (After print statement)</p>
-							  	<li>Push all registers used till now using multipush statement as before.</li>
-							  	<li>Store the function number 9 in register R1 and PID of current process from System Status table in register R2.</li>
-							  	<li>Call module 0 using call statement in SPL.</li>
-							  	<li>The return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
-							  	<li>Restore registers using multipop statement.</li>
+							  	<li>Store the function number of Terminal Write in register R1, PID of the current process in register R2 and word to be printed to the terminal in register R3.</li>
+							  	<li>Call module 4 using call statement.</li>
+							  	<li>Ignore the value present in R0 as Terminal Write does not have any return value.</li>
+							  	<li>Use multipop statement to restore the registers pushed. Specify the same order of registers used in multipush as registers are popped in the <b>reverse order</b> in which they are specified in the multipop statement.<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li>
+                                 </ol><br>
+
+                               <b>Implementation of Module 4 (Device Manager Module)</b><br><br>
+                                  <p>In this stage, we will implement only Terminal Write function in this module.</p>
+							      
+							  <ol style="list-style-type: decimal;margin-left: 2px">
+							    <li>Function number and current PID are stored in registers R1 and R2. Give meaningful names to these arguments.<div><pre>alias functionNum R1;
+alias currentPID R2;</pre></div></li>
+
+							     <li>Terminal write function has a function number 3. If the functionNum is 3, implement the following steps else return using return statement.</li>
+							    <p style="text-indent: 0px">Calling Acquire Terminal :-</p>
+							  	<li>Push all the registers used till now in this module using the multipush statement in SPL as done earlier.</li>
+							  	<li>Store the function number 8 in register R1 and PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status table</a> in register R2 (Can use currentPID, as it already contain current PID value).</li>
+							  	<li>Call module 0.</li>
+							  	<li>Ignore the value present in R0 as Acquire Terminal does not have any return value.</li>
+							  	<li>Use the multipop statement to restore the registers as done earlier. 
+							  	</li>
+							  	<li>Print the word in register R3, using the print statement.</li>
+							  	<p style="text-indent: 0px">Calling Release Terminal :-</p>
+							  	<li>Push all the registers used till now using the multipush statement as done earlier.</li>
+							  	<li>Store the function number 9 in register R1 and PID of the current process from the System Status table in register R2 (Can use currentPID, as it already contain current PID value).</li>
+							  	<li>Call module 0.</li>
+							  	<li>Return value will be stored in R0 by module 0. Save this return value in any other register if needed.</li>
+							  	<li>Restore the registers using the multipop statement.</li>
+							  	<li>Return using the return statement.</li>
+							  	
 							  </ol>
 
-							<br><b>Implementation of Module 0 code for terminal handing</b><br><br>
+							<br><b>Implementation of Module 0 code for terminal handling</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							  <li>Function number is present in R1 and PID passed as an argument is stored in R2. Give meaningful names to these registers to use them further.
 							  <div><pre>alias functionNum R1;
@@ -2904,38 +2925,39 @@ alias currentPID R2;</pre></div></li>
 <br>
 							  <li>In Module 0, for the Acquire Terminal function (functionNum = 8) implement the following steps.</li>
 							    
-							  <ol style="list-style-type: lower-roman; margin-left: 20px" ><li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in Terminal Status table is 1(terminal is allocated to other process). 
+							  <ol style="list-style-type: lower-roman; margin-left: 20px" ><li>The current process should wait in a loop until the terminal is free. Repeat the following steps if STATUS field in the Terminal Status table is 1(terminal is allocated to other process). 
 							     <ul style="list-style-type: disc;margin-left: 24px">
-							     	<li>Change the state of current process in its process table entry to WAIT_TERMINAL.</li>
-							     	<li>Push the registers used till now using multipush statement.</li>
+							     	<li>Change the state of the current process in its process table entry to WAIT_TERMINAL.</li>
+							     	<li>Push the registers used till now using the multipush statement.</li>
 							     	<li>Call the scheduler to schedule other process as this process is waiting for terminal.</li>
 							     	<li>Pop the registers pushed before. (Note that this code will be executed only after the scheduler schedules the process again, which in turn occurs only after the terminal was released by the holding process by invoking the release terminal function.)</li>
 							     </ul></li>
 							   <li>Change the STATUS field to 1 and PID field to currentPID in the Terminal Status Table.</li>
-							   <li>Return using return statement.</li>
+							   <li>Return using the return statement.</li>
 							   </ol>
 							   <br>
 							  <li>for the Release Terminal function (functionNum = 9) implement the following steps.</li>
 							  <ol style="list-style-type: lower-roman; margin-left: 20px">
-							  <li>currentPID and PID stored in Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as return value in register R1 and return from module using return statement.</li>
-							  <li>Change STATE field in Terminal Status table to 0, indicating terminal is released.</li>
-							  <li>Update the STATUS to READY for all processes which have STATUS as WAIT_TERMINAL with valid PID.</li>
+							  <li>currentPID and PID stored in the Terminal Status table should be same. If these are not same, then process is trying to release the terminal without acquiring it. If this case occurs, store -1 as the return value in register R0 and return from the module.</li>
+							  <li>Change the STATE field in the Terminal Status table to 0, indicating terminal is released.</li>
+							  <li>Update the STATUS to READY for all processes (with valid PID) which have STATUS as WAIT_TERMINAL.</li>
 							  <li>Save 0 in register R0 indicating success.</li>
-							  <li>Return to caller using return statement.</li>
+							  <li>Return to the caller.</li>
 							  </ol>
 							  </ol><br>
                              <b>Modifying Boot Module code</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							  	<li>Load Module 0 from disk pages 53 and 54 to memory pages 40 and 41.</li>
-							  	<li>Initialize STATUS field in <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that terminal is free before scheduling the first process.</li>
+							  	<li>Load Module 4 from disk pages 61 and 62 to memory pages 48 and 49.</li>
+							  	<li>Initialize the STATUS field in the <a href="os_design-files/mem_ds.html#ts_table">Terminal Status table</a> as 0. This will indicate that the terminal is free before scheduling the first process.</li>
 							  </ol>
 
 							<br>
 
 							  <b>Making things work</b><br><br>
 							  <ol style="list-style-type: decimal;margin-left: 2px">
-							  	<li>Compile and load boot module code, module 0, modified INT 7 routine using XFS-interface.</li>
-							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with idle process.</li>
+							  	<li>Compile and load boot module code, module 0, module 4, modified INT 7 routine using XFS-interface.</li>
+							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with the idle process.</li>
 							  </ol>
 
 <div class="container col-md-12">
