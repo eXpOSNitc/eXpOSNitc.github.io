@@ -125,52 +125,58 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>If</b> filename is invalid, return -1.</p>     
-             <p><b>If</b> file not found in system or file type is not EXEC, return -1 &nbsp; &nbsp; 
-             /* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode 
-             Table</a>. */</p>
-             
-    
-    
-    
-	<p ><a data-toggle="collapse"   href="#collapse11" >Deallocate resources of the current process.</a></p>
+	     <pre>
+Switch to the Kernel Stack.
+
+<b>If</b> filename is invalid, return -1.
+<b>If</b> file not found in system or file type is not EXEC, return -1 
+/* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. */
+
+<a data-toggle="collapse"   href="#collapse11" >Deallocate resources of the current process.</a>
 			<div id="collapse11" class="panel-collapse collapse">
-			<p style="text-indent: 4em;">Deallocate the User Area Page by invoking the free_user_area_page( )
-			in the process manager module.</p>
-			<p style="text-indent: 4em;">Deallocate the Page Table entries by invoking the free_page_table( )
-			in the process manager module.</p>
+			"Deallocate the User Area Page by invoking the free_user_area_page( )
+			in the process manager module.
 
-  
+			Deallocate the Page Table entries by invoking the free_page_table( )
+			in the process manager module.
 </div>
+Acquire two memory pages for user stack, one for User Area and one for code by invoking the 
+get_mem_page( ) function in the memory manager module.
 
-	<p>Acquire two memory pages for user stack, one for User Area and one for code by invoking the 
-	get_mem_page( ) function in the memory manager module.</p>
-	<p>Obtain the disk block number of the first code page from the inode entry of the file passed as argument.</p>
-	<p>Load the first code page into memory by invoking the DRead() function in the Device Manager module.</p>
+Obtain the disk block number of the first code page from the inode entry of the file passed as argument.
+
+Load the first code page into memory by invoking the DRead() function in the Device Manager module.
 	
-<p><a data-toggle="collapse"   href="#collapse1">Set the Process Table and Page Table entries of the process.</a></p>
+<a data-toggle="collapse"   href="#collapse1">Set the Process Table and Page Table entries of the process.</a>
 <div id="collapse1" class="panel-collapse collapse">
-                <p style="text-indent: 4em;">Set the Page Table entries for library.
-                    </p>
-                <p style="text-indent: 4em;">Invalidate the page table entries for heap. &nbsp;&nbsp; 
+                Set the Page Table entries for library.
+
+                Invalidate the page table entries for heap. &nbsp;&nbsp; 
                 /* Memory will be allocated when page fault occurs */
-                    </p>
-                <p style="text-indent: 4em;">Set the page table entry for the first code page to the 
-                page found eariler. Set the valid bit to 1.</p>
-                <p style="text-indent: 4em;">Set the code page entries of the other code pages to the 
+
+                Set the page table entry for the first code page to the 
+                page found eariler. Set the valid bit to 1.
+
+                Set the code page entries of the other code pages to the 
                 code block numbers obtained from the Inode Table entry of the file and set the auxilary
-                information to invalid and unreferenced.</p>
-                <p style="text-indent: 4em;">Set the page table entry for the stack page to the 
-                pages found eariler. Set the valid bit and write bit to 1.</p>
-                <p style="text-indent: 4em;">In the Process Table entry of the current process, 
+                information to invalid and unreferenced.
+
+                Set the page table entry for the stack page to the 
+                pages found eariler. Set the valid bit and write bit to 1.
+
+                In the Process Table entry of the current process, 
                 set the Inode Index field to the index of Inode Table entry for the file and User Area Page Number
-                to User Area Page found earlier.</p>
-                <p style="text-indent: 4em;">Set the kernel stack pointer to 0 indicating the index of beginning of
-                kernel stack.</p>
+                to User Area Page found earlier.
+
+                Set the kernel stack pointer to 0 indicating the index of beginning of
+                kernel stack.
                 </div>
-   <p>Obtain the entry point IP value from the header of the new process and set it to top of user stack.</p>
-   <p>Set SP to the start of the user stack region.</p>
-   <p>Return from system call to newly loaded process.</p>   
+Obtain the entry point IP value from the header of the new process and set it to top of user stack.
+
+Set SP to the start of the user stack region.
+
+Return from system call to newly loaded process.   
+   </pre>
          </div>
 		</div>
 		</div>

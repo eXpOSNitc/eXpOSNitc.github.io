@@ -134,42 +134,43 @@
               
               <br>
              <div><h4>Algorithm:</h4></div>
-           <p>Save the value of SP in the Process Table entry of the process.</p>
-           <p>Set the value of SP to he beginning of User Area Page.</p>
-           <p>Find a free Process Table entry by invoking the GetPTEntry() function in Process Manager module. 
-           &nbsp; &nbsp;/*Free entries are denoted by the state TERMINATED.*/</p>
-           <p>If no free entry is found, return -1.</p>
-           <p>Invoke the Getpage() function in Memory Manager module to obtain 3 memory pages: 2 for user stack and 1 for User Area Page of the child process.</p>
-           <p ><a data-toggle="collapse"   href="#collapse1" >Construct the context of the child process</a></p>
-            <div id="collapse1" class="panel-collapse collapse">
-        <p style="text-indent: 4em;">Copy the page table entries (code, heap and library) from the parent's page 
-        table to the child &nbsp; &nbsp;/* Shared between parent and child */</p>
-        <p style="text-indent: 4em;">For each page shared, increment its value in the 
-        <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a></p>
-        <p style="text-indent: 4em;">Set the page table entries for stack to the pages found earlier.</p>
-        <p style="text-indent: 4em;"> Copy the parent's 
-        <a href="process_table.html#machine_state" target="_blank">Machine State</a> (except PTBR) and 
-        <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the 
-        child  </p>
-        <p style="text-indent: 4em;"> Set the PTBR field of the Machine State to the address of the page table 
-        of the child. </p>
-        <p style="text-indent: 4em;"> For every open file of the parent, increment the File Open Count in 
-        the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.</p>
-        <p style="text-indent: 4em;"> For every semaphore acquired by the parent, increment Process Count 
-        in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>.</p>
+	     <pre>
+//Switch to Kernel Stack
+Save the value of SP to the USER SP field in the Process Table entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+//Allocate memory and set the Process Table
+Find a free Process Table entry by invoking the GetPTEntry() function in Process Manager module. 
+If no free entry is found, return -1.
+
+Invoke the Getpage() function in Memory Manager module to obtain 3 
+memory pages: 2 for user stack and 1 for User Area Page of the child process.
+
+Copy the parent's <a href="process_table.html#machine_state" target="_blank">Process Table Entry</a> (except PTBR) and 
+<a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> to the child 
+Set the PTBR field of the chile process to the address of the page table of the child.
+
+
+//Set Page Tables
+Copy the page table entries (code, heap and library) from the parent's page 
+table to the child  /* Shared between parent and child */
+For each page shared, increment its value in the Memory Free List
+Set the page table entries for stack to the pages found earlier.
+
+
+For every open file of the parent, increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.
+For every semaphore acquired by the parent, increment Process Count in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>.
        
-        <p style="text-indent: 4em;">Set the PPID field of child process to the current PID.</p>
-        <p style="text-indent: 4em;">/* The parent and child are identical except for PID, PPID, User Area Page Number
-         and PTBR */   </p>
+Set the PPID field of child process to the current PID.
+/* The parent and child are identical except for PID, PPID, User Area Page Number and PTBR */ 
         
-        <p style="text-indent: 4em;"> Set state of child process to (READY, _ ).</p>
-        </div>
-            
-            
-        <p>Set the return  value to 0 for the child process</p>
-        <p>The PID of the child process is set as the return value for the parent process</p>
-        <p>Return to the parent process.</p> 
-                     
+Set state of child process to (READY, _ ).
+
+Set the return  value to 0 for the child process
+The PID of the child process is set as the return value for the parent process
+
+Restore SP to User SP and return to the parent process.
+</pre>       
          </div>
 		</div>
 		</div>
