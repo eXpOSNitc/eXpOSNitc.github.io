@@ -3007,68 +3007,116 @@ alias currentPID R2;</pre></div></li>
                           </li>
                           </ul>
 
-                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the XSM instructon <a href="arch_spec-files/instruction_set.html">IN </a> to <b>read data from the console into the input port P0</b>.  IN is a previliged instruction and can be executed only inside a system call/module.  Hence, to read data from the console, a user process uses the read system call (LINK) with a request for terminal read.  The IN instruction will be executed within the read system call.</p> 
+                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the <a href="arch_spec-files/instruction_set.html">XSM instruction IN </a> to <b>read data from the console into the input port P0</b>.  IN is a privileged instruction and can be executed only inside a system call/module. Hence, to read data from the console, a user process invokes the read system call (LINK). The read system call invokes the Terminal Read function present in <a href="os_modules/Module_4.html" target="_blank">Device Manager module</a> (Module 4). The IN instruction will be executed within this Terminal Read function.</p> 
 
-                          <p>  The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead,the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.  </p>
+                          <p>The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead, the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.</p>
 
-                           <p> When does data arrive in P0?  This happens when some string/number is entered from the key-board and ENTER is pressed.  At this time, <b>the XSM machine will raise the console interrupt</b>. Thus the console interrupt is the hardware mechanism that helps the OS to infer that the IN instruction execution is complete.  </p>   
+                           <p> When does data arrive in P0?  This happens when some string/number is entered from the key-board and ENTER is pressed.  At this time, <b>the XSM machine will raise the console interrupt</b>. Thus the console interrupt is the hardware mechanism that helps the OS to infer that the execution of the IN instruction is complete.  </p>   
 
-                           <p> As noted above, the IN instruction is typically executed from the read system call. Since it is generally not useful for the read system call to continue execution till data arrives in P0, <b>a process executing the IN instruction will sets it's state to WAIT_TERMINAL and invoke the scheduler</b>. The process must resume execution only after the console device sends an interrupt upon data arrival.</p>  
+                           <p> As noted above, the IN instruction is typically executed from the Terminal Read function. Since it is not useful for the process that invoked the Terminal Read function to continue execution till data arrives in P0, <b>a process executing the IN instruction will sets its state to WAIT_TERMINAL and invoke the scheduler</b>. The process must resume execution only after the XSM machine sends an interrupt upon data arrival.</p>  
 
-                          <p> When the console interrupt occurs, the machine interrupts the current process (note that some other process would be running) and executes the console interrupt handler. (The interrupt mechanism is similar to the timer interrupt.  The current value of IP+2 is pushed into the stack and control transfers to the interrupt handler - see <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM machine execution tutorial</a> for details). <b>It is the responsibility of the interrupt handler to wake up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state also will be set to READY by the console interrupt handler.) </p>
-                          
-                           <p> The OS will maintain a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The read system call, while doing terminal read must 1) acquire the terminal 2) Issue an IN instruction 3) Set its state WAIT_TERMINAL and 4) Invoke the scheduler. </p> 
+                          <p> When the console interrupt occurs, the machine interrupts the current process (note that some other process would be running) and executes the console interrupt handler. (The interrupt mechanism is similar to the timer interrupt.  The current value of IP+2 is pushed into the stack and control transfers to the interrupt handler - see <a href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">XSM machine execution tutorial</a> for details).
+                          It is the responsiblity of the <b>console interrupt handler to transfer the data arrived in port P0 to the process which is waiting for the data</b>. This is done by copying the value present in port P0 into the input buffer field of the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the process which has requested for the input.  <b>Console interrupt handler also wakes up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state are also set to READY by the console interrupt handler.) </p>
+                           
+                            <p>User program calls the read system call using exposcall. To read, file descriptor (-1 for terminal) is passed as first argument. The second argument is a variable to store number/string from console. Refer to the read system call calling convention <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">here</a>. ExpL library converts exposcall to <a href="os_design-files/Sw_interface.html" target="_blank">low level system call interface</a> for read system call, to invoke interrupt 6.</p>
+
+                            <p>The read system call (Interrupt 6) invokes the Terminal Read function present in the Device manager Module. Reading from the terminal and storing the number/string (read from console) in the address provided is done by the Terminal Read function. Function number for the Terminal Read function, current PID and address where the word has to be stored are sent as arguments through registers R1, R2 and R3 respectively. After coming back from Terminal Read function, it is expected that the word address (passed as argument to read system call) contains the number/string entered in the terminal. </p>
 
 
+                           <p> The OS maintains a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The Terminal Read function must 1) Acquire the terminal 2) Issue an IN instruction (SPL read statement translates to XSM instruction IN) 3) Set its state as WAIT_TERMINAL 4) Invoke the scheduler and 5) After console interrupt wakes up this process, transfer data present in the input buffer field of the process table into the word address (passed as an argument).  </p> 
+
+                              <!--
                            <p> When the data finally arrives, <b>the console interrupt handler must transfer the data (in port P0) into the input buffer of the process</b> in the <a href="os_design-files/process_table.html" target="_blank">process table</a>. Then the handler wakes up process waiting for the terminal.</p>
 
-                          <p>  Finally, the read system call, after waking up from the WAIT_TERMINAL state, returns the input data in the buffer and passes this data to the user program that invoked the system call.  </p>    
-      Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceding further.
+                          <p>  Finally, the read system call, after waking up from the WAIT_TERMINAL state, returns the input data in the buffer and passes this data to the user program that invoked the system call.  </p> -->
+
+      Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceeding further.
 <br><br>
                          
-<b>Implementation of INT 6</b>
+<b>Implementation of INT 6</b><br><br>
 
 <ol style="list-style-type: decimal;margin-left: 2px">
-	<li>Save the value in the user stack pointer as userSP.</li>
-	<li>Store the value of user stack pointer in <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the current process</li>
-	<li>Intialize register SP with the kernel stack pointer using user area page present in process table of current process.</li>
-	Calling Aquire Terminal function
-	<li>Push all registers used till now using multipush.</li>
-	<li>Intialize regiters R1, R2 with function number of Aquire Terminal and PID of current process.</li>
+	<li>Save the value of register SP as userSP.
+	<div><pre>alias userSP R0;
+userSP=SP;</pre></div></li>
+	<li>Store the value of register SP in the UPTR field of the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the current process.</li>
+	<li>Initialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
+	<li>Retrieve the file descriptor from the user stack, stored at userSP-4.</li>
+	<li>If the file descriptor is not -1
+	<ol style="list-style-type: lower-roman;margin-left: 20px">
+	 <li>Store -1 as the return value in the user stack (at position userSP-1). </li>
+	 <li>Change SP back to user stack and return to the user mode.</li>
+	 </ol>
+	 </li>
+	<li>If the file descriptor is -1, implement below steps.
+      <ol style="list-style-type: lower-roman; margin-left: 20px">
+        <li>Retrieve the word address sent as an argument from the user stack (userSP-3).</li>
+        <li>Push all the registers used till now in this interrupt.</li>
+        <li>Save the function number of the Terminal Read function in the register R1. Save PID of the current process and the word address obtained above in registers R2 and R3 respectively.</li>
+        <li>Call module 4.</li>
+        <p style="text-indent: 0px">There is no return value for terminal Read.</p>
+        <li>Restore the registers.</li>
+        <li>Store 0 as return value in the user stack indicating success.</li>
+        <li>Change SP back to user stack and return to the user mode.</li>  	
+
+      </ol>
+      </li>
+      </ol><br>
+	<b>Modification to Module 4</b><br><br>
+     <p style="text-indent: 0px">In previous stage we implemented Terminal Write function in module 4, now we will add Terminal Read function.</p>
+     <ol>
+     <li>If function number in R1 is 4 then implement below steps.</li>
+	   <p style="text-indent: 0px">Calling Aquire Terminal function :-</p>
+	<li>Push all the registers used till now using multipush.</li>
+	<li>Initialize registers R1, R2 with function number of Acquire Terminal and PID of current process respectively.</li>
 	<li>Call module 0.</li>
-	<li>Restore registers using multipop statement.</li>
-	<li>Using read statement, request to read from the terminal.
+	<li>Restore the registers using the multipop statement.</li>
+	<li>Use read statement, for requesting to read from the terminal.
      <div><pre>read;</pre></div>
 	</li>
 	<li>Change the state of the current process to WAIT_TERMINAL.</li>
-	 Invoking the Context Switch Module
-	 <li>Push all registers used till now using multipush.</li>
-	 <li>Invoke scheduler by calling module 5.</li>
-	<li>Restore registers using multipop statement.</li>
-	<li>Obtain the logical address where the word has to be stored from user stack (userSP-3).</li>
-	<li>Convert the logical address to physical address.</li>
-	<li>Store the value present in input buffer field of process table to obtained physical address of the word.</li>
-	<li>Store 0 for the return value in the user stack (userSP-1) to indicate success.</li>
-	<li>Change SP to userSP to point SP to user stack.</li>
-	<li>Return to user mode using ireturn statement.</li>
-</ol>
-<br><br>
+	<p style="text-indent: 0px">Invoking the Context Switch Module :-</p>
+	<li>Push all the registers used till now.</li>
+	<li>Invoke the scheduler by calling module 5.</li>
+    <li>Restore the registers using the multipop statement.</li>
+	<li>The logical address of the word where the data has to be stored is in R3. Convert this logical address to physical address.</li>
+    <li>Store the value present in input buffer field of process table to the obtained physical address of the word.</li>
+	<li>Return to caller.</li>
+</ol><br>
    <b>Implementation of Console Interrupt Routine</b><br><br>
    <ol style="list-style-type: decimal; margin-left: 2px">
    	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
-   	<li>Intialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
+   	<li>Initialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
    	<li>Backup the user context of the currently running process in the kernel stack as done in timer interrupt routine.</li>
    	<li>Get the PID of the process that has aqcuired the terminal from the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a>, Save this as reqPID.</li>
    	<li>Using the reqPID obtained in the above step, get the corresponding process table entry.</li>
-   	<li>The input entered in the console is saved in register P0 by the XSM machine. Copy this value present in P0 in the input buffer field of the process table entry obtained in above step.</li>
-   	<li>Change the state of the process with PID as reqPID to READY.</li>
+   	<li>The input entered in the console is saved in port P0 by the XSM machine. Copy the value present in P0 into the input buffer field of the process table entry obtained in the above step.</li>
+   	<p style="text-indent: 0px">Calling Release Terminal :-</p>
+   	<li>Push the registers used in this interrupt.</li>
+   	<li>Initialize register R1 with function number, R2 with reqPID (The current process did not acquire the terminal. The process with reqPID as PID is holding the terminal.) </li>
+   	<li>Call module 0.</li>
+   	<li>Ignore the return value and restore the registers pushed before.</li>
    	<li>Restore the user context from the kernel stack as done in the timer interrupt routine.</li>
    	<li>Change SP to UPTR field from the process table entry of the currently running process and return to the user mode.</li>
 
-   </ol>
+   </ol><br>
 
-                            </div>
-                      </div>
+    <b>Modification to Boot Module</b><br><br>
+    <ol style="list-style-type: decimal; margin-left: 2px">
+    	<li>Load console interrupt handler and interrupt 6 from disk to memory.</li>
+    	<li>Remove the initialization of the third process, as we will run only idle and init processes.</li>
+    </ol><br>
+
+     <b>Making things work</b><br><br>
+     <ol style="list-style-type: decimal;margin-left: 2px">
+     <li>Compile and load boot module code, console interrupt and interrupt 6 using XFS interface.</li>
+     <li>Write an ExpL program which reads two numbers from console and finds the GCD using Euclidean's algorithm and print the GCD. Load this program as init program.</li>
+     </ol><br>
+
+
+<b style="color:#26A65B">Assignment 1: </b>Write an ExpL program to read N numbers in an array, sort using bubble sort and print the sorted array to the terminal. Load this program as init program and run the machine.
+         </div>
+          </div>
 
 	<!-- End Learning Objectives--> 
 
