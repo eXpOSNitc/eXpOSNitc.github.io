@@ -206,7 +206,7 @@
               </table>
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>LOCKING PID </b> (1 word)- specifies the PID of the process which has locked the semaphore </li>
-                   <li><b>PROCESS COUNT</b> (1 word) - specifies the number of processes which are sharing the semaphore.  </li>
+                   <li><b>PROCESS COUNT</b> (1 word) - specifies the number of processes which are sharing the semaphore. A value of 0 indicates that the semaphore has not been acquired by any process.</li>
                    <li><b>Unused</b> (2 words)</li>                                     
               </ul> 
               
@@ -302,7 +302,7 @@
               <h2 >System Status Table</h2>
                <br>
                <br>
-              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable, the number of processes in swapped state and, the pid of the process to be scheduled next. The size of the table is 8 words out of which 3 words are unused.</p>
+              <p> It keeps the information about the number of free pages in memory, the number of processes blocked because memory is unavailable, the number of processes in swapped state and, the pid of the process to be scheduled next. The size of the table is 8 words out of which 2 words are unused.</p>
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
@@ -311,7 +311,7 @@
                       <td style="border: 1px solid black">MEM_FREE_COUNT</td>
                       <td style="border: 1px solid black">WAIT_MEM_COUNT</td>
                       <td style="border: 1px solid black">SWAPPED_COUNT</td>
-
+                      <td style="border: 1px solid black">KERNEL_FLAG</td>
                       <td style="border: 1px solid black">Unused</td>
                                            
                   </tr>
@@ -322,7 +322,8 @@
                    <li><b>MEM_FREE_COUNT</b> (1 word) - specifies the number of free pages available in memory.</li>
                    <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting (blocked) for memory. </li>
                    <li><b>SWAPPED_COUNT</b> (1 word) - specifies the number of processes which are swapped. A process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>
-                   <li><b>Unused</b> (3 words)</li>
+                   <li><b>KERNEL_FLAG</b> (1 word) - Indicates the the kernel has over-ridden normal scheduling process (happens during swap-in/swap-out, shutdown, logout etc.) If the KERNEL_FLAG = 1 the <a href="../os_modules/Module_5.html">context switch module</a> will schedule only the idle process. </li>
+                   <li><b>Unused</b> (2 words)</li>
                </ul>
               <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
 </div>

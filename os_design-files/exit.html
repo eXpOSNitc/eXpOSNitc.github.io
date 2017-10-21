@@ -121,7 +121,18 @@
              <div><h4>Algorithm:</h4></div>
           <pre>  
 Invoke the exit() function from the Process Manager module.
-Invoke the scheduler() module.
+
+/* The current process has been terminated, and so it's kernel stack has been 
+released. Hence we cannot call any kernel module functions beyond this point. */
+
+<a data-toggle="collapse"   href="#collapse1">Manually schedule the Idle process.</a>
+<div id="collapse1" class="panel-collapse collapse">
+	Set the PTBR and PTLR registers from the Process Table entry of idle.
+	Set the PID as 0 in the System Status Table.
+	Set the state of idle as (RUNNING, - )
+	Set SP to UArea_Page * 512 + KPTR;
+	return;
+</div>
                </pre>       
          </div>
 		</div>

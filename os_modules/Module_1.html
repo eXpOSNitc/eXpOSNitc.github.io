@@ -196,9 +196,11 @@ Called by Fork system call.
    
 <i> <b>Description </b></i>: Frees all the resources in the Resource Table inside the User Area page.
  Also   frees the User Area page.<br>
- <i> <b style="color:red">Note </b></i>: The function should be called only if no "file" resource is locked.<br><br>
+ <i> <b style="color:red">Note </b></i>: The function should be called only when no file/buffer/terminal resource is locked by the process.<br><br>
 
 <pre>
+   /* If the user are page is swapped out, it has to be swapped back first. */
+
    Get the User Area Page number from the <a href="../os_design-files/process_table.html">process table</a> entry
    corresponding to the PID;
     
@@ -210,28 +212,36 @@ Called by Fork system call.
 		 if (the resource is a semaphore)
                  	Release the semaphore by calling the Release Semaphore() function in the 
 		 	<a href="Module_0.html">Resource Manager</a> Module.
+		 Invalidate the resource table entry.
     }
     
     Free the User Area page by calling the release_page()
     function in the <a href="Module_2.html">Memory Manager</a> module;
-    
-    return;
+     
+    return;	
+<b>Note</b>: The user area page holding the return address for the call to free_user_area_page()  
+has been released! Neverthless the return address and the saved context of the calling process 
+will not be lost. This is because release_page() is non blocking and hence the page will never be 
+allocated to another process before control transfers back to the caller.  The calling function 
+gets "time" to either invoke the scheduler using the same stack page or to allocate the same page 
+again for a different purpose.  
 </pre>
 Called by the exit_process function.
 
 
 
 
-<h3> Exit Process TO REVIEW FROM HERE</h3>
+<h3>Exit Process</h3>
 <i> <b>Description </b></i>: Terminate the process whose PID is provided.<br><br>
+ <i> <b style="color:red">Note </b></i>: The function should be called only when no file/terminal/disk/buffer resource is locked by the process.<br><br>
 
 
 <pre>
+    Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by
+    invoking the Free_Page_Table() function; 
+    
     Free the User Area Page corresponding to the process by calling
     the Free_User_Area_Page() function;  
-    
-    Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by
-    invoking the Free_Page_Table_Entry() function; 
     
     Set the state of process as (TERMINATED , - )
     
@@ -243,19 +253,24 @@ Called by exit system call, exception handler. Maybe called from logout also.
 
 
 <h3> Free Page Table </h3>
-<i> <b>Description </b></i>: Free the page table entry and the used pages.<br><br>
+<i> <b>Description </b></i>: Free the page table entry and the used pages. The Disk Map table entries are also freed.<br><br>
 
 <pre>
     Invalidate the <a href="../os_design-files/process_table.html#per_page_table">page table</a> entries corresponding to the shared library pages;
     
-    loop through the other <a href="../os_design-files/process_table.html">process table</a> entries{
+    loop through the other <a href="../os_design-files/process_table.html">page table</a> entries{
     	  if ( the entry is valid ){
               free the corresponding page by 
-              invoking the free_page() function 
+              invoking the release_page() function 
               in the <a href="../Module_2.html">Memory Manager module</a>;
           }
           Invalidate the page table entry;
     }
+
+    Loop through the <a href="../os_design-files/process_table.html">Disk Map Table</a> entries of the process  
+    	if (the entry is valid and is stack or heap)
+	    call release_block() function in the <a href="Module_2.html">Memory Manager</a> Module.
+        set the entry to -1.
     return;
 </pre>
 

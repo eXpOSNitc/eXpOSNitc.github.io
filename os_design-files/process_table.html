@@ -104,7 +104,7 @@
         
             
             <div class="heading">
-              <h2>Process Table</h2>
+              <h2>Process Table (Process Control Block)</h2>
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html" target="_blank">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 16.</p>
@@ -159,7 +159,7 @@
                           <div class="panel-body">
                               <p>The tuple can take the following values</p>
                       <ul style="list-style-type: circle;line-height: 25px;margin-left: 100px;">
-                          <li>(CREATED,___) – The process has been created in memory and data structures set up, but has never been scheduled.
+                          <li>(CREATED,___) – The process has been created in memory and data structures set up, but has never been scheduled. The fork system call creates the child process in CREATED state.
 
                           <li>(RUNNING,___) – The process is in execution.  This field is set by the scheduler when a process is scheduled.</li>
                           <li>(READY,___) – The process is ready to be scheduled.</li>
@@ -172,6 +172,7 @@
                           <li>(WAIT_TERMINAL,___) – The process is waiting for one of the following: a) a Read from Terminal, which it has issued OR b)to be completed or if the terminal is blocked by some other process.  The terminal interrupt handler changes the state from (WAIT_TERMINAL,___) to (READY,___), after it has completed the terminal read/write.</li>
                       </ul>
                               <p>Process states and transitions can be viewed <a href="state_diag.html" target="_blank">here</a>.</p>
+			      <p><b>Note: </b> When a process terminates, the STATE field in it's process table entry is marked TERMINATED to indicate that the process table entry is free for allocation to new processes. </p>
                           </div>
                         </div>
               
@@ -223,7 +224,6 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS DISK MAP TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Disk Map Table has 10 entries and each entry is of size 2 words. It stores the disk block number corresponding to the code pages of the process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
                               <p>The per-process Disk Map Table stores the disk block number corresponding to the pages of each process. The Disk Map Table has 10 entries for a single process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
  
  
@@ -242,6 +242,9 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                       <td style="border: 1px solid black">Stack Page 2 in disk</td>
                   </tr>
               </table>
+
+If a memory page is not stored in a disk block, the corresponding entry must be set to -1. 
+
                              </div>
                         </div> 
               
