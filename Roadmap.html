@@ -3006,7 +3006,10 @@ alias currentPID R2;</pre></div></li>
                              </div>
                           </li>
                           </ul>
+							</div>
+          					</div>
 
+	<!-- End Learning Objectives--> 
                           <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the <a href="arch_spec-files/instruction_set.html">XSM instruction IN </a> to <b>read data from the console into the input port P0</b>.  IN is a privileged instruction and can be executed only inside a system call/module. Hence, to read data from the console, a user process invokes the read system call (LINK). The read system call invokes the Terminal Read function present in <a href="os_modules/Module_4.html" target="_blank">Device Manager module</a> (Module 4). The IN instruction will be executed within this Terminal Read function.</p> 
 
                           <p>The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead, the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.</p>
@@ -3115,10 +3118,7 @@ userSP=SP;</pre></div></li>
 
 
 <b style="color:#26A65B">Assignment 1: </b>Write an ExpL program to read N numbers in an array, sort using bubble sort and print the sorted array to the terminal. Load this program as init program and run the machine.
-         </div>
-          </div>
-
-	<!-- End Learning Objectives--> 
+         
 
 		</div>
 		</div>
@@ -3131,7 +3131,7 @@ userSP=SP;</pre></div></li>
 
                       <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Exec System Call </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : OS Loader Implementation  </a>
                         </h4>
                       </div>
 
@@ -3145,50 +3145,161 @@ userSP=SP;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
                             <div id="lo17" class="panel-collapse expand">
                             <ul>
-                              <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with Process and Memory Manager modules.</li>
                               
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of  Exec system call.</li>
                             </ul>                                  
                              </div>
                           </li>
                           </ul>
-                          <p></p>
-
-<b>Exec System Call</b>
-        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
-        address space. A successful Exec operation results in the extinction of the invoking process and hence
-        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
-        <ol style="list-style-type:decimal;margin-left:2px">
-			<li>Retrieve the filename of the new process from the user stack.</li>
-			<li>Return -1 if the filename is NULL.</li>
-			<li>Iterate through the Inode Table to find the inode index of the file.</li>
-			<li>If file is not found, return -1.</li>
-			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
-			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
-			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
-			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
-			1 for User Area Page and 1 for code.</li>
-          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
-          from disk to memory. </li>
-          <li>Set up the page table entries of the new process. The first code page must be </li>
-          <li>Set up the Process Table entries.</li>
-          <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
-          <li>Set the value of SP as 4096.</li>
-       </ol>
-        </div>
+                          </div>
                       </div>
 
 	<!-- End Learning Objectives--> 
+
+                          <p>In this stage, you will be familiarized with the exec system call. Exec destroys the invoking process and starts the execution of a new program provided as an input. A successful exec operation results in the termination of the invoking process and hence never returns to it. The input program provided to exec is present in the disk. Exec must load this program from the disk to the memory to execute this program. Hence, exec can also be called as OS loader.</p>
+          
+        <p>Name of the executable file is the only input to exec system call. This file should be present in disk before starting of machine. The inode index of this file can be obtained by going through the inode table.</p>                  	
+        <p>Exec first deallocates all pages the invoking process is using. These include two heap pages, two user stack pages, code pages occupied by process and user area page. It also invalidates the entries of the page table of the invoking process. Note that the newly scheduled process will have the same PID as that of the invoking process. Hence it uses the process table entry and page table of invoking process. Exec calls the Exit Process function in <a href="os_modules/Module_1.html" target="_blank"> process manager module</a> (module -1) to deallocate the pages and to terminate the current process.</p>
+
+        <p>As mentioned earlier, Exit Process function deallocates the user area page of the current process. Exec system call runs in kernel mode and hence kernel stack should be available at all points during execution of exec. So, after coming back from Exit process function, exec reclaims the same user area page for the new process. Further exec acquires two heap, two stack and required code pages (valid disk blocks in the inode entry of the file in the inode table) for the new process. New page is acquired by invoking the get free page function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> (module - 2). Page table is updated according to the new pages acquired. Code blocks for the new process are loaded from the disk to memory pages obtained. For loading blocks into memory pages, we use immediate load (<a href="support_tools-files/spl.html" target="_blank">loadi statement</a> in SPL). Finally, exec sets the first instruction's IP value of new process on top of its  user stack and return to user mode.</p>
+<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq8"><b>Q1.</b> Why does exec reclaim the same user area page for the new process? </a>
+                            <div id="collapseq8" class="panel-collapse collapse">
+	     Since the page storing the kernel context has been de-allocated, it is unsafe  
+to invoke the get free page function present in memory manager module for allocating a fresh user area page.
+		</div>
+		</li>
+                          </ul>
+                          </div>
+                          </div>
+
+ <p>eXpOS maintains a data structure called memory free list in page 57 of <a href="os_implementation.html" target="">memory</a>. Each Page can be shared by zero or more processes. There are 128 entries in memory free list corresponding to each page of memory. For each page, the corresponding entry in the list stores the number of processes sharing the page. The constant <a href="support_tools-files/constants.html" target="_blank">MEMORY_FREE_LIST</a> gives the starting address of the memory free list. See the details of memory free list <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">here</a>. </p>                         
+<p>Now we will understand the working of the module functions that exec uses during its exection.</p>
+        
+        <p>The first function invoked in exec system call is Exit Process function (function number=3) from <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. It has PID of the current process as an argument. As mentioned earlier, exit process deallocates all the pages of invoked process.  It deallocates pages present in the page table by invoking another function called Free Page Table (function number = 4) present in the same module. further it deallocates the user area page by invoking Free User Area Page (function number = 2) in the same module. Then set the state of the invoked process to TERMINATED. </p>    
+
+         <p>In the function Free Page Table, for every valid entry in the page table of the current process, corresponding page is freed by invoking the Release Page function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> (Module - 2). Note that library pages are shared by all the processes so do not invoke the Release Page function for library pages. This function also invalidates the page table entries. The implementation of Free Page Table function will change in the next stages.</p>
+
+         <p>The function Free User Area Page takes PID of the current process as an argument.  User area page number is obtained from the process table entry corresponding to the PID. This user area page is freed by invoking the Release Page function from memory manager module. The user area page holding the return address for the call to Free User Area Page function has been released! Neverthless the return address and the saved context of the calling process will not be lost. This is because Release Page function is non blocking and hence the page will never be allocated to another process before control transfers back to the caller. (This function also releases the resourses like files and semaphores acquired by the process. The function will be updated in later stages accordingly.)</p>
+
+         <p>The function Release Page (function number = 2) is present in the memory manager module. The Release Page function takes the page number to be released as an argument. The Release Page function decrements the value in the memory free list corresponding to the page number given as an argument. Note that we don't tamper with the content of the page as a page may be shared by many processes. <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System status table </a>keeps track of number of free memory pages available to use in the MEM_FREE_COUNT field. When the memory free list entry of the page becomes zero, this signifies that no process is currently using the page. In this case, increment the value of MEM_FREE_COUNT in the system status table indicating that the page is free.</p>
+
+         <p>To acquire the pages for the new process, exec calls the module function Get Free Page (function number = 1) in the memory manager module. The function returns the page number of the page allocated. The field WAIT_MEM_COUNT in the system status table stores the number of processes waiting to acquire a memory page. The function first increments the WAIT_MEM_COUNT. If the memory is full (no page is free), then state of the process is changed to WAIT_MEM and the scheduler is invoked. The process waits in the WAIT_MEM state until any memory page is available for use. This process is scheduled again, when the memory is available (state of this process is changed to READY by some other process). The Get Free Page function changes the WAIT_MEM_COUNT and MEM_FREE_COUNT in the system status table accordingly. The function then searches for a free entry in the memory free list and returns the corresponding page number.</p><br><br>
+        
+       <b>Implementation of Exec system call</b><br><br>
+       <p>Exec has system call number as 9 and it is implemented in interrupt routine 9. Follow below steps to implement interrupt routine 9.</p>
+  <ol style="list-style-type: decimal;margin-left: 2px">
+  <li>Store the value of SP as userSP and change SP to point to kernel stack.</li>
+  <li>Set the MODE_FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to kernel mode.</li>
+  <li>Get the name of the file from user stack passed as an argument.</li>
+  <li>Search the inode table for the file, if the file is present save the inode index of the file for future use.</li>
+  <li>If the file is not present or file is not in XEXE format return to user mode with return value -1 indicating failure.</li>
+  <li>Call the Exit Process function in <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to deallocate the resources and pages of the current process.</li>
+  <li>Get the user area page number from the process table of the current process. This page is deallocted by the Exit Process function. Reclaim the same page by incementing the memory free list entry of user area page and decrementing the MEM_FREE_COUNT field in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>.</li>
+  <li>Set the SP to the start of the user area page to intialize the kernel stack of the new process.</li>
+  <li>New process uses the PID of the terminated process. Update the STATE field to RUNNING and store inode index obtained above in the inode index field in the process table.</li>
+  <li>Allocate new pages and set the page table entries for the new process. 
+     <ol style="list-style-type: lower-roman; margin-left: 20px">
+  <li>Set the library page entries in the page table.</li>
+  <li>Invoke the Get Free Page functin to allocate 2 stack and 2 heap pages. Also validate the corresponding entries in page table.</li>
+  <li>Find out the number of blocks occupied by the file from inode table. Allocate same number of code pages by invoking Get Free Page function and update the page table entries.</li></ol>
+  </li>
+  <li>Load the code blocks from disk to memory pages acquired in above step.</li>
+  <li>Store the entry point IP (present in the header of first code page) value on top of the user stack.</li>
+  <li>Change SP to user stack and return to user mode.</li>
+</ol>
+
+<br>
+        
+       <b>Implementation of Process Manager Module (Module - 1)</b><br><br>
+       <ol style="list-style-type: decimal;margin-left: 2px">
+       <li>According to the function number value present in R1, implement different functions in module 1.</li>
+       <li> If the function number is 2, follow below steps to implement Free User Area Page function.
+       <ol style="list-style-type: lower-roman;margin-left: 20px">
+       	<li>Obtain the user area page number from the process table entry according to the PID given as an argument.</li>
+       	<li>Free the user area page by invoking the Release Page function in the memory manager module.</li>
+       	<li>Return to the caller.</li>
+
+       </ol> 
+       </li>
+       <li> If the function number is 3, follow below steps to implement Exit Process function.
+       <ol style="list-style-type: lower-roman;margin-left: 20px">
+          <li>PID of the invoking process is given as an argument.</li>
+       	 <li>Invoke the Free Page Table function with same PID to deallocate the page table entries.</li>
+       	 <li>Invoke the Free user Area Page the function with same PID to free the user area page.</li>
+         <li>Set the state of the process as TERMINATED and return to the caller.</li>
+       </ol> 
+       </li>
+       <li> If the function number is 4, follow below steps to implement Free Page Table function.
+       <ol style="list-style-type: lower-roman;margin-left: 20px">
+       
+        <li>Invalidate the page table entries for the library pages by setting page number as -1 and auxiliary data as "0000" for each entry.</li>
+        <li>For each valid entry in the page table, release the page by invoking the Release Page function and invalidate the entry.</li>
+        <li>Return to the Caller.</li>
+       </ol> 
+       </li>
+       </ol>
+<br>
+       <b>Implementation of Memory Manager Module (Module - 2)</b><br><br>
+       <ol style="list-style-type: decimal;margin-left: 2px">
+       <li>According to the function number value present in R1, implement different functions in module 2.</li>
+       <li> If the function number is 1, follow below steps to implement Get Free Page function.
+       <ol style="list-style-type: lower-roman;margin-left: 20px">
+       	<li>Increment WAIT_MEM_COUNT field in the system status table.</li>
+       	<li>While memory is full (MEM_FREE_COUNT will be 0), do following.
+       	<ul style="list-style-type: disc; margin-left: 24px" 
+       	>
+       	 <li>Set the state of the invoked process as WAIT_MEM.</li>
+       	 <li>Schedule other process by invoking the scheduler.</li>
+       		
+       	</ul>
+
+       	</li>
+         <li>Decrement the WAIT_MEM_COUNT field and MEM_FREE_COUNT field in the system status table.</li>
+         <li>Find a free page using memory free list and set the corresponding entry as 1. Make sure to store the obtained free page number in R0 as return value.</li>
+         <li>Return to the caller.</li>
+       </ol> 
+       </li>
+       <li> If the function number is 2, follow below steps to implement Release Page function.
+       <ol style="list-style-type: lower-roman;margin-left: 20px">
+       	<li>The Page number to be released is present in R2. Decrement the corresponding entry in the memory free list.</li>
+       	<li>If that entry in the memory free list becomes zero, then the page is free. So increment the MEM_FREE_COUNT in the system status table.</li>
+       	<li>Return to the caller.</li>
+
+       </ol> 
+       </li>
+       </ol>
+       <br>
+       <b>Modification to Boot Module.</b><br><br>
+       <ol style="list-style-type: decimal;margin-left: 2px">
+       <li>Load interrupt routine 9, module 1 and module 2 from the disk to the memory.</li>
+       	<li>Initialize the memory free list with value 1 for pages used and 0 for pages not used.</li>
+       	<li>Intialize the fields MEM_FREE_COUNT and WAIT_MEM_COUNT in the system status table.</li>
+
+       </ol>
+
+       <br>
+       <b>Making things work</b><br><br>
+       <ol style="list-style-type: decimal;margin-left: 2px">
+       	<li>Compile and load interrupt routine 9, module 1 and module 2 using XFS-interface. Run the machine.</li>
+
+       </ol>
 
 		</div>
 		</div>
 <!-- =========end Stage 17 ===========-->
 
-					<!-- Stage 18 -->
+
+<!-- =========Stage 18 ===========-->
 
                       <div class="panel-heading" id="list_stage18">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse18"><span class="fa fa-check-square-o"></span>Stage 18 : Disk Interrupt Handler </a>
                         </h4>
                       </div>
 
@@ -3201,6 +3312,79 @@ userSP=SP;</pre></div></li>
                            <li class="list-group-item" style="background:#dff0d8">
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
                             <div id="lo18" class="panel-collapse expand">
+                            <ul>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with disk interrupt handler.</li>
+                              
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; modifying Exec system call to handle disk interrupt.</li>
+                            </ul>                                  
+                             </div>
+                          </li>
+                          </ul>
+                          </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+                        
+
+		</div>
+		</div>
+<!-- =========end Stage 18 ===========-->
+
+
+
+<!-- =========Stage 19 ===========-->
+
+                      <div class="panel-heading" id="list_stage19">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : Exception Handler </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse19" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
+                            <div id="lo19" class="panel-collapse expand">
+                            <ul>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with page fault exception.</li>
+                              
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of  Exception handler and Modification to Exec system call.</li>
+                              </ul>                                  
+                             </div>
+                          </li>
+                          </ul>
+                           </div>
+                      </div>
+
+	<!-- End Learning Objectives--> 
+                      
+       
+
+		</div>
+		</div>
+<!-- =========end Stage 19 ===========-->
+
+<!-- Stage 20 -->
+
+                      <div class="panel-heading" id="list_stage20">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process system calls </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse20" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
+                            <div id="lo20" class="panel-collapse expand">
                             <ul>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
                             </ul>                                  
@@ -3297,26 +3481,26 @@ userSP=SP;</pre></div></li>
    	 </div> 
 </div>
 
- <!-- =========end Stage 18 ===========-->
+ <!-- =========end Stage 20 ===========-->
 
+<!-- 
+// =========Stage 21 ===========
 
- <!-- =========Stage 19 ===========-->
-
-                      <div class="panel-heading" id="list_stage19">
+                      <div class="panel-heading" id="list_stage21">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse19"><span class="fa fa-check-square-o"></span>Stage 19 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse21"><span class="fa fa-check-square-o"></span>Stage 21 : File system calls </a>
                         </h4>
                       </div>
 
-                      <div id="collapse19" class="panel-collapse collapse">
+                      <div id="collapse21" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <!-- Begin Learning Objectives-->
+                            // Begin Learning Objectives
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo19">Learning Objectives</a>
-                            <div id="lo19" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo21">Learning Objectives</a>
+                            <div id="lo21" class="panel-collapse expand">
                             <ul>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
                             </ul>                                  
@@ -3327,31 +3511,31 @@ userSP=SP;</pre></div></li>
                         </div>
                       </div>
 
-	<!-- End Learning Objectives--> 
+	// End Learning Objectives 
 
 		</div>
 		</div>
 
- <!-- =========end Stage 19 ===========-->
+ // =========end Stage 21 ===========
 
 
- <!-- =========Stage 20 ===========-->
+ // =========Stage 22 ===========
 
-                      <div class="panel-heading" id="list_stage20">
+                      <div class="panel-heading" id="list_stage22">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse22"><span class="fa fa-check-square-o"></span>Stage 22 : Multiuser Modification </a>
                         </h4>
                       </div>
 
-                      <div id="collapse20" class="panel-collapse collapse">
+                      <div id="collapse22" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <!-- Begin Learning Objectives-->
+                            //Begin Learning Objectives
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item" style="background:#dff0d8">
-                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
-                            <div id="lo20" class="panel-collapse expand">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo22">Learning Objectives</a>
+                            <div id="lo22" class="panel-collapse expand">
                             <ul>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
                             </ul>                                  
@@ -3362,13 +3546,14 @@ userSP=SP;</pre></div></li>
                         </div>
                       </div>
 
-	<!-- End Learning Objectives--> 
+	//End Learning Objectives
 
 		</div>
 		</div>
 
-	 <!-- =========end Stage 20 ===========-->
-	
+	 //=========end Stage 20 ===========
+
+	-->
 <!--=========== Intoduction Section Ending ===============-->
 
 </section>
