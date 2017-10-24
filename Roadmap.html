@@ -2999,9 +2999,10 @@ alias currentPID R2;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo16">Learning Objectives</a>
                             <div id="lo16" class="panel-collapse expand">
                             <ul>
-                              <!--<li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to Module Programming.</li>-->
+                              
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarise with the Console Interrupt handling in XSM.</li>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of console input using the read system call.</li>
+                              <li><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Introduction to input buffer.</li>
                             </ul>                                  
                              </div>
                           </li>
@@ -3010,7 +3011,7 @@ alias currentPID R2;</pre></div></li>
           					</div>
 
 	<!-- End Learning Objectives--> 
-                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the <a href="arch_spec-files/instruction_set.html">XSM instruction IN </a> to <b>read data from the console into the input port P0</b>.  IN is a privileged instruction and can be executed only inside a system call/module. Hence, to read data from the console, a user process invokes the read system call (LINK). The read system call invokes the Terminal Read function present in <a href="os_modules/Module_4.html" target="_blank">Device Manager module</a> (Module 4). The IN instruction will be executed within this Terminal Read function.</p> 
+                          <p> In this stage, we will introduce you to XSM console interrupt handling. A process must use the <a href="arch_spec-files/instruction_set.html">XSM instruction IN </a> to <b>read data from the console into the input </b><a href="arch_spec-files/machine_organisation.html" target="_blank" >port P0</a>. IN is a privileged instruction and can be executed only inside a system call/module. Hence, to read data from the console, a user process invokes the <a href="os_spec-files/systemcallinterface.html" target="_blank">read system call </a>. The read system call invokes the Terminal Read function present in <a href="os_modules/Module_4.html" target="_blank">Device Manager module</a> (Module 4). The IN instruction will be executed within this Terminal Read function.</p> 
 
                           <p>The most important fact about the <b>IN instruction is that it will not wait for the data to arrive in P0</b>.  Instead, the XSM machine continues advancing the instruction pointer and executing the next instruction. Hence there must be some hardware mechanism provided by XSM to detect arrival of data in P0.</p>
 
@@ -3019,14 +3020,17 @@ alias currentPID R2;</pre></div></li>
                            <p> As noted above, the IN instruction is typically executed from the Terminal Read function. Since it is not useful for the process that invoked the Terminal Read function to continue execution till data arrives in P0, <b>a process executing the IN instruction will sets its state to WAIT_TERMINAL and invoke the scheduler</b>. The process must resume execution only after the XSM machine sends an interrupt upon data arrival.</p>  
 
                           <p> When the console interrupt occurs, the machine interrupts the current process (note that some other process would be running) and executes the console interrupt handler. (The interrupt mechanism is similar to the timer interrupt.  The current value of IP+2 is pushed into the stack and control transfers to the interrupt handler - see <a href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">XSM machine execution tutorial</a> for details).
-                          It is the responsiblity of the <b>console interrupt handler to transfer the data arrived in port P0 to the process which is waiting for the data</b>. This is done by copying the value present in port P0 into the input buffer field of the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the process which has requested for the input.  <b>Console interrupt handler also wakes up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state are also set to READY by the console interrupt handler.) </p>
+                          It is the responsiblity of the <b>console interrupt handler to transfer the data arrived in port P0 to the process which is waiting for the data</b>. This is done by copying the value present in port P0 into the <b>input buffer </b>field of the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the process which has requested for the input.  <b>Console interrupt handler also wakes up the process in WAIT_TERMINAL by setting its state to READY</b>. (Other processes in WAIT_TERMINAL state are also set to READY by the console interrupt handler.) </p>
+
+                          <p>Each process maintains an input buffer which stores the last data read by the process from the console.  On the occurance of a terminal interrupt, the interrupt handler uses the PID field of the terminal status table to identify the correct process that had acquired the terminal for a read operation. The handler transfer the data from the input port to the input buffer of the process.  </p>
+
                            
-                            <p>User program calls the read system call using exposcall. To read, file descriptor (-1 for terminal) is passed as first argument. The second argument is a variable to store number/string from console. Refer to the read system call calling convention <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">here</a>. ExpL library converts exposcall to <a href="os_design-files/Sw_interface.html" target="_blank">low level system call interface</a> for read system call, to invoke interrupt 6.</p>
+                            <p>User programs can invoke  the read system call using the library interface. For a terminal read, the file descriptor (-1 for terminal input) is passed as the first argument. The second argument is a variable to store number/string from console. Refer to the read system call calling convention <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">here</a>. ExpL library converts exposcall to <a href="os_design-files/Sw_interface.html" target="_blank">low level system call interface</a> for read system call, to invoke interrupt 6.</p>
 
-                            <p>The read system call (Interrupt 6) invokes the Terminal Read function present in the Device manager Module. Reading from the terminal and storing the number/string (read from console) in the address provided is done by the Terminal Read function. Function number for the Terminal Read function, current PID and address where the word has to be stored are sent as arguments through registers R1, R2 and R3 respectively. After coming back from Terminal Read function, it is expected that the word address (passed as argument to read system call) contains the number/string entered in the terminal. </p>
+                            <p>The read system call (Interrupt 6) invokes the <b>Terminal Read</b> function present in the <a href="os_modules/Module_4.html" target="_blank">Device manager Module</a>. Reading from the terminal and storing the number/string (read from console) in the address provided is done by the Terminal Read function. Function number for the Terminal Read function, current PID and address where the word has to be stored are sent as arguments through registers R1, R2 and R3 respectively. After coming back from Terminal Read function, it is expected that the word address (passed as argument to read system call) contains the number/string entered in the terminal. </p>
 
 
-                           <p> The OS maintains a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The Terminal Read function must 1) Acquire the terminal 2) Issue an IN instruction (SPL read statement translates to XSM instruction IN) 3) Set its state as WAIT_TERMINAL 4) Invoke the scheduler and 5) After console interrupt wakes up this process, transfer data present in the input buffer field of the process table into the word address (passed as an argument).  </p> 
+                           <p> The OS maintains a global data structure called the <a href="os_design-files/mem_ds.html#ts_table">terminal status table </a> that stores information about the current state of the terminal.  A process can acquire the terminal by invoking the Acquire Terminal function of the <a href="os_modules/Module_0.html">resource manager module </a>.  <b>When the Acquire Terminal function assigns the terminal to a process, it enters the PID of the process into the PID field of the terminal status table</b>. The Terminal Read function must perform the following  1) Acquire the terminal 2) Issue an IN instruction (SPL read statement translates to XSM instruction IN) 3) Set its state as WAIT_TERMINAL 4) Invoke the scheduler and 5) After console interrupt wakes up this process, transfer data present in the input buffer field of the process table into the word address (passed as an argument).  </p> 
 
                               <!--
                            <p> When the data finally arrives, <b>the console interrupt handler must transfer the data (in port P0) into the input buffer of the process</b> in the <a href="os_design-files/process_table.html" target="_blank">process table</a>. Then the handler wakes up process waiting for the terminal.</p>
@@ -3056,7 +3060,7 @@ userSP=SP;</pre></div></li>
         <li>Retrieve the word address sent as an argument from the user stack (userSP-3).</li>
         <li>Push all the registers used till now in this interrupt.</li>
         <li>Save the function number of the Terminal Read function in the register R1. Save PID of the current process and the word address obtained above in registers R2 and R3 respectively.</li>
-        <li>Call module 4.</li>
+        <li>Call device manager module.</li>
         <p style="text-indent: 0px">There is no return value for terminal Read.</p>
         <li>Restore the registers.</li>
         <li>Store 0 as return value in the user stack indicating success.</li>
@@ -3068,11 +3072,11 @@ userSP=SP;</pre></div></li>
 	<b>Modification to Module 4</b><br><br>
      <p style="text-indent: 0px">In previous stage we implemented Terminal Write function in module 4, now we will add Terminal Read function.</p>
      <ol>
-     <li>If function number in R1 is 4 then implement below steps.</li>
-	   <p style="text-indent: 0px">Calling Aquire Terminal function :-</p>
+     <li>If function number in R1 corresponds to Terminal Read, then implement below steps.</li>
+	   <p style="text-indent: 0px">Calling Acquire Terminal function :-</p>
 	<li>Push all the registers used till now using multipush.</li>
 	<li>Initialize registers R1, R2 with function number of Acquire Terminal and PID of current process respectively.</li>
-	<li>Call module 0.</li>
+	<li>Call resource manager module.</li>
 	<li>Restore the registers using the multipop statement.</li>
 	<li>Use read statement, for requesting to read from the terminal.
      <div><pre>read;</pre></div>
@@ -3080,34 +3084,37 @@ userSP=SP;</pre></div></li>
 	<li>Change the state of the current process to WAIT_TERMINAL.</li>
 	<p style="text-indent: 0px">Invoking the Context Switch Module :-</p>
 	<li>Push all the registers used till now.</li>
-	<li>Invoke the scheduler by calling module 5.</li>
+	<li>Invoke the scheduler.</li>
+	   <p style="text-indent: 0px">Following steps are executed after return from the scheduler</p> 
     <li>Restore the registers using the multipop statement.</li>
 	<li>The logical address of the word where the data has to be stored is in R3. Convert this logical address to physical address.</li>
     <li>Store the value present in input buffer field of process table to the obtained physical address of the word.</li>
-	<li>Return to caller.</li>
+	<li>Return to the caller.</li>
 </ol><br>
    <b>Implementation of Console Interrupt Routine</b><br><br>
+   <p style="text-indent: 0px">/* The console interrupt handler is entered while some other process is executing in the user mode.  The handler must switch to the kernel stack of that process, do the interrupt handling, restore the user stack of the process that was running and return control back to the process */     </p>
    <ol style="list-style-type: decimal; margin-left: 2px">
    	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
-   	<li>Initialize SP (kernel stack pointer) to (user area page number)*512 -1.</li>
+   	
+   	<li>Initialize SP (kernel stack pointer) to (user area page number)*512 -1.   //Switch to the kernel stack.</li>
    	<li>Backup the user context of the currently running process in the kernel stack as done in timer interrupt routine.</li>
    	<li>Get the PID of the process that has aqcuired the terminal from the <a href="os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a>, Save this as reqPID.</li>
    	<li>Using the reqPID obtained in the above step, get the corresponding process table entry.</li>
    	<li>The input entered in the console is saved in port P0 by the XSM machine. Copy the value present in P0 into the input buffer field of the process table entry obtained in the above step.</li>
-   	<p style="text-indent: 0px">Calling Release Terminal :-</p>
+   	<p style="text-indent: 0px">/*next release the terminal */</p>
    	<li>Push the registers used in this interrupt.</li>
-   	<li>Initialize register R1 with function number, R2 with reqPID (The current process did not acquire the terminal. The process with reqPID as PID is holding the terminal.) </li>
-   	<li>Call module 0.</li>
+   	<li>Initialize register R1 with function number for release terminal, R2 with reqPID (The current process did not acquire the terminal. The process with reqPID as PID is holding the terminal.) </li>
+   	<li>Call resource manager module.</li>
    	<li>Ignore the return value and restore the registers pushed before.</li>
    	<li>Restore the user context from the kernel stack as done in the timer interrupt routine.</li>
-   	<li>Change SP to UPTR field from the process table entry of the currently running process and return to the user mode.</li>
+   	<li>Change SP to UPTR field from the process table entry of the currently running process and return to the user mode.  //Switch back to user stack</li>
 
    </ol><br>
 
     <b>Modification to Boot Module</b><br><br>
     <ol style="list-style-type: decimal; margin-left: 2px">
     	<li>Load console interrupt handler and interrupt 6 from disk to memory.</li>
-    	<li>Remove the initialization of the third process, as we will run only idle and init processes.</li>
+    	<li>Remove the initialization of the third process, as we will run only idle and init processes in this stage.</li>
     </ol><br>
 
      <b>Making things work</b><br><br>
@@ -3117,8 +3124,22 @@ userSP=SP;</pre></div></li>
      </ol><br>
 
 
+<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq8"><b>Q1.</b> Is it possible that, the running process interrupted by the console interrupt be the same process that had acquired the terminal for reading? </a>
+                            <div id="collapseq8" class="panel-collapse collapse">
+	     No, The process which has acquired the terminal will be in WAIT_TERMINAL state after issuing a terminal read until the console interrupt occurs.  Hence, this process will not be scheduled until console interrupt changes it's state to  READY.
+		</div>
+		</li>
+                          </ul>
+                          </div>
+                          </div>
+
 <b style="color:#26A65B">Assignment 1: </b>Write an ExpL program to read N numbers in an array, sort using bubble sort and print the sorted array to the terminal. Load this program as init program and run the machine.
-         
+         <br><br>
 
 		</div>
 		</div>
@@ -3131,7 +3152,7 @@ userSP=SP;</pre></div></li>
 
                       <div class="panel-heading" id="list_stage17">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : OS Loader Implementation  </a>
+                          <a data-toggle="collapse"  href="#collapse17"><span class="fa fa-check-square-o"></span>Stage 17 : Program Loader</a>
                         </h4>
                       </div>
 
@@ -3145,9 +3166,9 @@ userSP=SP;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo17">Learning Objectives</a>
                             <div id="lo17" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with Process and Memory Manager modules.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with  Process manager and Memory Manager modules.</li>
                               
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of  Exec system call.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Enabling the OS to load and execute application programs from the disk (using the exec system call).</li>
                             </ul>                                  
                              </div>
                           </li>
@@ -3157,21 +3178,20 @@ userSP=SP;</pre></div></li>
 
 	<!-- End Learning Objectives--> 
 
-                          <p>In this stage, you will be familiarized with the exec system call. Exec destroys the invoking process and starts the execution of a new program provided as an input. A successful exec operation results in the termination of the invoking process and hence never returns to it. The input program provided to exec is present in the disk. Exec must load this program from the disk to the memory to execute this program. Hence, exec can also be called as OS loader.</p>
+                          <p>In this stage, you will be working on the implementation of the exec system call. Exec is the "program loader" of eXpOS.  Exec takes as input a filename.  It first checks whether the file is a valid eXpOS executable stored in the XSM disk, adhering to the <a target="_blank" href="abi.html#xexe">XEXE format</a>. If so, Exec destroys the invoking process, loads the executable file from the disk, and sets up the program for execution as a process.  A successful exec operation results in the termination of the invoking process and hence never returns to it. </p>
           
-        <p>Name of the executable file is the only input to exec system call. This file should be present in disk before starting of machine. The inode index of this file can be obtained by going through the inode table.</p>                  	
-        <p>Exec first deallocates all pages the invoking process is using. These include two heap pages, two user stack pages, code pages occupied by process and user area page. It also invalidates the entries of the page table of the invoking process. Note that the newly scheduled process will have the same PID as that of the invoking process. Hence it uses the process table entry and page table of invoking process. Exec calls the Exit Process function in <a href="os_modules/Module_1.html" target="_blank"> process manager module</a> (module -1) to deallocate the pages and to terminate the current process.</p>
+        <p>Name of the executable file is the only input to the exec system call. This file should be present in the disk before starting the machine. The inode index of this file can be obtained by going through the <a href="os_design-files/disk_ds.html" target="_blank">inode table</a>.</p>                  	
+        <p>Exec first deallocates all pages the invoking process is using. These include two heap pages, two user stack pages, code pages occupied by the process and the user area page. It also invalidates the entries of the page table of the invoking process. Note that the newly scheduled process will have the same PID as that of the invoking process. Hence it uses the same process table entry and page table of invoking process. Exec calls the <b>Exit Process</b> function in the <a href="os_modules/Module_1.html" target="_blank"> process manager module</a> (module 1) to deallocate the pages and to terminate the current process.</p>
 
-        <p>As mentioned earlier, Exit Process function deallocates the user area page of the current process. Exec system call runs in kernel mode and hence kernel stack should be available at all points during execution of exec. So, after coming back from Exit process function, exec reclaims the same user area page for the new process. Further exec acquires two heap, two stack and required code pages (valid disk blocks in the inode entry of the file in the inode table) for the new process. New page is acquired by invoking the get free page function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> (module - 2). Page table is updated according to the new pages acquired. Code blocks for the new process are loaded from the disk to memory pages obtained. For loading blocks into memory pages, we use immediate load (<a href="support_tools-files/spl.html" target="_blank">loadi statement</a> in SPL). Finally, exec sets the first instruction's IP value of new process on top of its  user stack and return to user mode.</p>
+        <p>As mentioned earlier, Exit Process function releases the user area page of the current process. Since Exec system call runs in kernel mode and needs a kernel stack for its own execution, after coming back from Exit process function, exec reclaims the same user area page for the new process. Further exec acquires two heap, two stack and required code pages (number of disk blocks in the inode entry of the file in the inode table) for the new process. New pages will be acquired by invoking the <b>Get Free Page</b> function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> (module 2). Page table is updated according to the new pages acquired. Code blocks for the new process are loaded from the disk to the memory pages obtained. For loading blocks into the memory pages, we use immediate load (<a href="support_tools-files/spl.html" target="_blank">loadi statement</a> in SPL). Finally, exec initializes the IP value of new process on top of its user stack and initiates execution of the newly loaded process in the user mode.</p>
 <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq8"><b>Q1.</b> Why does exec reclaim the same user area page for the new process? </a>
-                            <div id="collapseq8" class="panel-collapse collapse">
-	     Since the page storing the kernel context has been de-allocated, it is unsafe  
-to invoke the get free page function present in memory manager module for allocating a fresh user area page.
+<a data-toggle="collapse"  href="#collapseq9"><b>Q1.</b> Why does exec reclaim the same user area page for the new process? </a>
+                            <div id="collapseq9" class="panel-collapse collapse">
+	     Since the page storing the kernel context has been de-allocated, before making any function call, a stack page has to be allocated to store parameters, return address etc.  It is unsafe to invoke the Get Free Page function of the memory manager module before allocating a stack page (why?).   
 		</div>
 		</li>
                           </ul>
