@@ -138,7 +138,7 @@
                   <li><b>SWAP FLAG </b>(1 word) - Indicates if the process is swapped (1) or not (0). The process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>                                    
                   <li><b>INODE INDEX </b>(1 word)- Pointer to the Inode entry of the executable file, which was loaded into the process's address space. </li>
                   <li><b>INPUT BUFFER</b> (1 word) - Buffer used to store the input read from the terminal. Whenever a word is read from the terminal, Terminal Interrupt Handler will store the word into this buffer. </li>
-                  <li><b>MODE FLAG</b> (1 word) - Used to indicate whether the process is executing in kernel or user mode. It is not used for now.<!--It is set to 1 when it enters the kernel mode (upon entering a system call/exception handler) and resets to 0 when it returns  back to the user mode (upon returning from a system call/exception handler). --> </li>
+                  <li><b>MODE FLAG</b> (1 word) - Used to store the system call number if the process is executing inside a system call. It is set to -1 when the process is executing the exception handler. The value is set to 0 otherwise. </li>
        		  <li><b>USER AREA SWAP STATUS</b> (1 word) - Indicates whether the user area of the process has been swapped (1) or not (0).</li>
                   <li><b>USER AREA PAGE NUMBER</b> (1 word) - Page number allocated for the user area of the process. </li>
                   <li><b>KERNEL STACK POINTER</b> (1 word) - Pointer to the top of the kernel stack of the process. The <b>offset of this address within the user area</b> is stored in this field.</li>

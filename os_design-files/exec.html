@@ -126,6 +126,8 @@
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to SYS_CALL.
+
 Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
 
 /* Check for the file entry in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. */
@@ -135,7 +137,7 @@ Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack managem
 Call the exit_process() function in the <a href="../os_modules/Module_1.html">Process Manager Module</a> to deallocate resources of the current process.
 
 Reacquire the same User Area Page of the old process manually by incrementing 
-the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a> and MEM_FREE_COUNT in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>.
+the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a> and decrementing MEM_FREE_COUNT in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>.
 
 /* exit_process() in the previous step deallocated the user area page, and 
 hence we immediately reclaim the page for loading the new program.  Since the page
@@ -176,6 +178,7 @@ Load the first code page into memory by invoking the <b>disk_load()</b> function
 Obtain the entry point IP value from the header of the new process and set it to top of user stack.
 
 Set SP to the start of the user stack region.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to back to USER.
 
 ireturn from system call to newly loaded process.   
    </pre>

@@ -191,6 +191,7 @@
 	Decrement the WAIT_MEM_COUNT field and decrement the MEM_FREE_COUNT field in the System Status Table.
     
 	loop through entries in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>{
+	/* Available pages for user processes are from 76- 127. See <a href="../os_implementation.html">Memory Organisation</a>. */
         if ( a free entry is found ){
               Set the Memory Free List entry as 1;
               Return the corresponding page number;
@@ -207,7 +208,7 @@ Called by fork and exec system calls. Also called by exception handler on page f
 <pre>
     Decrement the entry corresponding to the page in the <a href="../os_design-files/mem_ds.html#mem_free_list">Memory Free List</a>;
 
-    Decrement the MEM_FREE_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
+    <b>If</b> Mem Free List entry becomes 0, increment the MEM_FREE_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
     
     return;
 </pre>

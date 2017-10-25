@@ -130,11 +130,13 @@ if a process attempts to wait for itself. The only data structure updated is <a 
               <br>
              <div><h4>Algorithm:</h4></div>
              
+	     <p>Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to SYS_CALL.</p>
              <p><b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /* Check the status from Process table.  */ </p>
            
              <p> Change the status from (RUNNING,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.</p>
              
              <p>Invoke the Scheduler to schedule the next process.</p>
+	     <p>Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to USER.</p>
              <p>Return 0.&nbsp;&nbsp;/* Success */</p>
 
          </div>
@@ -168,6 +170,7 @@ call does not fail. The only data structure updated is <a href="process_table.ht
               
               <br>
              <div><h4>Algorithm:</h4></div>
+	     <p>Set Mode?</p>
              <p><a data-toggle="collapse"   href="#collapse1">Wake up all processes waiting for the current process.</a></p>
              <div id="collapse1" class="panel-collapse collapse">
              <p style="text-indent: 4em;">Traverse through the <a href="process_table.html" target="_blank">Process Table</a></p>
