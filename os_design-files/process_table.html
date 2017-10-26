@@ -148,8 +148,9 @@
               </ul>
               <p>Invalid entries are represented by -1.</p>
                   
-              <p>Note: In this version of eXpOS, the <a href="#per_process_table">Per-Process Resource Table</a> is stored in the user area of each process. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
+              <p><b>Note1: </b>In this version of eXpOS, the <a href="#per_process_table">Per-Process Resource Table</a> is stored in the user area of each process. Generally, the Per-Process Resource Table is stored somewhere in memory and a pointer to the table is kept in the Process Table entry.</p>
               
+<p><b>Note2: </b>The Process Table is present in page 56 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">PROCESS_TABLE</a> points to the starting address of the table. PROCESS_TABLE + PID*16 gives the begining address of process table entry corresponding to the process with identifier PID.</p>
               <!-- START ITEM #1 -->
                         <div class="panel panel-default" id="state">
                             <br>
@@ -205,13 +206,15 @@
                    <li><b>Valid bit </b> - This bit is set to 1 by the OS when the physical page number field of a page table entry is valid (i.e, the page is loaded in memory). It is set to 0 if the entry is invalid. The OS expects the architecture to generate a page fault if any process attempts to access an invalid page.  </li>
                  <li><b>Write bit </b> - This bit is set to 1 by the OS if the page can be written and is set to 0 otherwise. The OS expects the architecture to generate an exception if any process, while running in the user mode, attempts to modify a page whose write bit is not set. </li>
                   <br> 
-                  If the Page Table entry is invalid, the Physical Page number is set to -1.
+                  If the Page Table entry is invalid, the Physical Page number is set to -1. 
+		
                   </ul>
                   <br>
                   <p><b>Note1:</b> In the XSM machine, the first three bits of the second word stores the reference bit, valid bit and the write permission bit. The fourth bit is the dirty bit which is not used by eXpOS.
 
 For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></p>
                   <p><b>Note2:</b> In the eXpOS implementation on the XSM architecture, if a page is not loaded to the memory, but is stored in a disk block, the disk block number corresponding to the physical page number is stored in the <a href="#disk_map_table">disk map table</a> of the process.  If memory access is made to a page whose page table entry is invalid, a <i>page fault</i> occurs and the machine transfers control to the Exception Handler routine, which is responsible for loading the correct physical page.</p>
+		<p><b>Note3:</b> The Page Table is present in page 58 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">PAGE_TABLE_BASE</a> points to the starting address of the table. PAGE_TABLE_BASE + PID*20 gives the begining address of page table entry corresponding to the process with identifier PID.</p>
                              </div>
                         </div>
               <br>
@@ -224,7 +227,7 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS DISK MAP TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The per-process Disk Map Table stores the disk block number corresponding to the pages of each process. The Disk Map Table has 10 entries for a single process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table.  </p>
+                              <p>The per-process Disk Map Table stores the disk block number corresponding to the pages of each process. The Disk Map Table has 10 entries for a single process. When the memory pages of a process are swapped out into the disk, the corresponding disk block numbers of those pages are stored in this table. </p>
  
  
  <p>The entry in the disk map table entry has the following format: </p>
@@ -243,8 +246,9 @@ For more information, see <a href="../arch_spec.html" target="_blank">XSM.</a></
                   </tr>
               </table>
 
-If a memory page is not stored in a disk block, the corresponding entry must be set to -1. 
+<p> If a memory page is not stored in a disk block, the corresponding entry must be set to -1. </p>
 
+<p><b>Note1:</b> The Disk Map Table is present in page 58 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">DISK_MAP_TABLE</a> points to the starting address of the table. DISK_MAP_TABLE + PID*10 gives the begining address of disk map table entry corresponding to the process with identifier PID.</p>
                              </div>
                         </div> 
               

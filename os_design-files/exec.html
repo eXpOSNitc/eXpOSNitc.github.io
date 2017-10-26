@@ -120,13 +120,13 @@
                                                                                                         
                     </table>
             <p><i>Description</i>: Exec destroys the present process and loads the executable file given as input into a new memory address space.  A successful Exec operation results in the extinction of the invoking process and hence never returns to it.  All open instances of file and semaphores of the parent process are closed. However, the newly created process will inherit the PID of the calling process.</p>
-            <p> The data structures that are modified in this system call are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+            <p> The data structures that are modified in this system call are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="process_table.html#per_process_table">Resource Table</a> and the <a href="process_table.html#disk_map_table">Disk Map Table</a>.</p>
              <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
-Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to SYS_CALL.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 9 indicate that the process is in exec system call.
 
 Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
 
@@ -160,13 +160,13 @@ Load the first code page into memory by invoking the <b>disk_load()</b> function
 	
 <a data-toggle="collapse"   href="#collapse1">Set the Page Table and Disk Map Table entries of the process.</a>
 <div id="collapse1" class="panel-collapse collapse">
-                Set the Page Table entries for library.
+                Set the Page Table entries for library. Set the valid bit to 1 and write bit to 0.
 
                 Invalidate the page table entries for heap. &nbsp;&nbsp; 
                 /* Memory will be allocated when page fault occurs */
 
                 Set the page table entry for the first code page to the 
-                page found eariler. Set the valid bit to 1.
+                page found eariler. Set it's valid bit to 1 and write bit to 0.
 		Other code pages are set to invalid and unreferenced.
 
                 Set the page table entry for the stack page to the 
@@ -178,7 +178,7 @@ Load the first code page into memory by invoking the <b>disk_load()</b> function
 Obtain the entry point IP value from the header of the new process and set it to top of user stack.
 
 Set SP to the start of the user stack region.
-Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to back to USER.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to back to 0.
 
 ireturn from system call to newly loaded process.   
    </pre>

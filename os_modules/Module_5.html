@@ -170,10 +170,10 @@
     
     Set the new PID in the System Status Table;
     
-    if (the new Process is in CREATED state){
+    if (the new Process is in CREATED state){ 		/* The process has just been forked from a parent process */
           Set SP to the value of UserSP field in the Process table entry of the new process;
     	  Set the state of the new process as (RUNNING, - );
-	  Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to USER.
+	  Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry 0.
           Use ireturn statement to transfer control back to user mode;
     }
     

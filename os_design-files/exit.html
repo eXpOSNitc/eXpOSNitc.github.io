@@ -114,15 +114,17 @@
                                                 <p>Return Value: None</p>
                                                 
                                                 <p><i>Description</i>: Exit system call terminates the execution of the process which invoked it and destroys its memory address space. The calling application ceases to exist after the system call and hence the system call never returns.</p>
-                                                <p>Data structures modified are <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a> and <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
+                                                <p>Data structures modified are <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="process_table.html#per_process_table">Resource Table</a> and the <a href="process_table.html#disk_map_table">Disk Map Table</a>.</p>
                                                
               <br>
               
              <div><h4>Algorithm:</h4></div>
           <pre>  
-Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to SYS_CALL.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 10.
 
-Invoke the exit() function from the Process Manager module.
+Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
+
+Invoke the <b>exit_process()</b> function from the <a href="../os_modules/Module_1.html">Process Manager</a> module.
 
 /* The current process has been terminated, and so it's kernel stack has been 
 released. Hence we cannot call any kernel module functions beyond this point. */
@@ -133,6 +135,7 @@ released. Hence we cannot call any kernel module functions beyond this point. */
 	Set the PID as 0 in the System Status Table.
 	Set the state of idle as (RUNNING, - )
 	Set SP to UArea_Page * 512 + KPTR;
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of idle to 0.
 	return;
 </div>
                </pre>       

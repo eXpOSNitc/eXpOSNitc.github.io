@@ -129,7 +129,7 @@
                                                 </table>
                                                  <p><i>Description</i>: Replicates the process invoking the system call. The heap, code and library <a href="../os_spec-files/processmodel.html" target="_blank">regions</a> of the parent are shared by the child. A new stack is allocated to the child and the parent's stack is copied into the child's stack.</p>
                                                  <p>When a process executes the Fork system call, the child process shares with the parent all the file and semaphore descriptors previously acquired by the parent.   Semaphore/file descriptors acquired subsequent to the fork operation by either the child or the parent will be exclusive to the respective process and will not be shared.</p>
-                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages) .</p>
+                                                 <p>Data Structures modified are <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> (in case of swapped pages), <a href="process_table.html#per_process_table">Resource Table</a> and the <a href="process_table.html#disk_map_table">Disk Map Table</a>.</p>
                                                  <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               
               <br>
@@ -142,7 +142,6 @@ indicating that the process is in the fork system call.
 //Switch to Kernel Stack - See <a href="stack_smcall.html">Kernel Stack Management during System Calls</a>. 
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
-
 
 //Allocate memory and set the Process Table
 Find a free Process Table entry by invoking the <b>get_pcb_entry()</b> function in <a href="../os_modules/Module_1.html">Process Manager</a> module. 
@@ -163,7 +162,7 @@ to the new UA Page, TICK and Kernel Stack Pointer to 0.
         
 Set state of child process to (CREATED, _ ).
 
-Copy the <a href="process_table.html#per_process_table">per-process resource table</a>.
+Copy the <a href="process_table.html#per_process_table">per-process resource table</a> and <a href="process_table.html#disk_map_table">per-process disk map table</a>.
 For every open file of the parent, increment the File Open Count in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.
 For every semaphore acquired by the parent, increment Process Count in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore Table</a>.
 /* The child shares open files and acquired semaphores with the parent */
@@ -171,10 +170,9 @@ For every semaphore acquired by the parent, increment Process Count in the <a hr
 //Set Page Tables
 Copy the page table entries (code, heap and library) from the parent's page 
 table to the child  /* Shared between parent and child */
+/* Code and Library Pages must be shared read only */
 For each page shared, increment its value in the Memory Free List
 Set the page table entries for stack to the pages acquired earlier.
-
-
        
 Set the return  value to 0 for the child process
 The PID of the child process is set as the return value for the parent process

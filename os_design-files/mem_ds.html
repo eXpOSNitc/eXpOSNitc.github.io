@@ -134,6 +134,7 @@
               <p>All invalid entries are set to -1.</p>  
 
               <p> An Unused entry is indicated by value of -1 in the INODE INDEX field.</p>
+<p><b>Note: </b>The Open File Table is present in page 56 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">OPEN_FILE_TABLE</a> points to the starting address of the table.</p>
 </div>
                   
         </div>
@@ -174,6 +175,7 @@
               </ul> 
               
               <p>All invalid entries are set to -1</p>     
+	<p><b>Note: </b>The File Status Table is present in page 57 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">FILE_STATUS_TABLE</a> points to the starting address of the table.</p>
 	  </div>
          </div>
         
@@ -211,6 +213,7 @@
               </ul> 
               
               <p>All invalid entries are set to -1</p>     
+		<p><b>Note: </b>The Semaphore Table is present in page 56 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">SEMAPHORE_TABLE</a> points to the starting address of the table.</p>
 </div>
                   
         </div>
@@ -247,6 +250,7 @@
                   <li><b>PID</b> (1 word) - specifies the PID of the process which invoked the disk transfer. If the disk transfer was initiated by the scheduler, to load/store a page of the process with identifier PID, then also the pid field is set.</li>
                   <li><b>Unused</b> (2 words) </li>
               </ul>    
+		<p><b>Note: </b>The Disk Staus Table is present in page 56 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">DISK_STATUS_TABLE</a> points to the starting address of the table.</p>
 </div>
                   
         </div>
@@ -285,6 +289,7 @@
                    <li><b>Unused</b> (1 word)</li>
                </ul>
               <p>Free entries are represented by -1 in all the fields.</p>
+		<p><b>Note: </b>The Buffer Table is present in page 58 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">BUFFER_TABLE</a> points to the starting address of the table.</p>
               
 </div>
                   
@@ -325,7 +330,8 @@
                    <li><b>KERNEL_FLAG</b> (1 word) - Indicates the the kernel has over-ridden normal scheduling process (happens during swap-in/swap-out, shutdown, logout etc.) If the KERNEL_FLAG = 1 the <a href="../os_modules/Module_5.html">context switch module</a> will schedule only the idle process. </li>
                    <li><b>Unused</b> (2 words)</li>
                </ul>
-              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p>
+              <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0 and SWAPPED_COUNT to 0. </p> 
+		<p><b>Note: </b>The System Status Table is present in page 57 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">SYSTEM_STATUS_TABLE</a> points to the starting address of the table.</p>
 </div>
                   
         </div>
@@ -357,6 +363,8 @@
                     <li><b>PID</b> (1 word) - specifies the PID of the process which is currently reading input from the terminal. This field is invalid when STATUS is 0.</li>
                    <li><b>Unused</b> (2 words)</li>                       
               </ul>    
+		<p><b>Note: </b>The Terminal Table is present in page 57 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">TERMINAL_STATUS_TABLE</a> points to the starting address of the table.</p>
+
 </div>
                   
         </div>
@@ -378,6 +386,7 @@
               <br>
               <p>The Memory free list is a data structure used for keeping track of used and unused pages in the memory. It consists of MAX_MEM_PAGE entries and each entry is of size one word. Thus, the total size of the free list is MAX_MEM_PAGE words. The number of memory pages available to the OS is architecture dependent. For the version of XSM discussed here, MAX_MEM_PAGE = 128.</p><p>Each entry of the free list contains either the value  0 indicating that the corresponding page in the memory is free (not allocated to any process) or contains the number of processes that are sharing the page. Memory free list entries for the pages allocated to the kernel are also set to 1.</p>
        
+		<p><b>Note: </b>Memory copy of the Mem Free List is present in page 57 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">MEMORY_FREE_LIST</a> points to the starting address of the data structure.</p>
 </div>
                   
         </div>
