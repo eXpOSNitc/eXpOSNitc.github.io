@@ -203,33 +203,43 @@ raises an exception.
 (The instruction failed to execute correctly.  So, upon return - if ever there is one - the same instruction 
 must be re-executed.)
 <br>
+<br>
 2.  IP is set to value 1024 and machine switches to privileged mode.  Thus, the next instruction will be 
 fetched from the exception handler.
+<br>
 <br>
 3.  The machine sets several CPU registers with values that describe (to the exception handler) the cause 
 of the exception.  These are explained below:
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;a) EIP (Exception IP):  The logical IP value of the unprivileged mode instruction that caused the 
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a) <b>EIP</b> (Exception IP):  The logical IP value of the unprivileged mode instruction that caused the 
 exception is stored in this register.   For example, if the instruction MOV R0, [5000], fetched from IP=3000 
 caused an exception because the logical page corresponding to address 5000 (logical page 8) was invalid, 
 the EIP will be loaded with value 3000.    
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;b) EPN (Exception Page Number):  The logical page number that caused the page fault is stored in this register.
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b) <b>EPN</b> (Exception Page Number):  The logical page number that caused the page fault is stored in this register.
   In the above example, if MOV R0, [5000] caused a page fault because logical page 8 was invalid, then EPN will 
   have value 8.  Note that if the instruction fetch caused a page fault (say IP=3000), then EPN would have 
   contained value 5.  
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;c) EC (Exception Cause):  The EC register will indicate the cause of the exception – values are set as below.
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;c) <b>EC</b> (Exception Cause):  The EC register will indicate the cause of the exception – values are set as below.
+<br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(i) Page Fault: The value stored in the EC register for this exception is 0.
 <br>
+<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ii) Illegal instruction: The value stored in the EC register for this exception is 1.
+<br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(iii) Illegal memory access: The value stored in the EC register for this exception is 2.
 <br>
+<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(iv) Arithmetic exception: The value stored in the EC register for this exception is 3.
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;d) EMA (Exception memory address):  The value of this register is relevant only in the case of illegal
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d) <b>EMA</b> (Exception memory address):  The value of this register is relevant only in the case of illegal
  memory access. The illegal memory which was tried to be accessed is stored in the register. Either the 
  address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.
 		</div> 

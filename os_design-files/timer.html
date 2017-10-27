@@ -110,28 +110,31 @@
                <br>
                <br>                                      
              
-              <p>The hardware requirement specification for eXpOS assumes that the machine is equipped
+              <p><i>Description: </i>The hardware requirement specification for eXpOS assumes that the machine is equipped
                with a timer device that sends periodic hardware interrupts.  
                The timer interrupt handler internally invokes the eXpOS <a href="../os_modules/Module_5.html" target="_blank"> scheduler module </a>.  
                </p>
               
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Save the SP register to User SP field of Process Table entry of the current process. </p>
+	     <pre>
+Save the SP register to User SP field of Process Table entry of the current process.
 			 
-             <p>Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the <a href="../os_design-files/process_table.html#user_area">User Area</a> page of the process).</p>
+Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the <a href="../os_design-files/process_table.html#user_area">User Area</a> page of the process).
 
-      			 <p>Backup the context of the current process using BACKUP instruction.</p>
-      			 <p>Change the state of the current process in its Process Table entry from RUNNING to READY.</p>
-      			 <p>Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a> using the call MOD_5 instruction.</p>
+Backup the context of the current process using BACKUP instruction.
 
-			 <p>// swap module will be invoked whenever necessary </p>
-          
-      			 <p>Restore the context of the new process using RESTORE instruction.</p>
-      			 <p>Set SP as the user SP saved in the Process Table entry of the new process.</p>
-			 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 0.
+Change the state of the current process in its Process Table entry from RUNNING to READY.
+Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a> using the call MOD_5 instruction.
+
+// swap module will be invoked whenever necessary 
+
+Restore the context of the new process using RESTORE instruction.
+
+Set SP as the user SP saved in the Process Table entry of the new process.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 0.
              
-             <p>Ireturn.</p>
+Ireturn.
          </div>
 		</div>
 		</div>

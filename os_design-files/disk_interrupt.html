@@ -111,19 +111,20 @@
               <h2 >Disk Interrupt Handler</h2>
                <br>
                <br>                                      
-               <p><i>Description</i>: Hardware sends an interrupt on completion of a load/store operation. This interrupt is handled by the Disk Interrupt Handler. The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a> and the <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a>.</p>
+               <p><i>Description</i>: Hardware sends an interrupt on completion of a <a href="../arch_spec-files/instruction_set.html">load/store operation</a>. This interrupt is handled by the Disk Interrupt Handler. The data structure updated is the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>.</p>
                            
              <div><h4>Algorithm:</h4></div>
-             <p>In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.</p>
-             <p><b>If</b> load/store was issued by a process &nbsp;&nbsp; /* PID field of the Disk Status Table will have a positive value */</p>
-             
-            
-             <p style="text-indent: 4em;"><a data-toggle="collapse"   href="#collapse2">Wake up all processes waiting for the disk.</a></p>
-             <div id="collapse2" class="panel-collapse collapse"><p style="text-indent: 8em;">1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (<a href="constants.html" target="_blank">WAIT_DISK</a>, _ ) state.</p>
-                 <p style="text-indent: 8em;">2. Change the state of the processes to (<a href="constants.html" target="_blank">READY</a>, _ ).</p></div>
-            
-             
-                             <div class="boxed" style="border:1px solid green">
+	     <pre>
+/* Since the disk interrupt handler does not invoke any module functions, we do not switch to kernel stack. */
+
+In the Disk Status Table, set the STATUS field to 0, indicating that the disk is no longer busy.
+
+<a data-toggle="collapse"   href="#collapse2">Wake up all processes waiting for the disk.</a>
+                 <div id="collapse2" class="panel-collapse collapse">	1. Search the <a href="process_table.html" target="_blank">Process table</a> for processes in (<a href="constants.html" target="_blank">WAIT_DISK</a>, _ ) state.
+	2. Change the state of the processes to (<a href="constants.html" target="_blank">READY</a>, _ ).</div>
+ireturn;
+</pre>
+     <!---                        <div class="boxed" style="border:1px solid green">
                      <p><a data-toggle="collapse"   href="#collapse14" style="color: darkgreen;">/* This section of code is included only when swapper module and demand paging are included. */</a></p>
                      <div id="collapse14" class="panel-collapse collapse">
 						  <p style="text-indent: 4em;"><b>If</b> the loaded block was a swap block &nbsp;&nbsp; /* Block was loaded due to a page fault exception */</p>
@@ -154,6 +155,7 @@
              <p style="text-indent: 8em;">Increment the MEM_FREE_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
              <p style="color: darkgreen;">/* The code for swapper module and demand paging ends here. */</p>
              </div>
+	     --->
              </div>
              <br><br>
              </div>

@@ -166,11 +166,17 @@
 <tr>    
     <td>4</td>
     <td>Release Block</td>
-    <td>Block Number</td>
+    <td>Block Number, PID</td>
     <td>NIL</td>
   </tr>
 
 
+<tr>    
+    <td>5</td>
+    <td>Load Code Page</td>
+    <td>Block Number</td>
+    <td>Page Number</td>
+  </tr>
 
    </table>    
                      
@@ -241,6 +247,28 @@ Note : Do not clear the contents of the page. A page may be shared by multiple p
 </pre>
 
 Note: A block may be shared by multiple processes and a call to release may not make the block free.
+
+ <h3> Load Code Page </h3>
+ <i> <b>Description </b></i>: Loads a single code page to memory given the block number of the page in the disk. It takes the block number and PID as an argument.<br><br>
+
+
+<pre>
+	/* If the required code page is already loaded by some other process, we simply increment the share count in the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a> */
+
+	Loop though code page entries in the <a href="../os_design-files/process_table.html#disk_map_table">disk map table</a> of all processes
+		If the block number in the Disk Map Table entry matches the 
+		block to be loaded, and it's corresponding <a href="../os_design-files/process_table.html#per_page_table">page table</a> entry is set to VALID
+			increment the share count of the page in the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a>.
+			return the physical page number
+
+	/* The code page is not in memory, and has to be loaded from disk */
+
+	Get a free memory page by calling the <b>get_free_page()</b> function.
+
+	Load the disk block into memory by calling the <b>disk_load()</b> function in the <a href="Module_4.html">Device Manager</a> Module.
+			
+	return
+</pre>
 
 <br><br>
 

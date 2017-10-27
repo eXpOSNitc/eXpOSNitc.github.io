@@ -226,7 +226,7 @@ Called by Fork system call.
 has been released! Neverthless the return address and the saved context of the calling process 
 will not be lost. This is because release_page() is non blocking and hence the page will never be 
 allocated to another process before control transfers back to the caller.  The calling function 
-gets "time" to either invoke the scheduler using the same stack page or to allocate the same page 
+gets "time" to either invoke the scheduler using the same stack page or to reallocate the same page 
 again for a different purpose.  
 </pre>
 Called by the exit_process function.
@@ -240,15 +240,24 @@ Called by the exit_process function.
 
 
 <pre>
+
+    /* Wake up all processes waiting for the current process */
+    loop though the <a href="../os_design-files/process_table.html">process table</a> entries
+    	if( process is waitng for the current process ) 		/* indicated by the STATE = (WAIT, PID ) */
+		Set STATE of the process to (READY, - )
+
     Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by
     invoking the Free_Page_Table() function; 
     
     Free the User Area Page corresponding to the process by calling
     the Free_User_Area_Page() function;  
+    /* After the User Area Page has been deallocated, the process is executing without a kernel stack.
+       Hence the process should immmediately be scehduled out */
     
     Set the state of process as (TERMINATED , - )
-    
+
     return;
+    /* Note that the return statement is executing using a deallocated stack page. See note after free_user_area_page() */ 
 </pre>
 
 Called by exit system call, exception handler, shutdown and logout.

@@ -113,35 +113,40 @@
                <br>   
                <p>Arguments : None</p>
                <p>Return value : None</p>
-               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) causes other faulty conditions which are machine dependent, the machine will generate an exception. The exception handler must terminate the process, wake up all processes waiting for it, resources locked by it and invoke the scheduler to continue round robin scheduling the remaining processes. </p>
-               <p>The exception handler is also invoked when a page required by a process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
-               <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html#per_page_table" target="_blank">Page Table</a>.</p>
-               <p>Kernel mode flag must be set upon entering the system call and reset before returning.</p>
+               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) causes other faulty conditions which are machine dependent, the machine will generate an exception. See <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Handling (Tutorial)</a>. The exception handler must terminate the process and invoke the context switch module to to schedule other processes. </p>
+               <p>The exception handler is also invoked when a page required by a process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. The eXpOS scheduler will never schedule a process if its stack page is not present in the memory.  Hence, a page fault can occur only when either a) one of the code pages of the process (logical pages 4 to 7) has to be loaded from the disk or b) one of the heap pages has not been allocated (logical page 2 or 3). When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
+               <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html#per_page_table" target="_blank">Page Table</a>.</p>
+               <p>The MODE FLAG must be set upon entering the system call and reset before returning.</p>
                
                <br>
              <div><h4>Algorithm:</h4></div>
-            
-             <p><b>If</b> the exception is not caused by a page fault &nbsp;&nbsp; /* Check the Exception Cause registers */ </p>
-             <p style="text-indent: 4em;">Display the cause and exit the process &nbsp;&nbsp; /* Invoke the <a href="exit.html" target="_blank">Exit System Call</a>. */</p> 
-             <p>/* Exception is due to page fault */</p>
-             <p>Using the Exception registers, find the <a href="process_table.html#per_page_table" target="_blank">page table</a> entry of the page causing the exception.</p>
-             <p><b>If</b> there are no free pages in the memory, then increment the WAIT_MEM_COUNT in the <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>. </p>
-             <p><b>while</b> there are no free pages in memory <b>do</b> &nbsp;&nbsp; /* Check the MEM_FREE_COUNT in System Status Table */</p>
-             <p style="text-indent: 4em;">Change the state of the process to (<a href="constants.html" target="_blank">WAIT_MEM</a>, _ ) in the <a href="process_table.html" target="_blank">Process Table</a> </p>
-             <p style=" text-indent: 4em;">Call scheduler.</p>
-             <p><b>endwhile</b></p>
-             <p>Find a free page in memory, increment its Memory Free List entry  and decrement MEM_FREE_COUNT in System Status Table.</p>
-             <p><b>If</b> the page table entry found above contains a block number &nbsp;&nbsp; /* The page is stored in the disk */</p>
-             <p style=" text-indent: 4em;"><b>while</b> the disk is busy &nbsp;&nbsp;/* Check the Status field of the <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
- <p style=" text-indent: 8em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.</p>
- <p style=" text-indent: 4em;"><b>endwhile</b></p>
+           <pre> 
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to -1 indicate that the process is in the execption handler.
 
-             <p style="text-indent: 4em;"><a href="load_store.html" target="_blank">Load</a> the block to the memory page found above</a>. &nbsp;&nbsp;/* Disk free List is updated by <a href="disk_interrupt.html" target="_blank">Disk Interrupt Handler</a> .*/</p>
-              <p style=" text-indent: 4em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) in the <a href="process_table.html" target="_blank">Process Table</a> and call the scheduler.&nbsp;&nbsp; /* Wait for the disk transfer to complete */</p>
-             <p>In the page table entry, set the Page Number field to the number of the page found above and auxiliary information to reyferenced and valid. </p>
-	     <`
+Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack management during system calls</a> */
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+<b>If</b> the exception is not caused by a page fault  /* Check the <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Cause registers</a> */
+             Display the cause of the exception.
+	     Terminate the process using <b>exit_process()</b> module function in the <a href="../os_modules/Module_1.html">Process Manager</a> module.
+	     Invoke the scheduler by calling the <b>switch_context()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
+
+/* Exception is due to page fault */
+Using the Exception registers, find the page number of the page causing the exception.
+
+If (page corresponds to a code page)
+	Get the disk block to load from the Disk Map Table entry of the process.
+	Load the page to memory by calling the <b>disk_load()</b> function in the Device Manager Module.
+	In the page table entry, set the Page Number field to the number of the page found above 
+	and auxiliary information to reyferenced and valid. Also set the write bit to 0.
   
-             <p>Return to the user process.</p>
+else if (page corresponds to a heap page)
+	Allocate a new memory page by calling the get_free_page() function in the Memory Manager module.
+	In the page table entry, set the Page Number field to the number of the page allocated above
+	and auxiliary information to reyferenced and valid. Also set the write bit to 1.
+
+ireturn.
 
              </div>
              </div>
