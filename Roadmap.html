@@ -2337,7 +2337,9 @@ loadi(70,12);</pre></div>
 
 //Stack
 [PTBR+16] = 81;
-[PTBR+17] = "0110";</pre></div></li>
+[PTBR+17] = "0110";
+[PTBR+18] = -1;
+[PTBR+19] = "0000";</pre></div></li>
 
 <li>We will run the INIT process of stage 11 (to print all numbers
 			 below 50) concurrently.  
@@ -2488,10 +2490,9 @@ has to be restored before the process is scheduled again for correct resumption 
 	ireturn;
 endif;
 </pre></div>
-<code>Note:</code>  In this experiment, the only situation where the timer finds the next process in CREATED state is when
+<code>Note:</code>  In this stage, the only situation where the timer finds the next process in CREATED state is when
 the IDLE process is to be scheduled for the first time.  Since INIT is scheduled directly from the OS startup code,
-the INIT process never goes through the CREATED state.  INIT is the only process in eXpOS that begins 
-in the CREATED state.  
+the INIT process never goes through the CREATED state. 
 		</li>
 
 	<li>Set the state of the newly found process as RUNNING.
@@ -3333,9 +3334,9 @@ userSP=SP;</pre></div></li>
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo18">Learning Objectives</a>
                             <div id="lo18" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with disk interrupt handler.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with disk interrupt handling in XSM.</li>
                               
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; modifying Exec system call to handle disk interrupt.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modifying Exec system call to handle disk interrupt.</li>
                             </ul>                                  
                              </div>
                           </li>
@@ -3344,8 +3345,89 @@ userSP=SP;</pre></div></li>
                       </div>
 
 	<!-- End Learning Objectives--> 
-                        
+                        <p>
+                        	In this stage, we will introduce disk interrupt handling in XSM. In previous stage, we used loadi statement to load a disk block into a memory page. When the <a href="support_tools-files/spl.html" target="_blank">loadi statement</a> (immediate load) is used for loading, the machine will continue the execution of the next instruction only after the block transfer is complete by the disk controller. A process can use the load statement instead of loadi to load a disk block to a memory page. <a href="support_tools-files/spl.html" target="_blank">load statement</a> in SPL translates to <a href="arch_spec-files/instruction_set.html" target="_blank">LOAD instruction in XSM</a>. 
+                        </p>
 
+                        <p>
+                        	LOAD instruction takes two arguments, page number and block number. The LOAD instruction initiates the transfer of data from the given disk block number to the page number. The XSM machine doesn't wait for the block transfer to complete, it continues with the execution of the next instruction. Hence XSM provides a hardware mechanism to detect the completion of data transfer. XSM machine raises a <a href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">disk interrupt</a> when the disk operation is complete. 
+                        </p>
+
+                        <p>
+                          To initiate the disk transfer using the load statement, first the process has to acquire the disk. This ensures that no other process uses the disk while the process which has acquired the disk is loading the disk block to the memory page. eXpOS maintains a data structure called <a href="os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a> to keep track of these disk-memory transfers. The disk status table stores the status of the disk indicating whether the disk is busy or free. The disk status table has a LOAD/STORE bit indicating whether the disk operation is loading or storing. It also stores the page number and the block number involved in the tansfer. To keep track which process is currently using the disk, PID of the process is also stored in the disk status table. The constant <a href="support_tools-files/constants.html" target="_blank">DISK_STATUS_TABLE</a> gives the starting address of the Disk Status Table.  
+                        </p>
+                         <p>After the current process has acquired the disk for loading, it initializes the Disk Status Table according to the operation. The process then issues the load statement (XSM instruction LOAD) to initiates the loading of the disk block to the memory page. As mentioned earlier, the XSM machine does not wait for the tranfer to complete. It continues with the execution of the next instruction. The next instruction may use the data of the memory page in which we are loading the disk block. So, it doesn't make any sense to continue with the execution of the next instruction. Hence, the process suspends its execution by changing its state to WAIT_DISK and invokes the scheduler.</p>
+
+                         <p>When the loading of the page from the disk to the memory (or storing of the page from the memory to the disk) is complete, XSM machine raises the hardware interrupt called disk interrupt. This interrupt mechanism is similar to the console interrupt handler. Note that when disk interrupt occurs, XSM machine stops the execution of the currently running process. The currently running process is not the one which has acquired the disk. The currently running process resumes its execution after disk interrupt handler returns to it. Disk interrupt handler releases the disk by changing the STATUS filed in the Disk Status table to 0. It then wakes up all the processes waiting for the disk which also includes the process which is waiting for the disk-transfer to complete. </p>
+                        <p>
+                        In exec system call, Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a> is invoked instead of the loadi statement. Disk Load function (function number 2) takes the PID of the current process, page number and block number as arguments. Disk Load function performs the following tasks 1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0) 2) Set the Disk Status table entries 3) Issue the load statement to initiate the loading 4) Set the state of the current process to WAIT_DISK and invoke the scheduler. </p>
+
+                        <p>The Acquire Disk function in the resource manager module (function number = 3) takes the PID of the process as argument. While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and schedule other process. When the disk is finally free, the process locks the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p>
+                        <!-- <p>There is one other task to be done in exec system call in this stage, initiaizing the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. Per-process resource table stores the details about the files and semaphores, the process is suing currently. The table has 8 entries each of 2 words each. We initialize all entries in this table to -1. A part of the user area page of each process is used for per-process resourece table. This initalization is done after we reacquire the user area page in exec system call.</p>-->
+
+
+                        <p><code>Note:</code> There is no Release Disk function to release the disk is present. As disk interrupt handler completes the task of Release Disk function.</p>
+
+<br>
+    <b> Modification to interrupt 9</b>
+<br><br>
+    <ol style="list-style-type: decimal; margin-left: 2px">
+   <!-- <li>After reacquiring the user area page, initialize all entries in the per-process table to -1.</li>-->
+   <li>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
+   </ol>
+    <br>
+    <b> Modification to device manager module</b><br><br>
+  <p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Disk Load, implement below steps:</p>
+    <ol style="list-style-type: decimal;margin-left: 2px">
+       <li>Invoke the Acquire Disk function present in the resource manager module.</li> 
+
+       <li>Set the LOAD/STORE field to 0 indicating loading from disk.</li>
+       <li>Store the page number and block number corresponding to disk load in the Disk Status Table.</li>
+       <li>Use load statement to load data from the disk block to the memory page.</li>
+       <li>Set the state of the current process to WAIT_DISK and invoke the scheduler.</li>
+       <li>Return to the caller. This statement will be executed after coming back from the scheduler.</li>   	
+    </ol>
+<br><b>Modification to resource manager module</b><br><br>
+<p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Acquire Disk, implement below steps:</p>
+<ol style="list-style-type: decimal;margin-left: 2px">
+	<li>While the  disk is busy (check STATUS field in the Disk Status Table), do following:
+     <ol style="list-style-type: lower-roman;margin-left: 20px">
+     	<li>Set the state of the process which has invoked the Acquire Disk to WAIT_DISK.</li>
+     	<li>Invoke the scheduler.</li>
+     </ol>
+	</li>
+	<li>Set the STATUS field to 1 and also store the PID of the process (PID given as argument) in the PID field of the Disk Status Table. </li>
+	<li>Return to the caller.</li>
+
+</ol>
+  <br><b>Implementation of Disk Interrupt Routine</b><br><br>
+  <ol style="list-style-type: decimal;margin-left: 2px">
+  	  <li>Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.</li>
+  	  <li>Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.</li>
+  	  <li>Return to user mode using the ireturn statement.</li>
+
+  </ol>
+  <br><b>Modifications to boot module</b><br><br>
+  <ol style="list-style-type: decimal;margin-left: 2px">
+  	<li>Load the disk interrupt routine from the disk to the memory.</li>
+  	<li>Initialize the STATUS field in the Disk Status Table to 0.</li>
+  </ol>
+ <br>
+   <p>Compile and load the modified and newly written files into the disk using XFS-interface.</p>
+
+   <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq10"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
+                            <div id="collapseq10" class="panel-collapse collapse">
+	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process is initialized and data structures like Disk Status Table is also not initialized. 
+		</div>
+		</li>
+                          </ul>
+                          </div>
+                          </div>
 		</div>
 		</div>
 <!-- =========end Stage 18 ===========-->
