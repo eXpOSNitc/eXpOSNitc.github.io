@@ -258,7 +258,7 @@ Note: A block may be shared by multiple processes and a call to release may not 
 	Loop though code page entries in the <a href="../os_design-files/process_table.html#disk_map_table">disk map table</a> of all processes
 		If the block number in the Disk Map Table entry matches the 
 		block to be loaded, and it's corresponding <a href="../os_design-files/process_table.html#per_page_table">page table</a> entry is set to VALID
-			increment the share count of the page in the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a>.
+			<b>increment the share count</b> of the page in the <a href="../os_design-files/mem_ds.html#mem_free_list">Mem Free List</a>.
 			return the physical page number
 
 	/* The code page is not in memory, and has to be loaded from disk */

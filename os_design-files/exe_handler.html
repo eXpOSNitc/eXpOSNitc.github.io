@@ -127,6 +127,8 @@ Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack man
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
+Backup the context of the current process using BACKUP instruction.
+
 <b>If</b> the exception is not caused by a page fault  /* Check the <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Cause registers</a> */
              Display the cause of the exception.
 	     Terminate the process using <b>exit_process()</b> module function in the <a href="../os_modules/Module_1.html">Process Manager</a> module.
@@ -140,14 +142,17 @@ If (page corresponds to a code page)
 	Load the page to memory by calling the <b>get_code_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> Module.
 	In the <a href="process_table.html#per_page_table">page table</a> entry, set the Page Number field to the page number returned by 
 	the previous call to get_code_page()
-	Set the referenced and valid bits to 1. Also set the write bit to 0.
+	Set the <a href="../Tutorials/xsm_interrupts_tutorial.html">referenced and valid bits</a> to 1. Also set the write bit to 0.
   
 else if (page corresponds to a heap page)
 	Allocate a new memory page by calling the <b>get_free_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 	In the page table entry, set the Page Number field to the number of the page allocated above
 	and auxiliary information to referenced and valid. Also set the write bit to 1.
 
+Restore the context of the process using RESTORE instruction.
+
 Reset the MODE_FLAG back to 0.
+Restore SP to the USER SP stored in the process table.
 
 ireturn.
 
