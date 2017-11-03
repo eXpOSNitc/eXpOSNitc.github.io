@@ -3041,7 +3041,7 @@ alias currentPID R2;</pre></div></li>
       Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceeding further.
 <br><br>
                          
-<b>Implementation of INT 6</b><br><br>
+<b>Implementation of read system call (interrupt 6 routine)</b><br><br>
 
 <ol style="list-style-type: decimal;margin-left: 2px">
 	<li>Save the value of register SP as userSP.
@@ -3070,7 +3070,7 @@ userSP=SP;</pre></div></li>
       </ol>
       </li>
       </ol><br>
-	<b>Modification to Module 4</b><br><br>
+	<b>Modification to Device manager Module</b><br><br>
      <p style="text-indent: 0px">In previous stage we implemented Terminal Write function in module 4, now we will add Terminal Read function.</p>
      <ol>
      <li>If function number in R1 corresponds to Terminal Read, then implement below steps.</li>
@@ -3092,7 +3092,7 @@ userSP=SP;</pre></div></li>
     <li>Store the value present in input buffer field of process table to the obtained physical address of the word.</li>
 	<li>Return to the caller.</li>
 </ol><br>
-   <b>Implementation of Console Interrupt Routine</b><br><br>
+   <b>Implementation of <a href="os_design-files/term_handler.html" target="_blank">Console Interrupt Handler</a></b><br><br>
    <p style="text-indent: 0px">/* The console interrupt handler is entered while some other process is executing in the user mode.  The handler must switch to the kernel stack of that process, do the interrupt handling, restore the user stack of the process that was running and return control back to the process */     </p>
    <ol style="list-style-type: decimal; margin-left: 2px">
    	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
@@ -3415,23 +3415,40 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
                         <p>
 
                         <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"><p> XSM machine disables interrupts when executing in the kernel mode.  Hence, the disk controller can raise an interrupt only when the machine is executing in the user mode. Hence the OS has to schedule "some process" even if all processess are waiting for disk/terminal interrupt - for otherwise, the device concerned will never be able to interrupt the processor.  The IDLE process is precisely designed to take care of this situation.   
-                        </p></div>
-                        In exec system call, Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a> is invoked instead of the loadi statement. Disk Load function (function number 2) takes the PID of the current process, page number and block number as arguments. Disk Load function performs the following tasks 1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0) 2) Set the Disk Status table entries 3) Issue the load statement to initiate the loading 4) Set the state of the current process to WAIT_DISK and invoke the scheduler. </p>
+                        </p></div><br>
 
-                        <p>The Acquire Disk function in the resource manager module (function number = 3) takes the PID of the process as argument. While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and schedule other process. When the disk is finally free, the process locks the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p>
+                        <p>
+                        In this stage, <b>you have to modify the exec system call by replacing the <a href="support_tools-files/spl.html" target="_blank">loadi statement</a> by a call to the <i>Disk Load</i> function. The <i>Disk Load</i> function (in device manager module), the <i>Acquire Disk</i> function (in resource manager module) and the <i>disk interrupt handler</i> must also be implemented in this stage.</b> Minor modification will be required for the boot module.</p>
+<br>
+                   <ol style="list-style-type: decimal;margin-left: 2px">
+                 <li><b>Disk Load (function number = 2, <a href="os_modules/Module_4.html" target="_blank">device manager module</a>) </b></li>
+                        <p> The Disk Load function takes the PID of a process, a page number and a block number as input and performs the following tasks : <br>1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0)<br> 
+                        2) Set the <a target="_blank" href="os_design-files/mem_ds.html#ds_table">Disk Status table</a> entries as mentoned in the algorithm.<br> 3) Issue the <a href="support_tools-files/spl.html" target="_blank">load statement</a> to initiate a disk block to memory page DMA transfer <br> 4) Set the state of the process (with given PID) to WAIT_DISK and invoke the scheduler. </p>
+<br>
+                        <li><b>Acquire Disk (function number = 3, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>) </b></li>
+                        <p>The Acquire Disk function in the resource manager module  takes the PID of a process as an argument. The Acquire disk function performs the following tasks : <br>
+                        1) While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and invoke the scheduler. <br>/* When the disk is finally free, the process is woken up by the disk interrupt handler.*/<br> 2) Lock the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p><br>
+                        <li><b>Implementation of <a target="_blank" href="os_design-files/disk_interrupt.html">Disk Interrupt handler</a> </b></li>
+
+  					<p>When the disk-memory transfer is complete, XSM raises the disk interrupt. The disk interrupt handler then performs the following tasks :
+
+  	    <br>1) Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.
+  	 <br>2) Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.
+  	 <br>
+  	  3) Return to user mode using the ireturn statement.
+                        </p>
                         <!-- <p>There is one other task to be done in exec system call in this stage, initiaizing the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. Per-process resource table stores the details about the files and semaphores, the process is suing currently. The table has 8 entries each of 2 words each. We initialize all entries in this table to -1. A part of the user area page of each process is used for per-process resourece table. This initalization is done after we reacquire the user area page in exec system call.</p>-->
 
 
-                        <p><code>Note:</code> There is no Release Disk function to release the disk is present. As disk interrupt handler completes the task of Release Disk function.</p>
+                        <p><code>Note:</code> There is no Release Disk function to release the disk instead the disk interrupt handler completes the task of the Release Disk function.</p>
 
 <br>
-    <b> Modification to interrupt 9</b>
-<br><br>
-    <ol style="list-style-type: decimal; margin-left: 2px">
+<li><b> Modification to exec system call (interrupt 9 routine)</b></li>
+    
    <!-- <li>After reacquiring the user area page, initialize all entries in the per-process table to -1.</li>-->
-   <li>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
-   </ol>
-    <br>
+   <p>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</p></li>
+  
+    <!--
     <b> Modification to device manager module</b><br><br>
   <p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Disk Load, implement below steps:</p>
     <ol style="list-style-type: decimal;margin-left: 2px">
@@ -3462,11 +3479,14 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
   	  <li>Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.</li>
   	  <li>Return to user mode using the ireturn statement.</li>
 
-  </ol>
-  <br><b>Modifications to boot module</b><br><br>
-  <ol style="list-style-type: decimal;margin-left: 2px">
-  	<li>Load the disk interrupt routine from the disk to the memory.</li>
-  	<li>Initialize the STATUS field in the Disk Status Table to 0.</li>
+  </ol>-->
+  <br>
+  <li><b>Modifications to boot module</b></li>
+    
+  
+   	<p> Following modifications are done in boot module :<br>
+   	1) Load the disk interrupt routine from the disk to the memory.<br>
+  	2) Initialize the STATUS field in the Disk Status Table to 0.<br></p>
   </ol>
  <br>
    <p>Compile and load the modified and newly written files into the disk using XFS-interface.</p>
@@ -3476,8 +3496,8 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq10"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
-                            <div id="collapseq10" class="panel-collapse collapse">
+<a data-toggle="collapse"  href="#collapseq11"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
+                            <div id="collapseq11" class="panel-collapse collapse">
 	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process is initialized and data structures like Disk Status Table is also not initialized. 
 		</div>
 		</li>
