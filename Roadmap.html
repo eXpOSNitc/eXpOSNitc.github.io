@@ -3041,7 +3041,7 @@ alias currentPID R2;</pre></div></li>
       Read about <a href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM interrupts</a> before proceeding further.
 <br><br>
                          
-<b>Implementation of INT 6</b><br><br>
+<b>Implementation of read system call (interrupt 6 routine)</b><br><br>
 
 <ol style="list-style-type: decimal;margin-left: 2px">
 	<li>Save the value of register SP as userSP.
@@ -3070,7 +3070,7 @@ userSP=SP;</pre></div></li>
       </ol>
       </li>
       </ol><br>
-	<b>Modification to Module 4</b><br><br>
+	<b>Modification to Device manager Module</b><br><br>
      <p style="text-indent: 0px">In previous stage we implemented Terminal Write function in module 4, now we will add Terminal Read function.</p>
      <ol>
      <li>If function number in R1 corresponds to Terminal Read, then implement below steps.</li>
@@ -3092,7 +3092,7 @@ userSP=SP;</pre></div></li>
     <li>Store the value present in input buffer field of process table to the obtained physical address of the word.</li>
 	<li>Return to the caller.</li>
 </ol><br>
-   <b>Implementation of Console Interrupt Routine</b><br><br>
+   <b>Implementation of <a href="os_design-files/term_handler.html" target="_blank">Console Interrupt Handler</a></b><br><br>
    <p style="text-indent: 0px">/* The console interrupt handler is entered while some other process is executing in the user mode.  The handler must switch to the kernel stack of that process, do the interrupt handling, restore the user stack of the process that was running and return control back to the process */     </p>
    <ol style="list-style-type: decimal; margin-left: 2px">
    	<li>Store the SP value in the UPTR field in the process table entry of the currently running process.</li>
@@ -3179,7 +3179,9 @@ userSP=SP;</pre></div></li>
 
 	<!-- End Learning Objectives--> 
 
-<b>Before proceeding futher review the XEXE file format and the address space model of a process from the eXpOS <a href="abi.html" target="_blank">ABI documentation</a>.</b>
+<b>Before proceeding futher review the XEXE file format and the address space model of a process from the eXpOS <a href="abi.html" target="_blank">ABI documentation</a>.
+Make sure to be thorough with the <a href="support_tools-files/spl.html" target="_blank">SPL module calling conventions.</a>
+</b><br><br>
 
 
                           <p>In this stage, you will be working on the implementation of the exec system call. Exec is the "program loader" of eXpOS.  Exec takes as input a filename.  It first checks whether the file is a valid eXpOS executable stored in the XSM disk, adhering to the <a target="_blank" href="abi.html#xexe">XEXE format</a>. If so, Exec destroys the invoking process, loads the executable file from the disk, and sets up the program for execution as a process.  A successful exec operation results in the termination of the invoking process and hence never returns to it. </p>
@@ -3193,7 +3195,7 @@ userSP=SP;</pre></div></li>
  <p>eXpOS maintains a data structure called <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank" >memory free list</a> in page 57 of the <a href="os_implementation.html" target="">memory</a>. Each Page can be shared by zero or more processes. There are 128 entries in the memory free list corresponding to each page of memory. For each page, the corresponding entry in the list stores the number of processes sharing the page. The constant <a href="support_tools-files/constants.html" target="_blank">MEMORY_FREE_LIST</a> gives the starting address of the memory free list. </p>                         
 
   
-<p>Now we will understand the working of the module functions that exec uses during its execution. Before proceeding further have a careful look of the diagram to understand the overall working of the exec system call.</p>
+<p>Now we will understand the working of the module functions that exec uses during its execution. Before proceeding further have a careful look of the diagram to understand the overall working of the exec system call.</p><br>
         
         <ol style="list-style-type: decimal; margin-left: 2px">
      <li><b>Exit Process (function number = 3, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>) </b></li>
@@ -3229,7 +3231,7 @@ userSP=SP;</pre></div></li>
   <li>If the file is present, save the inode index of the file into a register for future use.
   </li>
   <li>Call the <b>Exit Process</b> function in <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to deallocate the resources and pages of the current process.</li>
-  <li>Get the user area page number from the process table of the current process. This page has been deallocated by the Exit Process function. Reclaim the same page by incrementing the memory free list entry of user area page and decrementing the MEM_FREE_COUNT field in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>. (same user areas page is reclaimed - why?)</li>
+  <li>Get the user area page number from the process table of the current process. This page has been deallocated by the Exit Process function. Reclaim the same page by incrementing the memory free list entry of user area page and decrementing the MEM_FREE_COUNT field in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>. (same user area page is reclaimed - why?)</li>
   <li>Set the SP to the start of the user area page to intialize the kernel stack of the new process.</li>
   <li>New process uses the PID of the terminated process. Update the STATE field to RUNNING and store inode index obtained above in the inode index field in the process table.</li>
   <li>Allocate new pages and set the page table entries for the new process. 
@@ -3250,17 +3252,17 @@ userSP=SP;</pre></div></li>
        <li>According to the function number value present in R1, implement different functions in module 1.</li>
        <li> If the function number corresponds to <b>Free User Area Page</b>, follow steps below 
        <ol style="list-style-type: lower-roman;margin-left: 20px">
-       	<li>Obtain the user area page number from the process table entry according to the PID given as an argument.</li>
-       	<li>Free the user area page by invoking the <b>Release Page</b> function in the memory manager module.</li>
+       	<li>Obtain the user area page number from the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry corresponding to the PID given as an argument.</li>
+       	<li>Free the user area page by invoking the <b>Release Page</b> function. </li>
        	<li>Return to the caller.</li>
 
        </ol> 
        </li>
        <li> If the function number corresponds to <b>Exit Process</b>, follow steps below 
        <ol style="list-style-type: lower-roman;margin-left: 20px">
-          <li>PID of the invoking process is given as an argument.</li>
-       	 <li>Invoke the Free Page Table function with same PID to deallocate the page table entries.</li>
-       	 <li>Invoke the Free user Area Page the function with same PID to free the user area page.</li>
+          <li>Extract PID of the invoking process from the corresponding register.</li>
+       	 <li>Invoke the <b>Free Page Table</b> function with same PID to deallocate the page table entries.</li>
+       	 <li>Invoke the <b>Free user Area Page</b> function with the same PID to free the user area page.</li>
          <li>Set the state of the process as TERMINATED and return to the caller.</li>
        </ol> 
        </li>
@@ -3268,33 +3270,34 @@ userSP=SP;</pre></div></li>
        <ol style="list-style-type: lower-roman;margin-left: 20px">
        
         <li>Invalidate the page table entries for the library pages by setting page number as -1 and auxiliary data as "0000" for each entry.</li>
-        <li>For each valid entry in the page table, release the page by invoking the Release Page function and invalidate the entry.</li>
+        <li>For each valid entry in the page table, release the page by invoking the <b>Release Page</b> function and invalidate the entry.</li>
         <li>Return to the Caller.</li>
        </ol> 
        </li>
        </ol>
 <br>
-       <b>Implementation of Memory Manager Module (Module 2)</b><br><br>
+       <b>Implementation of <a href="os_modules/Module_2.html" target="_blank">Memory Manager Module</a> (Module 2)</b><br><br>
        <ol style="list-style-type: decimal;margin-left: 2px">
        <li>According to the function number value present in R1, implement different functions in module 2.</li>
-       <li> If the function number is 1, follow below steps to implement Get Free Page function.
+       <li>If the function number corresponds to <b>Get Free Page</b>, follow steps below 
        <ol style="list-style-type: lower-roman;margin-left: 20px">
-       	<li>Increment WAIT_MEM_COUNT field in the system status table.</li>
+       	<li>Increment WAIT_MEM_COUNT field in the system status table. //Do not increment the WAIT_MEM_COUNT in busy loop (an important step  )</li>
        	<li>While memory is full (MEM_FREE_COUNT will be 0), do following.
        	<ul style="list-style-type: disc; margin-left: 24px" 
        	>
        	 <li>Set the state of the invoked process as WAIT_MEM.</li>
-       	 <li>Schedule other process by invoking the scheduler.</li>
+       	 <li>Schedule other process by invoking the <a href="os_modules/Module_5.html" target="_blank">context switch module</a>. // blocking the process</li>
        		
        	</ul>
 
        	</li>
          <li>Decrement the WAIT_MEM_COUNT field and MEM_FREE_COUNT field in the system status table.</li>
-         <li>Find a free page using memory free list and set the corresponding entry as 1. Make sure to store the obtained free page number in R0 as return value.</li>
+         <p style="text-indent: 0px">/* Note the sequence - increment WAIT_MEM_COUNT, waiting for the memory, decrement WAIT_MEM_COUNT.*/ </p>
+         <li>Find a free page using memory free list and set the corresponding entry as 1. Make sure to store the obtained free page number in R0 as return value. </li>
          <li>Return to the caller.</li>
        </ol> 
        </li>
-       <li> If the function number is 2, follow below steps to implement Release Page function.
+       <li>If the function number corresponds to <b>Release Page</b>, follow steps below 
        <ol style="list-style-type: lower-roman;margin-left: 20px">
        	<li>The Page number to be released is present in R2. Decrement the corresponding entry in the memory free list.</li>
        	<li>If that entry in the memory free list becomes zero, then the page is free. So increment the MEM_FREE_COUNT in the system status table.</li>
@@ -3304,11 +3307,22 @@ userSP=SP;</pre></div></li>
        </li>
        </ol>
        <br>
-       <b>Modification to Boot Module.</b><br><br>
+       <b>Modifications to the Boot Module.</b><br><br>
        <ol style="list-style-type: decimal;margin-left: 2px">
-       <li>Load interrupt routine 9, module 1 and module 2 from the disk to the memory.</li>
-       	<li>Initialize the memory free list with value 1 for pages used and 0 for pages not used.</li>
-       	<li>Intialize the fields MEM_FREE_COUNT and WAIT_MEM_COUNT in the system status table.</li>
+       <li>Load interrupt routine 9, module 1 and module 2 from the disk to the memory. Refer to disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
+       	<li>Initialize the memory free list with value 1 for pages used and 0 for free pages.</li>
+       	<li>Initialize the fields WAIT_MEM_COUNT to 0 and MEM_FREE_COUNT to number of free pages in the system status table.</li> 
+
+<br>
+       	<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px" ><p>ExpOS memory layout for the XSM machine sets pages 76-127 as free pages and the remaining are reserved for OS modules, OS data structures, interrupts, system calls, code region of special processes (INIT, shell), the OS library etc. Hence, the initial setting of the memory free list should mark pages 76-127 as free (value 0) and the rest as allocated (value 1).  The memory manager shall be doing allocation and deallocation only from the free pool (76-127).  The boot module/OS startup code further allocates space for the user-area page and stack pages for INIT and IDLE processes from this free pool. The INIT process require two additional pages for the heap.  
+        The pages allocated to INIT process are-
+         stack-76, 77, 
+         heap-78, 79,
+        user area page-80 and 
+        for IDLE process-
+         stack-81,
+         user area page-82. Hence, the effective free pool (MEM_FREE_COUNT value) at the end of OS initialization process starts from memory page 83.</p></div> 
+
 
        </ol>
 
@@ -3326,7 +3340,7 @@ userSP=SP;</pre></div></li>
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq9"><b>Q1.</b> Why does exec reclaim the same user area page for the new process? </a>
+<a data-toggle="collapse"  href="#collapseq9"><b>Q1.</b> Why does exec reclaim the same user area page for the new process? (As done in step 7 of exec system call implementation.) </a>
                             <div id="collapseq9" class="panel-collapse collapse">
 	     Since the page storing the kernel context has been de-allocated, before making any function call, a stack page has to be allocated to store parameters, return address etc.  It is unsafe to invoke the Get Free Page function of the memory manager module before allocating a stack page (why?).   
 		</div>
@@ -3334,6 +3348,22 @@ userSP=SP;</pre></div></li>
                           </ul>
                           </div>
                           </div>
+
+<div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+                          <a data-toggle="collapse"  href="#collapseq10"><b>Q2.</b> Why should the OS set the WRITE PERMISSION BIT for library and code pages in each page table entry to 0, denying permission for the process to write to these pages?  </a>
+                            <div id="collapseq10" class="panel-collapse collapse">
+	     ExpOS does not expect processess to modify the code page during execution. Hence, during a fork() system call (to be seen in later stages), the code pages are shared between several processes.  Similarly, the library pages are shared by all processes.  If a process is allowed to write into a code/library page, the shared program/library will get modified and will alter the execution behaviour of other processes, which violates the basic <a href="https://en.wikipedia.org/wiki/Virtual_address_space" target="_blank">virtual address space</a> model offered by the OS.          
+		</div>
+		</li>
+                          </ul>
+                          </div>
+                           </div>
+
+                          <b style="color:#26A65B">Assignment 1: </b><b>[Shell version-I]</b> Write an ExpL program to read the name of program from the console and execute that program using exec system call. Load this program as INIT program and run the odd.expl (printing odd numbers between 1-100) program using the shell.
+         <br><br>
 		</div>
 		</div>
 <!-- =========end Stage 17 ===========-->
@@ -3359,7 +3389,7 @@ userSP=SP;</pre></div></li>
                             <ul>
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with disk interrupt handling in XSM.</li>
                               
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modifying Exec system call to handle disk interrupt.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify the Exec system call to handle disk interrupt.</li>
                             </ul>                                  
                              </div>
                           </li>
@@ -3369,36 +3399,56 @@ userSP=SP;</pre></div></li>
 
 	<!-- End Learning Objectives--> 
                         <p>
-                        	In this stage, we will introduce disk interrupt handling in XSM. In previous stage, we used loadi statement to load a disk block into a memory page. When the <a href="support_tools-files/spl.html" target="_blank">loadi statement</a> (immediate load) is used for loading, the machine will continue the execution of the next instruction only after the block transfer is complete by the disk controller. A process can use the load statement instead of loadi to load a disk block to a memory page. <a href="support_tools-files/spl.html" target="_blank">load statement</a> in SPL translates to <a href="arch_spec-files/instruction_set.html" target="_blank">LOAD instruction in XSM</a>. 
+                        	In this stage, we will introduce disk interrupt handling in XSM. In the previous stage, we used loadi statement to load a disk block into a memory page. When the <a href="support_tools-files/spl.html" target="_blank">loadi statement</a> (immediate load) is used for loading, the machine will  execute the next instruction only after the block transfer is complete by the <a href="arch_spec-files/interrupts_exception_handling.html#disk_interrupt" target="_blank">disk controller</a>. A process can use the <b>load statement</b> instead of loadi to load a disk block to a memory page. The <a href="support_tools-files/spl.html" target="_blank">load statement</a> in SPL translates to <a href="arch_spec-files/instruction_set.html" target="_blank">LOAD instruction in XSM</a>. 
                         </p>
 
                         <p>
-                        	LOAD instruction takes two arguments, page number and block number. The LOAD instruction initiates the transfer of data from the given disk block number to the page number. The XSM machine doesn't wait for the block transfer to complete, it continues with the execution of the next instruction. Hence XSM provides a hardware mechanism to detect the completion of data transfer. XSM machine raises a <a href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">disk interrupt</a> when the disk operation is complete. 
+                        	The LOAD instruction takes two arguments, a page number and a block number. The LOAD instruction initiates the transfer of data from the specified disk block to the memory page. The <b>XSM machine doesn't wait for the block transfer to complete</b>, it continues with the execution of the next instruction. Hence XSM provides a hardware mechanism to detect the completion of data transfer. XSM machine raises the <a href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">disk interrupt</a> when the disk operation is complete. 
                         </p>
 
                         <p>
-                          To initiate the disk transfer using the load statement, first the process has to acquire the disk. This ensures that no other process uses the disk while the process which has acquired the disk is loading the disk block to the memory page. eXpOS maintains a data structure called <a href="os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a> to keep track of these disk-memory transfers. The disk status table stores the status of the disk indicating whether the disk is busy or free. The disk status table has a LOAD/STORE bit indicating whether the disk operation is loading or storing. It also stores the page number and the block number involved in the tansfer. To keep track which process is currently using the disk, PID of the process is also stored in the disk status table. The constant <a href="support_tools-files/constants.html" target="_blank">DISK_STATUS_TABLE</a> gives the starting address of the Disk Status Table.  
+                          To initiate the disk transfer using the load statement, first the process has to <b>acquire</b> the disk. This ensures that no other process uses the disk while the process which has acquired the disk is loading the disk block to the memory page. eXpOS maintains a data structure called <a href="os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a> to keep track of these disk-memory transfers. The disk status table stores the status of the disk indicating whether the disk is busy or free. The disk status table has a LOAD/STORE bit indicating whether the disk operation is a load or store. The table also stores the page number and the block number involved in the transfer. To keep track of the process that has currently acquired the disk, the PID of the process is also stored in the disk status table. The constant <a href="support_tools-files/constants.html" target="_blank">DISK_STATUS_TABLE</a> gives the starting address of the Disk Status Table in the <a href="os_implementation.html" target="_blank">XSM memory</a>.  
                         </p>
-                         <p>After the current process has acquired the disk for loading, it initializes the Disk Status Table according to the operation. The process then issues the load statement (XSM instruction LOAD) to initiates the loading of the disk block to the memory page. As mentioned earlier, the XSM machine does not wait for the tranfer to complete. It continues with the execution of the next instruction. The next instruction may use the data of the memory page in which we are loading the disk block. So, it doesn't make any sense to continue with the execution of the next instruction. Hence, the process suspends its execution by changing its state to WAIT_DISK and invokes the scheduler.</p>
+                         <p>After the current process has acquired the disk for loading, it initializes the Disk Status Table according to the operation. The process then issues the load statement to initiate the loading of the disk block to the memory page. As mentioned earlier, the XSM machine does not wait for the tranfer to complete. It continues with the execution of the next instruction. However, virtually in any situation in eXpOS, the process has to wait till the data transfer is complete before proceeding (why?).  Hence, the process suspends its execution by changing its state to WAIT_DISK and invokes the scheduler, allowing other concurrent processes to run. (At present, the only concurrent process for the OS to schedule is the IDLE process.  However, in subsequent stages we will see that the OS will have more meaningful processes to run.)</p>
 
-                         <p>When the loading of the page from the disk to the memory (or storing of the page from the memory to the disk) is complete, XSM machine raises the hardware interrupt called disk interrupt. This interrupt mechanism is similar to the console interrupt handler. Note that when disk interrupt occurs, XSM machine stops the execution of the currently running process. The currently running process is not the one which has acquired the disk. The currently running process resumes its execution after disk interrupt handler returns to it. Disk interrupt handler releases the disk by changing the STATUS filed in the Disk Status table to 0. It then wakes up all the processes waiting for the disk which also includes the process which is waiting for the disk-transfer to complete. </p>
+                         <p>When the load/store transfer is complete, XSM machine raises the hardware interrupt called the <b>disk interrupt</b>. This interrupt mechanism is similar to the console interrupt. Note that when disk interrupt occurs, XSM machine stops the execution of the currently running process. The currently running process is not the one that has acquired the disk (why?). The disk interrupt handler releases the disk by changing the STATUS field in the Disk Status table to 0. It then wakes up all the processes waiting for the disk (by changing the STATE from WAIT_DISK to READY) which also includes the process which is waiting for the disk-transfer to complete. Then returns to the process which was interrupted by disk controller.</p>
                         <p>
-                        In exec system call, Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a> is invoked instead of the loadi statement. Disk Load function (function number 2) takes the PID of the current process, page number and block number as arguments. Disk Load function performs the following tasks 1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0) 2) Set the Disk Status table entries 3) Issue the load statement to initiate the loading 4) Set the state of the current process to WAIT_DISK and invoke the scheduler. </p>
 
-                        <p>The Acquire Disk function in the resource manager module (function number = 3) takes the PID of the process as argument. While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and schedule other process. When the disk is finally free, the process locks the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p>
+                        <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"><p> XSM machine disables interrupts when executing in the kernel mode.  Hence, the disk controller can raise an interrupt only when the machine is executing in the user mode. Hence the OS has to schedule "some process" even if all processess are waiting for disk/terminal interrupt - for otherwise, the device concerned will never be able to interrupt the processor.  The IDLE process is precisely designed to take care of this situation.   
+                        </p></div><br>
+
+                        <p>
+                        In this stage, <b>you have to modify the exec system call by replacing the <a href="support_tools-files/spl.html" target="_blank">loadi statement</a> by a call to the <i>Disk Load</i> function. The <i>Disk Load</i> function (in device manager module), the <i>Acquire Disk</i> function (in resource manager module) and the <i>disk interrupt handler</i> must also be implemented in this stage.</b> Minor modification will be required for the boot module.</p>
+<br>
+                   <ol style="list-style-type: decimal;margin-left: 2px">
+                 <li><b>Disk Load (function number = 2, <a href="os_modules/Module_4.html" target="_blank">device manager module</a>) </b></li>
+                        <p> The Disk Load function takes the PID of a process, a page number and a block number as input and performs the following tasks : <br>1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0)<br> 
+                        2) Set the <a target="_blank" href="os_design-files/mem_ds.html#ds_table">Disk Status table</a> entries as mentoned in the algorithm.<br> 3) Issue the <a href="support_tools-files/spl.html" target="_blank">load statement</a> to initiate a disk block to memory page DMA transfer <br> 4) Set the state of the process (with given PID) to WAIT_DISK and invoke the scheduler. </p>
+<br>
+                        <li><b>Acquire Disk (function number = 3, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>) </b></li>
+                        <p>The Acquire Disk function in the resource manager module  takes the PID of a process as an argument. The Acquire disk function performs the following tasks : <br>
+                        1) While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and invoke the scheduler. <br>/* When the disk is finally free, the process is woken up by the disk interrupt handler.*/<br> 2) Lock the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p><br>
+                        <li><b>Implementation of <a target="_blank" href="os_design-files/disk_interrupt.html">Disk Interrupt handler</a> </b></li>
+
+  					<p>When the disk-memory transfer is complete, XSM raises the disk interrupt. The disk interrupt handler then performs the following tasks :
+
+  	    <br>1) Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.
+  	 <br>2) Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.
+  	 <br>
+  	  3) Return to user mode using the ireturn statement.
+                        </p>
                         <!-- <p>There is one other task to be done in exec system call in this stage, initiaizing the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. Per-process resource table stores the details about the files and semaphores, the process is suing currently. The table has 8 entries each of 2 words each. We initialize all entries in this table to -1. A part of the user area page of each process is used for per-process resourece table. This initalization is done after we reacquire the user area page in exec system call.</p>-->
 
 
-                        <p><code>Note:</code> There is no Release Disk function to release the disk is present. As disk interrupt handler completes the task of Release Disk function.</p>
+                        <p><code>Note:</code> There is no Release Disk function to release the disk instead the disk interrupt handler completes the task of the Release Disk function.</p>
 
 <br>
-    <b> Modification to interrupt 9</b>
-<br><br>
-    <ol style="list-style-type: decimal; margin-left: 2px">
+<li><b> Modification to exec system call (interrupt 9 routine)</b></li>
+    
    <!-- <li>After reacquiring the user area page, initialize all entries in the per-process table to -1.</li>-->
-   <li>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
-   </ol>
-    <br>
+   <p>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</p></li>
+  
+    <!--
     <b> Modification to device manager module</b><br><br>
   <p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Disk Load, implement below steps:</p>
     <ol style="list-style-type: decimal;margin-left: 2px">
@@ -3429,11 +3479,14 @@ userSP=SP;</pre></div></li>
   	  <li>Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.</li>
   	  <li>Return to user mode using the ireturn statement.</li>
 
-  </ol>
-  <br><b>Modifications to boot module</b><br><br>
-  <ol style="list-style-type: decimal;margin-left: 2px">
-  	<li>Load the disk interrupt routine from the disk to the memory.</li>
-  	<li>Initialize the STATUS field in the Disk Status Table to 0.</li>
+  </ol>-->
+  <br>
+  <li><b>Modifications to boot module</b></li>
+    
+  
+   	<p> Following modifications are done in boot module :<br>
+   	1) Load the disk interrupt routine from the disk to the memory.<br>
+  	2) Initialize the STATUS field in the Disk Status Table to 0.<br></p>
   </ol>
  <br>
    <p>Compile and load the modified and newly written files into the disk using XFS-interface.</p>
@@ -3443,8 +3496,8 @@ userSP=SP;</pre></div></li>
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq10"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
-                            <div id="collapseq10" class="panel-collapse collapse">
+<a data-toggle="collapse"  href="#collapseq11"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
+                            <div id="collapseq11" class="panel-collapse collapse">
 	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process is initialized and data structures like Disk Status Table is also not initialized. 
 		</div>
 		</li>
