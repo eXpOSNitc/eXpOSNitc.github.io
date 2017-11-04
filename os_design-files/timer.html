@@ -118,23 +118,23 @@
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
-Save the SP register to User SP field of Process Table entry of the current process.
-			 
-Set the value of SP to the beginning of the kernel stack of the current process. (This will be the beginning of the <a href="../os_design-files/process_table.html#user_area">User Area</a> page of the process).
+Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack management during system calls</a> */
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
 
-Backup the context of the current process using BACKUP instruction.
-
-Change the state of the current process in its Process Table entry from RUNNING to READY.
-Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a> using the call MOD_5 instruction.
+Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
 
 // swap module will be invoked whenever necessary 
 
-Restore the context of the new process using RESTORE instruction.
+Change the state of the current process in its Process Table entry from RUNNING to READY.
+Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
+
+Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
 
 Set SP as the user SP saved in the Process Table entry of the new process.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 0.
              
-Ireturn.
+ireturn.
          </div>
 		</div>
 		</div>

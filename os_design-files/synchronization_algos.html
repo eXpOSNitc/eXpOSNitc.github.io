@@ -121,7 +121,7 @@ process has to wait.
                                                     </tr> 
                                                     <tr>
                                                       <td>-1</td>
-                                                      <td>Given process identifier is invalid or it is the pid of the invoking process</td>
+                                                      <td>Given process identifier is invalid or it is the pid of the same process invoking wait</td>
                                                                                                       
                                                 </table>
                                                 <p><i>Description </i>:  The current process is blocked till the process with PID given as argument
@@ -136,15 +136,13 @@ Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack man
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
-Backup the context of the current process using BACKUP instruction.  Or should we do this just before the scheduler call??
-
 <b>If</b> process is intending to wait for itself or for a non-existent process, return -1. &nbsp;&nbsp; /* Check the status from Process table.  */ 
            
 Change the status from (RUNNING,_ ) to (WAIT_PROCESS, Argument_PID ) in the <a href="process_table.html" target="_blank">Process Table</a>.
              
-Invoke the Scheduler by calling the switch_context() function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
+Invoke the Scheduler by calling the <b>switch_context()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
 
-Restore the context of the current process using RESTORE instruction.
+/* The following code excutes only when scheduled again after the occurance of a signal/exit of the process waiting for. */
 
 Restore SP to the USER SP stored in the process table.
 
@@ -177,7 +175,7 @@ Return 0.&nbsp;&nbsp;/* Success */
                                                     </tr> 
                                                      
                                                 </table>
-                                                <p><i>Description</i>:  All processes waiting for the signaling process are resumed. The system
+                                                <p><i>Description</i>:  All processes waiting for the signalling process are resumed. The system
 call does not fail. The only data structure updated is <a href="process_table.html" target="_blank">Process Table</a>.The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.
 </p>
               
@@ -188,10 +186,8 @@ Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to
 
 <a data-toggle="collapse"   href="#collapse1">Wake up all processes waiting for the current process.</a>
 <div id="collapse1" class="panel-collapse collapse">    Traverse through the <a href="process_table.html" target="_blank">Process Table</a>
-	<b>If</b> the process is in state (<a href="constants.html" target="_blank">SWAPPED_WAIT</a>, Pid) where Pid matches with the PID of the current process.
-		Change the state to (<a href="constants.html" target="_blank">SWAPPED</a>, _). &nbsp;&nbsp;/*It will be set to ready when set back.*/
-	<b>Else if</b> the process is in state (<a href="constants.html" target="_blank">WAIT_PROCESS</a>, Pid) where Pid matches with the PID of the current process.
-          	Change the status to (<a href="constants.html" target="_blank">READY</a>, _ ) for those processes in state (WAIT_PROCESS, Pid) where Pid matches with the PID of the current process.
+	<b>If</b> the process is in state (<a href="constants.html" target="_blank">WAIT_PROCESS</a>, Pid) where Pid matches with the PID of the current process.
+          	Change the status to (<a href="constants.html" target="_blank">READY</a>, _ ).
 </div>
 Reset the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 0.
 

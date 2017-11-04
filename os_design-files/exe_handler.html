@@ -113,7 +113,7 @@
                <br>   
                <p>Arguments : None</p>
                <p>Return value : None</p>
-               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write a page which is read-only, 4) causes other faulty conditions which are machine dependent, the machine will generate an exception. See <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Handling (Tutorial)</a>. The exception handler must terminate the process and invoke the context switch module to to schedule other processes. </p>
+               <p><i>Description</i> : If a process 1) generates an illegal instruction or an invalid address (outside its virtual address space) 2) do a division by zero 3) tries to write to a page which is read-only, 4) causes other faulty conditions which are machine dependent, the machine will generate an exception. See <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Handling (Tutorial)</a>. The exception handler must terminate the process and invoke the context switch module to to schedule other processes. </p>
                <p>The exception handler is also invoked when a page required by a process is not present in the memory. This condition is known as a <a href="http://en.wikipedia.org/wiki/Page_fault" target="_blank">page fault</a>. The eXpOS scheduler will never schedule a process if its stack page is not present in the memory.  Hence, a page fault can occur only when either a) one of the code pages of the process (logical pages 4 to 7) has to be loaded from the disk or b) one of the heap pages has not been allocated (logical page 2 or 3). When a page fault exception occurs, the exception handler routine checks if the page resides in the disk. If it does, it is loaded to the memory and the page table is updated. Otherwise, a new page is allocated to the process by the exception handler.</p>
                <p>The data structures updated are <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="mem_ds.html#ss_table" target="_blank">System Status Table</a>, <a href="mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> and <a href="process_table.html#per_page_table" target="_blank">Page Table</a>.</p>
                <p>The MODE FLAG must be set upon entering the system call and reset before returning.</p>
@@ -127,7 +127,7 @@ Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack man
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
-Backup the context of the current process using BACKUP instruction.
+Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
 
 <b>If</b> the exception is not caused by a page fault  /* Check the <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Cause registers</a> */
              Display the cause of the exception.
@@ -138,18 +138,19 @@ Backup the context of the current process using BACKUP instruction.
 Using the Exception registers, find the page number of the page causing the exception.
 
 If (page corresponds to a code page)
-	Get the disk block to load from the <a href="process_table.html#disk_map_table">Disk Map Table</a> entry of the process.
+	Get the disk block number to load from the <a href="process_table.html#disk_map_table">Disk Map Table</a> entry of the process.
 	Load the page to memory by calling the <b>get_code_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> Module.
-	In the <a href="process_table.html#per_page_table">page table</a> entry, set the Page Number field to the page number returned by 
-	the previous call to get_code_page()
-	Set the <a href="../Tutorials/xsm_interrupts_tutorial.html">referenced and valid bits</a> to 1. Also set the write bit to 0.
+	In the <a href="process_table.html#per_page_table">page table</a> entry, set the Page Number field to the page number returned by get_code_page()
+	Set the <a href="process_table.html#per_page_table">referenced and valid bits</a> to 1. Also set the <a href="process_table.html#per_page_table">write bit</a> to 0.
+	/* Code pages are not writable */
   
 else if (page corresponds to a heap page)
 	Allocate a new memory page by calling the <b>get_free_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 	In the page table entry, set the Page Number field to the number of the page allocated above
 	and auxiliary information to referenced and valid. Also set the write bit to 1.
+	/* Heap is writable */
 
-Restore the context of the process using RESTORE instruction.
+Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
 
 Reset the MODE_FLAG back to 0.
 Restore SP to the USER SP stored in the process table.

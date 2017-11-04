@@ -108,7 +108,7 @@
                <br>
                             <br>
               <p>The Process Table (PT) contains an entry for each <a href="../os_spec-files/processmodel.html" target="_blank">process</a> present in the system. The entry is created when the process is created by a Fork system call. Each entry contains several fields that stores all the information pertaining to a single process. The maximum number of entries in PT (which is maximum number of processes allowed to exist at a single point of time in eXpOS) is MAX_PROC_NUM. In the current version of eXpOS, MAX_PROC_NUM = 16.</p>
-              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words, of which last 2 words are unused. Any entry of PT has the following fields:</p>
+              <p>Each entry in the Process Table has a constant size, defined by the PT_ENTRY_SIZE. In this version of eXpOS, PT_ENTRY_SIZE is set to 16 words. Any entry of PT has the following fields:</p>
               <table class="table table-bordered" >
                   <tr >
                       <td style="border: 1px solid black">TICK</td>
@@ -171,8 +171,6 @@
                           <li>(WAIT_MEM, ___) – The process is blocked due to unavailability of memory pages. </li>                          
                           <li>(WAIT_BUFFER, BUFFERID) – The process is waiting for disk buffer of index BUFFERID to be unlocked. </li>
                           <li>(WAIT_TERMINAL,___) – The process is waiting for one of the following: a) a Read from Terminal, which it has issued OR b)to be completed or if the terminal is blocked by some other process.  The terminal interrupt handler changes the state from (WAIT_TERMINAL,___) to (READY,___), after it has completed the terminal read/write.</li>
-                          <li>(SWAPPED_WAIT,___) – future.</li>
-                          <li>(SWAPPED,___) – future.</li>
                       </ul>
                               <p>Process states and transitions can be viewed <a href="state_diag.html" target="_blank">here</a>.</p>
 			      <p><b>Note: </b> When a process terminates, the STATE field in it's process table entry is marked TERMINATED to indicate that the process table entry is free for allocation to new processes. </p>

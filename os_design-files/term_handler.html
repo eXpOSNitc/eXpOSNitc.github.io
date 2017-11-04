@@ -116,7 +116,11 @@
                <br>
               	<div><h4>Algorithm:</h4></div>
 		<pre>
-/* Since the terminal handler does not invoke any module functions, we do not switch to kernel stack. */
+Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack management during system calls</a> */
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
 
 Set the status field in <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> to 0 to indicate that the terminal is free.
 
@@ -132,6 +136,11 @@ Set the PID field of Terminal Status Table to -1.
 
 	2. Change the state of those processes to (<a href="constants.html" target="_blank">READY</a>, __).
 </div>
+
+Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
+
+Restore SP to the value stored in USER_SP field of the process table entry of the process.
+
 ireturn;
 </pre>
              

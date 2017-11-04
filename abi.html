@@ -301,6 +301,7 @@ level system call interface directly bye-passing the library.</p>
                                 <p>For an application program, there are two stages in executing a system call:</p>
                                 <ul style="text-indent: 5em;">
                                     <li>1. <b>Before the system call</b> :   The calling application must set up the arguments in the (user) stack before executing the trap instruction.  </li>
+				    <p><b>Important Note:</b>  The calling application is supposed to save its register context into the stack before making a system call.  The system call is not expected to save the user context of the calling application.  However, the <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling convention</a> (unfortunately) does not save the Base Pointer Register (BP) before the call. Hence, the OS implementation must be careful to save the value of the register.   
                                     <li>2. <b>After the system call</b> :   The return value of the system call must be extracted from the stack.  </li>
                                     
                                 </ul>

@@ -320,8 +320,10 @@ Called by Read, Write and Seek system calls.
 
 <pre> 
 
-Find the index of a free entry in <a href="../os_design-files/mem_ds.html#sem_table" target="_blank">Semaphore table</a> and increment the process count. If no free entry, return -1.
+Find the index of a free entry in <a href="../os_design-files/mem_ds.html#sem_table" target="_blank">Semaphore table</a>. If no free entry, return -1.
 /* Free entry is indicated by a Process Count of 0. */ 
+
+Set the PROCESS_COUNT to 1 and LOCKING_PID to -1.
 
 Return the Semaphore table index. &nbsp;&nbsp;/* success */
 </pre>
@@ -341,6 +343,7 @@ If ( semaphore is locked by the current process) &nbsp;&nbsp;/*Check the Locking
 	}
 
 Decrement the process count of the semaphore in the semaphore table.
+/* When the count becomes 0, the semaphore is free. */
 	     
 </pre>
 
