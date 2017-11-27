@@ -831,6 +831,10 @@
                                                         <td>-2</td>
                                                         <td>Permission denied</td>
                                                     </tr>
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Number of users have reached the system limit</td>
+                                                    </tr>
                                                                                                         
                                                 </table>
                                                 
@@ -869,6 +873,10 @@
                                                         <td>Permission denied</td>
                                                     </tr> 
                                                                                                         
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Undeleted files exist for the user</td>
+                                                    </tr> 
                                                 </table>
                                                 
                                                 <p>Description: This system call is used to remove an existing user. This system call can be executed only by processes whose user is either root or kernel. The root user and kernel cannot be removed. </p>
@@ -900,10 +908,14 @@
                                                         <td>-1</td>
                                                         <td>Unauthorised attempt to change password</td>
                                                     </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>The user does not exist.</td>
+                                                    </tr> 
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password. This system call can be executed only by processes whose user is either root or kernel.</p>
+                                                <p>Description: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -936,7 +948,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: If the username is valid, this system call returns the userid corresponding to the username passed.Otherwise,it returns -1.</p>
+                                                <p>Description: If the username is valid, this system call returns the userid corresponding to the username. Otherwise, it returns -1.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -969,7 +981,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.</p>
+                                                <p>Description: If the userid is valid, this system call returns the username corresponding to the userid. Otherwise, it returns -1.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1010,6 +1022,36 @@
                                 </div>
                          <!--end login system call-->
                            
+
+                         <!-- logout system call-->
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapse28">Logout</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse28" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                               
+                                                <p>Arguments: None</p>
+                                                <p>Return Value: </p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated. Processes which have locked resources are killed after they have released the resource. Idle is the only user process that is allowed to run till the competion of this system call. Finally the current running process is also terminated, leaving behind only the Login program and Idle which gets scheduled afterwards.</p>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         <!--end logout system call-->
+ 
                           </div>
                         </div>
                          <!--end multiuser system calls-->

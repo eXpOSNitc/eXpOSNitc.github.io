@@ -126,12 +126,28 @@
                                                         <td>-2</td>
                                                         <td>Permission denied</td>
                                                     </tr>
+                                                    <tr>
+                                                        <td>-3</td>
+                                                        <td>Number of users has reached the system limit.</td>
+                                                    </tr>
                                                                                                         
                                                 </table>
                                                 
              <p><i>Description</i>: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
+	     <pre>
+If the userid of the invoking process is not 0 or 1, return -2.
+
+Loop through the <a href="disk_ds.html#user_table">User Table</a> and exit returning -1 if an entry for the user already exists.
+
+Find a free entry in the User Table. If no free entry is found, return -3.
+
+Find the encrypted password by applying the <a href="../arch_spec-files/instruction_set.html">ENCRYPT</a> instruction on the input password.
+Set the USERNAME and ENCRYPTED PASSWORD fields of the User Table entry.
+
+Return 0
+	     </pre>
 
              
          </div>
@@ -180,7 +196,20 @@
                                                 <p><i>Description</i>: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
+            <pre>
+If the userid of the invoking process is not 0 or 1, return -2.
+
+If the user to be removed is the "root" or "kernel" return -2.
+
+Loop through the <a href="disk_ds.html#root_file">Root File</a> and exit returning -3 if there are files of the user present on disk.
+
+Loop through the <a href="disk_ds.html#user_table">User Table</a> and find the entry curresponding to the user.
+If the entry is not found, return -1.
+
+Invalidate the entry by setting the USERNAME and ENCRYPTED PASSWORD fields to -1.
+
+Return 0.
+	    </pre>
          </div>
 		</div>
 		</div>
@@ -204,8 +233,16 @@
                                                 <p>Return Value:</p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>Unauthorised attempt to change password</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td>-2</td>
+                                                        <td>The user does not exist</td>
                                                     </tr> 
                                                                                                         
                                                 </table>
@@ -213,7 +250,21 @@
                                                 <p><i>Description</i>: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
+             <pre>
+Loop through the <a href="disk_ds.html#user_table">User Table</a> and finds the entry curresponding to the user name.
+If entry is not found, return -2.
+
+If (userid of the process is not equal to the userid of the user) {
+	If (the current user is not kernel or root)) { 
+		Return -1 
+	}
+}
+
+Find the encrypted password by applying the <a href="../arch_spec-files/instruction_set.html">ENCRYPT</a> instruction on the input password.
+Set the ENCRYPTED PASSWORD field in the user table entry.
+
+Return 0.
+	     </pre>
          </div>
 		</div>
 		</div>
@@ -249,10 +300,17 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p><i>Description</i>: If the username is valid, this system call returns the userid corresponding to the username passed.Otherwise,it returns -1.
+                                                <p><i>Description</i>: If the username is valid, this system call returns the userid corresponding to the username. Otherwise, it returns -1.
+						<p> The userid of a user is the index of the user table entry of the user.<p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
+            <pre>
+Loop through the <a href="disk_ds.html#user_table">User Table</a>:
+	If username is equal to USERNAME field of the entry
+		return index of the entry
+
+Return -1
+	    </pre>
          </div>
 		</div>
 		</div>
@@ -285,10 +343,16 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p><i>Description</i>: If the userid is valid, this system call returns the username corresponding to the userid passed.Otherwise,it returns -1.</p>
+                                                <p><i>Description</i>: If the userid is valid, this system call returns the username corresponding to the userid. Otherwise, it returns -1.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
+	     <pre>
+If (UserID < 0 or UserID > 15)
+	Return -1
+
+Fetch the user name from the <a href="disk_ds.html#user_table">User Table</a>.
+Return the username.
+</pre>
          </div>
 		</div>
 		</div>
@@ -307,8 +371,12 @@
              
                                                 
             <p>Arguments: User name, Password</p>
-                                                <p>Return Value: </p>
+                                                <p>Return Value: 0 on success?? </p>
                                                 <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
                                                     <tr>
                                                         <td>-1</td>
                                                         <td>Invalid username or password</td>
@@ -323,12 +391,48 @@
                                                 <p><i>Description</i>: This system call is used to login a new user. It can be executed only from a process with userid 0 (kernel process). It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
+             <pre>
+	If <b>userid</b> of the calling process is not 0, return -2.
+
+	If the user name is "kernel", return -2.
+	     </pre>
          </div>
 		</div>
 		</div>
 		</section>
-				
+			
+		<section id="logout">
+		   <br><br><br>
+
+      <div class="container">
+        <div class="row">
+         <div class="heading">
+              <h2>Logout</h2>
+               <br>
+               <br>                                      
+
+             
+                                                
+            <p>Arguments: None</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                                                                        
+                                                </table>
+                                                
+						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated. Processes which are in the kernel mode are killed (right after??) they switch to user mode. Idle is the only user process that is allowed to run till the competion of this system call. Finally the current running process is also terminated, leaving behind only the Login program and Idle which gets scheduled afterwards.</p>
+              <br>
+             <div><h4>Algorithm:</h4></div>
+             <pre>
+	     </pre>
+         </div>
+		</div>
+		</div>
+		</section>
+		
 
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">

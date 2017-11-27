@@ -271,16 +271,21 @@
               </ul>  
           
            <p> <br>
-           The User table entry for two special users - the kernel and root are set at the time of formatting. <br/>
-           The userid field in inode corresponds to index in the user table. The userid of kernel is 0 and the root is 1.<br/>
-           The password field for kernel is empty because kernel is a non - loginable user.
-              </p>
-            
-            <p>
-                <u>Write about the password encryption scheme </u> 
-            </p>     
-              <p>All unused entries are set to -1.</p>  
-		<p><b>Note : </b>Memory copy of the User Table is present in page 60 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">USER_TABLE</a> points to the starting address of data structure.</p>
+              All unused entries are set to -1.<br><br>
+           The User table entry for two special users - the kernel and root are set at the time of disk formatting.<br/>
+           The userid assigned to a user is the index of the curresponding entry in the user table. The userid of kernel is 0 and the root is 1.<br/>
+	   The inode table entry of a file contains the userid of the owner of the file.<br>
+           The password field for kernel is empty because kernel is a non - loginable user.<br>
+	<br>
+           XSM machine provides an <a href="../arch_spec-files/instruction_set.html">ENCYRPT</a> machine instruction that converts an integer/string to a hash value.  The hash value is called the "encrypted" form of the original integer/string.  XSM provides no mechanism for reversing the ENCRYPT procedure.  <br>
+<br>
+	   <b>IMPORTANT NOTE:</b> There must be some mechanism to initialize the root password. In the XSM Machine, if you run the <a href="../support_tools-files/xfs-interface.html">xfs-interface</a> FDISK, the default password of root is set to "root" (without quotes).  When FDISK is run, the encryped password field of the user root is initialized in the user table.  The value corresponds to that obtained by running the ENCRYPT function on the string "root".  
+
+
+             
+            <br>
+            <br>
+		<b>Note : </b>Memory copy of the User Table is present in page 60 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">USER_TABLE</a> points to the starting address of data structure.</p>
 </div>
                   
         </div>
