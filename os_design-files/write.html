@@ -99,111 +99,111 @@
     </header>
     <!--=========== End HEADER SECTION ================--> 
 
-	 <!--=========== BEGIN Read================-->
+	 <!--=========== BEGIN Write================-->
 	<section id="seek">
 		   <br><br><br>
 
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2>Read System Call</h2>
+              <h2>Write System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: File Descriptor(Integer) and a Buffer (a String/Integer variable) into which a word is to be read from the file</p>
-            <p>Return Value:</p>
-            <table class="table table-bordered">
-            <table class="table table-bordered">
+			<p>Arguments: File Descriptor(Integer) and Address where word to be written is present</p>
+                                                <p>Return Value:</p>
+                                                <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
                                                         <td>Success</td>
                                                     </tr> 
-                                                   <tr>
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>File Descriptor given is invalid</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>No disk space / File size exceeded</td>
+                                                        <td>No disk space</td>
                                                     </tr> 
-                                                     <tr>
+                                                    <tr>
                                                         <td>-3</td>
-                                                        <td>File is the Root file</td>
-                                                    </tr> 
+                                                        <td>Permission denied</td>
+                                                    </tr>
+                                                    
                                                 </table>
-                                                <p><i><b>Description</b></i> : The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file. After each Write operation, the file pointer advances to the next word in the file. Root and Executable files cannot be written.</p> <br>
-
+                                                <p>Description: The file descriptor is used to identify an open instance of the file.  The Write operation writes the word stored in the buffer to the position pointed by the file pointer of the file.   After each Write operation, the file pointer advances to the next word in the file. Root file and Executable files cannot be written.</p>
+                                                <p><font color="red">*</font> In addition to this in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, data files which are created with exclusive permission, cannot be written into by any user other than the owner, root or kernel.</p>
+                                            
                                                 <!--
                                                 <p>The data structures modified are <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
 
                                                 -->
              <div><h4><b>Algorithm</b>:</h4></div>
-             <p><b>If</b> the word is to be written to STDOUT (terminal device) &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */</p>
-             
-             <p style=" text-indent: 4em;">Call the <i>Terminal Write </i>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .</p>
+	     <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 5, 
+indicating that the process is in the write system call.
+
+//Switch to Kernel Stack - See <a href="stack_smcall.html">Kernel Stack Management during System Calls</a>. 
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+<b>If</b> the word is to be written to STDOUT (terminal device) &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */
+	     Call the <b>terminal_write()</b>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .
 			 
-			<p>/* If not terminal, write to file. */</p>
+/* If not terminal, write to file. */
 
-      <p>If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */</p>
+If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */
 
-       <p ><a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a></p>
-             <div id="collapse5a" class="panel-collapse collapse">
+<a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a><div id="collapse5a" class="panel-collapse collapse">
+                 Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
+                 Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table</a> entry.
 
-                <p style=" text-indent: 6em;"> Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.</p>
-                <p style=" text-indent: 6em;"> Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table</a> entry.</p>
+                 The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>??.</div>
 
-                 <p style=" text-indent: 6em;"> The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.</p>
+If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   
+/* No file is open with this file descriptor. */
 
-              </div>
+Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.
 
-             <p>If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* No file is open with this file descriptor. */</p>
+Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. 
 
+If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT), return -3. 
 
+Get the Lseek position from the Open File Table entry.
 
-      <p>Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.</p>
+<b>If</b> lseek position is same as the maximum file size, return -2.&nbsp;&nbsp;/* Maximum file size reached*/
 
-      <p>Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. </p>
+Acquire the Lock on the File by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.  
 
-      <p>If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT), return -3. </p>
+<a data-toggle="collapse"   href="#collapse8a">If the Lseek position is the same as File size </a><div id="collapse8a" class="panel-collapse collapse">
+              Get a free disk block by calling the <b>get_free_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 
-      <p>Get the Lseek position from the Open File Table entry.</p>
+              If no free disk block is found 
+                   Release the Lock on the file  by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.   
+                    Return -2.
 
-       <p><b>If</b> lseek position is same as the maximum file size, return -2.&nbsp;&nbsp;/* Maximum file size reached*/</p>
-
-       <p>Acquire the Lock on the File by calling the <i>Acquire Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>  
-
-       <p> <a data-toggle="collapse"   href="#collapse8a">If the Lseek position is the same as File size </a></p>
-          <div id="collapse8a" class="panel-collapse collapse">
-              <p style=" text-indent: 4em;"> Find a free disk block by searching in the <a href="disk_ds.html#disk_free_list" target="_blank">Disk free list </a>.</p>
-
-              <p style=" text-indent: 4em;"> If no free disk block is found</p> 
-                   <p style=" text-indent: 6em;">Release the Lock on the file  by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>   
-                   <p style=" text-indent: 6em;"> Return -2.</p>
-
-              <p style=" text-indent: 4em;">Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.</p> 
+              Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry. 
                   
-              <p style=" text-indent: 4em;">Update the file size ( ++ 512) in the corresponding field in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.</p> 
-                  
-          </div>  
+              Update the file size ( ++ 512) in the corresponding field in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.        </div>  
 
-      <p><a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a></p>
-      <div id="collapse8" class="panel-collapse collapse">
+<a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a>
+<div id="collapse8" class="panel-collapse collapse">
+               Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/
+               Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .
+               Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/</div>
+Write the word to the File Buffer by calling the <b>buffered_write()</b> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.
 
-              <p style=" text-indent: 4em;"> Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/</p>
-              <p style=" text-indent: 4em;">Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .</p>
-              <p style=" text-indent: 4em;"> Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/</p>
+Increment the Lseek position in the Open File Table entry.
 
-      </div>
+Release the Lock on the File by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
 
-     
+Switch back to the user stack by resoting USER SP from the process table.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
-      <p>Write the word to the File Buffer by calling the <i>Buffer Write</i> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.</p>
-
-      <p>Increment the Lseek position in the Open File Table entry.</p>
-
-      <p>Release the Lock on the File by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.</p>
-
-  <p>Return 0. &nbsp;&nbsp;/* success */</p>
+Return 0. &nbsp;&nbsp;/* success */
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
+  </pre>
  <br>
 <h4>Questions:</h4>
 <div class="panel-body">

@@ -137,6 +137,9 @@
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 22, 
+indicating that the process is in the newusr system call.
+
 If the userid of the invoking process is not 0 or 1, return -2.
 
 Loop through the <a href="disk_ds.html#user_table">User Table</a> and exit returning -1 if an entry for the user already exists.
@@ -146,7 +149,11 @@ Find a free entry in the User Table. If no free entry is found, return -3.
 Find the encrypted password by applying the <a href="../arch_spec-files/instruction_set.html">ENCRYPT</a> instruction on the input password.
 Set the USERNAME and ENCRYPTED PASSWORD fields of the User Table entry.
 
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 Return 0
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	     </pre>
 
              
@@ -197,6 +204,9 @@ Return 0
               <br>
              <div><h4>Algorithm:</h4></div>
             <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 23, 
+indicating that the process is in the remuser system call.
+
 If the userid of the invoking process is not 0 or 1, return -2.
 
 If the user to be removed is the "root" or "kernel" return -2.
@@ -208,7 +218,11 @@ If the entry is not found, return -1.
 
 Invalidate the entry by setting the USERNAME and ENCRYPTED PASSWORD fields to -1.
 
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 Return 0.
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	    </pre>
          </div>
 		</div>
@@ -251,6 +265,9 @@ Return 0.
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 24, 
+indicating that the process is in the setpwd system call.
+
 Loop through the <a href="disk_ds.html#user_table">User Table</a> and finds the entry curresponding to the user name.
 If entry is not found, return -2.
 
@@ -263,7 +280,11 @@ If (userid of the process is not equal to the userid of the user) {
 Find the encrypted password by applying the <a href="../arch_spec-files/instruction_set.html">ENCRYPT</a> instruction on the input password.
 Set the ENCRYPTED PASSWORD field in the user table entry.
 
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 Return 0.
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	     </pre>
          </div>
 		</div>
@@ -305,11 +326,18 @@ Return 0.
               <br>
              <div><h4>Algorithm:</h4></div>
             <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 26, 
+indicating that the process is in the getuid system call.
+
 Loop through the <a href="disk_ds.html#user_table">User Table</a>:
 	If username is equal to USERNAME field of the entry
 		return index of the entry
 
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 Return -1
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	    </pre>
          </div>
 		</div>
@@ -347,11 +375,19 @@ Return -1
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 25, 
+indicating that the process is in the getuname system call.
+
 If (UserID < 0 or UserID > 15)
 	Return -1
 
 Fetch the user name from the <a href="disk_ds.html#user_table">User Table</a>.
+
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 Return the username.
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 </pre>
          </div>
 		</div>
@@ -392,9 +428,15 @@ Return the username.
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 27, 
+	indicating that the process is in the login system call.
+
 	If <b>userid</b> of the calling process is not 0, return -2.
 
+
 	If the user name is "kernel", return -2.
+	
+	<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	     </pre>
          </div>
 		</div>
@@ -414,19 +456,19 @@ Return the username.
              
                                                 
             <p>Arguments: None</p>
-                                                <p>Return Value:</p>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td>0</td>
-                                                        <td>Success</td>
-                                                    </tr> 
-                                                                                                        
-                                                </table>
+                                                <p>Return Value: None</p>
                                                 
-						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated. Processes which are in the kernel mode are killed (right after??) they switch to user mode. Idle is the only user process that is allowed to run till the competion of this system call. Finally the current running process is also terminated, leaving behind only the Login program and Idle which gets scheduled afterwards.</p>
+						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and Login will be the only processes running after the execution of Logout.</p>
+
+	<br>
+	<p>(NK: Don't we have to set the mode flag in all these system calls?)
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 28, 
+indicating that the process is in the logout system call.
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
 	     </pre>
          </div>
 		</div>

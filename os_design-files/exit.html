@@ -122,7 +122,7 @@
           <pre>  
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 10.
 
-Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
+//Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
@@ -134,6 +134,8 @@ This makes it possible to make a final call from the process to the scheduler. T
 the process after the following scheduler invocation. */ 
 
 Invoke the <b>context_switch()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
                </pre>       
          </div>
 		</div>

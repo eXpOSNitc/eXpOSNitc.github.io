@@ -128,7 +128,7 @@
 	     <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 9 indicate that the process is in exec system call.
 
-Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
+//Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
@@ -182,6 +182,8 @@ Set SP to the start of the user stack region.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to back to 0.
 
 ireturn from system call to newly loaded process.   
+	
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
    </pre>
          </div>
 		</div>

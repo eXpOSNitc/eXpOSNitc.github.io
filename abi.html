@@ -291,7 +291,7 @@ is done by the allocator routines in the shared library (for example, memory all
 <p> <code>Note:</code>  If a high level language like <a href="silcnitc.github.io" target="_blank">ExpL </a> is used for writing application programs, then the application 
 programs will be using the <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">high level library interface </a> for invoking system calls.  
 The ExpL compiler is responsible for generating assembly language code to translate the call to a
-corresponding library call using the <a href="abi.html" target="_blank">low level library interface</a>.  The ExpL library which is pre-loaded into
+corresponding library call using the low level library interface.  The ExpL library which is pre-loaded into
 the system memory during eXpOS boot up contains assembly language code that redirects
 the library call to the corresponding eXpOS system call using the low level system call interface described
 here.  If you write assembly language application programs as user programs, then you can use the low 
@@ -301,7 +301,12 @@ level system call interface directly bye-passing the library.</p>
                                 <p>For an application program, there are two stages in executing a system call:</p>
                                 <ul style="text-indent: 5em;">
                                     <li>1. <b>Before the system call</b> :   The calling application must set up the arguments in the (user) stack before executing the trap instruction.  </li>
-				    <p><b>Important Note:</b>  The calling application is supposed to save its register context into the stack before making a system call.  The system call is not expected to save the user context of the calling application.  However, the <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling convention</a> (unfortunately) does not save the Base Pointer Register (BP) before the call. Hence, the OS implementation must be careful to save the value of the register.   
+				    <pre>
+				    <p><b>Important Note:</b>  The calling application is supposed to save its register context into the stack before making a system call.  
+The system call is not expected to save the user context of the calling application.  However, the <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling convention</a> 
+(unfortunately) does not save the Base Pointer Register (BP) before the call. Hence, the OS implementation must be careful 
+to save the value of the register.   
+				    </pre>
                                     <li>2. <b>After the system call</b> :   The return value of the system call must be extracted from the stack.  </li>
                                     
                                 </ul>
@@ -357,7 +362,7 @@ The machine code to the left pops the values from the stack. The system call num
 <p>
 Associated with each system call, there is a system call number and interrupt routine number. The system call number is used to identify a system call. The interrupt routine number denotes the number of the interrupt routine which  handles the system call. An interrupt routine may handle more than one system call.       
 </p>       
-   <p> <b> Mapping of system calls to interrupt numbers and corresponding system call interface specification with details of arguments and return values of system calls is <a href="./os_design-files/Sw_interface.html" target="_blank">here</a>.</b> </p>
+   <p> <b> Mapping of system calls to interrupt numbers and corresponding system call interface specification with details of arguments and return values of system calls are given in the <a href="./os_design-files/Sw_interface.html" target="_blank">eXpOS Low Level System Call Interface</a> Documentation.</b> </p>
             <!--<p>For details of argument of the system calls, click <a href="os_spec-files/systemcallinterface.html" target="_blank">here</a>.</p>-->
 
                                </div>
@@ -389,7 +394,7 @@ Associated with each system call, there is a system call number and interrupt ro
 								  <br/>
 								  <p>The library routine is linked to <b>virtual address 0</b> of the address space of a process by the OS loader and requires four arguments (function code and three arguments to the system call / memory management routine) to be passed through the stack. The routine invokes the corresponding low level system call / memory management routine and returns to the user program the return value of the system call / memory management routine through the stack. The figure to the side shows the contents of the stack immediately before a call to this library routine.</p>                           
 								
-                                <p>The invocation details for the system calls and the dynamic memory management routines using the library interface can be seen <a href = "../os_spec-files/dynamicmemoryroutines.html" target="_blank"><b>here</b></a>.</p></p>
+                                <p>The invocation details for the system calls and the dynamic memory management routines using the library interface can be seen in the <a href = "../os_spec-files/dynamicmemoryroutines.html" target="_blank"><b>eXpOS High Level Library Interface</b></a> documentation.</p></p>
                             </div>
 
                             <h3 style="clear:right">Invoking a library module</h3>

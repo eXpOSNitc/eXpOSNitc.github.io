@@ -109,24 +109,20 @@
               <h2 >Create System Call</h2>
                <br>
                <br>                                      
-            <p>Arguments: Filename (String) </p>
+            <p>Arguments: Filename (String), Permission (0 - exclusive/1 - open-access) </p>
             <p>Return Value:</p>
             <table class="table table-bordered">
             <tr>
             <td>0</td>
-            <td>Success</td>
+            <td>Success/File already exists</td>
         </tr> 
         <tr>
             <td>-1</td>
-            <td>No space for file</td>
+            <td>No free inode table entry</td>
         </tr>
-        <tr>
-            <td>-2</td>
-            <td>Invalid Filename</td>
-        </tr> 
     </table>
 
-    <p><i><b>Description</b></i> : The Create operation takes as input a filename. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to <a href="constants.html" target="_blank">DATA</a> and file size to 0. It also creates a root entry for that file. The filename cannot be "Root" since it is reserved for the Root file.</p> 
+    <p><i><b>Description</b></i> : The Create operation takes as input a filename. If the file already exists, then the system call returns 0 (success).  Otherwise, it creates an empty file by that name, sets the file type to <a href="constants.html" target="_blank">DATA</a>, file size to 0, userid to that of the process (from the <a href="../os_design-files/process_table.html">process table</a>) and permission as given in the input in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. It also creates a root entry for that file.</p> 
      <br> 
      <!--   Include if necessary ( When Swap comes in)
 
@@ -136,20 +132,30 @@
        <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p> !-->
              
              <div><h4><b>Algorithm</b>:</h4></div>
+<pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 1, 
+indicating that the process is in the create system call.
 
-             <p>If the filename given is "Root", return -2.</p>
-             <p>If the file is present in the system, return 0. &nbsp;&nbsp;/* Check the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  */ </p>
+If the file is present in the system, reset the mode flag and return 0. &nbsp;&nbsp;/* Check the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>  */ 
       
-             <p>Find the index of a free entry in the Inode Table. If no free entry found, return -1. &nbsp;&nbsp;/* Maximum number of files reached */</p>
+Find the index of a free entry in the Inode Table. 
+If no free entry found, return -1. &nbsp;&nbsp;/* Maximum number of files reached */
              
-             <p>In the Inode Table entry found above, set file name to the given file name, file size to 0 and file type to <a href="constants.html" target="_blank">DATA</a>.</p>
-             <p>In the Inode Table entry, set the block numbers to -1.&nbsp;&nbsp;/* No disk blocks are allocated to the file */</p>
-             <p>In the <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry corresponding to the Inode Table index, set the file name field to the given file name, file size to 0 and file type to DATA.</p>
+In the Inode Table entry found above, set FILE NAME to the given file name, FILE SIZE to 0 and FILE TYPE to <a href="constants.html" target="_blank">DATA</a>.
+In the Inode Table entry, set the block numbers to -1.&nbsp;&nbsp;/* No disk blocks are allocated to the file */
 
+Set the USER ID to the USERID of the process /* See the <a href="../os_design-files/process_table.html">process table</a> for user id */
+Set the PERMISSION to the permission supplied as input.
 
-         
-             <p>Return from the system call with 0.&nbsp;&nbsp;/* success */</p>
-                                        
+In the <a href="disk_ds.html#root_file" target="_blank">Root file</a> entry corresponding to the Inode Table index, 
+set the FILE NAME, FILE SIZE, FILE TYPE, USER ID and PERMISSION fields.
+
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
+Return from the system call with 0.&nbsp;&nbsp;/* success */
+	     <br>
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
+</pre>	     
                                         
                                                                                            
                                             </div>

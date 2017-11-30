@@ -110,46 +110,63 @@
                <br>
                <br>                                      
             <p>Arguments: Filename (String) </p>
-            <p>Return Value:</p>
+            <p>Return Value: </p>
             <table class="table table-bordered">
             <tr>
             <td>0</td>
-                                                        <td>Success</td>
+                                                        <td>Success/File does not exist</td>
                                                     </tr> 
                                                     <tr>
             <td>-1</td>
-                                                        <td>File not found or File is not a DATA file</td>
+                                                        <td>Permission denied</td>
                                                     </tr> 
                                                  <tr>
             <td>-2</td>
                                                         <td>File is open</td>
                                                     </tr> 
                                              </table>
-                                                <p><i><b>Description</b></i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   <br>
+                                                <p><i><b>Description</b></i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file. Delete command fails also if the file to be deleted does not belong to the current user and it has exclusive permissions.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   <br>
                                                 <!--   Include if necessary ( When Swap comes in)
 
                                                 <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
                                                  <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p> -->
              <div><h4><b>Algorithm </b> :</h4></div>
-            
-             <p>Find the index of the file in the Inode Table.</p>
-            
-             <p>If file is not present in <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> or if it is not a <a href="./constants.html" target="_blank">DATA </a> file, return -1.</p>
+            <pre>
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 4, 
+indicating that the process is in the delete system call.
 
-             <p>Check if the the file open count is 0 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */</p>
-                
-             <p > For each used disk block of the file, decrement its entry in the memory copy of <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>. &nbsp;&nbsp; /* Release the disk blocks */</p>        
-             
-             <p >Invalidate (set to -1) the Inode Table entry of the file.</p>
-                       
+//Switch to Kernel Stack - See <a href="stack_smcall.html">Kernel Stack Management during System Calls</a>. 
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+Find the index of the file in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>.
             
+If file is not present in the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, return 0. 
+
+Check if the the file open count is 0 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;/* File is open, cannot be deleted */
+ 
+If the file is not a DATA file, return -1.
+
+If the USER ID of the file is not equal to the user id of the current user and 
+the exclusive permission is set, return -1. 
+
+For each used disk block of the file, call the <b>release_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to free the disk block.        
              
-             <p> Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by invalidating the root entry for the file.</p>
+Invalidate (set to -1) the Inode Table entry of the file.
              
-             <p>Return from system call with 0. &nbsp;&nbsp; /* indicating success */</p>
+Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by invalidating the entry for the file.
+
+Switch back to the user stack by resoting USER SP from the process table.
+Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
+Return from system call with 0. &nbsp;&nbsp; /* indicating success */
+
+<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
+	     </pre>
         <br>
         <h4>Questions</h4>
         <p>1. Why can't an open file be deleted?</p>
+        <p>2. Can it happen that some other process has locked the file?</p>
                       
          </div>
 		</div>

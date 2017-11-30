@@ -134,6 +134,13 @@
              <div><h4><b>Algorithm</b>:</h4></div>
 	
 <pre>
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 3, 
+	indicating that the process is in the close system call.
+
+	//Switch to Kernel Stack - See <a href="stack_smcall.html">Kernel Stack Management during System Calls</a>. 
+	Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+	Set the value of SP to the beginning of User Area Page.
+
 	If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */
 
 	<a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a>
@@ -146,12 +153,15 @@
 
 	Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from Per-Process Resource Table entry.
 
-	Call the Close function in the <a href="../os_modules/Module_3.html">File Manager module</a> with the Open File Table index as arguemnt.
+	Call the <b>close()</b> function in the <a href="../os_modules/Module_3.html">File Manager module</a> with the Open File Table index as arguemnt.
 	
 	Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.
 
-	Return from system call with 0. &nbsp;&nbsp; /* success */
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
+	Return from system call with 0. &nbsp;&nbsp; /* success */
+	
+	<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
 	</pre>
         <br>
         <h4>Questions</h4>

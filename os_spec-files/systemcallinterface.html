@@ -137,19 +137,15 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
-                                                        <td>Success</td>
+                                                        <td>Success/File already exists</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>No space for file</td>
+                                                        <td>No space for file in the disk or inode table</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>-2</td>
-                                                        <td>If the file already exists</td>
-                                                    </tr> 
                                                 </table>
-                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0. Note that the file name must be a character string and must not be “root”. </p>
-                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is  open or exclusive respectively.  If the exclusive flag is set, write 
+                                                <p>Description: The Create operation takes as input a filename and creates an empty file by that name. If a root entry for the file already exists, then the system call returns 0 (success).  Otherwise, it creates a root entry for the file name, sets the file type to DATA and file size to 0.</p>
+                                                <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implementation, the file permission is either 0 or 1, indicating file is  open-access or exclusive respectively.  If the exclusive flag is set, write 
                                                 and delete system calls will fail except when made by the owner or the
                                                 root.</p>
                                             </div>
@@ -178,15 +174,11 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-1</td>
-                                                        <td>File not found or file is not a data file.</td>
+                                                        <td>Permission Denied</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
                                                         <td>File is open</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>-3</td>
-                                                        <td>Permission denied</td>
                                                     </tr>
                                                 </table>
                                                 <p>Description: Delete removes the file from the file system and removes its root entry.   A file that is currently opened by any application cannot be deleted.  Root file and Executable files also cannot be deleted.</p>
@@ -1035,16 +1027,9 @@
                                             <div class="panel-body">
                                                
                                                 <p>Arguments: None</p>
-                                                <p>Return Value: </p>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td>0</td>
-                                                        <td>Success</td>
-                                                    </tr> 
-                                                                                                        
-                                                </table>
+                                                <p>Return Value: None </p>
                                                 
-						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated. Processes which have locked resources are killed after they have released the resource. Idle is the only user process that is allowed to run till the competion of this system call. Finally the current running process is also terminated, leaving behind only the Login program and Idle which gets scheduled afterwards.</p>
+						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and Login will be the only processes running after the execution of Logout.</p>
                                                 
                                             </div>
                                         </div>

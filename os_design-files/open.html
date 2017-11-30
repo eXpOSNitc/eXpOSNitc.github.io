@@ -138,7 +138,7 @@
 
               <p><i><b>Description</b></i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
 
-              <p> The <a href="disk_ds.html#root_file" target="_blank">Root file</a> can be opened for Reading by specifying the filename as <i> <b>"Root"</b></i>. Note that the Root file is different from the other files - It has a reserved memory page copy. So this will be treated as a special case in all related system calls. The write system call fails if operated on a file descriptor opened on the root file.</p>
+              <p> The <a href="disk_ds.html#root_file" target="_blank">root file</a> can be opened for Reading by specifying the filename as <i> <b>"root"</b></i>. Note that the Root file is different from the other files - It has a reserved memory page copy. So this will be treated as a special case in all related system calls. The write system call fails if operated on a file descriptor opened on the root file.</p>
 
               <!--
               <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
@@ -148,9 +148,16 @@
              <div><h4><b>Algorithm</b>:</h4></div>
 
 <pre>
-	What to do if file is root?
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 2, 
+	indicating that the process is in the open system call.
 
-	Call the Open function from the <a href="os_modules/Module_3.html">File Manager module</a> to set the Open File table entry.
+	//Switch to Kernel Stack - See <a href="stack_smcall.html">Kernel Stack Management during System Calls</a>. 
+	Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+	Set the value of SP to the beginning of User Area Page.
+
+	What to do if file is root? (NK: Modify open to set inode index as INODE_ROOT)
+
+	Call the <b>open()</b> function from the <a href="../os_modules/Module_3.html">File Manager module</a> to set the Open File table entry.
 		
 	If Open fails, return the error code.
 
@@ -174,8 +181,11 @@
 	     </div>
 	If filename is not "Root", increment the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>
      
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+
 	Return the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */
-        
+	     <br>
+	<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
      </pre>     
 
           <br>

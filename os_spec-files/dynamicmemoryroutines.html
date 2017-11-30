@@ -123,14 +123,13 @@
     </tr>
 
 <tr>
-    <td rowspan="3">Create</td>
-    <td rowspan="3">"Create"</td>	
-    <td rowspan="3">File Name</td>
-    <td rowspan="3">Permission <font style="color: red" >*</font></td>
-    <td rowspan="3">-</td>
-    <td>0 - Success</tr>
-    <td>-1 - No space for file</tr>
-    <td>-2 - File already exists</tr>
+    <td rowspan="2">Create</td>
+    <td rowspan="2">"Create"</td>	
+    <td rowspan="2">File Name</td>
+    <td rowspan="2">Permission <font style="color: red" >*</font></td>
+    <td rowspan="2">-</td>
+    <td>0 - Success/File already exists</tr>
+    <td>-1 - No free inode table entry</tr>
   </tr>
 
   <tr>
@@ -158,15 +157,14 @@
   </tr>
                                    
 <tr>
-    <td rowspan="4">Delete</td>
-    <td rowspan="4">"Delete"</td>	
-    <td rowspan="4">File Name</td>
-    <td rowspan="4">-</td>
-    <td rowspan="4">-</td>
-    <td>0 - Success</tr>
-    <td>-1 - File not found or file is not a data file</tr>
+    <td rowspan="3">Delete</td>
+    <td rowspan="3">"Delete"</td>	
+    <td rowspan="3">File Name</td>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success/File does not exist</tr>
+    <td>-1 - Permission Denied</tr>
     <td>-2 - File is open</tr>
-    <td>-3 - permission denied</td> 
   </tr>
   <tr>
 	  <td rowspan="4">Write</td>
@@ -320,33 +318,36 @@
     <td>-1 - Permission denied</td> 
   </tr>
      <tr>
-    <td style="color:red" rowspan="3">Newusr</td>
-    <td rowspan="3">"Newusr"</td>		
-    <td rowspan="3">User name</td>
-    <td rowspan="3">Password</td>
-    <td rowspan="3">-</td>
+    <td style="color:red" rowspan="4">Newusr</td>
+    <td rowspan="4">"Newusr"</td>		
+    <td rowspan="4">User name</td>
+    <td rowspan="4">Password</td>
+    <td rowspan="4">-</td>
     <td>0 - Success</tr>
     <td>-1 - User already exists</tr>
     <td>-2 - Permission denied</tr>
+    <td>-3 - No. of users have reached the system limit.</tr>
   </tr>
         <tr>
-    <td rowspan="3" style="color:red">Remusr</td>
-    <td rowspan="3">"Remusr"</td>		
-    <td rowspan="3">User name</td>
-    <td rowspan="3">-</td>
-    <td rowspan="3">-</td>
+    <td rowspan="4" style="color:red">Remusr</td>
+    <td rowspan="4">"Remusr"</td>		
+    <td rowspan="4">User name</td>
+    <td rowspan="4">-</td>
+    <td rowspan="4">-</td>
     <td>0 - Success</tr>
     <td>-1 - User does not exist</tr> 
     <td>-2 - Permission denied</tr>
+    <td>-3 - Undeleted files exist for the user</tr>
   </tr>
         <tr>
-    <td rowspan="2" style="color:red">Setpwd</td>
-    <td rowspan="2">"Setpwd"</td>		
-    <td rowspan="2">User name</td>
-    <td rowspan="2">New Password</td>
-    <td rowspan="2">-</td>
+    <td rowspan="3" style="color:red">Setpwd</td>
+    <td rowspan="3">"Setpwd"</td>		
+    <td rowspan="3">User name</td>
+    <td rowspan="3">New Password</td>
+    <td rowspan="3">-</td>
     <td>0 - Success</tr>
     <td>-1 - Unauthorised attempt to change password</tr> 
+    <td>-2 - The user does not exist.</tr>
   </tr>
         <tr>
     <td rowspan="2" style="color:red">Getuname</td>
@@ -381,12 +382,12 @@
     <td >-</td>
     <td >-</td>
     <td >-</td>
-    <td>0 - Success</td>
+    <td >-</td>
   </tr>
                             
     <tr>
-	  <td>Test</td>
-	  <td>"Test"</td>
+	  <td>Test1</td>
+	  <td>"Test0"</td>
     <td>Unspecified</td>
     <td>Unspecified</td>
     <td>Unspecified</td>
