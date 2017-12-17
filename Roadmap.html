@@ -2775,6 +2775,7 @@ loadi(51,64);</pre></div> </li>
 				Write an SPL program for the scheduler module (module 5) as given below:  
 				<ol style="list-style-type: decimal; margin-left: 2px">
 					<li>Obtain the PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
+					<li>Push the BP of the current process on top of the kernel stack. //This will be explained in the later stages  when the scheduler is also invoked from other modules not only timer.</li>
 					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry corresponding to the current PID.</li>
 					<li>Save SP % 512 in the kernel stack pointer field, also PTBR and PTLR into the corresponding fields in the Process Table entry.</li>
 					<li>Iterate through the Process Table entries, starting from the succeeding entry of the current process to find a process in READY or CREATED state.</li>
@@ -2789,6 +2790,7 @@ loadi(51,64);</pre></div> </li>
 						<li>Switch to the user mode using the ireturn statement.</li></ul>
 					  </li>
 					<li>Set the state of the new process as RUNNING.</li>
+					<li>Restore the BP of the new process from the top of it's kernel stack.</li>
 					<li>Return using return statement.</li>
 				</ol>
 				<br>
@@ -3200,7 +3202,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
         <ol style="list-style-type: decimal; margin-left: 2px">
      <li><b>Exit Process (function number = 3, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>) </b></li>
 
-        <p>The first function invoked in the exec system call is the <b>Exit Process</b> function. Exit Process function takes PID of a process as an argument (In this stage, PID of the current process is passed) and deallocates all the pages of the invoked process. It deallocates the pages present in the page table by invoking another function called <b>Free Page Table </b> present in the same module. Further, The Exit Process deallocates the user area page by invoking <b>Free User Area Page</b> in the same module. The state of the process (corresponding to the given PID) is set to TERMINATED. </p>  <br>
+        <p>The first function invoked in the exec system call is the <b>Exit Process</b> function. Exit Process function takes PID of a process as an argument (In this stage, PID of the current process is passed). Exit process first wakes up all the processes waiting for the process with the given PID  and also deallocates all the pages of the invoked process. It deallocates the pages present in the page table by invoking another function called <b>Free Page Table </b> present in the same module. Further, The Exit Process deallocates the user area page by invoking <b>Free User Area Page</b> in the same module. The state of the process (corresponding to the given PID) is set to TERMINATED. </p>  <br>
 
         <li><b>Free Page Table (function number = 4, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>) </b></li>
 
@@ -3409,7 +3411,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
                         <p>
                           To initiate the disk transfer using the load statement, first the process has to <b>acquire</b> the disk. This ensures that no other process uses the disk while the process which has acquired the disk is loading the disk block to the memory page. eXpOS maintains a data structure called <a href="os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a> to keep track of these disk-memory transfers. The disk status table stores the status of the disk indicating whether the disk is busy or free. The disk status table has a LOAD/STORE bit indicating whether the disk operation is a load or store. The table also stores the page number and the block number involved in the transfer. To keep track of the process that has currently acquired the disk, the PID of the process is also stored in the disk status table. The constant <a href="support_tools-files/constants.html" target="_blank">DISK_STATUS_TABLE</a> gives the starting address of the Disk Status Table in the <a href="os_implementation.html" target="_blank">XSM memory</a>.  
                         </p>
-                         <p>After the current process has acquired the disk for loading, it initializes the Disk Status Table according to the operation. The process then issues the load statement to initiate the loading of the disk block to the memory page. As mentioned earlier, the XSM machine does not wait for the tranfer to complete. It continues with the execution of the next instruction. However, virtually in any situation in eXpOS, the process has to wait till the data transfer is complete before proceeding (why?).  Hence, the process suspends its execution by changing its state to WAIT_DISK and invokes the scheduler, allowing other concurrent processes to run. (At present, the only concurrent process for the OS to schedule is the IDLE process.  However, in subsequent stages we will see that the OS will have more meaningful processes to run.)</p>
+                         <p>After the current process has acquired the disk for loading, it initializes the Disk Status Table according to the operation. The process then issues the load statement to initiate the loading of the disk block to the memory page. As mentioned earlier, the XSM machine does not wait for the transfer to complete. It continues with the execution of the next instruction. However, virtually in any situation in eXpOS, the process has to wait till the data transfer is complete before proceeding (why?).  Hence, the process suspends its execution by changing its state to WAIT_DISK and invokes the scheduler, allowing other concurrent processes to run. (At present, the only concurrent process for the OS to schedule is the IDLE process.  However, in subsequent stages we will see that the OS will have more meaningful processes to run.)</p>
 
                          <p>When the load/store transfer is complete, XSM machine raises the hardware interrupt called the <b>disk interrupt</b>. This interrupt mechanism is similar to the console interrupt. Note that when disk interrupt occurs, XSM machine stops the execution of the currently running process. The currently running process is not the one that has acquired the disk (why?). The disk interrupt handler releases the disk by changing the STATUS field in the Disk Status table to 0. It then wakes up all the processes waiting for the disk (by changing the STATE from WAIT_DISK to READY) which also includes the process which is waiting for the disk-transfer to complete. Then returns to the process which was interrupted by disk controller.</p>
                         <p>
@@ -3423,19 +3425,19 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
                    <ol style="list-style-type: decimal;margin-left: 2px">
                  <li><b>Disk Load (function number = 2, <a href="os_modules/Module_4.html" target="_blank">device manager module</a>) </b></li>
                         <p> The Disk Load function takes the PID of a process, a page number and a block number as input and performs the following tasks : <br>1) Acquires the disk by invoking the Acquire Disk function in the <a target="_blank" href="os_modules/Module_0.html">resource manager module</a> (module 0)<br> 
-                        2) Set the <a target="_blank" href="os_design-files/mem_ds.html#ds_table">Disk Status table</a> entries as mentoned in the algorithm.<br> 3) Issue the <a href="support_tools-files/spl.html" target="_blank">load statement</a> to initiate a disk block to memory page DMA transfer <br> 4) Set the state of the process (with given PID) to WAIT_DISK and invoke the scheduler. </p>
+                        2) Set the <a target="_blank" href="os_design-files/mem_ds.html#ds_table">Disk Status table</a> entries as mentioned in the algorithm.<br> 3) Issue the <a href="support_tools-files/spl.html" target="_blank">load statement</a> to initiate a disk block to memory page DMA transfer. <br> 4) Set the state of the process (with given PID) to WAIT_DISK and invoke the scheduler. </p>
 <br>
                         <li><b>Acquire Disk (function number = 3, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>) </b></li>
                         <p>The Acquire Disk function in the resource manager module  takes the PID of a process as an argument. The Acquire disk function performs the following tasks : <br>
-                        1) While the disk is busy (STATUS field in the Disk Status Table is 1), set the status of the process to WAIT_DISK and invoke the scheduler. <br>/* When the disk is finally free, the process is woken up by the disk interrupt handler.*/<br> 2) Lock the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p><br>
+                        1) While the disk is busy (STATUS field in the Disk Status Table is 1), set the state of the process to WAIT_DISK and invoke the scheduler. <br>/* When the disk is finally free, the process is woken up by the disk interrupt handler.*/<br> 2) Lock the disk by setting the STATUS and the PID fields in the Disk Status Table to 1 and PID of the process respectively. </p><br>
                         <li><b>Implementation of <a target="_blank" href="os_design-files/disk_interrupt.html">Disk Interrupt handler</a> </b></li>
 
   					<p>When the disk-memory transfer is complete, XSM raises the disk interrupt. The disk interrupt handler then performs the following tasks :
-
-  	    <br>1) Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.
-  	 <br>2) Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.
+         <br>1) Switch to the kernel stack and back up the register context. 
+  	    <br>2) Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.
+  	 <br>3) Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.
   	 <br>
-  	  3) Return to user mode using the ireturn statement.
+  	  4) Restore the register context and return to user mode using the ireturn statement.
                         </p>
                         <!-- <p>There is one other task to be done in exec system call in this stage, initiaizing the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. Per-process resource table stores the details about the files and semaphores, the process is suing currently. The table has 8 entries each of 2 words each. We initialize all entries in this table to -1. A part of the user area page of each process is used for per-process resourece table. This initalization is done after we reacquire the user area page in exec system call.</p>-->
 
@@ -3446,7 +3448,11 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
 <li><b> Modification to exec system call (interrupt 9 routine)</b></li>
     
    <!-- <li>After reacquiring the user area page, initialize all entries in the per-process table to -1.</li>-->
-   <p>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</p></li>
+   <p>Instead of the loadi statement used to load the disk block to the memory page, invoke the Disk Load function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</p>
+   
+   <p>Another modification to be done in exec system call is initialization of the per-process resource table. Per-process resource table stores the information about the files and semaphores which a process is currently using. For each process, per-process resource table is stored in the user area page of the process. This table has 8 entries with 2 words each, in total it occupies 16 words. In exec, after reacquiring the user area page for the new process, per-process resource table should be initialized in this user area page. Each entry in the per-process table is initialized to -1. See details of the per-process resource table <a href="os_design-files/process_table.html#per_process_table" target="_blank">here</a>.</p>
+
+   </li>
   
     <!--
     <b> Modification to device manager module</b><br><br>
@@ -3489,7 +3495,8 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
   	2) Initialize the STATUS field in the Disk Status Table to 0.<br></p>
   </ol>
  <br>
-   <p>Compile and load the modified and newly written files into the disk using XFS-interface.</p>
+   <p>Compile and load the modified and newly written files into the disk using XFS-interface. Run the Shell version-I with any program to check for errors.</p>
+
 
    <div class="container col-md-12">
                           <div class="section_area">
@@ -3498,7 +3505,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
 
 <a data-toggle="collapse"  href="#collapseq11"><b>Q1.</b> Can we use the load statement in the boot module code instead of the loadi statement? Why?</a>
                             <div id="collapseq11" class="panel-collapse collapse">
-	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process is initialized and data structures like Disk Status Table is also not initialized. 
+	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process is initialized and data structures are also not initialized (like Disk Status Table). 
 		</div>
 		</li>
                           </ul>
