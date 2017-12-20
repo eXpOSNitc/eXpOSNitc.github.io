@@ -2692,7 +2692,7 @@ the INIT process never goes through the CREATED state.
 			the implementation of the module soon below). 
 			<div><pre>loadi(50,63);
 loadi(51,64);</pre></div> </li>
-			<li>First 3 process table entries are occupied. Initialize PID field of all other process table entries to -1. This will be useful while finding the next process to schedule using round robin scheduling algorithm.</li>
+			<li>First 3 process table entries are occupied. Initialize STATE field of all other process table entries to TERMINATED. This will be useful while finding the next process to schedule using round robin scheduling algorithm. Note that when the STATE field in the process table entry is marked as TERMINATED, this indicates that the process table entry is free for allocation to new processes.</li>
 			</ol>
 			
 			<br>
@@ -3352,22 +3352,17 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
 	     Since the page storing the kernel context has been de-allocated, before making any function call, a stack page has to be allocated to store parameters, return address etc.  It is unsafe to invoke the Get Free Page function of the memory manager module before allocating a stack page (why?).   
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
 
-<div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+ <li class="list-group-item">
                           <a data-toggle="collapse"  href="#collapseq10"><b>Q2.</b> Why should the OS set the WRITE PERMISSION BIT for library and code pages in each page table entry to 0, denying permission for the process to write to these pages?  </a>
                             <div id="collapseq10" class="panel-collapse collapse">
 	     ExpOS does not expect processess to modify the code page during execution. Hence, during a fork() system call (to be seen in later stages), the code pages are shared between several processes.  Similarly, the library pages are shared by all processes.  If a process is allowed to write into a code/library page, the shared program/library will get modified and will alter the execution behaviour of other processes, which violates the basic <a href="https://en.wikipedia.org/wiki/Virtual_address_space" target="_blank">virtual address space</a> model offered by the OS.          
 		</div>
 		</li>
+
                           </ul>
                           </div>
-                           </div>
+                          </div><br>
 
                           <b style="color:#26A65B">Assignment 1: </b><b>[Shell version-I]</b> Write an ExpL program to read the name of program from the console and execute that program using exec system call. Load this program as INIT program and run the odd.expl (printing odd numbers between 1-100) program using the shell.
          <br><br>
@@ -3528,14 +3523,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process or data structures are initialized (like Disk Status Table). 
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
-
-<div class="container col-md-12" style="margin-bottom: 0px">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq12"><b>Q2.</b> Why does the disk interrupt handler has to backup the register context?</a>
                             <div id="collapseq12" class="panel-collapse collapse">
@@ -3544,30 +3532,16 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 	      The interrupt handler also needs to restore the context before return.  
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
 
-<div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+
+		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq13"><b>Q3.</b> Why doen't system calls backup register context?</a>
                             <div id="collapseq13" class="panel-collapse collapse">
 	       Yes, readi statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode.
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
-
-
-
-                          <div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq14"><b>Q4.</b> Does the XSM terminal input provide polling based input?</a>
                             <div id="collapseq14" class="panel-collapse collapse">
@@ -3577,9 +3551,6 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                           </ul>
                           </div>
                           </div>
-
-
-
 
 		</div>
 		</div>
@@ -3655,7 +3626,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
          4) Return the memory page number to which the code block have been loaded.  
          <br></p><br>
         <li><b>Modification to the Free Page Table (function number = 4, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b></li>
-          <p style="text-indent: 0px"> 1) In Free Page Table function should free the disk blocks used by heap and stack of the current process. This is done by going through the heap and stack entries in <a>disk map table</a>. If any valid entries are found, invoke the release block function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.   
+          <p style="text-indent: 0px"> 1) In Free Page Table function should free the disk blocks used by heap and stack of the current process. This is done by going through the heap and stack entries in <a>disk map table</a>. If any valid entries are found, invoke the Release Block function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.   
          
          <br>
          2) Invalidate all the entries of the disk map table.
