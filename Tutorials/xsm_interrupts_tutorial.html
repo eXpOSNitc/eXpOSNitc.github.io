@@ -119,7 +119,11 @@ The addresses of these handlers are stored in locations 493, 494 and 495 of the 
 values 2048, 3072 and 4096.  Thus, the OS bootstrap code must load the timer interrupt handler into 
 memory starting from 2048, disk interrupt handler from address 3072 and console interrupt handler from 4096.</p>  
 <br><br>
-<b style="font-size: 20px" id="timer_interrupt">Timer Interrupt</b>
+<div id="timer_interrupt">
+<br>
+<br>
+<br>
+<b style="font-size: 20px" >Timer Interrupt</b>
 <br>
 <p>XSM has a timer device which can be set to interrupt the machine at regular intervals of time.  
 You can run the XSM simulator with the option - - timer:</p>  
@@ -144,7 +148,12 @@ intervals of time.  This is necessary to ensure that an application once started
 "forever."  In a time-sharing environment, <b>the timer handler invokes the scheduler (dispatch module) of 
 the OS to do a context switch</b> to a different process when one process has completed its time quantum. </p> 
 <br><br>
-<b style="font-size: 20px" id="disk_and_console_interrupts">Disk and Console Interrupts</b>
+</div>
+<div id="disk_and_console_interrupts">
+<br>
+<br>
+<br>
+<b style="font-size: 20px" >Disk and Console Interrupts</b>
 <br>
 <p>
 The other two interrupt handlers are associated with the disk and the console.  
@@ -163,9 +172,14 @@ As noted previously, the OS must load the disk interrupt handler into the two pa
 <p>
 <b>The XSM machine enables interrupts only when the machine is executing in unprivileged mode.</b>(If a previously initiated load/store/IN operation is completed while XSM is running in privileged mode, 
 the machine waits for next transition to unprivileged mode before processing the interrupt.)</p>
-<br><br>
-
-<b style="font-size: 20px" id="exception_handling_in_XSM">Exception handling in XSM   </b>
+<br>
+<br>
+</div>
+<div id="exception_handling_in_XSM" >
+<br>
+<br>
+<br>
+<b style="font-size: 20px" >Exception handling in XSM   </b>
 <br>
 <p>
 What must happen when an application running in unprivileged mode contains an illegal instruction or a 
@@ -242,7 +256,8 @@ the EIP will be loaded with value 3000.
 &nbsp;&nbsp;&nbsp;&nbsp;d) <b>EMA</b> (Exception memory address):  The value of this register is relevant only in the case of illegal
  memory access. The illegal memory which was tried to be accessed is stored in the register. Either the 
  address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.
-		</div> 
+</div>
+</div> 
              </div>
            </div>
          </div>
