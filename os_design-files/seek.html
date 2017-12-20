@@ -128,8 +128,9 @@
                                                 </table>
                                                 <p><b><i>Description</i></b> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>
 
-                                                <p>Seek system call fails if the seek position requested exceeds the file size.</p>
+                                                <p>If a positive offset goes beyond the size of the file, the seek position will be set to the file size (in the <a href="../os_design-files/disk_ds.html#inode_table">inode table</a> entry). A negative offset leading to LSeek value below 0 will give an error.</p>
                                                 <br>
+						<b>We are yet to review seek algorithm and full read system call</b>
                                                 <!--   Include if necessary ( When Swap comes in)
 
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
@@ -146,7 +147,6 @@ Save the value of SP to the USER SP field in the <a href="process_table.html">Pr
 Set the value of SP to the beginning of User Area Page.
 
 If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value must lie within the range from 0 to 7 (both included). */
-             
 
 <a data-toggle="collapse"   href="#collapse5b">Locate the Per-Process Resource Table of the current process.</a><div id="collapse5b" class="panel-collapse collapse">
                  Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
@@ -174,6 +174,7 @@ Change the lseek value in the Per-Process Resource Table entry to lseek+offset.
 Call the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Free the inode */
 
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+Switch back to the user stack by resoting USER SP from the process table.
 
 Return with 0. &nbsp;&nbsp;/* success */
 	
@@ -183,6 +184,9 @@ Return with 0. &nbsp;&nbsp;/* success */
         
         <h4>Questions</h4>
         <p>1. What concurrency issue can occur if the inode is not locked?</p>
+        <p>2. What goes wrong if the LSEEK is stored in the File Status Table instead of the Open File table?</p>
+        <p>3. What goes wrong if the LSEEK is stored in the per-process resource table instead of the Open File table?</p>
+        <p>4. Which all file system calls set the FILE_SIZE field in the inode status table?</p>
                <br>       
          </div>
 		</div>

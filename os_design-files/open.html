@@ -136,9 +136,9 @@
                                                    
         </table>
 
-              <p><i><b>Description</b></i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a file pointer with every open instance of a file.  The file pointer indicates the current location of file access (read/write).  The Open system call sets the file pointer to 0 (beginning of the file).  </p>  
+              <p><i><b>Description</b></i> : For a process to read/write a file, it must first open the file. Only data and root files can be opened. The Open operation returns a file descriptor which identifies the open instance of the file. An application can open the same file several times and each time, a different descriptor will be returned by the Open operation. </p><p> The OS associates a seek position with every open instance of a file.  The seek position indicates the current location of file access (read/write).  The Open system call initilizes the seek position to 0 (beginning of the file). The seek position can be modified using the <a href="seek.html">Seek system call</a>.</p>  
 
-              <p> The <a href="disk_ds.html#root_file" target="_blank">root file</a> can be opened for Reading by specifying the filename as <i> <b>"root"</b></i>. Note that the Root file is different from the other files - It has a reserved memory page copy. So this will be treated as a special case in all related system calls. The write system call fails if operated on a file descriptor opened on the root file.</p>
+              <p> The <a href="disk_ds.html#root_file" target="_blank">root file</a> can be opened for Reading by specifying the filename as <i> <b>"root"</b></i>. Note that the Root file is different from the other files - It has a reserved memory page copy. So this will be treated as a special case in all related system calls. </p>
 
               <!--
               <p>The data structures modified are <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
@@ -155,42 +155,39 @@
 	Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 	Set the value of SP to the beginning of User Area Page.
 
-	What to do if file is root? (NK: Modify open to set inode index as INODE_ROOT)
-
-	Call the <b>open()</b> function from the <a href="../os_modules/Module_3.html">File Manager module</a> to set the Open File table entry.
+ 	<a data-toggle="collapse"   href="#collapse5b">Find a free Per-Process Resource Table entry.</a> <div id="collapse5b" class="panel-collapse collapse">
+                Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
+                Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table </a>entry.
+                The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.              
+		Find a free <a href="process_table.html#per_process_table" target="_blank">Resource Table</a> entry.&nbsp;&nbsp;
+		If there is no free entry, return -3.  </div>
+ 
+	Call the <b>open()</b> function from the <a href="../os_modules/Module_3.html">File Manager module</a> to get the <a href="../os_design-files/mem_ds.html#file_table">Open File table</a> entry.
 		
 	If Open fails, return the error code.
 
- 	<a data-toggle="collapse"   href="#collapse5b">Locate the Per-Process Resource Table of the current process.</a>
-             <div id="collapse5b" class="panel-collapse collapse">
-                Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
-                Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table </a>entry.
-                The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.
-              </div>
- 	<a data-toggle="collapse"   href="#collapse5a">Find a free entry in the Per-Process Resource Table of the Process</a>
-             <div id="collapse5a" class="panel-collapse collapse">
-		Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
-		Find the User Area page number from the Process Table entry.
-		Find a free <a href="process_table.html#per_process_table" target="_blank">Resource Table</a> entry.&nbsp;&nbsp;/* The index of this entry is the File Descriptor of the file. */
-		If there is no free entry, return -3.  
-</div>
- 	<a data-toggle="collapse"   href="#collapse6">Set the Per-Process Resource Table entry</a>
-             <div id="collapse6" class="panel-collapse collapse">
+ 	<a data-toggle="collapse"   href="#collapse6">Set the Per-Process Resource Table entry</a>             <div id="collapse6" class="panel-collapse collapse">
 		Set the Resource Identifier field to <a href="./constants.html" target="_blank">FILE </a>. 
-		Set the Open File Table index field to the free Open File Table entry found.
-	     </div>
-	If filename is not "Root", increment the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>
+		Set the Open File Table index field to the free Open File Table entry found.	     </div>
+
+	Increment the File Open Count in the <a href="./mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>
      
 	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
+	Restore SP to User SP.
+
 	Return the index of the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry. &nbsp;&nbsp;/* success */
-	     <br>
+	/* The index of this entry is the File Descriptor of the file. */
+
 	<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
      </pre>     
 
           <br>
           <h4>Questions</h4>
-          <p>1. Why must the Per Process Resource Table entry be set only after a free Open File Table entry is allocated (and vice versa) ?</p>            
+          <p>1. Why must a free Per Process Resource Table entry be found before alling the open() module function?</p>            
+	  <p>2. Why should the "root" file be treated seperately? Where is this change implimented for the open system call?</p>
+	  <p>3. Why are we not locking the file even though file data stuctures are modified in this system call?</p>
+	  <p>4. Why do we maintain OPEN INSTANCE COUNT in Open File table and FILE OPEN COUNT in File Status table? Why do we need two tables?</p>
          </div>
 		</div>
 		</div>

@@ -122,7 +122,7 @@
                                                     </tr> 
                                                     <tr>
                                                         <td>-2</td>
-                                                        <td>No disk space</td>
+                                                        <td>No disk space / File Full</td>
                                                     </tr> 
                                                     <tr>
                                                         <td>-3</td>
@@ -149,6 +149,9 @@ Set the value of SP to the beginning of User Area Page.
 
 <b>If</b> the word is to be written to STDOUT (terminal device) &nbsp;&nbsp; /* indicated by a file descriptor value of -2 */
 	     Call the <b>terminal_write()</b>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .
+	     Switch back to the user stack by restoring USER SP from the process table.
+             Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+             Return 0. &nbsp;&nbsp;/* success */
 			 
 /* If not terminal, write to file. */
 
@@ -157,8 +160,7 @@ If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value 
 <a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a><div id="collapse5a" class="panel-collapse collapse">
                  Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
                  Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table</a> entry.
-
-                 The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>??.</div>
+                 The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.</div>
 
 If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   
 /* No file is open with this file descriptor. */
@@ -167,7 +169,8 @@ Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File 
 
 Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. 
 
-If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT), return -3. 
+If the USER ID of the file is not equal to the user id of the current user and 		/* Check the <a href="../os_design-files/process_table.html">process table</a> entry */
+the exclusive permission is set, return -3. 
 
 Get the Lseek position from the Open File Table entry.
 
@@ -175,29 +178,29 @@ Get the Lseek position from the Open File Table entry.
 
 Acquire the Lock on the File by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.  
 
-<a data-toggle="collapse"   href="#collapse8a">If the Lseek position is the same as File size </a><div id="collapse8a" class="panel-collapse collapse">
+<a data-toggle="collapse"   href="#collapse8a">If the Lseek position is a multiple of 512 and the same as File size in the inode table</a>	/* New block to be allocated */<div id="collapse8a" class="panel-collapse collapse"> 
               Get a free disk block by calling the <b>get_free_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 
               If no free disk block is found 
-                   Release the Lock on the file  by calling the <i>Release Inode</i> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.   
+                    Release the Lock on the file by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.   
                     Return -2.
 
-              Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry. 
-                  
-              Update the file size ( ++ 512) in the corresponding field in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry.        </div>  
+              Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry. </div>
 
 <a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a>
 <div id="collapse8" class="panel-collapse collapse">
-               Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/
+               Get the block index from lseek position. &nbsp;&nbsp;/* block index = lseek / block size (512) */
                Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .
-               Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/</div>
+               Get the offset value from lseek position. &nbsp;&nbsp;/* offset = lseek % the block size (512) */</div>
 Write the word to the File Buffer by calling the <b>buffered_write()</b> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.
+
+If Lseek equals file size, increment file size.
 
 Increment the Lseek position in the Open File Table entry.
 
 Release the Lock on the File by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
 
-Switch back to the user stack by resoting USER SP from the process table.
+Switch back to the user stack by restoring USER SP from the process table.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
 Return 0. &nbsp;&nbsp;/* success */
@@ -206,6 +209,9 @@ Return 0. &nbsp;&nbsp;/* success */
   </pre>
  <br>
 <h4>Questions:</h4>
+<p>1. What happens when the "root" is being written into?</p> 
+<p>2. What is the MAX_FILE_SIZE? Which data structure constrains the file size?</p> 
+<p>3. What modification to the file data stuctures will enable files exceeding MAX_FILE_SIZE?</p>
 <div class="panel-body">
         
        
