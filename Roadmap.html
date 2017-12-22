@@ -3527,25 +3527,23 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 <a data-toggle="collapse"  href="#collapseq12"><b>Q2.</b> Why does the disk interrupt handler has to backup the register context?</a>
                             <div id="collapseq12" class="panel-collapse collapse">
-	      Disk interrupt handler is a hardware interrupt. When disk interrupt occures, the XSM machine just pushes IP+2 value on stack and transfers control to disk interrupt. It will not backup the registers and the interrupt handler must
-	      back up the context of process in execution before modifying machine registers.
-	      The interrupt handler also needs to restore the context before return.  
+	      Disk interrupt handler is a hardware interrupt. When disk interrupt occurs, the XSM machine just pushes IP+2 value on stack and transfers control to disk interrupt. Occurance of a hardware interrupt is unexpected. When the disk interrupt is raised, the process will not have control over it so the process (curently running) cannot backup the registers. That's why interrupt handler must back up the context of the process (currently running) before modifying the machine registers. The interrupt handler also needs to restore the context before returning to user mode.  
 		</div>
 		</li>
 
 
 		<li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq13"><b>Q3.</b> Why doen't system calls backup register context?</a>
+<a data-toggle="collapse"  href="#collapseq13"><b>Q3.</b> Why doesn't system calls backup the register context?</a>
                             <div id="collapseq13" class="panel-collapse collapse">
-	       Yes, readi statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode.
+	        The process currently running is in full control over calling the interrupt (software interrupt) corresponding to a system call. This allows a process to back up the registers used till that point (not all registers). Note that instead of process, the software interrupt can also back up the registers. But, the software interrupt will not know how many registers are used by the process so it has to back up all the registers. Backing up the registers by a process saves space and time.
 		</div>
 		</li>
 		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq14"><b>Q4.</b> Does the XSM terminal input provide polling based input?</a>
                             <div id="collapseq14" class="panel-collapse collapse">
-	       Yes, <i>readi</i> statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode. Write operation is always asynchromous.
+	       Yes, <i>readi</i> statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode. Write operation is always asynchronous.
 		</div>
 		</li>
                           </ul>
@@ -3588,21 +3586,26 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                       </div>
 
 	<!-- End Learning Objectives--> 
-        <b>It is absolutely necessary to read about <a href="Tutorials/xsm_interrupts_tutorial.html#exception_handling_in_XSM" target="_blank">Exception handling in XSM</a> before proceeding further.</b> <br><br>             
-       <p>This stage introduces you to exception handling in eXpOS. There are four events that result in XSM generating an exception. These events are a) illegal memory access, b) illegal instruction, c) arithmetic exception and d) page fault. When one of this events occur, the XSM machine raises an exception and control is transferred to the exception handler. The exception handler code used in previous stages contains only halt instruction which halts the system in the case of an exception. Clearly it is inappropriate to halt the system (all the processes are terminated) for exception occured in one process. In this stage, we implement the exception handler which takes appropriate action for each exception. The exception handler occupies page 2 and 3 in the memory and blocks 15 and 16 in the disk. There are 4 special registers in XSM which are used to obtain the cause of the exception and the information related to the exception. These registers are EC, EIP, EPN and EMA. The cause of the exception is obtained from the value present in the EC register.</p>
-       <p>Exception handler mechanism gives a facility to resume the execution of the process after the corresponding exception has been taken care of. It is not always possible to resume the execution of the process, as some events which cause exception cannot be corrected. In this case, the proper action is to halt the process gracefully. For the events 1) illegal memory access (EC=2) 2) illegal instructions (EC=1) and 3) arithmetic exception (EC=3), the exception handler just prints the cause of the exception. These cases occur because the last instruction executed (in the currently running user process) resulted in the corresponding error condition.  As the OS is not reponsible for correcting these conditions (why?),  the exception handler halts the process by calling Exit Process function in <a href="os_modules/Module_1.html" target="_blank">process manager module</a> and then invokes the scheduler to run other processes.</p>
+        <b>It is absolutely necessary to have clear understanding about <a href="Tutorials/xsm_interrupts_tutorial.html#exception_handling_in_XSM" target="_blank">Exception handling in XSM</a> before proceeding further.</b> <br><br>             
+       <p>This stage introduces you to exception handling in eXpOS. There are four events that result in generation of an exception in XSM. These events are a) illegal memory access, b) illegal instruction, c) arithmetic exception and d) page fault. When one of this events occur, the XSM machine raises an exception and control is transferred to the exception handler. The exception handler code used in previous stages contains only halt instruction which halts the system in the case of an exception. Clearly it is inappropriate to halt the system (all the processes are terminated) for exception occured in one process. In this stage, we implement the exception handler which takes appropriate action for each exception. The exception handler occupies <b>page 2 and 3 in the memory and blocks 15 and 16 in the disk</b>. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>. There are 4 special registers in XSM which are used to obtain the cause of the exception and the information related to the exception. These registers are <b>EC, EIP, EPN and EMA</b>. The cause of the exception is obtained from the value present in the EC register.</p>
+       <p>Exception handler mechanism gives a facility to resume the execution of the process after the corresponding exception has been taken care of. It is not always possible to resume the execution of the process, as some events which cause the exception cannot be corrected. In this case, the proper action is to halt the process gracefully. For the events 1) illegal memory access (EC=2) 2) illegal instruction (EC=1) and 3) arithmetic exception (EC=3), the exception handler just prints the cause of the exception. These cases occur because the last instruction executed (in the currently running user process) resulted in the corresponding error condition.  As the OS is not reponsible for correcting these conditions (why?),  the exception handler halts the process gracefully and then invokes the scheduler to run other processes.</p>
 
-       <p>The page fault exception (EC=0) occurs when the last instruction in the currently running application tried to either a) fetch data from a legal address within its address space, but the page was set to invalid in the page table or b) fetch and execute an instruction from a legal address within its address space, whose page table entry is invalid.  In either case, the exception occured not because of any error from the side of the application, but because the OS had not loaded the page and set the page tables.  In such case, the exception handler resumes the execution of the process after allocating a page in memory, attaching the page to the process (by setting page table entries appropriately) and loading the page from the disk to this memory region (if necessary).   </p>
+       <p>The <b>page fault exception</b> (EC=0) occurs when the last instruction in the currently running application tried to either -
+       <br><b>a)</b> fetch data from a legal address within its address space, but the page was set to invalid in the page table or <br><b>b)</b> fetch and execute an instruction from a legal address within its address space, whose page table entry is invalid.</p>  <p>In either case, the exception occured not because of any error from the side of the application, but because the OS had not loaded the page and set the page tables.  In such case, the exception handler resumes the execution of the process after allocating a page in memory, attaching the page to the process (by setting page table entries appropriately) and loading the page from the disk to this memory region (if necessary).   </p><br>
 
       <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"> <p>But why should the OS not allocate all the pages required for a process when the process is initialized by the Exec system call, as we were doing in the previous two stages?  The reason is that this method of pre-allocation allows fewer concurrent processes to run than with the present strategy of "lazy allocation" to be described now. The strategy followed in this stage is to start executing a process with just one page of code and two pages of stack allocated initially. When the process, during execution, tries to access a page that was not loaded, an exception is generated and the execption handler will allocate the required page. If the required page is a code page, the page will be transferred from the disk to the allocated memory.  Since pages are allocated only on demand, memory utilization is better (on the average) with this approach.  </p></div><br>
+      <p>In previous stage, exec system call allocated 2 memory pages for each heap and stack. It also allocated and loaded all the code pages of the process. We will modify exec to allocate memory pages for only stack (2 pages). <b>No memory pages will be allocated to heap. Consequently, the entries in the page table corresponding to heap are set to invalid. For code blocks, only a single memory page is allocated and the first code block is loaded into that memory page.</b> In previous stage, the job of allocating a new memory page and loading a code block into that memory page is done by <i>Get Free Page</i> and <i>Disk Load</i> functions respectively. Now, we will write new module function <b>Get Code Page</b> in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> for simultaneously allocating a memory page and loading a code block. This function will be invoked from exec to allocate one memory page and load the first code block into that memory page. Note that only the first code page entry in the page table is set to valid, while remaining 3 entries are set to invalid.</p>
+
+      <p>Each process has a data structure called <a href="os_design-files/process_table.html#disk_map_table" target="_blank"><b>Per-process Disk map table</b></a>. The disk map table stores the disk block numbers corresponding to the memory pages used by the process. <b>Each disk map table has 10 words</b> of which one is for user area page, two for heap, four for code and two for stack pages. Remaining one word is unused. Whenever the copy of the memory page of a process is present in some disk block, that disk block number is stored in the per-process Disk Map Table entry corresponding to that memory page. This is done to keep track of the disk copy of memory pages. The SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_MAP_TABLE</a> gives the starting address of the table. The disk map table for any process is obtained by adding PID*10 to DISK_MAP_TABLE.</p>
+
+      <p>In exec system call, initialize the disk map table for the new process. The code page entries are filled with the disk block numbers obtained from the inode table. Remaining entries are set to invalid (store -1). (In later stages, when we swap out the process to disk, we will fill the stack and the heap entries with the disk block numbers used for swapping. More about this will be discussed in later stages).</p>
+
+      <p>The <b>Get Code Page</b> function takes as input the block number of a single code block, and loads that block into a memory page. Code pages are shared by the processes running the same program. The purpose of this function is to find out if the current code block is already in use by some other process. This is done by going through the disk map table entries of all the processes checking for the code block (block number provided as argument). If found, then the <b>Get Code Page</b> checks if the code block is loaded into a memory page  (entry in the corresponding page table should be valid). If the code block is already present in some memory page, then Get Code Page function just returns that memory page number. If not, a new memory page is allocated by invoking the <b>Get Free Page</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> followed by loading the code block in that memory page using the <b>Disk Load</b> function of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. The Get Code Page function finally returns the memory page number.</p>
 
 
-      <p> The register EIP saves the logical IP value of the instruction which has raised the exception. The register EPN stores the logical page number of the address that has caused the page fault. Based on the value present in EPN, the exception handler finds out whether page fault has caused for heap or code page. When page fault has occured for heap page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the Get Free Page function in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. In case the page fault has occured for code page, exception handler invokes the Get Code Page function in memory manager module. The page table of the process is updated to store the page number obtained from Get Code Page or Get Free Page functions.</p>
-       <p>In previous stage, exec system call allocates 2 memory pages for each heap and stack. It also allocates and load all the code pages of the process. We will modify exec to allocate memory pages for only stack (2 pages). No memory pages will be allocated to heap, also the entries in the page table corresponding to heap are invalidated. For code blocks, only a single memory page is allocated and the first code block is loaded into that memory page. In previous stage, the job of allocating a new memory page and loading a code block into that memory page is done by Get Free Page and Disk Load functions respectively. Now, modify exec to invoke the function Get Code Page present in memory manager module for both allocating  a memory page and loading a code block. Note that only the first code page entry in the page table is valid, remaining 3 entries are invalidated.</p>
-
-      <p>Each process has a data structure called Per-process Disk map table. Disk map table stores the disk block numbers corresponding to the pages used by the process. Each disk map table has 10 words of which one is for user area page, 2 for heap, 4 for code and 2 for stack pages. Remaining one word is unused. Suppose the copy of the page of a process is present in some disk block. To keep track of this disk copy, disk block number is stored in the per-process Disk Map Table entry corresponding to that memory page. See details of Disk map Table <a href="os_design-files/process_table.html#disk_map_table" target="_blank" >here</a>. SPL constant DISK_MAP_TABLE gives the starting address of the table and the corresponding disk map table for a process is obtained by adding PID*10 to DISK_MAP_TABLE.</p>
-      <p>In exec system call, initialize the disk map table for the new process. The code page entries are filled with the disk block numbers obtained from inode table. Remaining entries are invalidated (store -1). (In later stages, when we swap out the process to disk, we will fill the stack and the heap entries with the disk block numbers used for swapping. More about this will be discussed in later stages).</p>
-      <p>Get Code Page function loads a single code block into memory page given a block number. Code pages are shared by the processes running the same program. The purpose of this function is to find out if the current code block is already in use by some other process. This is done by going through disk map table entries of all the processes and checking whether the corresponding page table entry is valid or not. If the code block is already present in some memory page, Get Code Page function just returns that memory page number. If not a new memory page is allocated by invoking Get Free Page function, the code block is loaded in that memory page using Disk Load function and return the memory page number.</p>
+<p>The exception handler first switches to the kernel stack and backs up the register context as done by any other hardware interrupt routine. The exception handler then uses EC register to find out the cause of the exception. If the cause of the exception is other than page fault, we should print the appropriate message to notify the user. As these exceptions cannot be corrected, exception handler must terminate the process by invoking the <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> and invoke the scheduler to schedule other processes.</p>
+      <p> The register EIP saves the logical IP value of the instruction which has raised the exception. The register EPN stores the logical page number of the address that has caused the page fault. Note that eXpOS is designed such that, page fault exception can only occur for heap and code pages. Library pages are shared by all processes so they are always present in the memory. Stack pages are neccessary to run a process and are accessed more frequently. So both library and stack pages for a process should be present in the memory.
+      Based on the value present in EPN, the exception handler finds out whether page fault has caused for heap or code page. When page fault has occured for heap page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the <b>Get Free Page</b> function in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. If the page fault has occured for a code page, then the exception handler invokes the <b>Get Code Page</b> function in memory manager module. The page table of the process is updated to store the page number obtained from Get Code Page or Get Free Page functions. After handling the page fault exception, the exception handler restores the register context, switches to user stack and returns to user mode.</p><br>
 
     <ol style="list-style-type: decimal; margin-left: 2px">
         <li><b>Modification of exec system call</b></li>
@@ -3643,7 +3646,10 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
     	
     </ol>
   <br>
-   <p>Compile and load the modified and newly written files into the disk using XFS-interface. Run the Shell version-I with any program to check for errors.</p>
+   <p>Compile and load the modified and newly written files into the disk using XFS-interface.</p>
+
+
+<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to implement a linked list. Your program should first read an integer N, then read N intergers from console and store them in the linked list and print the linked list to the console. Run this program using shell version-I.
 
 		</div>
 		</div>
@@ -3653,7 +3659,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
                       <div class="panel-heading" id="list_stage20">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process creation and termination</a>
                         </h4>
                       </div>
 
@@ -3667,7 +3673,9 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
                             <div id="lo20" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
+                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Enable OS to create new processes.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of the fork and exit system calls.</li>
+
                             </ul>                                  
                                      
                             </div>
@@ -3677,10 +3685,15 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                       </div>
 
 	<!-- End Learning Objectives-->    
-        In this stage you will implement the process system calls. There are three process system calls : fork, 
-        exec and exit with system call numbers 8, 9 and 10 and are handled by interrupt routines 8, 9 and 10 respectively.
-          <br><br>
-		<b>Modifications to OS Startup Code</b><br>
+        <p>In this stage, you will understand working of fork and exit system calls.</p>
+
+        <p>Fork has system call number 8 and it is implemented in interrupt routine 8. From ExpL program, fork is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>. Fork does not take any arguments. In general, Fork system call creates a new process. This new process is called child process of the current process. So, fork system call can be called as "Process Creator" of eXpOS.</p>
+
+        <p>The child process created by fork is identical to the parent process. The child process will execute the same program, but with different PID. The state (variables, heap, stack ) of the parent process till the invocation of fork is replicated in the child process. After completion of the fork, both child and parent processes will start the execution from the next instruction after the call to fork.     </p>
+
+
+
+        		<!--<b>Modifications to OS Startup Code</b><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
         <li> Initialise the state of all free process table entries to TERMINATED state. This is done to
         identify the free entries while searching for a process table entry for a new process.</li>
@@ -3758,7 +3771,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
           <li>Set the value of SP as 4096.</li>
        
       
-   	</ol>
+   	</ol>-->
    	 </div> 
 </div>
 
