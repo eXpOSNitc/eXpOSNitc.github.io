@@ -2692,7 +2692,7 @@ the INIT process never goes through the CREATED state.
 			the implementation of the module soon below). 
 			<div><pre>loadi(50,63);
 loadi(51,64);</pre></div> </li>
-			<li>First 3 process table entries are occupied. Initialize PID field of all other process table entries to -1. This will be useful while finding the next process to schedule using round robin scheduling algorithm.</li>
+			<li>First 3 process table entries are occupied. Initialize STATE field of all other process table entries to TERMINATED. This will be useful while finding the next process to schedule using round robin scheduling algorithm. Note that when the STATE field in the process table entry is marked as TERMINATED, this indicates that the process table entry is free for allocation to new processes.</li>
 			</ol>
 			
 			<br>
@@ -3231,7 +3231,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
        <b>Implementation of Exec system call</b><br><br>
        <p><a href="os_design-files/Sw_interface.html">Exec</a> has system call number as 9 and it is implemented in interrupt routine 9. Follow steps below to implement interrupt routine 9.</p>
   <ol style="list-style-type: decimal;margin-left: 2px">
-  <li>Save user stack value for later use, set up the kernel stack.(see kernel stack management during system calls.)</li>
+  <li>Save user stack value for later use, set up the kernel stack. (see kernel stack management during system calls.)</li>
   <li>Set the MODE_FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to kernel mode.</li>
   <li>Get the argument (name of the file) from user stack.</li>
   <li>Search the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> for the file, If the file is not present or file is not in XEXE format return to user mode with return value -1 indicating failure (after setting up MODE_FLAG and the user stack).</li>
@@ -3352,22 +3352,17 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
 	     Since the page storing the kernel context has been de-allocated, before making any function call, a stack page has to be allocated to store parameters, return address etc.  It is unsafe to invoke the Get Free Page function of the memory manager module before allocating a stack page (why?).   
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
 
-<div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+ <li class="list-group-item">
                           <a data-toggle="collapse"  href="#collapseq10"><b>Q2.</b> Why should the OS set the WRITE PERMISSION BIT for library and code pages in each page table entry to 0, denying permission for the process to write to these pages?  </a>
                             <div id="collapseq10" class="panel-collapse collapse">
 	     ExpOS does not expect processess to modify the code page during execution. Hence, during a fork() system call (to be seen in later stages), the code pages are shared between several processes.  Similarly, the library pages are shared by all processes.  If a process is allowed to write into a code/library page, the shared program/library will get modified and will alter the execution behaviour of other processes, which violates the basic <a href="https://en.wikipedia.org/wiki/Virtual_address_space" target="_blank">virtual address space</a> model offered by the OS.          
 		</div>
 		</li>
+
                           </ul>
                           </div>
-                           </div>
+                          </div><br>
 
                           <b style="color:#26A65B">Assignment 1: </b><b>[Shell version-I]</b> Write an ExpL program to read the name of program from the console and execute that program using exec system call. Load this program as INIT program and run the odd.expl (printing odd numbers between 1-100) program using the shell.
          <br><br>
@@ -3474,38 +3469,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
    <p>We will initialize another data strucutre as well in this stage. This is the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. (This step can be deferred to later stages, but since the work involved is simple, we will finish it here).  The per-process resource table stores the information about the files and semaphores which a process is currently using. For each process, per-process resource table is stored in the user area page of the process. This table has 8 entries with 2 words each, in total it occupies 16 words. In exec, after reacquiring the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> for the new process, per-process resource table should be initialized in this user area page. Since the newly created process has not opened any files or semaphores, each entry in the per-process table is initialized to -1.</p>
    </li>
   
-    <!--
-    <b> Modification to device manager module</b><br><br>
-  <p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Disk Load, implement below steps:</p>
-    <ol style="list-style-type: decimal;margin-left: 2px">
-       <li>Invoke the Acquire Disk function present in the resource manager module.</li> 
-
-       <li>Set the LOAD/STORE field to 0 indicating loading from disk.</li>
-       <li>Store the page number and block number corresponding to disk load in the Disk Status Table.</li>
-       <li>Use load statement to load data from the disk block to the memory page.</li>
-       <li>Set the state of the current process to WAIT_DISK and invoke the scheduler.</li>
-       <li>Return to the caller. This statement will be executed after coming back from the scheduler.</li>   	
-    </ol>
-<br><b>Modification to resource manager module</b><br><br>
-<p style="text-indent: 0px">If the function number (value present in R1) corresponds to the function number of the Acquire Disk, implement below steps:</p>
-<ol style="list-style-type: decimal;margin-left: 2px">
-	<li>While the  disk is busy (check STATUS field in the Disk Status Table), do following:
-     <ol style="list-style-type: lower-roman;margin-left: 20px">
-     	<li>Set the state of the process which has invoked the Acquire Disk to WAIT_DISK.</li>
-     	<li>Invoke the scheduler.</li>
-     </ol>
-	</li>
-	<li>Set the STATUS field to 1 and also store the PID of the process (PID given as argument) in the PID field of the Disk Status Table. </li>
-	<li>Return to the caller.</li>
-
-</ol>
-  <br><b>Implementation of Disk Interrupt Routine</b><br><br>
-  <ol style="list-style-type: decimal;margin-left: 2px">
-  	  <li>Set the STATUS field in the Disk Status table to 0 indicating that disk is no longer busy.</li>
-  	  <li>Go through all the process table entries, and change the state of the process to READY, which is in WAIT_DISK state.</li>
-  	  <li>Return to user mode using the ireturn statement.</li>
-
-  </ol>-->
+    
   <br>
   <li><b>Modifications to boot module</b></li>
     
@@ -3528,58 +3492,32 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 	     No. The modules needed for the execution of load, need to be present in the memory first. And even if they are present, at the time of execution of the boot module, no process or data structures are initialized (like Disk Status Table). 
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
-
-<div class="container col-md-12" style="margin-bottom: 0px">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq12"><b>Q2.</b> Why does the disk interrupt handler has to backup the register context?</a>
                             <div id="collapseq12" class="panel-collapse collapse">
-	      Disk interrupt handler is a hardware interrupt. When disk interrupt occures, the XSM machine just pushes IP+2 value on stack and transfers control to disk interrupt. It will not backup the registers and the interrupt handler must
-	      back up the context of process in execution before modifying machine registers.
-	      The interrupt handler also needs to restore the context before return.  
+	      Disk interrupt handler is a hardware interrupt. When disk interrupt occurs, the XSM machine just pushes IP+2 value on stack and transfers control to disk interrupt. Occurance of a hardware interrupt is unexpected. When the disk interrupt is raised, the process will not have control over it so the process (curently running) cannot backup the registers. That's why interrupt handler must back up the context of the process (currently running) before modifying the machine registers. The interrupt handler also needs to restore the context before returning to user mode.  
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
 
-<div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq13"><b>Q3.</b> Why doen't system calls backup register context?</a>
+		<li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq13"><b>Q3.</b> Why doesn't system calls backup the register context?</a>
                             <div id="collapseq13" class="panel-collapse collapse">
-	       Yes, readi statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode.
+	        The process currently running is in full control over calling the interrupt (software interrupt) corresponding to a system call. This allows a process to back up the registers used till that point (not all registers). Note that instead of process, the software interrupt can also back up the registers. But, the software interrupt will not know how many registers are used by the process so it has to back up all the registers. Backing up the registers by a process saves space and time.
 		</div>
 		</li>
-                          </ul>
-                          </div>
-                          </div>
-
-
-
-                          <div class="container col-md-12">
-                          <div class="section_area">
-                          <ul class="list-group">
-                           <li class="list-group-item">
+		<li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq14"><b>Q4.</b> Does the XSM terminal input provide polling based input?</a>
                             <div id="collapseq14" class="panel-collapse collapse">
-	       Yes, <i>readi</i> statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode. Write operation is always asynchromous.
+	       Yes, <i>readi</i> statement provided in SPL gives polling based terminal I/O. But readi statement only works in debug mode. Write operation is always asynchronous.
 		</div>
 		</li>
                           </ul>
                           </div>
                           </div>
-
-
-
 
 		</div>
 		</div>
@@ -3617,21 +3555,26 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                       </div>
 
 	<!-- End Learning Objectives--> 
-        <b>It is absolutely necessary to read about <a href="Tutorials/xsm_interrupts_tutorial.html#exception_handling_in_XSM" target="_blank">Exception handling in XSM</a> before proceeding further.</b> <br><br>             
-       <p>This stage introduces you to exception handling in eXpOS. There are four events that result in XSM generating an exception. These events are a) illegal memory access, b) illegal instruction, c) arithmetic exception and d) page fault. When one of this events occur, the XSM machine raises an exception and control is transferred to the exception handler. The exception handler code used in previous stages contains only halt instruction which halts the system in the case of an exception. Clearly it is inappropriate to halt the system (all the processes are terminated) for exception occured in one process. In this stage, we implement the exception handler which takes appropriate action for each exception. The exception handler occupies page 2 and 3 in the memory and blocks 15 and 16 in the disk. There are 4 special registers in XSM which are used to obtain the cause of the exception and the information related to the exception. These registers are EC, EIP, EPN and EMA. The cause of the exception is obtained from the value present in the EC register.</p>
-       <p>Exception handler mechanism gives a facility to resume the execution of the process after the corresponding exception has been taken care of. It is not always possible to resume the execution of the process, as some events which cause exception cannot be corrected. In this case, the proper action is to halt the process gracefully. For the events 1) illegal memory access (EC=2) 2) illegal instructions (EC=1) and 3) arithmetic exception (EC=3), the exception handler just prints the cause of the exception. These cases occur because the last instruction executed (in the currently running user process) resulted in the corresponding error condition.  As the OS is not reponsible for correcting these conditions (why?),  the exception handler halts the process by calling Exit Process function in <a href="os_modules/Module_1.html" target="_blank">process manager module</a> and then invokes the scheduler to run other processes.</p>
+        <b>It is absolutely necessary to have clear understanding about <a href="Tutorials/xsm_interrupts_tutorial.html#exception_handling_in_XSM" target="_blank">Exception handling in XSM</a> before proceeding further.</b> <br><br>             
+       <p>This stage introduces you to exception handling in eXpOS. There are four events that result in generation of an exception in XSM. These events are a) illegal memory access, b) illegal instruction, c) arithmetic exception and d) page fault. When one of this events occur, the XSM machine raises an exception and control is transferred to the exception handler. The exception handler code used in previous stages contains only halt instruction which halts the system in the case of an exception. Clearly it is inappropriate to halt the system (all the processes are terminated) for exception occured in one process. In this stage, we implement the exception handler which takes appropriate action for each exception. The exception handler occupies <b>page 2 and 3 in the memory and blocks 15 and 16 in the disk</b>. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>. There are 4 special registers in XSM which are used to obtain the cause of the exception and the information related to the exception. These registers are <b>EC, EIP, EPN and EMA</b>. The cause of the exception is obtained from the value present in the EC register.</p>
+       <p>Exception handler mechanism gives a facility to resume the execution of the process after the corresponding exception has been taken care of. It is not always possible to resume the execution of the process, as some events which cause the exception cannot be corrected. In this case, the proper action is to halt the process gracefully. For the events 1) illegal memory access (EC=2) 2) illegal instruction (EC=1) and 3) arithmetic exception (EC=3), the exception handler just prints the cause of the exception. These cases occur because the last instruction executed (in the currently running user process) resulted in the corresponding error condition.  As the OS is not reponsible for correcting these conditions (why?),  the exception handler halts the process gracefully and then invokes the scheduler to run other processes.</p>
 
-       <p>The page fault exception (EC=0) occurs when the last instruction in the currently running application tried to either a) fetch data from a legal address within its address space, but the page was set to invalid in the page table or b) fetch and execute an instruction from a legal address within its address space, whose page table entry is invalid.  In either case, the exception occured not because of any error from the side of the application, but because the OS had not loaded the page and set the page tables.  In such case, the exception handler resumes the execution of the process after allocating a page in memory, attaching the page to the process (by setting page table entries appropriately) and loading the page from the disk to this memory region (if necessary).   </p>
+       <p>The <b>page fault exception</b> (EC=0) occurs when the last instruction in the currently running application tried to either -
+       <br><b>a)</b> fetch data from a legal address within its address space, but the page was set to invalid in the page table or <br><b>b)</b> fetch and execute an instruction from a legal address within its address space, whose page table entry is invalid.</p>  <p>In either case, the exception occured not because of any error from the side of the application, but because the OS had not loaded the page and set the page tables.  In such case, the exception handler resumes the execution of the process after allocating a page in memory, attaching the page to the process (by setting page table entries appropriately) and loading the page from the disk to this memory region (if necessary).   </p><br>
 
       <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"> <p>But why should the OS not allocate all the pages required for a process when the process is initialized by the Exec system call, as we were doing in the previous two stages?  The reason is that this method of pre-allocation allows fewer concurrent processes to run than with the present strategy of "lazy allocation" to be described now. The strategy followed in this stage is to start executing a process with just one page of code and two pages of stack allocated initially. When the process, during execution, tries to access a page that was not loaded, an exception is generated and the execption handler will allocate the required page. If the required page is a code page, the page will be transferred from the disk to the allocated memory.  Since pages are allocated only on demand, memory utilization is better (on the average) with this approach.  </p></div><br>
+      <p>In previous stage, exec system call allocated 2 memory pages for each heap and stack. It also allocated and loaded all the code pages of the process. We will modify exec to allocate memory pages for only stack (2 pages). <b>No memory pages will be allocated to heap. Consequently, the entries in the page table corresponding to heap are set to invalid. For code blocks, only a single memory page is allocated and the first code block is loaded into that memory page.</b> In previous stage, the job of allocating a new memory page and loading a code block into that memory page is done by <i>Get Free Page</i> and <i>Disk Load</i> functions respectively. Now, we will write new module function <b>Get Code Page</b> in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> for simultaneously allocating a memory page and loading a code block. This function will be invoked from exec to allocate one memory page and load the first code block into that memory page. Note that only the first code page entry in the page table is set to valid, while remaining 3 entries are set to invalid.</p>
+
+      <p>Each process has a data structure called <a href="os_design-files/process_table.html#disk_map_table" target="_blank"><b>Per-process Disk map table</b></a>. The disk map table stores the disk block numbers corresponding to the memory pages used by the process. <b>Each disk map table has 10 words</b> of which one is for user area page, two for heap, four for code and two for stack pages. Remaining one word is unused. Whenever the copy of the memory page of a process is present in some disk block, that disk block number is stored in the per-process Disk Map Table entry corresponding to that memory page. This is done to keep track of the disk copy of memory pages. The SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_MAP_TABLE</a> gives the starting address of the table. The disk map table for any process is obtained by adding PID*10 to DISK_MAP_TABLE.</p>
+
+      <p>In exec system call, initialize the disk map table for the new process. The code page entries are filled with the disk block numbers obtained from the inode table. Remaining entries are set to invalid (store -1). (In later stages, when we swap out the process to disk, we will fill the stack and the heap entries with the disk block numbers used for swapping. More about this will be discussed in later stages).</p>
+
+      <p>The <b>Get Code Page</b> function takes as input the block number of a single code block, and loads that block into a memory page. Code pages are shared by the processes running the same program. The purpose of this function is to find out if the current code block is already in use by some other process. This is done by going through the disk map table entries of all the processes checking for the code block (block number provided as argument). If found, then the <b>Get Code Page</b> checks if the code block is loaded into a memory page  (entry in the corresponding page table should be valid). If the code block is already present in some memory page, then Get Code Page function just returns that memory page number. If not, a new memory page is allocated by invoking the <b>Get Free Page</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> followed by loading the code block in that memory page using the <b>Disk Load</b> function of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. The Get Code Page function finally returns the memory page number.</p>
 
 
-      <p> The register EIP saves the logical IP value of the instruction which has raised the exception. The register EPN stores the logical page number of the address that has caused the page fault. Based on the value present in EPN, the exception handler finds out whether page fault has caused for heap or code page. When page fault has occured for heap page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the Get Free Page function in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. In case the page fault has occured for code page, exception handler invokes the Get Code Page function in memory manager module. The page table of the process is updated to store the page number obtained from Get Code Page or Get Free Page functions.</p>
-       <p>In previous stage, exec system call allocates 2 memory pages for each heap and stack. It also allocates and load all the code pages of the process. We will modify exec to allocate memory pages for only stack (2 pages). No memory pages will be allocated to heap, also the entries in the page table corresponding to heap are invalidated. For code blocks, only a single memory page is allocated and the first code block is loaded into that memory page. In previous stage, the job of allocating a new memory page and loading a code block into that memory page is done by Get Free Page and Disk Load functions respectively. Now, modify exec to invoke the function Get Code Page present in memory manager module for both allocating  a memory page and loading a code block. Note that only the first code page entry in the page table is valid, remaining 3 entries are invalidated.</p>
-
-      <p>Each process has a data structure called Per-process Disk map table. Disk map table stores the disk block numbers corresponding to the pages used by the process. Each disk map table has 10 words of which one is for user area page, 2 for heap, 4 for code and 2 for stack pages. Remaining one word is unused. Suppose the copy of the page of a process is present in some disk block. To keep track of this disk copy, disk block number is stored in the per-process Disk Map Table entry corresponding to that memory page. See details of Disk map Table <a href="os_design-files/process_table.html#disk_map_table" target="_blank" >here</a>. SPL constant DISK_MAP_TABLE gives the starting address of the table and the corresponding disk map table for a process is obtained by adding PID*10 to DISK_MAP_TABLE.</p>
-      <p>In exec system call, initialize the disk map table for the new process. The code page entries are filled with the disk block numbers obtained from inode table. Remaining entries are invalidated (store -1). (In later stages, when we swap out the process to disk, we will fill the stack and the heap entries with the disk block numbers used for swapping. More about this will be discussed in later stages).</p>
-      <p>Get Code Page function loads a single code block into memory page given a block number. Code pages are shared by the processes running the same program. The purpose of this function is to find out if the current code block is already in use by some other process. This is done by going through disk map table entries of all the processes and checking whether the corresponding page table entry is valid or not. If the code block is already present in some memory page, Get Code Page function just returns that memory page number. If not a new memory page is allocated by invoking Get Free Page function, the code block is loaded in that memory page using Disk Load function and return the memory page number.</p>
+<p>The exception handler first switches to the kernel stack and backs up the register context as done by any other hardware interrupt routine. The exception handler then uses EC register to find out the cause of the exception. If the cause of the exception is other than page fault, we should print the appropriate message to notify the user. As these exceptions cannot be corrected, exception handler must terminate the process by invoking the <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> and invoke the scheduler to schedule other processes.</p>
+      <p> The register EIP saves the logical IP value of the instruction which has raised the exception. The register EPN stores the logical page number of the address that has caused the page fault. Note that eXpOS is designed such that, page fault exception can only occur for heap and code pages. Library pages are shared by all processes so they are always present in the memory. Stack pages are neccessary to run a process and are accessed more frequently. So both library and stack pages for a process should be present in the memory.
+      Based on the value present in EPN, the exception handler finds out whether page fault has caused for heap or code page. When page fault has occured for heap page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the <b>Get Free Page</b> function in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. If the page fault has occured for a code page, then the exception handler invokes the <b>Get Code Page</b> function in memory manager module. The page table of the process is updated to store the page number obtained from Get Code Page or Get Free Page functions. After handling the page fault exception, the exception handler restores the register context, switches to user stack and returns to user mode.</p><br>
 
     <ol style="list-style-type: decimal; margin-left: 2px">
         <li><b>Modification of exec system call</b></li>
@@ -3655,7 +3598,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
          4) Return the memory page number to which the code block have been loaded.  
          <br></p><br>
         <li><b>Modification to the Free Page Table (function number = 4, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b></li>
-          <p style="text-indent: 0px"> 1) In Free Page Table function should free the disk blocks used by heap and stack of the current process. This is done by going through the heap and stack entries in <a>disk map table</a>. If any valid entries are found, invoke the release block function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.   
+          <p style="text-indent: 0px"> 1) In Free Page Table function should free the disk blocks used by heap and stack of the current process. This is done by going through the heap and stack entries in <a>disk map table</a>. If any valid entries are found, invoke the Release Block function present in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.   
          
          <br>
          2) Invalidate all the entries of the disk map table.
@@ -3669,10 +3612,11 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
     		5) Restore the register context, change to the user stack and return to the user mode.</p><br>
     	<li><b>Modification to the Boot Module</b></li>
     	    <p>Initialize the disk map table entries for the INIT process.</p>
-    	
     </ol>
-  <br>
-   <p>Compile and load the modified and newly written files into the disk using XFS-interface. Run the Shell version-I with any program to check for errors.</p>
+   <p>Compile and load the modified and newly written files into the disk using the XFS-interface.</p><br>
+
+
+<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to implement a linked list. Your program should first read an integer N, then read N intergers from console and store them in the linked list and print the linked list to the console. Run this program using shell version-I.<br><br>
 
 		</div>
 		</div>
@@ -3682,7 +3626,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
                       <div class="panel-heading" id="list_stage20">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process system calls </a>
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process creation and termination</a>
                         </h4>
                       </div>
 
@@ -3696,7 +3640,9 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
                             <div id="lo20" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the process system calls.</li>
+                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Enable OS to create new processes.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of the fork and exit system calls.</li>
+
                             </ul>                                  
                                      
                             </div>
@@ -3705,106 +3651,78 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                         </div>
                       </div>
 
-	<!-- End Learning Objectives-->    
-        In this stage you will implement the process system calls. There are three process system calls : fork, 
-        exec and exit with system call numbers 8, 9 and 10 and are handled by interrupt routines 8, 9 and 10 respectively.
-          <br><br>
-		<b>Modifications to OS Startup Code</b><br>
-		<ol style="list-style-type:decimal;margin-left:2px">
-        <li> Initialise the state of all free process table entries to TERMINATED state. This is done to
-        identify the free entries while searching for a process table entry for a new process.</li>
-        <li> The OS supports maintains information about free memory pages usinng the <a href ="os_design-files/mem_ds.html#mem_free_list" target="_blank">Memory Free List</a> data structure.
-        The used pages are marked as 1 and the unused pages are marked as 0 in Memory Free List. The pages 0 - 75 are
-        reserved for the OS and the pages 75 - 80 are used as stack pages and user area pages by init and idle programs.
-        Hence, mark the pages 0 - 80 as used and 81 - 127 as unused. </li>
-        <li> Load interrupts 8, 9 and 10 from disk blocks 31 - 36 to memory pages 18 - 23.</li>
-        <li> Load modules 2, </li>
-		</ol>
-		<br><br>
-		<b>Fork System Call</b>
-		<p>Fork System Call replicates the process invoking the system call. The heap, code and library regions
-		 of the parent are shared by the child. A new stack is allocated to the child and the parent's stack 
-		 is copied into the child's stack.</p>
-		<ol style="list-style-type:decimal;margin-left:2px">
-		<li>Save the value of SP in the Process Table entry of the process and set the value of SP to the 
-		beginning of User Area Page.
-         </li>
-         <li>Invoke the GetPTentry() from Process Manager module to find a free Process Table entry for the
-          child process. Ensure that you push all the used registers to stack before invoking the module.</li>
-         <li>If the value returned is -1 indicating no free Process Table entries, retuen -1 indicaing failure.</li>
-         <li>The new process requires 3 memory pages: 2 for user stack and 1 for User Area Page.
-         Invoke the Getpage() function in Memory Manager module thrice to obtain 3 memory pages.
-         </li>
-         <li>The index of the Process Table entry found gives the PID of the child process.
-         PAGE_TABLE_BASE + PID*20 would give the PTBR of the child process.
-         Copy the page table entries (code, heap and library) from the parent's page table to the 
-         child. Set the page table entries of user stack as the newly found pages for user stack.</li>
-         <li>The heap, code and library regions of the parent are shared by the child. 
-         For each page shared, increment its value in the Memory Free List</li>
-         <li>Copy the parent's <a href="process_table.html#machine_state" target="_blank">Machine State</a> 
-         (except PTBR and User Area Page number). Set the PTBR field of the Machine State to the address of 
-         the page table of the child. Set the User Area Page number field as the newly found page for User Area Page.</li>
-		 <li>Copy the user stack of parent to the user child of child.</li>
-		 <li>Set the return  value to 0 for the child process.</li>
-		 <li>The PID of the child process is set as the return value for the parent process.</li>
-		 <li>Set state of child process to CREATED. </li>
-		 <li>Set the value of SP to point to the user stack.</li>
-		 <li>Return to the parent process.</li>
-		 </ol>
-		 <br><br>
-		 <b>GetPTentry()</b>
-		 <ol style="list-style-type:decimal;margin-left:2px">
-		 <li>Iterate through the Process Table entries to find a free entry to be allocated for the new process</li>
-		 <li>If no free entry is found, return -1.</li>
-		 </ol>
-		 <br><br>
-		 <b>Getpage()</b><br>
-		 <ol style="list-style-type:decimal;margin-left:2px">
-        <li>Iterate through the Memory Free List to find a free entry (denoted by 0).</li>
-        <li>If no free entry is found,....</li>
-        <li>Return the index of the free entry.</li>
-        </ol>
-        <br><br>
-        <b>Exec System Call</b>
-        <p>Exec destroys the present process and loads the executable file given as input into a new memory 
-        address space. A successful Exec operation results in the extinction of the invoking process and hence
-        never returns to it.However, the newly created process will inherit the PID of the calling process.</p>
-        <ol style="list-style-type:decimal;margin-left:2px">
-			<li>Retrieve the filename of the new process from the user stack.</li>
-			<li>Return -1 if the filename is NULL.</li>
-			<li>Iterate through the Inode Table to find the inode index of the file.</li>
-			<li>If file is not found, return -1.</li>
-			<li>Inorder to overlay the existing process with the new process passed as argument, you will first
-			deallocate the resources of the existing process. Invoke the FreePTentry() and FreePageTable() from Process manager module
-			with the current PID as the argument to free the Process Table and Page Table entries of the current process.</li>
-			<li>Invoke the Getpage() function in Memory Manager module to obtain 4 memory pages- 2 for user stack,
-			1 for User Area Page and 1 for code.</li>
-          <li>Invoke DWrite() from Device manager module to load the first code page of the new process
-          from disk to memory. </li>
-          <li>Set up the page table entries of the new process. The first code page must be </li>
-          <li>Set up the Process Table entries.</li>
-          <li>Obtain the value of IP from the first code page and set this value to top of the user stack.</li>
-          <li>Set the value of SP as 4096.</li>
+	<!-- End Learning Objectives-->   
+    
+        <p>In this stage, you will understand how to create a new process using the fork system call and how to terminate a process using the exit system call. You will first look at the fork system call followed by the exit system call.</p>
+        <br>
+
+<b style="font-size: 20px">Fork System Call</b> <br><br>
+        <p> In general, Fork system call creates a new process. The newly created process and process which has invoked the fork has a child-parent relationship. So, the fork system call can be called as the "Process Creator" of eXpOS. The child process created by the fork is identical to the parent process. The child process will execute the same program, but with different PID. Having a different PID, gives the child process a different process table and page table. The state (variables, heap, stack) of the parent process till the invocation of the fork is replicated in the child process. On successful completion of the fork system call, it gives PID of the child process as the return value for parent process. Whereas the return value is zero for the child process. In case fork system call fails to create a new process, -1 is stored as return value for the parent process. After completion of the fork, control is transfered back to the parent process. After completion of the fork, child process will be ready to execute and will be in the CREATED state. When child process is scheduled (by the scheduler) to run for the first time, it will start its execution from the immediate instruction after the call to fork.  </p>
+
+        <p>The child process shares the heap and code pages with the parent process. New memory pages are allocated for user stack and kernal stack (user area page). The Fork system call copies the content of the parent's user stack pages to the memory pages allocated for the user stack of the  child process. The content of the kernel stack is not copied to the user area page of child process. ExpL is designed in such a way that, local and  global variables (and arrays) of primitive data types (int, string) of any process are allocated memory in the stack. Parent and child processes has different memory pages for the user stack, but the content in them is same. This enables the child process to use the variables as well as the values currently present in them. The variables (structure variables) of user defined data type declared by the parent process are allocated memory in the heap. As the heap pages are shared by the parent and the child processes, both processes share the variables (of user defined data type) also. Parent and child processes can simultaneously access/modify the heap pages, so usage of heap has to be synchronized. This synchronization is handled with the help of semaphores. Semaphores will be discussed in the later stages. Even though, code pages are shared among parent and child processes, synchronization is not required as code page have read only access.</p>
+
+      <p>From ExpL program, fork is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>. Fork has system call number 8 and it is implemented in the interrupt routine 8. Fork does not take any arguments. Follow the below description to implement the fork system call. Take help of the algorithm given <a href="os_design-files/fork.html" target="_blank">here</a>. </p>
+
+       <ul style="list-style-type: disc; margin-left: 10px; ">
+
+       <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE_FLAG to the system call number and switch to the kernel stack. To get a new PID for the child process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new process table allocated for the child process. This index is saved as the PID of the child process. As there are only 16 process tables present in the tmemory, maximum 16 processes can run simultaneously. If a free process table is not available, Get Pcb Entry returns -1. In such case, store -1 as the return value in the stack, reset the MODE_FLAG (to 0), switch to user stack and return to the user mode from the fork system call. When PID is available, proceed with the fork system call. </li>
+
+       <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and  user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
        
+       <li style="padding-left: 20px">The next step in the fork system call is initialization of the <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child process. Copy the USERID field from the process table of the parent to the child process, as the user (currently logged in) will be same for both child and parent processes. Similarly, copy the SWAP FLAG and the USER AREA SWAP STATUS fields. These fields are related to the concept of swapping, which will be explianed in the later stages. INODE INDEX for the child and the parent processes will be same, as both of them run the same program. UPTR field should also be copied from the parent process. Content of the user stack is same for both of them, so when both of the processes resume execution, SP value should also be same.</li> 
+
+       <li style="padding-left: 20px">Set the MODE FLAG, KPTR and TICK fields to 0. MODE FLAG, KPTR are set to zero as the child process starts its execution from the user mode. TICK field should be initialized to 0, when a process is created.  Pid of the parent process is stored in the PPID field of the child process. <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> of the child process is set to <a href="support_tools-files/constants.html" target="_blank" >CREATED</a>. Store the new memory page number obtained for user area page in the the USER AREA PAGE NUMBER field in the process table of the child proces. PID, PTBR and PTLR fields of the child process are already initialized in the Get Pcb Entry function. No need to initialize any value to INPUT BUFFER.</li>
       
-   	</ol>
+      <li style="padding-left: 20px">The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> has details about the open instances of the files and the semaphores currently acquired by the process. Child process uses the files and the semaphores opened by the parent process. Copy the per-process resource table. Also copy the per-process disk map table of the parent to the child.</li>
+
+      <li>/* open file table and semaphore table*/</li>
+ 
+       <li style="padding-left: 20px">Now, we initialize the page table of the child process. As heap, code and library pages are shared by parent and child process, copy these entries (page number and auxiliary information) form the page table of the parent process to the child process. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a>. Initialize the stack page entries in the page table with the new memory page numbers obtained before. Note that the auxiliary information for the stack pages is same for both parent and child process. Copy content of the user stack pages of the parent process to the user stack pages of the child process word by word.</li>
+
+       <li style="padding-left: 20px">Store the PID of the child process and 0 as the return values in the stacks of the parent and child processes respectively. Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
+</ul>
+<p>The Get Pcb Entry function in the <a href="os_modules/Module_1.html" target="_blank">process manager</a>, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1.  A free process table entry (STATE field is set to TERMINATED) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry, PTBR to the starting address of the page table (can be obtained using index) and PTLR to 10. Return the index to the caller.</p><br>
+
+   <b style="font-size: 20px">Exit System Call</b> <br><br>
+
+
+   <p>At the end of every process, exit system call is invoked to terminate the process. So, exit system call is called as the "process terminator" of the eXpOS. In the previous stages, we had already implemented the exit system call. Now, we will simplify the system call by invoking some functions from the modules. </p>
+
+   <p>Exit system call has to perform some duties related to the data structures and the memory pages the process is currently using. All the memory pages acquired by the process has to be released. The page table entries has to be invalidated. There may be other processes waiting for this process to terminate. Exit system call must wake up these processes. It also has to close all the files and release the semaphores acquired by the process. Per-process resource table also has to be invalidated. Exit system call has to set the state of the process to TERMINATED.  All these tasks can be done by invoking the <b>Exit Process</b> function of the <a href="os_modules/Module_1.html">process manager module</a>. </p>     
+
+   <p>Exit system call has a system call number 10 and is implemented in the interrupt routine 10. Follow the description given below to implement the exit system call. Take the help of the algorithm given <a href="os_design-files/exit.html" target="_blank">here</a>.</p> 
+
+    <ul style="list-style-type: disc; margin-left: 10px; ">
+
+     <li style="padding-left: 20px">Exit system call first sets the MODE FLAG to the system call number and switches to the kernal stack.</li> 
+
+     <li style="padding-left: 20px">It then invokes the <b>Exit Process</b> function present in the process manager module. Loop through all the process table entries to find out if all the processes other than idle are terminated. If so, then halt the system. If it is not the case, then invoke the scheduler to schedule other processes. </li></ul><br>
+
+
+<b>Modifications to the Boot module</b><br><br>
+<p>Load interrupt routine 8 from disk to memory. /*initialize open file table, initialize semaphore table*/.</p>
+
+<p>Compile and load interrupt routine 8, interrupt routine 10, module 2 into the disk using the XFS-interface.</p><br>
+      
+<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to create a child process using Fork. The parent and child processes has to use exec system call to execute even and odd programs respectively. Load this program as the init program and run the machine.<br><br>
+
+
    	 </div> 
 </div>
 
  <!-- =========end Stage 20 ===========-->
 
-<!-- 
-// =========Stage 21 ===========
+<!--=========Stage 21 ===========-->
 
                       <div class="panel-heading" id="list_stage21">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse21"><span class="fa fa-check-square-o"></span>Stage 21 : File system calls </a>
+                          <a data-toggle="collapse"  href="#collapse21"><span class="fa fa-check-square-o"></span>Stage 21 : Process synchronization</a>
                         </h4>
                       </div>
 
                       <div id="collapse21" class="panel-collapse collapse">
                         <div class="panel-body">
-                            // Begin Learning Objectives
+                            <!-- Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
@@ -3812,34 +3730,36 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo21">Learning Objectives</a>
                             <div id="lo21" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the file system calls.</li>
+                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with process synchronization in eXpOS</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of wait and signal system calls</li>
+
                             </ul>                                  
                                      
                             </div>
                           </li>
                           </ul>
+
                         </div>
                       </div>
 
-	// End Learning Objectives 
+	<!-- End Learning Objectives--> 
 
 		</div>
 		</div>
 
- // =========end Stage 21 ===========
+ <!-- =========end Stage 21 ===========-->
 
-
- // =========Stage 22 ===========
+ <!-- =========Stage 22 ===========-->
 
                       <div class="panel-heading" id="list_stage22">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse22"><span class="fa fa-check-square-o"></span>Stage 22 : Multiuser Modification </a>
+                          <a data-toggle="collapse"  href="#collapse22"><span class="fa fa-check-square-o"></span>Stage 22 : Semaphores </a>
                         </h4>
                       </div>
 
                       <div id="collapse22" class="panel-collapse collapse">
                         <div class="panel-body">
-                            //Begin Learning Objectives
+                            <!--Begin Learning Objectives-->
                           <div class="container col-md-12">
                           <div class="section_area">
                           <ul class="list-group">
@@ -3847,7 +3767,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo22">Learning Objectives</a>
                             <div id="lo22" class="panel-collapse expand">
                             <ul>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the Multiuser Modification.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of semaphores system calls</li>
                             </ul>                                  
                                      
                             </div>
@@ -3856,14 +3776,14 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                         </div>
                       </div>
 
-	//End Learning Objectives
+	<!--End Learning Objectives-->
 
 		</div>
 		</div>
 
-	 //=========end Stage 20 ===========
+	 <!--=========end Stage 20 ===========-->
 
-	-->
+
 <!--=========== Intoduction Section Ending ===============-->
 
 </section>
