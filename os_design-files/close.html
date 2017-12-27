@@ -142,7 +142,7 @@
 	<a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a>             <div id="collapse5a" class="panel-collapse collapse">
 		Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
 		Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table </a>entry.
-		The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.              </div>
+		The <a href="../os_design-files/process_table.html#per_process_table">Per-Process Resource Table</a> is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.              </div>
 	If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* No file is open with this file descriptor. */
 
 	Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from Per-Process Resource Table entry.
@@ -151,7 +151,7 @@
 	
 	Invalidate the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry.
 
-	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
+	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 0.
 	Switch back to the user stack.
 
 	Return from system call with 0. &nbsp;&nbsp; /* success */

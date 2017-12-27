@@ -130,7 +130,6 @@
 
                                                 <p>If a positive offset goes beyond the size of the file, the seek position will be set to the file size (in the <a href="../os_design-files/disk_ds.html#inode_table">inode table</a> entry). A negative offset leading to LSeek value below 0 will give an error.</p>
                                                 <br>
-						<b>We are yet to review seek algorithm and full read system call</b>
                                                 <!--   Include if necessary ( When Swap comes in)
 
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
@@ -151,25 +150,30 @@ If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value 
 <a data-toggle="collapse"   href="#collapse5b">Locate the Per-Process Resource Table of the current process.</a><div id="collapse5b" class="panel-collapse collapse">
                  Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
                  Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table </a>entry.
-                 The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.              </div>
+                 The  <a href="../os_design-files/process_table.html#per_process_table">Per-Process Resource Table</a> is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.              </div>
 
 <b>If</b> entry in Per Process Resource Table corresponding to the file descriptor is invalid, return -1.&nbsp;&nbsp; 
 /* No file is open with this file descriptor. */
 
 Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.
 
-Get the current Lseek position and index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. 
+Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry.
+
+Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
+If the locking fails, return -1. 
+
+Get the current Lseek position from the Open File Table entry. 
 
 <a data-toggle="collapse"   href="#collapse2">Check the validity of the given offset </a><div id="collapse2" class="panel-collapse collapse">
 1. Get the file size of the file from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> (Use 512 if inode index is "INODE_ROOT").
-2. <b>If</b> (lseek + the given offset) does not lie in the range 0 to (file size - 1), return -2.&nbsp;&nbsp;/* the new lseek position is outside the file */</div>
+2. <b>If</b> (lseek + the given offset) is less than 0, <b>release_inode()</b> and return -2.&nbsp;&nbsp;</div>
 
-Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
-
-<b>If</b> the given offset is 0
-Set lseek value in the <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a> entry to 0.
-else
-Change the lseek value in the Per-Process Resource Table entry to lseek+offset.
+<b>If</b> the given offset is 0,
+	Set lseek value in the Open File Table entry to 0.
+<b>else if</b> lseek+offset is greater than the file size,
+	Set the lseek value to file size. /* Check inode table for file size */
+<b>else</b>
+	Change the lseek value in the Per-Process Resource Table entry to lseek+offset.
 
 Call the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Free the inode */
 
@@ -182,11 +186,12 @@ Return with 0. &nbsp;&nbsp;/* success */
 </pre>
 <br>
         
-        <h4>Questions</h4>
-        <p>1. What concurrency issue can occur if the inode is not locked?</p>
+        <h4>Questions:</h4>
+        <p>1. What concurrency issue can occur if the inode is not locked before reading the lseek position?</p>
         <p>2. What goes wrong if the LSEEK is stored in the File Status Table instead of the Open File table?</p>
         <p>3. What goes wrong if the LSEEK is stored in the per-process resource table instead of the Open File table?</p>
         <p>4. Which all file system calls set the FILE_SIZE field in the inode status table?</p>
+        <p>5. If your OS code has no bugs, acquire_inode() will never fail. Why?</p>
                <br>       
          </div>
 		</div>

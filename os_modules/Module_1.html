@@ -241,10 +241,13 @@ Called by the exit_process function.
 
 <pre>
 
-    /* Wake up all processes waiting for the current process */
     loop though the <a href="../os_design-files/process_table.html">process table</a> entries
+    	/* Wake up all processes waiting for the current process */
     	if( process is waitng for the current process ) 		/* indicated by the STATE = (WAIT_PROCESS, PID ) */
 		Set STATE of the process to (READY, - )
+	/* Set the children of the process as Orphan */
+	if( process has PPID as that of the current process)
+		Set PPID to -1.
 
     Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by
     invoking the Free_Page_Table() function; 

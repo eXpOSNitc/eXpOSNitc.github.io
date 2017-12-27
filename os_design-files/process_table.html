@@ -132,7 +132,7 @@
                <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
                    <li><b>TICK </b>(1 word)- keeps track of how long the process was in memory/ swapped state. It has an initial value of 0 and is updated whenever the scheduler is called. TICK is reset to 0 when a process is swapped out or in.</li>
                    <li><b>PID </b>(1 word) - process descriptor, a number that is unique to each process. This field is set by Fork System Call. In the present version of eXpOS, the pid is set to the index of the entry in the process table.</li>
-                  <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call.</li>
+                  <li><b>PPID </b>(1 word) - process descriptor of the parent process. This field is set by Fork System Call. PPID of a process is set to -1 when it's parent process exits. A process whose parent has exited is called an Orphan Process.</li>
                   <li><b>USERID </b>(1 word) - Userid of the currently logged in user. This field is set by Fork System Call.</li>
                   <li><a href="#state"><b>STATE</b></a> (2 words) - a two tuple that describes the current state of the process. The details of the states are explained below. </li>
                   <li><b>SWAP FLAG </b>(1 word) - Indicates if the process is swapped (1) or not (0). The process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>                                    

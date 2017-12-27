@@ -143,51 +143,54 @@ Save the value of SP to the USER SP field in the <a href="process_table.html">Pr
 Set the value of SP to the beginning of User Area Page.
 
 <b>If</b> input is to be read from terminal &nbsp;&nbsp; /* indicated by a file descriptor value of -1 */
-	Call the <i>Terminal Read </i>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .
+	Call the <b>terminal_read()</b>function in the <a href="../os_modules/Module_4.html" target="_blank">Device manager </a> Module .
 			 
 /* If not terminal, read from file. */
+<b> else </b>
 
-If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */
+	If file descriptor is invalid, return -1. &nbsp;&nbsp; /* File descriptor value should be within the range 0 to 7 (both included). */
 
-<a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a>
+	<a data-toggle="collapse"   href="#collapse5a">Locate the Per-Process Resource Table of the current process.</a>
 <div id="collapse5a" class="panel-collapse collapse">
                 Find the PID of the current process from the <a href="./mem_ds.html#ss_table" target="_blank">System Status Table</a>.
                 Find the User Area page number from the <a href="process_table.html#per_process_table" target="_blank">Process Table</a> entry.
-                The  Per-Process Resource Table is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.??
+                The  <a href="../os_design-files/process_table.html#per_process_table">Per-Process Resource Table</a> is located at the  <a href="constants.html" target="_blank">RESOURCE_TABLE_OFFSET</a> from the base of the <a href="./process_table.html#user_area" target="_blank"> User Area Page </a>.
               </div>
-If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.  
-/* No file is open with this file descriptor. */
+	If the Resource identifier field of the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> entry is invalid or does not indicate a <a href="constants.html" target="_blank">FILE</a>, return -1.  
+	/* No file is open with this file descriptor. */
 
-Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.
+	Get the index of the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a> entry from the Per Process Resource Table entry.
 
-Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. 
+	Get the index of the <a href="./disk_ds.html#inode_table" target="_blank">Inode Table</a> entry from the Open File Table entry. 
+	
+	Acquire the Lock on the File by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
+	If acquiring the inode fails, return -1.
 
-Get the Lseek position from the Open File Table entry.
+	Get the Lseek position from the Open File Table entry.
       
-Translate the Memory Buffer address given as input.
+	Get the physical address curresponding to the logical address of Memory Buffer address given as input.
 
-<a data-toggle="collapse"   href="#collapse_root">If the File corresponds to Root file ( indicated by Inode index as INODE_ROOT)  </a>
-<div id="collapse_root" class="panel-collapse collapse">
-                  Check for EOF ?? (NK: If the lseek value is equal to the root file size(480), return -2.) 
-                  Read from the word at lseek position in memory copy of root file to the translated memory address.
+	<b>If</b> the File corresponds to Root file ( indicated by Inode index as INODE_ROOT)  
+                  If the lseek value is equal to the root file size(480), <b>release_inode()</b> return -2. 
+
+                  Read from the word at lseek position in memory copy of <a href="../os_design-files/disk_ds.html#root_file">root file</a> to the translated memory address. 
+		  /* Use SPL Constant <a href="../support_tools-files/constants.html ">ROOT_FILE</a> */
+
                   Increment the Lseek position in the Open File Table.        
-                  Return 0.&nbsp;&nbsp;/* Success */ 
-</div>
-<a data-toggle="collapse"   href="#collapse2">Check for EOF </a><div id="collapse2" class="panel-collapse collapse">                 <b>If</b> lseek position is same as(NK: greater than?) the file size, return -2.&nbsp;&nbsp;/* End of file reached*/
-</div>
+	<b> else </b>
+		<b>If</b> lseek position is same as the file size, <b>release_inode()</b> and return -2.&nbsp;&nbsp;/* End of file reached */
 
-<a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a>
-<div id="collapse8" class="panel-collapse collapse">              Get the block index from lseek position. &nbsp;&nbsp;/* lseek value divided by the block size (512) gives the index of the block to be read*/
-              Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .
-              Get the offset value from lseek position. &nbsp;&nbsp;/* lseek value % the block size (512) gives the position to be read from.*/
+		<a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a>
+	<div id="collapse8" class="panel-collapse collapse">			Get the block index from lseek position. &nbsp;&nbsp;/* lseek/512 gives the index of the block */
+			Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .
+            		Get the offset value from lseek position. &nbsp;&nbsp;/* lseek%512 gives the position to be read from.*/
       </div>
-Acquire the Lock on the File by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
+		Read the data from the File Buffer by calling the <b>buffered_read()</b> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.
+		Copy the data to the translated memory address.
 
-Read the data from the File Buffer by calling the <b>buffered_read()</b> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.
+		Increment the Lseek position in the Open File Table.
 
-Increment the Lseek position in the Open File Table.
-
-Release the Lock on the File by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
+	Release the Lock on the File by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.
 
 Switch back to the user stack by resoting USER SP from the process table.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.

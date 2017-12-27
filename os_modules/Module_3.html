@@ -180,7 +180,7 @@
    <h3> Buffered Write </h3>
    <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word provided is written into the offset position of the buffer.<br> Buffer managemnet is handled by this function internally.<br><br>
 
-<pre>
+<pre
     Identify the buffer ; 			
     /* Buffer Number = (Disk Number % 4) is a simple scheme, 
     good enough for our purposes. More efficient schemes are used in real systems */
@@ -267,10 +267,13 @@ Called by the Read system call. <br> <br><br>
 
 Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file.
 
-If file is not present in Inode Table or if it is of type EXEC, return -1. 	/* Only data files can be opened */
+Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
+If the locking fails, return -1. 
+
+If file name in the inode table entry does not match the input file name or if it is of type EXEC, <b>release_inode()</b> and return -1. 	/* Only data files can be opened */
 
 Find a free entry in the <a href="../os_design-files/mem_ds.html#file_table">Open File Table</a>.
-If there are no free entries, return -2.  /* Reached maximum number of open files in the system. */
+If there are no free entries, <b>release_inode()</b> and return -2.  /* Reached maximum number of open files in the system. */
 
 <b>If</b> the file name is "root" <b>then</b> 
 	Set the INODE INDEX field in the open file table entry to INODE_ROOT. 
@@ -278,11 +281,15 @@ If there are no free entries, return -2.  /* Reached maximum number of open file
 	Increment the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a> 
 	Set the INODE INDEX field in the open file table entry to the inode table index of the file. 
 
-Set the OPEN INSTANCE COUNT and LSEEK fields in the open file table entry to 0.
+Set the OPEN INSTANCE COUNT to 1 and LSEEK to 0 in the open file table entry.
+
+Call the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Free the inode */
 
 return the Open File Table Index.
 
-Question: Why don't we maintain file open count for the root file? We still need maintain open instance count for the root file, why?
+Question: 
+	1. Why don't we need to maintain file open count for the root file? We still need to maintain open instance count for the root file, why?
+	2. After acquiring the inode, why do we check if the input file name matches the inode table entry?
 </pre>
 
 Called by the open system call.
