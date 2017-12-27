@@ -154,7 +154,7 @@ Copy the parent's <a href="process_table.html" target="_blank">Process Table Ent
 KERNEL STACK POINTER, INPUT BUFFER, PTBR and PTLR to the child. 
 
 Set the PPID field of child process to the current PID. Also set User Area Page Number 
-to the new UA Page, TICK and Kernel Stack Pointer to 0. 
+to the new UA Page, MODE, TICK and Kernel Stack Pointer to 0. 
 
 /* Kernel Context of the child process is empty */
 
@@ -173,6 +173,8 @@ table to the child  /* Shared between parent and child */
 /* Code and Library Pages must be shared read only */
 For each page shared, increment its value in the Memory Free List
 Set the page table entries for stack to the pages acquired earlier.
+
+Copy word by word the contents of the parent user stack to that of the child.
        
 Set the return  value to 0 for the child process
 The PID of the child process is set as the return value for the parent process
