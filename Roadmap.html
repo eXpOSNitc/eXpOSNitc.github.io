@@ -3744,6 +3744,49 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 	<!-- End Learning Objectives--> 
 
+<p>In this stage, we will understand concept of process synchronization using wait and signal system calls. We will also implement wait, signal, getpid, getppid system calls.</p>
+
+<p><i>Wait</i> is a system call used to suspend the execution of a process, till the process with given PID terminates or signals the waiting process. <i>Wait</i> system call blocks the current process and invoke the scheduler. To signal the waiting process, <i>signal</i> system call is used. <i>Signal</i> system call wakes up all the processes waiting for the process which invoked <i>signal</i>. Even if a process terminates without invoking <i>signal</i>, then exit system call voluntarily wakes up all the processes waiting for it. </p>
+
+
+<p>Process synchronization means sharing a resource (data structure, memory etc) concurrently among the processes such that there won't be data inconsistency. One of the methods to achieve process synchronization is by using <i>Wait</i> and <i>Signal</i> system calls. Let us understand how <i>wait</i> and <i>signal</i> help in maintaining data consistency. Suppose two processes (say A and B) shares a resource. When process A issues <i>wait</i> system call with PID of process B, it intends to wait until process B signals or terminates. At this time only process B uses the resource (as process A is in blocked state). When process B is done with the resource, it invokes <i>signal</i> system call. <i>Signal</i> system call will wake up all the processes waiting for process B. Now process A is ready to use the resource. Even if process B does not invoke <i>signal</i> and terminate, then <i>exit</i> system call wakes up all processes waiting for process B. This makes sure that only one process can access/modify the resource at one point of time. <i>Wait</i> and <i>signal</i> system calls are mostly used for synchronization between parent and child processes. There are more advanced  methods like semaphores to maintain data consistency of shared resources. We will look at semaphores in next stage.</p>
+
+<p>As we have learnt in previous stage, the child process created using <i>fork</i> system call shares library, code and heap pages with the parent process. Child and parent processes have read only access to the library and code pages whereas they have write/read access to heap pages. There is a possibility of data inconsistency in heap if both the processes tries to access/modify from heap concurrently. As library and code pages are read only, there will not be any data inconsistency in them. It is absolutely necessary to maintain data consistency of shared resources among child and parent processes. For data consistency among child and parent processes <i>wait</i> and <i>signal</i> system call can be used.</p>
+
+<p>/*Explaining exec condition*/</p>
+<p>The system calls wait, signal, getpid and getppid are all implemented in the interrupt routine 11. Each system call has different system call number to identify it in the interrupt routine. At the beginning of the interrupt routine 11, extract the system call number from the user stack and switch to the kernel stack. At the end of interrupt routine 11, change back to the user stack and return to the user mode. This code at the end will be common for all system calls and will be executed if a system call is completed without any failure. If a system call fails, we return to the user mode from corresponding system call itself. The system call numbers for wait, signal, getpid and getppid are 11, 12, 13 and 14 respectively. From ExpL program, these system calls are invoked using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.
+</p><br>
+
+
+
+  <b style="font-size: 20px">Wait System Call</b> <br><br>
+<p> <a href="os_design-files/synchronization_algos.html" target="_blank">Wait system call</a> takes PID of a process (for which the given process will wait) as an argument. </p>
+
+<p>First thing that wait system call does is change the MODE FLAG in <a href="os_design-files/process_table.html" target="_blank">process table</a> to system call number. It will then extract the PID from the user stack. There are some valid conditions for argument PID that should be checked first. A process should not wait for itself and the argument PID should be valid. The process with the argument PID should be existent /*Terminated, cyclic wait*/. If any of the above conditons are not satisfying, return to user mode with -1 stored as return value indicating failure. At any point of return to user, remember to reset the MODE FLAG and change the stack to user stack. If all valid conditions are satisfied then proceed as follows. Change the state of the current process from RUNNING to the tuple <a href="os_design-files/process_table.html#state" target="_blank">(WAIT_PROCESS, argument PID)</a> in the process table. Note that the STATE field in the process table is a tuple (allocated 2 words). Invoke the scheduler to schedule other processes. When the current process resumes execution again, reset the MODE FLAG in the process table of the current process. Store 0 in the user stack as return value.       </p><br>
+
+  <b style="font-size: 20px">Signal System Call</b> <br><br>
+  
+  <p>Signal system call does not have any argumnets. Firstly, set the MODE FLAG in the process table to the signal system call number. Loop through all process table entries, if there is a process with STATE as tuple (WAIT_PROCESS, current process PID) then change the STATE field to READY. Reset the MODE FLAG to 0 in the process table and store 0 as return value in user stack.</p><br>
+
+  <b style="font-size: 20px">Getpid and Getppid System Calls</b> <br><br>
+ <p>Getpid and Getppid system calls returns the PID of the current process and the PID of the parent process of the current process respectively to the user program. Implement both these system calls in interrupt routine 11.</p><br> 
+
+  
+<b>Making things work</b>
+  <p>Make necessary changes to the boot module. Compile and load the newly written and modified files to the disk using XFS-interface.</p>
+
+  <b style="color:#26A65B">Assignment 1: </b><b>[Shell version-II]</b> Write an ExpL program according to below psuedocode. Load this program as INIT program and run the XSM machine.<br><br>
+
+<div><pre>while ( true ) 
+            read ( input )
+            if ( input != exit )
+                  pid = fork() 
+                  if ( pid == 0 ) 
+                        exec ( input )
+                  else
+                        wait ( pid )
+            else
+                  break</pre></div>
 		</div>
 		</div>
 
