@@ -3410,7 +3410,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
 	<!-- End Learning Objectives--> 
 
 
-	<p> 
+	
  <b>Read and understand the <a  href="Tutorials/xsm_interrupts_tutorial.html#disk_and_console_interrupts" target="_blank">XSM tutorial on Interrupts and Exception handling</a> before proceeding further. (Revise the console and disk interrupt part.) 
 </b></p>
                         <p>
@@ -3595,12 +3595,14 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 
 <p>
-           The free page table function releases the memory pages acquired by a process and adds to the free memory pool (indicated by a zero entry in the memory free list.)</p>
+           The <b>Free Page Table</b> function of the <a href="os_modules/Module_1.html" >process manager module</a> decrements the memory reference count (in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a>) of the memory pages acquired by a process.  If some stack/heap page is swapped in the disk, the reference count of the corresponding disk block is decremented in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a>. Note that in the present stage, we allocate the stack/heap pages of a process in memory and never allocate any disk block to store stack/heap pages. Thus, the disk free list decrement is a vaccous step in the present stage.  However this will be useful for later stages.  Hence we design the module function in advance to meet the future requirements.  The following is a brief explanation on why this step can be useful later.</p>
 
-          <p> As already seen in <a href="" target="_blank">Stage 2</a>, eXpOS maintains a <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> to keep track of disk block allocation. In later stages, the OS will allocate certain disk blocks to a process temporarily.  
-           This is done to swap out the heap/stack pages of a process when the OS finds shortage of memory space to run all the processes. If a heap/stack page of a process is swapped out into some disk block, the page can be released to some other process.  In such cases, the page table entry for the swapped out page will be set to invalid, but the entry corresponding to the page in the disk map table will contain the disk block number to which the page has been swapped out.  
-</p>
-<p>In this stage, Free Page Table function of process manager module is modified. Disk Map Table contains the block numbers of the disk copy of the heap and stack pages. Free Page Table releases these disk blocks by invoking <b>Release Block</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Release Block function takes a disk block number as argument. Release Block decrements the count corresponding to the disk block in the memory copy of the disk free list.</p>
+           <p> As already seen in <a href="" target="_blank">Stage 2</a>, eXpOS maintains the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> to keep track of disk block allocation. <b>In later stages, the OS will allocate certain disk blocks to a process temporarily.  
+           This is done to swap out the heap/stack pages of a process when the OS finds shortage of memory space to run all the processes.</b> If a heap/stack page of a process is swapped out into some disk block, the page can be released to some other process.  In such cases, the page table entry for the swapped out page will be set to invalid, but the entry corresponding to the page in the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> will contain the disk block number to which the page has been swapped out. The disk free list entry for the block will be greater than zero as the block is no longer free.  (It can happen that multiple processes share the block.  The disk free list entry for the block will indicate the count of the number of processes sharing the disk block.)  </p>
+           
+           <p>
+<b>When the page table entries of a process are invalidated using the <i>Free Page Table</i> function of the process manager module,</b> (either when a process exits or when the exec system call replaces the current process with a new one) <b>it is necessary to ensure that any temporary disk blocks allocated to the process are also released.</b> Hence the free page table function checks whether the disk map table entry of a stack/heap page contains a valid disk block number, and if so decrements its disk free list entry by invoking the <b>Release Block</b> function of the memory manager module.</p><br>
+
     <ol style="list-style-type: decimal; margin-left: 2px">
         <li><b>Modifications of <a href="os_design-files/exec.html" target="_blank">exec system call</a></b></li>
          <p style="text-indent: 0px">
@@ -3609,27 +3611,23 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
          2) Change the page allocation for code pages from previous stage. Invoke the <b>Get Code Page</b> function for the first code block and update the page table entry for this first code page. Invalidate rest of the code pages entries in the page table.
          <br>
          3) Initialize the disk map table of the process. The code page entries are set to the disk block numbers from inode table of the program (program given as argument to exec). Initialize rest of the entries to -1.<br>
-         With these modfications, You  have completed the final implementation of Exec system call. The full algorithm is provided <a href="os_design-files/exec.html" target="_blank">here</a>. 
+         With these modifications, You  have completed the final implementation of Exec system call. The full algorithm is provided <a href="os_design-files/exec.html" target="_blank">here</a>. 
          </p><br>
         <li><b>Get Code Page (function number = 5, <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>) </b></li>
 
         <p style="text-indent: 0px">
-         1) Check the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> entries of <b>all the processes</b>, if the given block number is present in any entry and the corresponding page table entry is valid then return the memory page number. Also increment the memory free list entry of that page. It is incremented as the memory page is now shared.  
+         1) Check the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> entries of <b>all the processes</b>, if the given block number is present in any entry and the corresponding page table entry is valid then return the memory page number. Also increment the memory free list entry of that page. Memory Free list entry is incremented as page is being shared by another process. 
          <br>
-         2) If the code page is not in memory, then invoke <b>Get Free Page</b> function present in <a href="os_modules/Module_2.html" target="_blank" >memory manager module</a>.     
+         2) If the code page is not in memory, then invoke <b>Get Free Page</b> function in the <a href="os_modules/Module_2.html" target="_blank" >memory manager module</a> to allocate a new page.     
          <br>
-         3) Load the disk block to memory page by invoking <b>Disk Load</b> function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.
+         3) Load the disk block to the newly acquired memory page by invoking the <b>Disk Load</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.
          <br>
-         4) Return the memory page number to which the code block have been loaded.  
+         4) Return the memory page number to which the code block has been loaded.  
          <br></p><br>
         <li><b>Modification to the Free Page Table (function number = 4, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b></li>
-          
-
-<p style="text-indent: 0px">
-           1) Free Page Table function should free the disk blocks used by heap and stack of the current process. This is done by going through the heap and stack entries in the <a>disk map table</a>. If any valid entries are found, invoke the Release Block function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.   
-         
-         <br>
-         2) Invalidate all the entries of the disk map table.
+          <p style="text-indent: 0px">
+           1) Go through the heap and stack entries in the <a>disk map table</a> of the process with given PID. If any valid entries are found, invoke the <b>Release Block</b> function in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. <br>
+         	2) Invalidate all the entries of the disk map table.
          </p><br>
          
 
@@ -3637,23 +3635,47 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
        <p style="text-indent: 0px">
            1) Decrement the count of the disk block number in the memory copy of the Disk Free List.<br>
            2) Return to the caller. </p>
-           <p><code>Note :</code> Get Code Page, Free Page Table, Release Block functions implemented above are final versions. They will not be modified later.</p><br>
+           <p><code>Note :</code> <b>Get Code Page</b>, <b>Free Page Table</b> and  <b>Release Block</b> functions implemented above are final versions. They will not require modification in later stages.</p><br>
 
     	<li><b>Implementation of <a href="os_design-files/exe_handler.html" target="_blank">Exception Handler</a></b></li>
     	<p style="text-indent: 0px">
-    		1) Switch to the kernel stack and backup the register context.<br>
-    		2) If the cause of the exception is other than page fault (EC is not equl to 0) then print a meaningfull message. Then invoke the exit process function to halt the process and invoke the scheduler. <br>
-    		3) If page fault is caused due to a code page, then get the code block number to be loaded from the disk map table. For this block, invoke the Get Code Page function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this code page,  set the page number to memory page obtained from Get Code Page function and auxiliary information to "1100".<br>
-    		4) If page fault is caused due to a heap page, then invoke the Get Free Page function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this heap page,  set the page number to memory page obtained from Get Free Page function and auxiliary information to "1110".<br> 
-    		5) Restore the register context, change to the user stack and return to the user mode.</p><br>
+    		1) Set the MODE FLAG to -1 in the <a>process table</a> of the current process, indicating in exception handler.
+    		2) Switch to the kernel stack and backup the register context.<br>
+    		3) If the cause of the exception is other than page fault (EC is not equal to 0) then print a meaningful error message. Then invoke the <b>Exit Process</b> function to halt the process and invoke the scheduler. <br>
+    		4) If page fault is caused due to a code page, then get the code block number to be loaded from the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a>. For this block, invoke the <b>Get Code Page</b> function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this code page,  set the page number to memory page obtained from <b>Get Code Page</b> function and auxiliary information to "1100".<br>
+    		5) If page fault is caused due to a heap page, then invoke the Get Free Page function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this heap page,  set the page number to memory page obtained from Get Free Page function and auxiliary information to "1110".<br> 
+    		6) Reset the MODE FLAG to 0. Restore the register context, change to the user stack and return to the user mode.</p>
+
+    		 <p>The Exception handler implementation given above is final. The full algorithm is given <a href="os_design-files/exe_handler.html" target="_blank">here</a>.
+    		</p><br>
+
     	<li><b>Modification to the Boot Module</b></li>
-    	    <p>Initialize the disk map table entries for the INIT process. Load the Disk Free List from the disk block 2 to the memory page 61. </p>
+    	    <p>Initialize the disk map table entries for the INIT process. Load the Disk Free List from the disk block 2 to the memory page 61. (See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.) </p>
 
-    </ol>
-   <p>Compile and load the modified and newly written files into the disk using the XFS-interface.</p><br>
+    </ol><br>
+
+    <b>Making things work</b><br>
+   <p>Compile and load the modified and newly written files into the disk using the XFS-interface.</p>
 
 
-<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to implement a linked list. Your program should first read an integer N, then read N intergers from console and store them in the linked list and print the linked list to the console. Run this program using shell version-I.<br><br>
+<div class="container col-md-12" >
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq15"><b>Q1.</b> Does EPN always equal to logical page number of EIP?   </a>
+                            <div id="collapseq15" class="panel-collapse collapse">
+	     No. There are two causes for page fault. Page fault occurs while fetching an instruction from an invalidated code page, in this case EPN and EIP will be same. Another cause for page fault is when data is accessed/modified from an invalidated page (heap page), in this case EIP and EPN will not be same.    
+		</div>
+		</li></ul>
+                          </div>
+                          </div>
+
+
+
+
+
+<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to implement a linked list. Your program should first read an integer N, then read N intergers from console and store them in the linked list and print the linked list to the console. Run this program using shell version-I of stage 17.<br><br>
 
 		</div>
 		</div>
@@ -3677,8 +3699,11 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo20">Learning Objectives</a>
                             <div id="lo20" class="panel-collapse expand">
                             <ul>
-                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Enable OS to create new processes.</li>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of the fork and exit system calls.</li>
+                            
+
+                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding the process creation mechanism in eXpOS.</li>
+                            
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of fork and exit system calls.</li>
 
                             </ul>                                  
                                      
@@ -3689,14 +3714,31 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                       </div>
 
 	<!-- End Learning Objectives-->   
-    
-        <p>In this stage, you will understand how to create a new process using the fork system call and how to terminate a process using the exit system call. You will first look at the fork system call followed by the exit system call.</p>
+    <b>Read and understand  <a href="os_spec-files/expos_abstractions.html" target="_blank"> eXpOS process abstraction</a> and <a href="os_spec-files/processmodel.html" target="_blank">eXpOS process model</a> documentation before proceeding further.</b><br><br>
+
+        <p>In this stage, you will understand how to create a new process using the fork system call and how to terminate a process using the exit system call.</p>
         <br>
 
-<b style="font-size: 20px">Fork System Call</b> <br><br>
-        <p> In general, Fork system call creates a new process. The newly created process and process which has invoked the fork has a child-parent relationship. So, the fork system call can be called as the "Process Creator" of eXpOS. The child process created by the fork is identical to the parent process. The child process will execute the same program, but with different PID. Having a different PID, gives the child process a different process table and page table. The state (variables, heap, stack) of the parent process till the invocation of the fork is replicated in the child process. On successful completion of the fork system call, it gives PID of the child process as the return value for parent process. Whereas the return value is zero for the child process. In case fork system call fails to create a new process, -1 is stored as return value for the parent process. After completion of the fork, control is transfered back to the parent process. After completion of the fork, child process will be ready to execute and will be in the CREATED state. When child process is scheduled (by the scheduler) to run for the first time, it will start its execution from the immediate instruction after the call to fork.  </p>
 
-        <p>The child process shares the heap and code pages with the parent process. New memory pages are allocated for user stack and kernal stack (user area page). The Fork system call copies the content of the parent's user stack pages to the memory pages allocated for the user stack of the  child process. The content of the kernel stack is not copied to the user area page of child process. ExpL is designed in such a way that, local and  global variables (and arrays) of primitive data types (int, string) of any process are allocated memory in the stack. Parent and child processes has different memory pages for the user stack, but the content in them is same. This enables the child process to use the variables as well as the values currently present in them. The variables (structure variables) of user defined data type declared by the parent process are allocated memory in the heap. As the heap pages are shared by the parent and the child processes, both processes share the variables (of user defined data type) also. Parent and child processes can simultaneously access/modify the heap pages, so usage of heap has to be synchronized. This synchronization is handled with the help of semaphores. Semaphores will be discussed in the later stages. Even though, code pages are shared among parent and child processes, synchronization is not required as code page have read only access.</p>
+<b style="font-size: 20px">Fork System Call</b> <br><br>
+        <p> The Fork system call spawns a new process. The new process and the process which invoked fork has a child-parent relationship.
+        The child process will be allocated a different PID and a new address space. Hence, the child process will have a different process table and page table. However, the child and the parent will share the code and heap regions of the address space. The child will be allocated new stack pages and a new user area page.  
+</p>
+    <p>    The child process table is initialized with the same values of the parent except for the entries *****.  
+        The contents of the stack of the parent are  
+        copied into the new stack pages allocated for the child
+        The contents of the per process resource table in the user area page of the parent process is copied to the child process.  However, the contents of the parent's kernel stack are not copied
+        to the child, and the kernel stack of the child is set to empty (that is, KPTR field in the process table entry of the child is set to 0.)</p>
+
+
+       <p> Fork system call returns to the the parent process. The parent resumes execution from the next instruction following the INT instruction invoking fork. Upon successful completion, fork returns the PID of the child process to parent process.</p>  
+
+         <p>After completion of fork, the child process will be ready for execution and will be in the CREATED state. When the child process is scheduled (by the scheduler) to run for the first time, it will start its execution from the immediate instruction after the call to fork.  The return value of fork to the child process is zero. </p>
+
+        <p>We have already noted that the child process shares the heap and code pages with the parent process, whereas a new memory pages are allocated for user stack and the content of the parent's user stack pages are copied to the user stack of the  child process. ExpL compiler allocates local and  global variables and arrays of primitive data types (int, string) of any process in the stack. Parent and child processes has different memory pages for the user stack, Thus, the parent and the child resumes after fork with  separate private copies these variables, with the same values.  Since the stack page is not shared between the parent and the child, subsequent modifications to these variables by either parent or the child will not be visible to the other.  </p> 
+
+
+       <p> but the content in them is same. This enables the child process to use the variables as well as the values currently present in them. The variables (structure variables) of user defined data type declared by the parent process are allocated memory in the heap. As the heap pages are shared by the parent and the child processes, both processes share the variables (of user defined data type) also. Parent and child processes can simultaneously access/modify the heap pages, so usage of heap has to be synchronized. This synchronization is handled with the help of semaphores. Semaphores will be discussed in the later stages. Even though, code pages are shared among parent and child processes, synchronization is not required as code page have read only access.</p>
 
       <p>From ExpL program, fork is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>. Fork has system call number 8 and it is implemented in the interrupt routine 8. Fork does not take any arguments. Follow the below description to implement the fork system call. Take help of the algorithm given <a href="os_design-files/fork.html" target="_blank">here</a>. </p>
 
@@ -3831,7 +3873,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 <div>
    <pre>while ( true ) 
             read ( input )
-            if ( input != exit ) 
+            if ( input != "halt" ) 
                 pid = fork()
                 if ( pid < 0 ) 
                 	print "Fork Failure"
@@ -3846,7 +3888,8 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                 	endif		
                 endif				
             else
-                break
+            	a=shutdown()
+       
             endif
 endwhile</pre></div>
 		</div>
