@@ -1901,6 +1901,8 @@ INT 10
 	and writes the word stored in this address to the terminal using the OUT instruction. </p>
 	<p>Detailed instructions for doing so are given below</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
+  <li>Set the MODE FLAG field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number which is 5 for write system call. To get the process table of current process, use the PID obtained from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>.  
+  <div><pre>[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 9] = 5;</pre></div>  </li>
 	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
 userSP = SP;</pre>
@@ -1989,7 +1991,8 @@ physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 51
 	<li> Set back the value of SP to point to top of user stack.
 	<pre> SP = userSP;</pre>
 	</li>	
-
+<li>Reset the MODE FLAG field in the process table to 0. Value 0 indicates that process is running in user mode.
+  <div><pre>[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 9] = 0;</pre></div>  </li>
 	<li>
 	Pass control back to the user program using the ireturn statement.
 	</li>
@@ -3048,6 +3051,7 @@ alias currentPID R2;</pre></div></li>
 <b>Implementation of read system call (interrupt 6 routine)</b><br><br>
 
 <ol style="list-style-type: decimal;margin-left: 2px">
+  <li>Set the MODE FLAG in the process table of the current process to the system call number which is 7 for read system call.</li>
 	<li>Save the value of register SP as userSP.
 	<div><pre>alias userSP R0;
 userSP=SP;</pre></div></li>
@@ -3057,8 +3061,7 @@ userSP=SP;</pre></div></li>
 	<li>If the file descriptor is not -1
 	<ol style="list-style-type: lower-roman;margin-left: 20px">
 	 <li>Store -1 as the return value in the user stack (at position userSP-1). </li>
-	 <li>Change SP back to user stack and return to the user mode.</li>
-	 </ol>
+	</ol>
 	 </li>
 	<li>If the file descriptor is -1, implement below steps.
       <ol style="list-style-type: lower-roman; margin-left: 20px">
@@ -3069,10 +3072,10 @@ userSP=SP;</pre></div></li>
         <p style="text-indent: 0px">There is no return value for terminal Read.</p>
         <li>Restore the registers.</li>
         <li>Store 0 as return value in the user stack indicating success.</li>
-        <li>Change SP back to user stack and return to the user mode.</li>  	
-
-      </ol>
+         	</ol>
       </li>
+      <li>Reset the MODE FLAG in the process table to 0.</li>
+      <li>Change SP back to user stack and return to the user mode.</li>
       </ol><br>
 	<b>Modification to Device manager Module</b><br><br>
      <p style="text-indent: 0px">In previous stage we implemented Terminal Write function in module 4, now we will add Terminal Read function.</p>
@@ -3228,10 +3231,10 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
        <b>Implementation of Exec system call</b><br><br>
        <p><a href="os_design-files/Sw_interface.html">Exec</a> has system call number as 9 and it is implemented in interrupt routine 9. Follow steps below to implement interrupt routine 9.</p>
   <ol style="list-style-type: decimal;margin-left: 2px">
-  <li>Save user stack value for later use, set up the kernel stack. (see kernel stack management during system calls.)</li>
-  <li>Set the MODE_FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to kernel mode.</li>
+  <li>Save user stack value for later use, set up the kernel stack. (see <a href="os_design-files/stack_smcall.html" target="_blank">kernel stack management during system calls</a>.)</li>
+  <li>Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to system call number of exec.</li>
   <li>Get the argument (name of the file) from user stack.</li>
-  <li>Search the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> for the file, If the file is not present or file is not in XEXE format return to user mode with return value -1 indicating failure (after setting up MODE_FLAG and the user stack).</li>
+  <li>Search the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> for the file, If the file is not present or file is not in XEXE format return to user mode with return value -1 indicating failure (after setting up MODE FLAG and the user stack).</li>
   <li>If the file is present, save the inode index of the file into a register for future use.
   </li>
   <li>Call the <b>Exit Process</b> function in <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to deallocate the resources and pages of the current process.</li>
@@ -3246,7 +3249,7 @@ Make sure to be thorough with the <a href="support_tools-files/spl.html" target=
   </li>
   <li>Load the code blocks from the disk to the memory pages using <a href="support_tools-files/spl.html" target="_blank">loadi statement</a>. (We will change this step in the next stage.) </li>
   <li>Store the entry point IP (present in the header of first code page) value on top of the user stack.</li>
-  <li>Change SP to user stack, change the MODE_FLAG back to user mode and return to user mode.</li>
+  <li>Change SP to user stack, change the MODE FLAG back to user mode and return to user mode.</li>
 </ol>
 
 <br>
@@ -3636,7 +3639,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
     	<li><b>Implementation of <a href="os_design-files/exe_handler.html" target="_blank">Exception Handler</a></b></li>
     	<p style="text-indent: 0px">
-    		1) Set the MODE FLAG to -1 in the <a>process table</a> of the current process, indicating in exception handler.
+    		1) Set the MODE FLAG to -1 in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process, indicating in exception handler.
     		2) Switch to the kernel stack and backup the register context.<br>
     		3) If the cause of the exception is other than page fault (EC is not equal to 0) then print a meaningful error message. Then invoke the <b>Exit Process</b> function to halt the process and invoke the scheduler. <br>
     		4) If page fault is caused due to a code page, then get the code block number to be loaded from the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a>. For this block, invoke the <b>Get Code Page</b> function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this code page,  set the page number to memory page obtained from <b>Get Code Page</b> function and auxiliary information to "1100".<br>
@@ -3740,41 +3743,43 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
        <p><b>Since the Parent and child processes can concurrently access/modify the heap pages, they need support from the OS to synchronize access to the shared heap memory.</b> eXpOS provides support for such synchronization through systems calls for <b>semaphores</b> and <b>signal handling</b>. These will be discussed in later stages. Even though, code and library pages are shared among parent and child processes, synchronization is not required for these pages as their access is read only. </p>
 
-      <p>High level ExpL programs can invoke <i>fork</i> system call using the library interface function <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall</a>. Fork has system call number 8 and it is implemented in the interrupt routine 8. Fork does not take any arguments. Follow the description below to implement the fork system call. <b>Read the description of various entries of <a href="os_design-files/process_table.html" target="_blank">process table</a> before proceeding further.</b></p>
+      <p>High level ExpL programs can invoke <i>fork</i> system call using the library interface function <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall</a>. Fork has system call number 8 and it is implemented in the interrupt routine 8. Fork does not take any arguments. Follow the description below to implement the fork system call. </p>
+
+      <p><b>Read the description of various entries of <a href="os_design-files/process_table.html" target="_blank">process table</a> before proceeding further.</b></p>
 
        <ul style="list-style-type: disc; margin-left: 10px; ">
 
-       <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE_FLAG to the system call number and switch to the kernel stack. To get a new PID for the child process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new process table allocated for the child. This index is saved as the PID of the child. As there are only 16 process tables present in the memory, maximum 16 processes can run simultaneously. If a free process table is not available, Get Pcb Entry returns -1. In such case, store -1 as the return value in the stack, reset the MODE_FLAG (to 0), switch to user stack and return to the user mode from the fork system call. When PID is available, proceed with the fork system call. </li>
+       <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE FLAG to the system call number and switch to the kernel stack. To get a new PID for the child process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new process table allocated for the child. This index is saved as the PID of the child. As there are only 16 process tables present in the memory, maximum 16 processes can run simultaneously. If a free process table is not available, Get Pcb Entry returns -1. In such case, store -1 as the return value in the stack, reset the MODE FLAG (to 0), switch to user stack and return to the user mode from the fork system call. When PID is available, proceed with the fork system call. </li>
 
        <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and  user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
        
        <li style="padding-left: 20px">The next step in the fork system call is initialization of the <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child process. Copy the USERID field from the process table of the parent to the child process, as the user (currently logged in) will be same for both child and parent. (We will discuss USERID later when we add multi-user support to eXpOS.) Similarly, copy the SWAP FLAG and the USER AREA SWAP STATUS fields. (These fields will be discussed later, when we discuss swapping out processes from memory to the disk.) INODE INDEX for the child and the parent processes will be same, as both of them run the same program. UPTR field should also be copied from the parent process. As mentioned earlier, content of the user stack is same for both of them, so when both of the processes resume execution in user mode, the value of SP must be the same.</li> 
 
-       <li style="padding-left: 20px">Set the MODE FLAG, KPTR and TICK fields of the child process to 0. MODE FLAG, KPTR are set to zero as the child process starts its execution from the user mode. The TICK field keep track of how long a process has been running in memory and should be initialized to 0, when a process is created. (The TICK field will be used later to decide which process must be swapped out of memory when memory is short. The strategy will be to swap out that process which had been in memory for the longest time). PID of the parent is stored in the PPID field of the process table of the child. <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> of the child process is set to <a href="support_tools-files/constants.html" target="_blank">CREATED</a>. Store the new memory page number obtained for user area page in the USER AREA PAGE NUMBER field in the process table of the child proces. PID, PTBR and PTLR fields of the child process are already initialized in the <a>Get Pcb Entry</a> function. It is not required to initialize <a>INPUT BUFFER</a>.</li>
+       <li style="padding-left: 20px">Set the MODE FLAG, KPTR and TICK fields of the child process to 0. MODE FLAG, KPTR are set to zero as the child process starts its execution from the user mode. The TICK field keep track of how long a process has been running in memory and should be initialized to 0, when a process is created. (The TICK field will be used later to decide which process must be swapped out of memory when memory is short. The strategy will be to swap out that process which had been in memory for the longest time). PID of the parent is stored in the PPID field of the process table of the child. <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> of the child process is set to <a href="support_tools-files/constants.html" target="_blank">CREATED</a>. Store the new memory page number obtained for user area page in the USER AREA PAGE NUMBER field in the process table of the child proces. PID, PTBR and PTLR fields of the child process are already initialized in the <a href="os_modules/Module_1.html" target="_blank">Get Pcb Entry</a> function. It is not required to initialize <a href="os_design-files/process_table.html#state" target="_blank">INPUT BUFFER</a>.</li>
       
-      <li style="padding-left: 20px">The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> has details about the open instances of the files and the semaphores currently acquired by the process. Child process shares the files and the semaphores opened by the parent process.  Hence we need to copy the entries of the per-process resource table of the parent to the child.  We will discuss files and semaphores in later stages. (There is a little bit more book keeping work associated with files and semaphores. Since we have not added files or semaphores so far to the OS, we skip this work for the time being and complete the pending tasks later).</li>  
+      <li style="padding-left: 20px">The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> has details about the open instances of the files and the semaphores currently acquired by the process. Child process shares the files and the semaphores opened by the parent process.  Hence we need to copy the entries of the per-process resource table of the parent to the child.  We will discuss files and semaphores in later stages. (There is a little bit more book keeping work associated with files and semaphores. Since we have not added files or semaphores so far to the OS, we will skip this work for the time being and complete the pending tasks in later stages).</li>  
 
 
-      <li>Copy the per-process disk map table of the parent to the child. This will ensure that the disk block numbers of the code pages of the parent process are copied to the child.  Further, if the parent has swapped out heap pages, those will be shared by the child.  (This will be explained in detail in a later stage).  The eXpOS design guarentees that stack pages and the user area page of a process invoking fork() will not be swapped.  Hence the disk map table entries of the parent process corresponding to the stack and user area pages will be -1, and these values will be copied to the child.   </li>
+      <li style="padding-left: 20px">Copy the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">per-process disk map table</a> of the parent to the child. This will ensure that the disk block numbers of the code pages of the parent process are copied to the child.  Further, if the parent has swapped out heap pages, those will be shared by the child.  (This will be explained in detail in a later stage).  The eXpOS design guarentees that the stack pages and the user area page of a process will not be swapped at the time when it invokes the fork system call. Hence the disk map table entries of the parent process corresponding to the stack and user area pages will be invalid, and these values will be copied to the child.   </li>
 
       <!--<li>/* open file table and semaphore table*/</li>-->
  
-       <li style="padding-left: 20px">Now, we initialize the page table of the child process. As heap, code and library pages are shared by parent and child process, copy these entries (page number and auxiliary information) form the page table of the parent process to the child process. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a>. Initialize the stack page entries in the page table with the new memory page numbers obtained before. Note that the auxiliary information for the stack pages is same for both parent and child. Copy content of the user stack pages of the parent to the user stack pages of the child word to word.</li>
+       <li style="padding-left: 20px">Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the child process. As heap, code and library pages are shared by the parent process and the child process, copy these entries (page number and auxiliary information) form the page table of the parent to the child. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> (why do we do need to do this?). Initialize the stack page entries in the page table with the new memory page numbers obtained earlier. Note that the auxiliary information for the stack pages is same for both parent and child (why?). Copy content of the user stack pages of the parent to the user stack pages of the child word by word.</li>
 
-       <li style="padding-left: 20px">Store the PID of the child process and 0 as the return values in the stacks of the parent and child processes respectively. Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
+       <li style="padding-left: 20px">Set up return values in the user stacks of the parent and the child processes.  Store the PID of the child process as return value to the parent and 0 as the return values to the child.  Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
 </ul>
-<p>The complete algorithm for fork system call is provided <a href="os_design-files/fork.html" target="_blank">here</a>.</p> <br>
+<p>The complete version of the algorithm for the fork system call is provided <a href="os_design-files/fork.html" target="_blank">here</a>.</p> <br>
 <b>Get Pcb Entry (function number = 1, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a>)</b><br><br>
-<p>The Get Pcb Entry function in the process manager, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1.  A free process table entry (STATE field is set to TERMINATED) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry, PTBR to the starting address of the page table (can be obtained using index) and PTLR to 10. Return the index to the caller.</p><br>
-
+<p>The Get Pcb Entry function in the process manager, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1. A free process table entry (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a> field is set to <a href="support_tools-files/constants.html">TERMINATED</a>) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry. Initialize PTBR to the starting address of the page table  for that process (obtained using index) and PTLR to 10. Return the index to the caller.</p>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of above Get Pcb Entry module function is final version.</p>
    <b style="font-size: 20px">Exit System Call</b> <br><br>
 
 
-   <p>At the end of every process, exit system call is invoked to terminate the process. So, exit system call is called as the "process terminator" of the eXpOS. In the previous stages, we had already implemented the exit system call. Now, we will simplify the system call by invoking some functions from the modules. </p>
+   <p>At the end of every process, <i>exit</i> system call is invoked to terminate the process. In the previous stages, we had already implemented the <i>exit</i> system call. Now, we will change the <i>exit</i> system call to invoke the module function Exit Process to terminate the process.</p>
 
-   <p>Exit system call has to perform some duties related to the data structures and the memory pages the process is currently using. All the memory pages acquired by the process has to be released. The page table entries has to be invalidated. There may be other processes waiting for this process to terminate. Exit system call must wake up these processes. It also has to close all the files and release the semaphores acquired by the process. Per-process resource table also has to be invalidated. Exit system call has to set the state of the process to TERMINATED.  All these tasks can be done by invoking the <b>Exit Process</b> function of the <a href="os_modules/Module_1.html">process manager module</a>. </p>     
+   <p><i>Exit</i> system call has to update/clear the OS data structures of the terminating process and detach the memory pages allocated to the process from its address space.  The page table entries are invalidated. There may be other processes waiting for this process to terminate.  Exit system call must wake up these processes. (Currently, processes do not wait, we will see this in the next stage.) <i>Exit</i> has to close the files and release the semaphores acquired by the process. Per-process resource table has to be invalidated. Finally, <i>Exit</i> has to set the state of the process to TERMINATED.  These tasks are done by invoking the <b>Exit Process</b> function of the <a href="os_modules/Module_1.html">process manager module</a>. </p>     
 
-   <p>Exit system call has a system call number 10 and is implemented in the interrupt routine 10. Follow the description given below to implement the exit system call. Take the help of the algorithm given <a href="os_design-files/exit.html" target="_blank">here</a>.</p> 
+   <p><i>Exit</i> system call has a system call number 10 and is implemented in the interrupt routine 10. Follow the description given below to implement the exit system call.</p> 
 
     <ul style="list-style-type: disc; margin-left: 10px; ">
 
@@ -3782,40 +3787,51 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
      <li style="padding-left: 20px">It then invokes the <b>Exit Process</b> function present in the process manager module. Finally, Exit system call invokes the scheduler to schedule other processes. </li></ul><br>
 
-<p style="text-indent: 0px"><code>Note :</code> After above modifications, when all processes except IDLE are TERMINATED, exit system call does not provide any mechanism to halt the system. When you run XSM machine, IDLE process will run even after all other processes complete execution. Use Ctrl+C signal to terminate the machine.</p><br>
+
+<p style="text-indent: 0px"><code>Note :</code>With above changes implementation of exit system call is complete. The algorithm for exit system call is given <a href="os_design-files/exit.html" target="_blank">here</a>.</p><br>
+
 <b>Modifications to the Boot module</b><br><br>
-<p>Load interrupt routine 8 from disk to memory. /*initialize open file table, initialize semaphore table*/.</p>
+<p>Load interrupt routine 8 from disk to memory.</p>
 <b>Making things work</b><br><br>
-<p>Compile and load interrupt routine 8, interrupt routine 10, module 2 into the disk using the XFS-interface.</p><br>
+<p>Compile and load interrupt routine 8, interrupt routine 10, module 2 into the disk using the XFS-interface.</p>
       
-
-
-<div class="container col-md-12" >
+      <div class="container col-md-12" >
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq16"><b>Q1.</b> Does EPN always equal to the logical page number of EIP?   </a>
+<a data-toggle="collapse"  href="#collapseq16"><b>Q1.</b> How does eXpOS prevent a program running in user mode from writing to the library and code pages?  </a>
                             <div id="collapseq16" class="panel-collapse collapse">
-	     No. Page fault can occur in two situations. One possibility is during insturction fetch - if the instruction pointer points to an invalid page.  In this case, the missing virtual page number (EPN) corresponds to the logical page number of the EIP. The second possibility is during instruction execution when an operand fetch/memory write accesses a page that is not loaded.  In this case EPN will indicate the page number of the missing page, and not the logical page number corresponding to EIP value.  
-		</div>
+                              In the page table of every process, pages of a process have auxiliary information associated with them. Auxiliary information consists of 4 bits of which third bit is write bit. If write bit is set to 1 for a page, then the process (to which the page belongs) has permission to write to the corresponding page. When write bit is set to 0, the page has read only access so the process can not modify the content of the page. When a process tries to write to a page for which write bit is 0, XSM machine raises <a href="Tutorials/xsm_interrupts_tutorial.html#exception_handling_in_XSM" target="_blank">illegal memory access</a> exception. Refer about auxiliary information <a href="os_design-files/process_table.html#per_page_table" target="_blank">here</a>.   
+
+                            </div>
 		</li>
  <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq17"><b>Q1.</b> Does EPN always equal to the logical page number of EIP?   </a>
-                            <div id="collapseq17" class="panel-collapse collapse">
-	     No. Page fault can occur in two situations. One possibility is during insturction fetch - if the instruction pointer points to an invalid page.  In this case, the missing virtual page number (EPN) corresponds to the logical page number of the EIP. The second possibility is during instruction execution when an operand fetch/memory write accesses a page that is not loaded.  In this case EPN will indicate the page number of the missing page, and not the logical page number corresponding to EIP value.  
-		</div>
+<a data-toggle="collapse"  href="#collapseq17"><b>Q2.</b> Where does ExpL allocate memory for variables of user defined data type?</a>
+                            <div id="collapseq17" class="panel-collapse collapse">Variables of user defined data type are allocated memory in stack, same as any variable of primitive data type. Every variable in ExpL is allocated one word memory in stack. Variable of primitive data type saves actual data in the word that is allocated to it, but variables of user defined data type stores the starting address of the object. Alloc() library function allocates memory for an object in heap and returns the starting address. This return address is stored in the stack for corresponding variable.</div>
 		</li>
+<li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq18"><b>Q3.</b> Upon completion of the fork system call, the parent and the child will contain the same return IP address on the top of the user stack. The value of the user stack pointer (UPTR) will also be the same for both the processes.   When the fork sytem call returns to user mode (using the IRET instruction) which process executes first - parent or child? why?</a>
+                            <div id="collapseq18" class="panel-collapse collapse">Fork system call returns to the parent process. IRET sets the value of IP register to the return address at the top of the stack, pointed to by the SP register. The machine translates the logical SP to physical SP using the page table pointed to by the PTBR register, which points to the page table of the parent.  Subsequent instruction fetch cycles continue to proceed by translating the value of IP using the PTBR value, which points to the page table of the parent process.  The parent process continues execution till a context switch occurs.  
+                              </div>
+    </li>
 
 		</ul>
                           </div>
                           </div>
 
-<b style="color:#26A65B">Assignment 1: </b> Write an ExpL program to create a child process using Fork. The parent and child processes has to use exec system call to execute even and odd programs respectively. Load this program as the init program and run the machine.<br><br>
+<p style="text-indent: 0px"><code>Note :</code>When all processes except IDLE are TERMINATED, our present OS will repeatedly schedule IDLE and thus will be in an infinite loop. Hence you will have to Use Ctrl+C to terminate the machine.  We will ensure graceful shutdown from the next
+stage. </p><br>
 
+<b style="color:#26A65B">Assignment 1: </b> Write two ExpL programs even.expl and odd.expl to print the first 100 even and odd numbers respectively.  Write another ExpL program that first creates a child process using Fork.  Then, the parent process shall use the exec system call to execute even.xsm and the child shall execute odd.xsm. Load this program as the init program.  <br><br>
 
-   	 </div> 
+<b style="color:#26A65B">Assignment 2: </b> The following ExpL program 
+creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate points to the head of the shared linked list.  Now, the parent prints the 1st, 3rd, 5th, 7th... etc. entries of the list whereas the child prints the 2nd, 4th, 6th, 8th....etc. entries of the list.  Eventually all numbers will be printed, but in some arbitrary order (why?). The program is
+given HERE. Try to read and understand the program before running it.  Run the program as the INIT program.  In the next stages, we will see how to use the sychronization primitives of the OS to modify the above program so that the number are printed out in sequential order. <br><br>
+
+</div> 
 </div>
 
  <!-- =========end Stage 20 ===========-->
@@ -3852,25 +3868,52 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 	<!-- End Learning Objectives--> 
 
-<p>In this stage, we will understand the concept of process synchronization using wait and signal system calls. We will also implement wait, signal, getpid, getppid system calls.</p>
+<b>Read and understand  <a href="os_spec-files/expos_abstractions.html" target="_blank"> Access control and synchronization</a> and <a href="os_spec-files/synchronization.html#process_synchronization" target="_blank"> process synchronization</a> documentation before proceeding further.</b><br><br>
 
-<p><i>Wait</i> is a system call used to suspend the execution of a process, till the process with given PID terminates or signals the waiting process. <i>Wait</i> system call blocks the current process and invokes the scheduler. To signal the waiting process, <i>signal</i> system call is used. <i>Signal</i> system call wakes up all the processes waiting for the process which invoked <i>signal</i>. Even if a process terminates without invoking <i>signal</i>, then exit system call voluntarily wakes up all the processes waiting for it. </p>
-<p>Process synchronization means sharing a resource (data structure, memory etc) concurrently among the processes such that there won't be data inconsistency. One of the methods to achieve process synchronization is by using <i>Wait</i> and <i>Signal</i> system calls. Let us understand how <i>wait</i> and <i>signal</i> help in maintaining data consistency. Suppose two processes (say A and B) shares a resource. When process A issues <i>wait</i> system call with PID of process B, it intends to wait until process B signals or terminates. At this time only process B uses the resource (as process A is in blocked state). When process B is done with the resource, it invokes <i>signal</i> system call. <i>Signal</i> system call will wake up all the processes waiting for process B. Now process A is ready to use the resource. Even if process B does not invoke <i>signal</i> and terminate, then <i>exit</i> system call wakes up all the processes waiting for process B. This makes sure that only one process can access/modify the resource at one point of time. <i>Wait</i> and <i>signal</i> system calls are mostly used for synchronization between parent and child processes. There are more advanced  methods like semaphores to maintain data consistency of shared resources. We will look at semaphores in the next stage.</p>
 
-<p>As we have learnt in previous stage, the child process created using <i>fork</i> system call shares library, code and heap pages with the parent process. Child and parent processes have read only access to the library and code pages whereas they have write/read access to the heap pages. There is a possibility of data inconsistency in heap if both the processes tries to access/modify from heap concurrently. As library and code pages are read only, there will not be any data inconsistency in them. It is absolutely necessary to maintain data consistency of the shared resources among child and parent processes. For data consistency among child and parent processes, <i>wait</i> and <i>signal</i> system calls can be used.</p>
 
-<p>/*Explaining exec condition*/</p>
-<p>The system calls wait, signal, getpid and getppid are all implemented in the interrupt routine 11. Each system call has different system call number to identify it in the interrupt routine. At the beginning of the interrupt routine 11, extract the system call number from the user stack and switch to the kernel stack. At the end of interrupt routine 11, change back to the user stack and return to the user mode. This code at the end will be common for all system calls and will be executed if a system call is completed without any failure. If a system call fails, we return to the user mode from corresponding system call itself. The system call numbers for wait, signal, getpid and getppid are 11, 12, 13 and 14 respectively. From ExpL program, these system calls are invoked using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.
+<p>In this stage, we will add support for process synchronization using <i>wait</i> and <i>signal</i> system calls to eXpOS. With the help of these system calls, we will design a more advanced shell program. We will also implement <i>getpid</i> and <i>getppid</i> system calls.</p>
+
+<p>When a process executes the <i>wait</i> system call, its execution is supended till the process whose PID is given as argument to wait terminates or executes a signal system call.  The process that enters <i>Wait</i> sets its state to WAIT_PROCESS and invokes the scheduler.</p> 
+
+
+<p>A process executes the <i>signal</i> system call to wakes up all the processes waiting for it.  If a process terminates without invoking <i>signal</i>, then exit system call voluntarily wakes up all the processes waiting for it. </p>
+
+<p>When several processes running concurrently share a resource (shared memory or file) it is necessary to synchronize access to the shared resource to avoid data inconsistency. <i>Wait</i> and <i>Signal</i>  are primitives that help to achieve synchronization.</p>  
+
+<p>To understand how <i>wait</i> and <i>signal</i> help for process synchronization, assume that two processes (say A and B) executing concurrently share a resource. When process A issues the <i>wait</i> system call with the PID of process B, it intends to wait until process B signals or terminates. When process B is done with the resource, it can invoke the <i>signal</i> system call to wake up A (and all other processes waiting for process B). Thus, <i>signal</i> and <i>wait</i> can ensure that A is allowed to access the resource only after B permits A to do so.</p>
+
+<p>In the above example suppose process B had finished using the shared resource and had executed <i>Signal</i> system call before A executed <i>Wait</i> system call, then A will wait for B to issue another Signal.  Hence if B does not issue another signal, then A will resume execution only after B terminates.  The issue here is that, although the OS acts on the occurance of a signal immediately, it never records the occurance of the signal for future. <b>In other words, Signals are memoryless.</b> A more advanced synchronization primitive that has a state variable associated with it - namely the <a href="https://en.wikipedia.org/wiki/Semaphore_(programming)" target="_blank">semaphore</a> - will be added to the OS in the next stage.
+</p>
+
+<p>When a process issues the <i>Exit</i> system call, all processes waiting for it must be awakened.  We will modify the <b>Exit Process</b> function in the <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to wake up all processes waiting for the terminating process.  However, there is one special case to handle here.  The Exit Process function is invoked by the <i>Exec</i> system call as well.  In this case, the process waiting for the current process must not be woken up (why?).  The implementation details will be explained below.  
+</p>
+
+<p>Finally, when a process Exits, all its child processes 
+become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">orphan processes</a> and their PPID field is set to -1 in the module function <b>Exit Process</b>. Here too, if Exit Process in invoked from the Exec system call, the children must not become orphans.</p><br>    
+
+
+
+<b style="font-size: 20px">Implementation of Interrupt routine 11</b><br><br>
+<p>The system calls <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Getppid</i> are all implemented in the interrupt routine 11. Each system call has a different system call number. </p>
+
+<ul style="list-style-type: disc; margin-left: 10px;">
+<li style="padding-left: 20px">At the beginning of interrupt routine 11, extract the system call number from the user stack and switch to the kernel stack.</li>
+<li style="padding-left: 20px">Implement system calls according to the system call number extracted from above step. Steps to implement each system call are explained below.</li>
+<li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
+</ul>
+<p>
+The system call numbers for <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Getppid</i> are 11, 12, 13 and 14 respectively. From ExpL program, these system calls are invoked using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.
 </p><br>
 
- <b style="font-size: 20px">Wait System Call</b> <br><br>
-<p> <a href="os_design-files/synchronization_algos.html" target="_blank">Wait system call</a> takes PID of a process (for which the given process will wait) as an argument. </p>
+ <b>Wait System Call</b> <br><br>
+<p> Wait system call takes PID of a process (for which the given process will wait) as an argument. </p>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
 
-<li style="padding-left: 20px">First thing that wait system call does is change the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number. </li>
+<li style="padding-left: 20px">Change the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number. </li>
 
-<li style="padding-left: 20px">It will then extract the PID from the user stack. There are some valid conditions for argument PID that should be checked first. A process should not wait for itself and the argument PID should be valid. The process with the argument PID should be existent /*Terminated, cyclic wait*/. If any of the above conditons are not satisfying, return to the user mode with -1 stored as return value indicating failure. At any point of return to user, remember to reset the MODE FLAG and change the stack to user stack.</li> 
+<li style="padding-left: 20px">Extract the PID from the user stack. Check the valid conditions for argument. A process should not wait for itself or a TERMINATED process. The argument PID should be in valid range (what is the <a href="os_design-files/process_table.html" target="_blank">valid range</a>?). If any of the above conditons are not satisfying, return to the user mode with -1 stored as return value indicating failure. At any point of return to user, remember to reset the MODE FLAG and change the stack to user stack.</li> 
 
 <li style="padding-left: 20px">If all valid conditions are satisfied then proceed as follows. Change the state of the current process from RUNNING to the tuple <a href="os_design-files/process_table.html#state" target="_blank">(WAIT_PROCESS, argument PID)</a> in the process table. Note that the STATE field in the process table is a tuple (allocated 2 words).</li> 
 
@@ -3878,22 +3921,26 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 <li style="padding-left: 20px">When the current process resumes execution again, reset the MODE FLAG in the process table of the current process. Store 0 in the user stack as return value.</li> </ul><br>
 
-  <b style="font-size: 20px">Signal System Call</b> <br><br>
+  <b>Signal System Call</b> <br><br>
   
-  <p><a href="os_design-files/synchronization_algos.html#signal" target="_blank">Signal system call</a> does not have any argumnets.</p>
+  <p>Signal system call does not have any arguments.</p>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
 
-  <li  style="padding-left: 20px"> Firstly, set the MODE FLAG in the process table to the signal system call number. </li>
+  <li  style="padding-left: 20px"> Set the MODE FLAG in the process table to the signal system call number. </li>
 
   <li style="padding-left: 20px">Loop through all process table entries, if there is a process with STATE as tuple (WAIT_PROCESS, current process PID) then change the STATE field to READY. </li>
 
   <li style="padding-left: 20px">Reset the MODE FLAG to 0 in the process table and store 0 as return value in the user stack.</li><br>
 
-  <b style="font-size: 20px">Getpid and Getppid System Calls</b> <br><br>
+  <b >Getpid and Getppid System Calls</b> <br><br>
  <p>Getpid and Getppid system calls returns the PID of the current process and the PID of the parent process of the current process respectively to the user program. Implement both these system calls in interrupt routine 11.</p><br> 
+
+ <p><code>Note :</code>The above implementations of system call are final and will not change later. See algorithms <a href="os_design-files/synchronization_algos.html" target="_blank">wait/signal</a> and <a>getpid/getppid</a>.</p>
+
+
 <b>Modifications to Exit Process Function  </b><br><br>
-<p>There are some modifications in the Exit Process function of the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. The Exit Process function has PID of a terminating process as argument. Exit Process function will be called from exit and exec system calls to terminate a process. Therefore Exit Process function must wake up all the processes waiting for the process with the given PID. The process with given PID can be parent of other process(es). Exit Process must search for such child process(es), whose PPID is the given PID and invalidate PPID of those child processes as -1. A child process whose parent is terminated is called as <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">orphan process</a>. </p><br> 
+<p>There are some modifications in the Exit Process function of the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. The Exit Process function has PID of a terminating process as argument. Exit Process function will be called from exit and exec system calls to terminate a process. Therefore Exit Process function must wake up all the processes waiting for the process with the given PID. The process with given PID can be parent of other process(es). Exit Process must search for such child process(es), whose PPID is the given PID and invalidate PPID of those child processes as -1.  </p><br> 
 <b>Making things work</b><br><br>
   <p>Make necessary changes to the boot module. Compile and load the newly written and modified files to the disk using XFS-interface.</p><br>
 
@@ -3954,6 +4001,11 @@ endwhile</pre></div>
 
 	<!--End Learning Objectives-->
 
+
+<!--
+<p>As we have seen in the previous stage, a child process can share with its parent heap pages which can be modified by both the process. This leads to the "critical section problem" when accessing  child process created using <i>fork</i> system call shares library, code and heap pages with the parent process. Child and parent processes have read only access to the library and code pages whereas they have write/read access to the heap pages. There is a possibility of data inconsistency in heap if both the processes tries to access/modify from heap concurrently. As library and code pages are read only, there will not be any data inconsistency in them. It is absolutely necessary to maintain data consistency of the shared resources among child and parent processes. For data consistency among child and parent processes, <i>wait</i> and <i>signal</i> system calls can be used.</p>
+
+-->
 		</div>
 		</div>
 
