@@ -167,7 +167,7 @@
               <h2 class="Big" id="disk_free_list">Disk Free List</h2>
                <br>
               <br>
-              <p>The Disk Free List consists of DISK_SIZE entries. (The value of DISK_SIZE is fixed to 512 in the present version).  Each entry is of size one word and thus, the size of the disk free list is DISK_SIZE = 512 words. For each block in the disk there is an entry in the Disk Free List which contains either 0 (free) or a number indicating the number of processes sharing the block. </p>
+              <p>The Disk Free List consists of DISK_SIZE entries. (The value of DISK_SIZE is fixed to 512 in the present version).  Each entry is of size one word and thus, the size of the disk free list is DISK_SIZE = 512 words. For each block in the disk there is an entry in the Disk Free List which contains either 0 (free) or 1 if being used. </p>
               <p>When the system starts up, the OS startup code loads the Disk Free List to memory. It is stored back when the system halts or a Shutdown system call is executed.</p>
               
 		<p><b>Note : </b>Memory copy of the Disk Free List is present in page 61 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">DISK_FREE_LIST</a> points to the starting address of the table.</p>

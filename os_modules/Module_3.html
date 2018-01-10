@@ -259,13 +259,13 @@ NOTE: Physical memory address must be provided. <br> <br>
 Called by the Read system call. <br> <br><br>
            
    <h3> Open </h3>
-   <i> <b>Description </b></i>: Locates the file in the inode table and makes an entry in the Open File Table. Returns the Open File Table index or an error code if file does not exist or the table is full.<br>
+   <i> <b>Description </b></i>: Locates the file in the inode table and makes an entry in the Open File Table. Returns the Open File Table index or an error code if file does not exist or the table is full. On a successfull open, the file status table entry of the file is incremented.<br>
    <br>
    <b>Note:</b> This function must not be called unless a the calling process has a free entry available in the <a href="../os_design-files/process_table.html#per_process_table">per-process resource table</a> to store the open file table index returned by this function.<br><br>
 
 <pre>
 
-Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file.
+Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file. If the entry is not found, return -1.
 
 Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
 If the locking fails, return -1. 
@@ -276,7 +276,7 @@ Find a free entry in the <a href="../os_design-files/mem_ds.html#file_table">Ope
 If there are no free entries, <b>release_inode()</b> and return -2.  /* Reached maximum number of open files in the system. */
 
 <b>If</b> the file name is "root" <b>then</b> 
-	Set the INODE INDEX field in the open file table entry to INODE_ROOT. 
+	Set the INODE INDEX field in the open file table entry to <a href="../support_tools-files/constants.html">INODE_ROOT</a>. 
 <b>else</b>
 	Increment the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a> 
 	Set the INODE INDEX field in the open file table entry to the inode table index of the file. 

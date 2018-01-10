@@ -173,11 +173,11 @@ If the USER ID of the file is not equal to the user id of the current user and 	
 the exclusive permission is set, return -3. 
 
 Acquire the Lock on the File by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html" target="_blank">Resource Manager</a> module.  
-If acquiring th inode fails, return -1.
+If acquiring the inode fails, return -1.
 
 Get the Lseek position from the Open File Table entry.
 
-<b>If</b> lseek position is same as the maximum file size, <b>release_inode()</b> and return -2.&nbsp;&nbsp;/* Maximum file size of 2048 reached*/
+<b>If</b> lseek position is same as the <a href="support_tools-files/constants.html">MAX_FILE_SIZE</a>, <b>release_inode()</b> and return -2.&nbsp;&nbsp;/* Maximum file size of 2048 reached*/
 
 <a data-toggle="collapse"   href="#collapse8a">If the Lseek position is a multiple of 512 and the same as File size in the inode table</a>	/* New block to be allocated */<div id="collapse8a" class="panel-collapse collapse"> 
               Get a free disk block by calling the <b>get_free_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
@@ -186,7 +186,7 @@ Get the Lseek position from the Open File Table entry.
 
               Set the new disk block found in the corresponding (lseek / 512) disk block field  in the <a href="./disk_ds.html#inode_table" target="_blank">Inode table</a> entry. </div>
 
-<a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is read.</a>
+<a data-toggle="collapse"   href="#collapse8">Find the disk block number and the position in the block from which input is to be written.</a>
 <div id="collapse8" class="panel-collapse collapse">
                Get the block index from lseek position. &nbsp;&nbsp;/* block index = lseek / block size (512) */
                Get the disk block number corresponding to the block index from the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> .

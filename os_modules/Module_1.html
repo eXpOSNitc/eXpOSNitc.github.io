@@ -241,13 +241,18 @@ Called by the exit_process function.
 
 <pre>
 
-    loop though the <a href="../os_design-files/process_table.html">process table</a> entries
-    	/* Wake up all processes waiting for the current process */
-    	if( process is waitng for the current process ) 		/* indicated by the STATE = (WAIT_PROCESS, PID ) */
-		Set STATE of the process to (READY, - )
-	/* Set the children of the process as Orphan */
-	if( process has PPID as that of the current process)
-		Set PPID to -1.
+    <b>if</b> (the current process is not in the exec system call)	// check MODE_FLAG
+    {
+    	<b>loop</b> though the <a href="../os_design-files/process_table.html">process table</a> entries
+	{
+    		/* Wake up all processes waiting for the current process */
+    		<b>if</b>( process is waitng for the current process ) 		/* indicated by the STATE = (WAIT_PROCESS, PID ) */
+			Set STATE of the process to (READY, - )
+		/* Set the children of the process as Orphan */
+		<b>if</b>( process has PPID as that of the current process)
+			Set PPID to -1.
+	}
+    }
 
     Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by
     invoking the Free_Page_Table() function; 
@@ -263,8 +268,10 @@ Called by the exit_process function.
     /* Note that the return statement is executing using a deallocated stack page. See note after free_user_area_page() */ 
 </pre>
 
-Called by exit system call, exception handler, shutdown and logout.
+Called by exec system call, exit system call, exception handler, shutdown and logout.
 
+<h4>Question:</h4>
+<p>1. Why is the loop in the beginning not executed when called from exec system call?</p> 
 
 
 <h3> Free Page Table </h3>

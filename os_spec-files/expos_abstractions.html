@@ -183,7 +183,6 @@
                             <div class="panel-body">
                            <p>Two concurrently executing processes sharing resources like files or memory (for example, parent and child processes sharing the heap) would like to ensure that only one of them execute critical section code that access/modify a resource that is shared between them. </p>
 <p>A classical solution to this problem is using <a href="http://en.wikipedia.org/wiki/Semaphore_%28programming%29" target="_blank">semaphores</a>. A process can acquire a semaphore using the <b>Semget</b> system call and share it with its child (or later generation) processes.  A semaphore can be locked by any of these sharing processes using the <b>SemLock </b>system call and the execution of all other processes trying to lock the same semaphore subsequently will be suspended (<b>blocked</b>) by the OS until the locking process unlocks the semaphore using the <b>SemUnlock</b> system call.  </p>
-<p>A process can lock a (data) file using the <b>FLock</b> system call.  Once locked, every other process trying to execute any system call on the file will be blocked by the OS till the file is unlocked by the original process using the <b>FUnLock</b> system call. </p>
 <p>The <b>Wait</b> system call allows a process to suspend its own execution until another process wakes it up using the <b>Signal</b> system call.  This primitive is useful when a process must be made to wait at a point during its execution until another related process signals it to continue.</p>
 
                             </div>
@@ -292,15 +291,6 @@
     <td>Wait</td>
     <td>Suspend execution of the current process until the process specified sends a signal or terminates. </td>		
     
-  </tr>
-  <tr>
-    <td>FLock</td>
-    <td>Get exclusive access permission to file specified. (Process blocks till lock is obtained.)  </td>		
-    
-  </tr>
-  <tr>
-	  <td>FUnLock</td>
-	  <td>Release the lock on a file already acquired.</td>
   </tr>
   <tr>
 	  <td>Semget</td>
