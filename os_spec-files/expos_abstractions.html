@@ -201,7 +201,7 @@
                           <div id="TwocollapseFour" class="panel-collapse collapse">
                             <div class="panel-body">
 
-<p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact.</p> 
+<p>It was already noted that the child process shares the <b>heap</b> of the parent process.  Hence memory allocated in the heap will be a <b>shared memory</b> between both the processes.  However, if either the parent or the child process loads another program into its virtual address space using the exec system call, then the shared heap is detached from that process and the surviving process will have the heap intact. The file pointers handled by the parent process are also shared by the child process.</p> 
 <p>Thus, eXpOS does not support any explicit primitives for memory sharing, but instead allows related processes to share these resources implicitly using the fork system call semantics. </p> 
 <p>The file sharing semantics between users in <font color="red">Multiuser </font>extension to eXpOS is described <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">here</a>.
 
