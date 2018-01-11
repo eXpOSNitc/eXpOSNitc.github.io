@@ -3655,7 +3655,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
     </ol><br>
 
-    <b>Making things work</b><br>
+    <b>Making things work</b><br><br>
    <p>Compile and load the modified and newly written files into the disk using the XFS-interface.</p>
 
 
@@ -3772,7 +3772,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 <p>The complete version of the algorithm for the fork system call is provided <a href="os_design-files/fork.html" target="_blank">here</a>.</p> <br>
 <b>Get Pcb Entry (function number = 1, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a>)</b><br><br>
 <p>The Get Pcb Entry function in the process manager, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1. A free process table entry (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a> field is set to <a href="support_tools-files/constants.html">TERMINATED</a>) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry. Initialize PTBR to the starting address of the page table  for that process (obtained using index) and PTLR to 10. Return the index to the caller.</p>
-<p style="text-indent: 0px"><code>Note :</code>The implementation of above Get Pcb Entry module function is final version.</p>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b> module function is final version.</p>
    <b style="font-size: 20px">Exit System Call</b> <br><br>
 
 
@@ -3828,9 +3828,9 @@ stage. </p><br>
 
 <b style="color:#26A65B">Assignment 1: </b> Write two ExpL programs even.expl and odd.expl to print the first 100 even and odd numbers respectively.  Write another ExpL program that first creates a child process using Fork.  Then, the parent process shall use the exec system call to execute even.xsm and the child shall execute odd.xsm. Load this program as the init program.  <br><br>
 
-<b style="color:#26A65B">Assignment 2: </b> The following ExpL program 
-creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the parent prints the 1st, 3rd, 5th, 7th... etc. entries of the list whereas the child prints the 2nd, 4th, 6th, 8th....etc. entries of the list.  Eventually all numbers will be printed, but in some arbitrary order (why?). The program is
-given <a href="test_prog.html#ll_fork" target="_blank">here</a>. Try to read and understand the program before running it.  Run the program as the INIT program.  In the next stages, we will see how to use the sychronization primitives of the OS to modify the above program so that the number are printed out in sequential order. <br><br>
+<b style="color:#26A65B">Assignment 2: </b> Write an ExpL program which 
+creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the child prints the  1st, 3rd, 5th, 7th... etc. entries of the list whereas  the parent prints the 2nd, 4th, 6th, 8th....etc. entries of the list.  Eventually all numbers will be printed, but in some arbitrary order (why?). The program is
+given <a href="test_prog.html#ll_fork" target="_blank">here</a>. Try to read and understand the program before running it.  Run the program as the INIT program.  In the next stages, we will see how to use the sychronization primitives of the OS to modify the above program so that the numbers are printed out in sequential order. <br><br>
 
 </div> 
 </div>
@@ -3856,7 +3856,7 @@ given <a href="test_prog.html#ll_fork" target="_blank">here</a>. Try to read and
                             <div id="lo21" class="panel-collapse expand">
                             <ul>
                             <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with process synchronization in eXpOS</li>
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of wait and signal system calls</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of <i>Wait</i> and <i>Signal</i> system calls</li>
                             </ul>                                  
                                      
                             </div>
@@ -3868,35 +3868,37 @@ given <a href="test_prog.html#ll_fork" target="_blank">here</a>. Try to read and
 
 	<!-- End Learning Objectives--> 
 
-<b>Read and understand  <a href="os_spec-files/expos_abstractions.html" target="_blank"> Access control and synchronization</a> and <a href="os_spec-files/synchronization.html#process_synchronization" target="_blank"> process synchronization</a> documentations before proceeding further.</b><br><br>
+<b>Read and understand  <a href="os_spec-files/expos_abstractions.html" target="_blank"> Access control and synchronization</a> and <a href="os_spec-files/synchronization.html#process_synchronization" target="_blank"> Process synchronization</a> documentations before proceeding further.</b><br><br>
 
 
 
 <p>In this stage, we will add support for process synchronization using <i>Wait</i> and <i>Signal</i> system calls to eXpOS. With the help of these system calls, we will design a more advanced shell program. We will also implement <i>Getpid</i> and <i>Getppid</i> system calls.</p>
 
-<p>When a process executes the <i>Wait</i> system call, its execution is supended till the process whose PID is given as argument to <i>Wait</i> terminates or executes the <i>Signal</i> system call.  The process that enters <i>Wait</i> sets its state to WAIT_PROCESS and invokes the scheduler.</p> 
+<p>When a process executes the <i>Wait</i> system call, its execution is suspended till the process whose PID is given as argument to <i>Wait</i> terminates or executes the <i>Signal</i> system call.  The process that enters <i>Wait</i> sets its state to WAIT_PROCESS and invokes the scheduler.</p> 
 
 
 <p>A process executes the <i>Signal</i> system call to wake up all the processes waiting for it.  If a process terminates without invoking <i>Signal</i>, then <i>Exit</i> system call voluntarily wakes up all the processes waiting for it. </p>
 
 <p>When several processes running concurrently share a resource (shared memory or file) it is necessary to synchronize access to the shared resource to avoid data inconsistency. <i>Wait</i> and <i>Signal</i> form one pair of primitives that help to achieve synchronization.</p>  
 
-<p>To understand how <i>Wait</i> and <i>Signal</i> help for process synchronization, assume that two processes (say A and B) executing concurrently share a resource. When process A issues the <i>Wait</i> system call with the PID of process B, it intends to wait until process B signals or terminates. When process B is done with the resource, it can invoke the <i>Signal</i> system call to wake up A (and all other processes waiting for process B). Thus, <i>Signal</i> and <i>Wait</i> can ensure that A is allowed to access the resource only after B permits A to do so.</p>
+<p>To understand how <i>Wait</i> and <i>Signal</i> help for process synchronization, assume that two processes (say A and B) executing concurrently share a resource. When process A issues the <i>Wait</i> system call with the PID of process B, it intends to wait until process B signals or terminates. When process B is done with the resource, it can invoke the <i>Signal</i> system call to wake up process A (and all other processes waiting for process B). Thus, <i>Signal</i> and <i>Wait</i> can ensure that process A is allowed to access the resource only after process B permits process A to do so.</p>
 
-<p>In the above example suppose process B had finished using the shared resource and had executed <i>Signal</i> system call before A executed <i>Wait</i> system call, then A will wait for B to issue another Signal.  Hence if B does not issue another signal, then A will resume execution only after B terminates.  The issue here is that, although the OS acts on the occurance of a signal immediately, it never records the occurance of the signal for the future. <b>In other words, Signals are memoryless.</b> A more advanced synchronization primitive that has a state variable associated with it - namely the <a href="https://en.wikipedia.org/wiki/Semaphore_(programming)" target="_blank">semaphore</a> - will be added to the OS in the next stage.
+<p>In the above example suppose process B had finished using the shared resource and had executed <i>Signal</i> system call before process A executed <i>Wait</i> system call, then process A will wait for process B to issue another signal.  Hence if process B does not issue another signal, then process A will resume execution only after process B terminates.  The issue here is that, although the OS acts on the occurance of a signal immediately, it never records the occurance of the signal for the future. <b>In other words, Signals are memoryless.</b> A more advanced synchronization primitive that has a state variable associated with it - namely the <a href="https://en.wikipedia.org/wiki/Semaphore_(programming)" target="_blank">semaphore</a> - will be added to the OS in the next stage.
 </p>
 
 <p>When a process issues the <i>Exit</i> system call, all processes waiting for it must be awakened.  We will modify the <b>Exit Process</b> function in the <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to wake up all processes waiting for the terminating process.  However, there is one special case to handle here.  The Exit Process function is invoked by the <i>Exec</i> system call as well.  In this case, the process waiting for the current process must not be woken up (why?).  The implementation details will be explained below.  
 </p>
 
 <p>Finally, when a process Exits, all its child processes 
-become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">orphan processes</a> and their PPID field is set to -1 in the module function <b>Exit Process</b>. Here too, if Exit Process in invoked from the Exec system call, the children must not become orphans.</p><br>    
+become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">orphan processes</a> and their PPID field is set to -1 in the module function <b>Exit Process</b>. Here too, if Exit Process in invoked from the <i>Exec</i> system call, the children must not become orphans.</p><br>    
 
-<b>Shell Program</b>  
+<b>Shell Program</b>  <br><br>
   <p>The Shell is a user program that implements an interactive user interface for the OS.  In the present stage, we will run the shell as the INIT program, so that the shell will interact with the user.
 </p>
 <p>
-  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "halt", the program executes the <i>Shutdown</i> system call to shutdown the OS.  Otherwise, the shell program forks and create a child process.  The parent process then waits for the child to Exit using the <i>Wait</i> system call.  The child process will try to execute the command (that is, execute the file with name <i>command</i>.)  If no such file exists, Exec fails and the child prints "bad command" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next command.</p>  
+  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "halt", the program executes the <i>Shutdown</i> system call to shutdown the OS.  Otherwise, the shell program forks and create a child process.  The parent process then waits for the child to exit using the <i>Wait</i> system call.  The child process will try to execute the <i>command</i> (that is, execute the file with name <i>command</i>.)  If no such file exists, <i>Exec</i> fails and the child prints "bad command" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next <i>command</i>.</p>  
+
+  <br>
 
 <b style="font-size: 20px">Implementation of Interrupt routine 11</b><br><br>
 <p>The system calls <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Getppid</i> are all implemented in the interrupt routine 11. Each system call has a different system call number. </p>
@@ -3910,8 +3912,8 @@ become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">or
 The system call numbers for <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Getppid</i> are 11, 12, 13 and 14 respectively. From ExpL program, these system calls are invoked using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.
 </p><br>
 
- <b>Wait System Call</b> <br><br>
-<p> Wait system call takes PID of a process (for which the given process will wait) as an argument. </p>
+<b>Wait System Call</b> <br><br>
+<p> <i>Wait</i> system call takes PID of a process (for which the given process will wait) as an argument. </p>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
 
@@ -3926,9 +3928,9 @@ The system call numbers for <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Get
 <li style="padding-left: 20px">Reset the MODE FLAG in the process table of the current process. Store 0 in the user stack as return value and return to the calling program. <br>
   </li> </ul><br>
 
-  <b>Signal System Call</b> <br><br>
+<b>Signal System Call</b> <br><br>
   
-  <p>Signal system call does not have any arguments.</p>
+  <p><i>Signal</i> system call does not have any arguments.</p>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
 
@@ -3938,12 +3940,25 @@ The system call numbers for <i>Wait</i>, <i>Signal</i>, <i>Getpid</i> and <i>Get
 
   <li style="padding-left: 20px">Reset the MODE FLAG to 0 in the process table and store 0 as return value in the user stack.</li><br>
 
-  <b >Getpid and Getppid System Calls</b> <br><br>
- <p>Getpid and Getppid system calls returns the PID of the current process and the PID of the parent process of the current process respectively to the user program. Implement both these system calls in interrupt routine 11.</p> 
+ <b>Getpid and Getppid System Calls</b> <br><br>
+ <p><i>Getpid</i> and <i>Getppid</i> system calls returns the PID of the current process and the PID of the parent process of the current process respectively to the user program. Implement both these system calls in interrupt routine 11.</p> 
 
- <p><code>Note :</code>The system calls implemented above are final and will not change later. See algorithms for <a href="os_design-files/synchronization_algos.html" target="_blank">wait/signal</a> and <a href="os_design-files/proc_misc.html" target="_blank">getpid/getppid</a>.</p><br>
-<b>Modifications to Exit Process Function  </b><br><br>
-<p> <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. The Exit Process function has PID of a process to be terminated as argument, and is invoked from Exit and Exec system calls.  Exit process function modified so that it wakes up all the processes waiting for the current process if invoked from the Exit system call.  Similarly, the children of the process are set as orphan process if Exit process is invoked from Exit system call.  Whether Exit process was invoked from Exec or Exit can be found out using the MODE flag in the process table of the invoking process. </p> <br>
+ <p><code>Note :</code>The system calls implemented above are final and will not change later. See algorithms for <a href="os_design-files/synchronization_algos.html" target="_blank">Wait/Signal</a> and <a href="os_design-files/proc_misc.html" target="_blank">Getpid/Getppid</a>.</p><br>
+
+<b>Modifications to Exit Process Function (function number = 3, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a>) </b><br><br>
+<p> Exit Process function is modified so that it wakes up all the processes waiting for the current process.  Similarly, the children of the process are set as orphan processes by changing PPID field of child processes to -1. But when the Exit Process function is invoked from <i>Exec</i> system call, the process is not actually terminating instead a new program is executed with the same PID.
+So when Exit Process is invoked from <i>Exec</i> system call, it should not wake up the processes waiting for the current process and also should not set the children as orphan processes. Check the MODE FLAG in the process table of the current process to find out from which system call Exit Process function is invoked.</p> 
+<ul style="list-style-type: disc; margin-left: 10px; ">
+<p style="text-indent: 0px">If MODE FLAG field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> has system call number not equal to 9 (<i>Exec</i>) implement below steps.</p>
+<li style="padding-left:20px">
+Loop through the process table of all processes and change the state to READY for the processes whose state is tuple (WAIT_PROCESS, current PID). Also if the PPID of a process is PID of current process, then invalidate PPID field to -1. 
+</li>
+
+</ul>
+
+<p><code>Note :</code>The <b>Exit Process</b> module function implemented here is final and will not change later.</p>
+
+<br>
 <!--
 <ul style="">
 <li>If the MODE FLAG </li>
@@ -3951,52 +3966,39 @@ with the given PID only if the MODE FLAG in the process table of the process is 
 </ul><br>-->
 
 <b>Shutdown system call</b><br><br>
-<p>To ensure graceful termination of the system we will write shutdown system call with just a HALT instruction. <i>Shutdown</i> system call is implemented in interrupt routine 15. Create a xsm file with just HALT instruction and load this file as interrupt routine 15. From this stage onwards, we will use Shell version-II as our init program. Shell version-II will invoke shutdown system call to halt the system. </p> <br>
+<p>To ensure graceful termination of the system we will write <i>Shutdown</i> system call with just a HALT instruction. <i>Shutdown</i> system call is implemented in interrupt routine 15. Create a xsm file with just HALT instruction and load this file as interrupt routine 15. From this stage onwards, we will use Shell version-II as our init program. Shell version-II will invoke <i>Shutdown</i> system call to halt the system. </p> 
+
+
+
+<br>
 
 <b>Modifications to boot module</b><br><br>
-<p>Load interrupt routine 11 and interrupt routine 15 from disk to memory.</p><br>
+<p>Load interrupt routine 11 and interrupt routine 15 from disk to memory. See disk and memory organization    <a href="os_implementation.html" target="_blank">here</a>.</p><br>
 
 <b>Making things work</b><br><br>
-  <p>Compile and load the newly written and modified files to the disk using XFS-interface.</p><br>
+  <p>Compile and load the newly written and modified files to the disk using XFS-interface.</p>
 
 <div class="container col-md-12" >
                           <div class="section_area">
                           <ul class="list-group">
 <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq19"><b>Q1.</b> Why does the Exit Process function should not wake up the processes waiting for other processes, when Exit Process function is invoked from Exec system call? </a>
-                            <div id="collapseq19" class="panel-collapse collapse">Fork system call returns to the parent process. IRET sets the value of IP register to the return address at the top of the stack, pointed to by the SP register. The machine translates the logical SP to physical SP using the page table pointed to by the PTBR register, which points to the page table of the parent.  Subsequent instruction fetch cycles continue to proceed by translating the value of IP using the PTBR value, which points to the page table of the parent process.  The parent process continues execution till a context switch occurs.  
-                              </div>
+<a data-toggle="collapse"  href="#collapseq19"><b>Q1.</b> When Exit Process function is invoked from <i>Exec</i> system call, why it should not wake up the processes waiting for the current process and why it should not set the child processes as orphan processes? </a>
+                            <div id="collapseq19" class="panel-collapse collapse"> The newly created process in <i>Exec</i> system call uses the same PID of the invoking process. By using the same PID, the parent-child relationships of the invoking process still continues to exists so the PPID field should not be changed. Similarly as <i>Exec</i> does not terminate the current process and the process did not issue a signal, so the processes waiting for invoking process should continue to wait.     
+
+                                                           </div>
     </li>
 
 		</ul>
                           </div>
                           </div>
-  <b style="color:#26A65B">Assignment 1: </b><b>[Shell Version-II]</b> Implement the shell program according to the description given above. Shell version-II ExpL program is given <a href="test_prog.html#shell_version_2_p" target="_blank">here</a>. Load this program as the INIT program and run the XSM machine. Run  
+  <b style="color:#26A65B">Assignment 1: </b><b>[Shell Version-II]</b> It is recommended to implement the shell program according to the description given above on your own. A variant of shell program is given <a href="test_prog.html#shell_version_2_p" target="_blank">here</a>. Load this program as the INIT program. Test the shell version by giving different ExpL programs written till now as input. Remember to load the xsm files of ExpL programs as executables into the disk. 
+  
+  <br><br>
+
+  <b style="color:#26A65B">Assignment 2: </b>Modify the program given in assignment-2 of previous stage to use <i>Wait</i> and <i>Signal</i> system calls to synchronize the order of printing the numbers. The program given creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the child prints the  1st, 3rd, 5th, 7th... etc. entries of the list whereas the parent prints the 2nd, 4th, 6th, 8th....etc. entries of the list. Modify the program to invoke <i>Wait</i> system call from parent with PID of child process before printing a number and child to invoke <i>Signal</i> system call after child prints an entry. Usage of <i>Wait</i> and <i>Signal</i> system calls make sure that numbers are printed in sequential order. Run this program using the shell.  
 
    <br><br>
-<!--<div>
-   <pre>while ( true ) 
-            read ( input )
-            if ( input != "halt" ) 
-                pid = fork()
-                if ( pid < 0 ) 
-                	print "Fork Failure"
-                	continue
-                endif
-                if ( pid != 0 ) 
-                	wait ( pid )
-                else
-                	a=exec ( input )
-                	if ( a < 0 ) 
-                		break
-                	endif		
-                endif				
-            else
-            	a=shutdown()
-       
-            endif
-endwhile</pre></div>-->
 		</div>
 		</div>
 
@@ -4039,24 +4041,25 @@ endwhile</pre></div>-->
 <p>In this stage, we will look at a method provided in eXpOS to handle data sharing among concurrent processes. eXpOS provides binary semaphores which can be used in user applications (ExpL programs) to access/modify shared resources such that data inconsistency will not occur.</p>
 
 
-<p>Child process created using <i>fork</i> system call shares library, code and heap pages with the parent process. Child and parent processes have read only access to the library and code pages whereas they have write/read access to the heap pages. There is a possibility of data inconsistency in heap if both the processes tries to access/modify from heap concurrently. As library and code pages are read only, there will not be any data inconsistency in them. It is absolutely necessary to maintain data consistency of the shared resources among child and parent processes. For data consistency among child and parent processes, <i>wait</i> and <i>signal</i> system calls can be used. </p>
+<p>Child process created using <i>Fork</i> system call shares library, code and heap pages with the parent process. Child and parent processes have read only access to the library and code pages whereas they have write/read access to the heap pages. There is a possibility of data inconsistency in heap if both the processes tries to access/modify from heap concurrently. As library and code pages are read only, there will not be any data inconsistency in them. It is absolutely necessary to maintain data consistency of the shared resources among child and parent processes. </p>
 
-<p>eXpOS provides a more sophisticated way to maintain data consistency using binary semaphores. There are four actions related to semaphores that a process can perform. Below are the actions along with the system calls eXpOS provides to perform these actions - <br>
-1) Acquiring a semaphore - Semget system call <br> 2) Releasing a semaphore - SemUnLock system call <br> 3) Locking a semaphore - SemLock system call<br> 4) Unlocking a semaphore - SemUnLock system call <br></p>
+<p>eXpOS provides a more sophisticated way to maintain data consistency using binary <a href="https://en.wikipedia.org/wiki/Semaphore_(programming)" target="_blank">semaphores</a>. There are four actions related to semaphores that a process can perform. Below are the actions along with the system calls eXpOS provides to perform these actions - <br>
+1) Acquiring a semaphore - <i>Semget</i> system call <br> 2) Releasing a semaphore - <i>Semrelease</i> system call <br> 3) Locking a semaphore - <i>SemLock</i> system call<br> 4) Unlocking a semaphore - <i>SemUnLock</i> system call <br></p>
 
-<p>To use a semaphore, first a process has to acquire a semaphore. When a process forks, the semaphores currently acquired by a process is shared between child and parent. A process can lock and unlock a semaphore only after acquiring the semaphore. To enter into the critical section, the process must lock the semaphore. After exiting from the critical section, the process unlocks the semaphore allowing other processes (with which the semaphore is shared) to enter the critical section. After use of the semaphore is over, a process will detach the semaphore from itself by releasing the semaphore. </p>
+<p>To use a semaphore, first a process has to acquire a semaphore. When a process forks, the semaphores currently acquired by a process is shared between child and parent. A process can lock and unlock a semaphore only after acquiring the semaphore. The process must lock the semaphore if it needs to enter into the critical section. After exiting from the critical section, the process unlocks the semaphore allowing other processes (with which the semaphore is shared) to enter the critical section. After use of the semaphore is over, a process will detach the semaphore from itself by releasing the semaphore. </p>
 
-<p> eXpOS uses two data structures - semaphore table and per-process resource table to manage semaphores. Semaphore table is a global data structure which is used to store details of semaphores currently used by all the processes. Semaphore table has 32 (MAX_SEM_COUNT) entries which means only 32 semaphores can be used by all the processes in the system at a time. Each entry in the semaphore table occupies four words. A semaphore is shared between two or more processes. PROCESS COUNT field of each entry keeps track of how many processes are currently sharing the semaphore. If a process locks the semaphore, LOCKING PID field stores the PID of that process. LOCKING PID is set -1 when the semaphore is not locked by any of the processes which has acquired this semaphore. Rest two words of each entry in the semaphore table are unused. An invalid semaphore table entry is indicated with PROCESS COUNT set to 0. The SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE_TABLE</a> gives the starting address of the semaphore table in the <a href="os_implementation.html" target="_blank">memory</a>. See details of semaphore table <a target="_blank" href="os_design-files/mem_ds.html#sem_table">here</a>.</p>
+<p> eXpOS uses two data structures - <b>semaphore table</b> and <b>per-process resource table</b> to manage semaphores. Semaphore table is a global data structure which is used to store details of semaphores currently used by all the processes. Semaphore table has 32 (MAX_SEM_COUNT) entries which means only 32 semaphores can be used by all the processes in the system at a time. Each entry in the semaphore table occupies four words. A semaphore is shared between two or more processes. PROCESS COUNT field of each entry keeps track of how many processes are currently sharing the semaphore. If a process locks the semaphore, LOCKING PID field stores the PID of that process. LOCKING PID is set -1 when the semaphore is not locked by any of the processes which has acquired this semaphore. Rest two words of each entry in the semaphore table are unused. An invalid semaphore table entry is indicated with PROCESS COUNT set to 0. The SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE_TABLE</a> gives the starting address of the semaphore table in the <a href="os_implementation.html" target="_blank">memory</a>. See details of semaphore table <a target="_blank" href="os_design-files/mem_ds.html#sem_table">here</a>.</p>
 
-<p>Every process maintains a resource table to keep track of resources (semaphores and files) currently used by the process. This table is referred as per-process resource table. Per-process resource table occupies last 16 words of user area page of a process. Per-process resource table can save details of maximum 8 resources at a time, which gives 2 words for each entry in the table. The first field called as Resource Identifier indicates whether resource is file (0) or semaphore (1). The second field stores the index of the semaphore table entry (or open file table entry) for semaphores (or for files). See the details of per-process resource table <a href="os_design-files/process_table.html#per_process_table" target="_blank" >here</a> </p>
+<p>Every process maintains a resource table to keep track of resources (semaphores and files) currently used by the process. This table is referred as per-process resource table. Per-process resource table occupies last 16 words of user area page of a process. Per-process resource table can save details of maximum 8 resources at a time, which gives 2 words for each entry in the table. The first field called as Resource Identifier indicates whether resource is file (0) or semaphore (1). The second field stores the index of the semaphore table entry (or open file table entry) for semaphores (or for files). See the details of per-process resource table <a href="os_design-files/process_table.html#per_process_table" target="_blank" >here</a>. </p>
 
-
-<p> To acquire a new semaphore, Semget system call is used. Semget  creates a new entry in the semaphore table (by invoking Acquire semaphore function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). Semget stores the index of  entry created in semaphore table in the per-process resource table of that process. Finally, Semget system call returns the index of newly created entry in the per-process resource table  as semaphore descriptor (SEMID).  Per-process resource table keeps track of semaphores (and files) currently acquired by a process. Semrelease system call invokes the Release function in resource manager module to release the acquired semaphore and to wake up all the processes waiting for the semaphore. Semrelease takes SEMID as argument and also invalidates the per-process table entry corresponding to the SEMID.</p>
-/**incomplete**/
+<!--
+<p> To acquire a new semaphore, <i>Semget</i> system call is used. <i>Semget</i>  creates a new entry in the semaphore table (by invoking the Acquire semaphore function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semget</i> then finds a free entry in the per-process resource table and stores the index of semaphore table entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table  as semaphore descriptor (SEMID).  To detach a semaphore from the process, <i>Semrelease</i> system call is used. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore (by invoking the Release semaphore function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). Semrelease also invalidates the per-process table entry corresponding to the SEMID given as argument.</p>
 <p></p>
 
 <p>Acquire semaphore and release semaphore</p>
+-->
 
+<br><br>
 
 <b style="font-size: 20px">Implementation of Interrupt routine 13</b><br><br>
 <p>The system calls <i>Semget</i> and <i>Semrelease</i> are implemented in the interrupt routine 13. <i>Semget</i> and <i>Semrelease</i> has system call numbers 17 and 18 respectively.</p>
@@ -4073,18 +4076,29 @@ endwhile</pre></div>-->
 <ul style="list-style-type: disc; margin-left: 10px; ">
 <li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
 <li style="padding-left: 20px">Loop through the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> of the current process  to find a free entry. Free entry is indicated by -1 in the Resource Identifier field. If a free entry is found, the index of this free entry is called as semaphore descriptor and denoted as SEMID.</li>
-<li style="padding-left: 20px">If no free entry is found in the per-process resource table, then store -1 as return value in the stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px"> </li>
-<li style="padding-left: 20px">If Acquire Semaphore returns -1 (no free entry in <a>semaphore table</a>), then store -2 as return value in the stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
- </ul><br>
+<li style="padding-left: 20px">If no free entry is found in the per-process resource table, this indicates the process has reached its limit of resources. In this case, store -1 as return value in the stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
+<li style="padding-left: 20px">To create a new semaphore entry in the semaphore table, invoke <b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html " target="_blank">resource manager module</a>. Acquire Semaphore function returns the index of the free entry of the semaphore table if found.</li>
+<li style="padding-left: 20px">If no free entry is found in <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a>, then the system has reached its limit of sempahores. So, Acquire Semaphore function returns -1. In this case, store -2 as return value for <i>Semget</i> system call in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
+<li style="padding-left: 20px">Store the index returned by Acquire Semaphore function in the second field of the per-process resource table entry corresponding to SEMID.</li>
+<li style="padding-left: 20px">Set the Resource Identifier Field in the per-process resource table entry to 1 indicating that the entry is used for semaphore resource.</li>
+<li style="padding-left: 20px">Store SEMID as the return value in the user stack. Reset the MODE FLAG to 0.</li>
+ </ul>
+<p>The algorithm for <i>Semget</i> system call is provided <a href="os_design-files/semaphore_algos.html#semget">here</a> </p><br>
+
+
 
 <b>Semrelease System Call</b><br><br>
-<p><i>Semrelease</i> system call has semaphore desciptor (SEMID) as argument from user program. </p>
+<p><i>Semrelease</i> system call takes semaphore desciptor (SEMID) as argument from user program. </p>
 <ul style="list-style-type: disc; margin-left: 10px; ">
 <li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
+<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should have value 1 (semaphore). If these two conditions does not satisfy, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
+<li style="padding-left: 20px">If valid conditions are satisfied then continue with the implementation. Invoke <b>Release Semaphore</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> with SEMID as argument to update the semaphore table.</li>
+<li style="padding-left: 20px">Invalidate the per-process resource table entry corresponding to SEMID by setting the Resource Identifier field to -1.</li>
+<li style="padding-left: 20px">Store 0 as return value in the user stack indicating success and reset the MODE FLAG to 0.</li>
+</ul>
 
-</ul><br>
 
+<p>The algorithm for <i>Semrelease</i> system call is provided <a href="os_design-files/semaphore_algos.html#ssemrelease">here</a> </p><br>
 <b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html">resource manager module</a>)</b><br><br>
 
 <b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html">resource manager module</a>)</b><br><br>
@@ -4100,22 +4114,38 @@ endwhile</pre></div>-->
 <li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
 </ul><br>
 
+
+
 <b>SemLock System Call</b><br><br>
-<p><i>SemLock</i> system call has semaphore desciptor (SEMID) as argument from user program. </p>
+<p><i>SemLock</i> system call takes semaphore desciptor (SEMID) as argument from user program. </p>
 <ul style="list-style-type: disc; margin-left: 10px; ">
 <li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
+<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should have value 1 (semaphore). If these two conditions does not satisfy, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
+<li style="padding-left: 20px">If valid conditions are satisfied then continue with the implementation. If the requested semaphore is currently used by some other process, then the current process will wait in WAIT_SEMAPHORE state until the semaphore becomes free. Find the semaphore table index using the SEMID. While the LOCKING PID field in the semaphore table for the requested semaphore has PID of some other process, then <br>
+1) Change the STATE of the current process to the tuple (WAIT_SEMAPHORE, semaphore table index) <br>
+2) Invoke the scheduler.</li>
+<p style="padding-left: 20px;text-indent: 0px;">/*The following steps are executed only when the scheduler runs this process again, which in turn happens only when the state of the process becomes READY again.*/</p>
+<li style="padding-left: 20px">As the requested semaphore is free to lock, change the LOCKING PID in the semaphore table to PID of the current process.</li>
+<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
+</ul>
+<p>The algorithm for <i>SemLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semlock">here</a> </p><br>
 
-</ul><br>
 
 <b>SemUnLock System Call</b><br><br>
 <p><i>SemUnLock</i> system call has semaphore desciptor (SEMID) as argument from user program. </p>
 <ul style="list-style-type: disc; margin-left: 10px; ">
 <li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
+<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should have value 1 (semaphore). If these two conditions does not satisfy, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
 
-</ul><br>
+<li style="padding-left: 20px">If valid conditions are satisfied then continue with the implementation. Find the semaphore table index using the SEMID. Check the LOCKING PID value in the semaphore table corresponding to the semaphore table index. If the LOCKING PID value is valid and has PID of any other process, then the current process can not unlock the semaphore. In this case, store -2 as return value in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
+<li style="padding-left: 20px">If the LOCKING PID value is the PID of the current process, then invalidate the LOCKING PID to -1 and wake up the processes waiting for this semaphore by changing the STATE from the tuple (WAIT_SEMAOHORE, semaphore table index) to READY.</li>
+<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
 
+</ul>
 
+<p>The algorithm for <i>SemUnLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semunlock">here</a> </p><br>
 
+<p style="text-indent: 0px"><code>Note :</code> The implementations of the system calls Semget, Semrelease, SemLock and SemUnLock are final.  </p>
 
 <b></b>
 
