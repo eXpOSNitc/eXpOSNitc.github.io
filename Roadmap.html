@@ -3959,11 +3959,7 @@ Loop through the process table of all processes and change the state to READY fo
 <p><code>Note :</code>The <b>Exit Process</b> module function implemented here is final and will not change later.</p>
 
 <br>
-<!--
-<ul style="">
-<li>If the MODE FLAG </li>
-with the given PID only if the MODE FLAG in the process table of the process is not 9. The process with given PID can be parent of other process(es). Exit Process must search for such child process(es), whose PPID is the given PID and invalidate PPID of those child processes as -1 only if the MODE FLAG in the process table of the process is not 9. 
-</ul><br>-->
+
 
 <b>Shutdown system call</b><br><br>
 <p>To ensure graceful termination of the system we will write <i>Shutdown</i> system call with just a HALT instruction. <i>Shutdown</i> system call is implemented in interrupt routine 15. Create an xsm file with just the HALT instruction and load this file as interrupt routine 15. From this stage onwards, we will use a new version of Shell as our init program. This Shell version will invoke <i>Shutdown</i> system call to halt the system. </p> 
@@ -3979,13 +3975,31 @@ In later stages, when a file system is added to the OS, the file system data wil
 <b>Making things work</b><br><br>
   <p>Compile and load the newly written/modified files to the disk using XFS-interface.</p>
 
+  <div class="container col-md-12" >
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq19"><b>Q1.</b> Does the eXpOS guarantees that two processes will not wait for each other i.e. circular wait will not happen? </a>
+                            <div id="collapseq19" class="panel-collapse collapse">
+                              No. The present eXpOS does not provide any functionality to avoid circular wait. It is the responsiblity of the user program to make sure that such conditions will not occur. 
+
+                            </div>
+		</li>
+
+		</ul>
+                          </div>
+                          </div>
+
 
   <b style="color:#26A65B">Assignment 1: </b><b>[Shell Version-II]</b> It is recommended to implement the shell program according to the description given earlier on your own. One implementation of shell program is given <a href="test_prog.html#shell_version_2_p" target="_blank">here</a>. Load this program as the INIT program. Test the shell version by giving different ExpL programs written in previous stages. Remember to load the xsm files of ExpL programs as executables into the disk before trying to execute them using shell. 
   
   <br><br>
 
   <b style="color:#26A65B">Assignment 2: </b>Modify <a href="test_prog.html#ll_fork" target="_blank">the program</a> given in assignment-2 of previous stage to use <i>Wait</i> and <i>Signal</i> system calls to synchronize the order of printing the numbers. The program given creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the child prints the  1st, 3rd, 5th, 7th... etc. entries of the list whereas the parent prints the 2nd, 4th, 6th, 8th....etc. entries of the list. Modify the program to invoke <i>Wait</i> system call from parent with PID of child process before printing a number and child to invoke <i>Signal</i> system call after child prints an entry. Usage of <i>Wait</i> and <i>Signal</i> system calls make sure that numbers are printed in sequential order. Run this program using the shell.  
+   <br><br>
 
+   <b style="color:#26A65B">Assignment 3: </b> Write an ExpL program 'pid.expl' which invokes <i>Getpid</i> system call and prints the pid. Write another ExpL program which invokes <i>Fork</i> system call three times back to back. Then, the program shall use <i>Exec</i> system call to execute pid.xsm file. Run this program using the shell.
    <br><br>
 		</div>
 		</div>
@@ -4040,17 +4054,20 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 
 <p>To use a semaphore, first a process has to acquire a semaphore. <b>When a process forks, the semaphores currently acquired by a process is shared between the child and the parent.</b> A process can lock and unlock a semaphore only after acquiring the semaphore. The process must lock the semaphore if it needs to enter into the critical section. After exiting from the critical section, the process unlocks the semaphore allowing other processes (with which the semaphore is shared) to enter the critical section. After use of the semaphore is over, a process will detach the semaphore from itself by releasing the semaphore. </p>
 
-<p> A process maintains record of the semaphores acquired by it in its <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. eXpOS uses the data structure called <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> to manage semaphores. Semaphore table is a global data structure which is used to store details of semaphores currently used by all the processes. The Semaphore table has 32 (<a href="support_tools-files/constants.html" target="">MAX_SEM_COUNT</a>) entries. This means that only 32 semaphores can be used by all the processes in the system at a time. Each entry in the semaphore table occupies four words of which the last two are currently unused. For each semaphore, the PROCESS COUNT field in it's semaphore table entry keeps track of the number of processes currently sharing the semaphore. If a process locks the semaphore, the LOCKING PID field is set to the PID of that process. LOCKING PID is set to -1 when the semaphore is not locked by any process. An invalid semaphore table entry is indicated by PROCESS COUNT equal to 0. The SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE_TABLE</a> gives the starting address of the semaphore table in the <a href="os_implementation.html" target="_blank">memory</a>. See <a target="_blank" href="os_design-files/mem_ds.html#sem_table">semaphore table</a> for more details.</p>
+<p> A process maintains record of the semaphores acquired by it in its <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. eXpOS uses the data structure, <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> to manage semaphores. Semaphore table is a global data structure which is used to store details of semaphores currently used by all the processes. The Semaphore table has 32 (<a href="support_tools-files/constants.html" target="_blank">MAX_SEM_COUNT</a>) entries. This means that only 32 semaphores can be used by all the processes in the system at a time. Each entry in the semaphore table occupies four words of which the last two are currently unused. For each semaphore, the PROCESS COUNT field in it's semaphore table entry keeps track of the number of processes currently sharing the semaphore. If a process locks the semaphore, the LOCKING PID field is set to the PID of that process. LOCKING PID is set to -1 when the semaphore is not locked by any process. An invalid semaphore table entry is indicated by PROCESS COUNT equal to 0. The SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE_TABLE</a> gives the starting address of the semaphore table in the <a href="os_implementation.html" target="_blank">memory</a>. See <a target="_blank" href="os_design-files/mem_ds.html#sem_table">semaphore table</a> for more details.</p>
  
-<p>The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of each process keeps track of the resources (semaphores and files) currently used by the process.  The per-process resource table is stored in the last 16 words of the<a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> of a process. Per-process resource table can store details of at most eight resources at a time.  Hence the total number of semaphores and files acquired by a process at a time is at most eight.  Each per process resource table entry contains two words. The first field, called the Resource Identifier field, indicates whether the entry corresponds to a file (0) or a semaphore (1). The second field stores the index of the semaphore table entry if the resource is a semaphore. (If the resource is a file, an index to the open file table entry will be stored - we will see this in later stages.) See the description of <a href="os_design-files/process_table.html#per_process_table" target="_blank" >per-process resource table</a> for details.</p>  
+<p>The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of each process keeps track of the resources (semaphores and files) currently used by the process.  The per-process resource table is stored in the last 16 words of the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> of a process. Per-process resource table can store details of at most eight resources at a time.  Hence the total number of semaphores and files acquired by a process at a time is at most eight.  Each per process resource table entry contains two words. The first field, called the Resource Identifier field, indicates whether the entry corresponds to a file (0) or a semaphore (1). The second field stores the index of the semaphore table entry if the resource is a semaphore. (If the resource is a file, an index to the open file table entry will be stored - we will see this in later stages.) See the description of <a href="os_design-files/process_table.html#per_process_table" target="_blank" >per-process resource table</a> for details.</p>  
 
 
-<p> To acquire a new semaphore, <i>Semget</i> system call is used. <i>Semget</i>  creates a new entry in the semaphore table (by invoking the Acquire semaphore function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semget</i> then finds a free entry in the per-process resource table and stores the index of the semaphore table entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as semaphore descriptor (SEMID).  To detach a semaphore from the process, <i>Semrelease</i> system call is used. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore (by invoking the Release semaphore function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). Semrelease also invalidates the per-process table entry corresponding to the SEMID given as argument.</p>
-<p></p>
-<!--
-<p>Acquire semaphore and release semaphore</p>
--->
-<br><br>
+<p> To acquire a new semaphore, <b><i>Semget</i></b> system call is used. <i>Semget</i>  creates a new entry in the semaphore table (by invoking the Acquire semaphore function in resource manager module). <i>Semget</i> then finds a free entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> and stores the index of the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as <b>semaphore descriptor</b> (SEMID).  To detach a semaphore from the process, <b><i>Semrelease</i></b> system call is used. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore (by invoking the Release semaphore function in resource manager module). <i>Semrelease</i> also invalidates the per-process table entry corresponding to the SEMID given as an argument.</p>
+
+
+<p>A process locks the semaphore it is sharing using the <b><i>SemLock</i></b> system call. If the requested semaphore is currently locked by some other process, the current process blocks its execution by changing its STATE to the tuple (WAIT_SEMAPHORE, semaphore table index of requested semaphore) until the requested semaphore is unlocked. When the semaphore is unlocked, then STATE of the current process is made READY (by the process which has unlocked the semaphore). At this point, the current process locks the semaphore by changing the LOCKING PID in the semaphore table entry to the PID of the current process. A process invokes <b><i>SemUnLock</i></b> system call to unlock the semaphore it has locked earlier. <i>SemUnLock</i> has SEMID of the locked semaphore as argument. <i>SemUnLock</i> invalidates the LOCKING PID field in the semaphore table entry for the locked semaphore. All the processes waiting for the semaphore are made READY for execution.   
+</p>
+
+<p><b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager</a> module is invoked from <i>Semget</i> system call. Acquire Semaphore creates an entry for the semaphore in the semaphore table and returns the index of that entry. <b>Release Semaphore</b> function of resource manager module is invoked from <i>Semrelease</i> system call. If the semaphore to be released is locked by current process, then Release Semaphore function first unlocks the semaphore. Release Semaphore function finally decrements the PROCESS COUNT of the corresponding semaphore in the semaphore table.</p>
+
+<br>
 
 <b style="font-size: 20px">Implementation of Interrupt routine 13</b><br><br>
 <p>The system calls <i>Semget</i> and <i>Semrelease</i> are implemented in the interrupt routine 13. <i>Semget</i> and <i>Semrelease</i> has system call numbers 17 and 18 respectively.</p>
@@ -4074,7 +4091,7 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">Set the Resource Identifier Field in the per-process resource table entry to 1 indicating that the entry is used for semaphore resource.</li>
 <li style="padding-left: 20px">Store SEMID as the return value in the user stack. Reset the MODE FLAG to 0.</li>
  </ul>
-<p>The algorithm for <i>Semget</i> system call is provided <a href="os_design-files/semaphore_algos.html#semget">here</a> </p><br>
+<p>The algorithm for <i>Semget</i> system call is provided <a href="os_design-files/semaphore_algos.html#semget" target="_blank">here</a>. </p><br>
 
 
 
@@ -4089,10 +4106,24 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 </ul>
 
 
-<p>The algorithm for <i>Semrelease</i> system call is provided <a href="os_design-files/semaphore_algos.html#ssemrelease">here</a> </p><br>
-<b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html">resource manager module</a>)</b><br><br>
+<p>The algorithm for <i>Semrelease</i> system call is provided <a href="os_design-files/semaphore_algos.html#ssemrelease" target="_blank">here</a>. </p><br>
 
-<b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html">resource manager module</a>)</b><br><br>
+
+<b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
+<ul style="list-style-type: disc; margin-left: 10px;">
+<p style="text-indent: 0px">Acquire Semaphore function implemented in the resource manager module (module 0) takes PID of the current process as argument. It returns the index of a free entry of semaphore table.  </p>
+<li style="padding-left: 20px">Loop through the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> and find a free entry (free entry is indicated by 0 in the PROCESS COUNT field). If no free entry is found then return -1 to the caller.</li>
+<li style="padding-left: 20px">In the free entry is found, set the PROCESS COUNT to 1 and LOCKING PID to -1. Return the index of the free entry in the semaphore table to the caller.</li>
+</ul><br>
+
+
+<b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
+<ul style="list-style-type: disc; margin-left: 10px;">
+	<p style="text-indent: 0px;">Release Semaphore function takes semaphore table index and PID of the current process as arguments.</p>
+	<li style="padding-left: 20px">If the LOCKING PID correspoding to the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> index is equal to the current PID then the semaphore must be unlocked first before releasing. To unlock the semaphore, invalidate the LOCKING PID field to -1 and change the STATE of all the processes waiting for this semaphore to READY.</li>
+	<li style="padding-left: 20px">Decrement the PROCESS COUNT field corresponding to the given semaphore table index.</li>
+</ul>
+<p style="text-indent: 0px"><code>Note :</code> The implementation of the functions <b>Acquire Semaphore</b> and <b>Release Semaphore</b> are final.</p><br>
 
 
 
@@ -4119,7 +4150,7 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">As the requested semaphore is free to lock, change the LOCKING PID in the semaphore table to PID of the current process.</li>
 <li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
 </ul>
-<p>The algorithm for <i>SemLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semlock">here</a> </p><br>
+<p>The algorithm for <i>SemLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semlock" target="_blank">here</a>. </p><br>
 
 
 <b>SemUnLock System Call</b><br><br>
@@ -4134,11 +4165,15 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 
 </ul>
 
-<p>The algorithm for <i>SemUnLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semunlock">here</a> </p><br>
+<p>The algorithm for <i>SemUnLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semunlock" target="_blank">here</a>. </p><br>
 
-<p style="text-indent: 0px"><code>Note :</code> The implementations of the system calls Semget, Semrelease, SemLock and SemUnLock are final.  </p>
+<p style="text-indent: 0px"><code>Note :</code> The implementations of the system calls <i>Semget</i>, <i>Semrelease</i>, <i>SemLock</i> and <i>SemUnLock</i> are final.  </p><br>
 
-<b></b>
+<b>Modifications to boot module</b><br><br>
+<p>Initialize the semaphore table by setting PROCESS COUNT of all entries to 0. Load interrupt routine 13 and 14 from the disk to the memory. </p><br>
+
+<b>Making things work</b><br><br>
+<p> Compile and load the newly written/modified files to the disk using XFS-interface.</p><br>
 
 		</div>
 		</div>
