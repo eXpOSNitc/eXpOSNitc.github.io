@@ -176,9 +176,9 @@ Load the first code page into memory by invoking the <b>get_code_page()</b> func
 		Set the code pages in the <a href="../os_design-files/process_table.html#disk_map_table">Disk Map Table</a> to the Block numbers by refering 
 		to the <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>. Other fields are set to -1.
                 </div>
-Obtain the entry point IP value from the header of the new process and set it to top of user stack.
+Obtain the entry point IP value from the header of the new process and set it to the beginning  of user stack(logical address 4096).
+Set SP to the logical address of the user stack.
 
-Set SP to the start of the user stack region.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to back to 0.
 
 ireturn from system call to newly loaded process.   

@@ -152,41 +152,7 @@
 
 
 
-<section id="shutdown">
-		   <br><br><br>
-
-      <div class="container">
-        <div class="row">
-         <div class="heading">
-              <h2 >Shutdown System Call</h2>
-               <br>
-               <br>                                      
-             
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
-                                                
-             <p><i>Description</i>: Shutdown system call terminates all processes and halts the machine. </p>
-              <br>
-             <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> disk is not free <b>do</b> &nbsp; &nbsp; /* Check status field in <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a> */</p>
-             <p style=" text-indent: 4em;"> Change the state of the process to (<a href="constants.html" target="_blank">WAIT_DISK</a>, __ ) and call the scheduler.</p>
-             <p> <b>endwhile</b></p>
-             <p>/* The following store operations are not done asynchronously */</p>
-             <p> Store Inode Table to the disk.</p>
-             <p> Store dirty pages contained in buffer to the disk.   &nbsp; &nbsp; /* Check dirty bit in Buffer Table */</p>
-             <p>Store Disk Free List to the disk.</p>
-             <p>Store the Root file to the disk.</p>
-             <p>Halt the machine.</p>
-         </div>
-		</div>
-		</div>
-                   
-
-       
-                   
-
-	</section>
-	<section id="shell">
+<section id="shell">
 		   <br><br><br>
 
       <div class="container">
