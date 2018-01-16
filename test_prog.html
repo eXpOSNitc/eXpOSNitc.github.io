@@ -47,6 +47,32 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+<!--Css added only for this file to get the line numbers in the code-->
+<style type="text/css">
+pre {
+    
+    font-family: monospace;
+    line-height: 0;
+    counter-reset: line;
+  }
+
+pre span
+{
+
+  display: block;
+  line-height: 1.5rem;
+
+}
+pre span:before {
+      counter-increment: line;
+      content: counter(line);
+      display: inline-block;
+      padding: 0.5em;
+      margin-right: 0.5em;
+      border-right: 1px solid #ddd;
+ }
+</style>
+
   </head>
   <body> 
      <!-- BEGAIN PRELOADER -->
@@ -74,7 +100,7 @@
             <!-- LOGO -->
 
             <!-- TEXT BASED LOGO -->
-            <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
+            <a class="navbar-brand" href="index.html">eXpOS<span >NITC</span></a>
             
                               
           </div>
@@ -114,186 +140,206 @@
             </div>
           </div>
         <!--end heading-->   
-        <div id="shell_version_2_p" >
-       <b style="font-size: 20px">1. Shell version-II (without multiuser)</b><br><br>
+       
+        <div class="panel-body"  id="shell_version_2_p"  >
+       <b style="font-size: 20px">1. Test Program 1 (Shell version-II without multiuser)</b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input<b></td>
+                                                        <td>Executable file name/string "halt"</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Executes given xsm program/halt system if input is "halt"</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> shell version II without the multiuser</p><br>
        <div><pre>
-int main()
-{
-decl
-          int temp, pid, a;
-          string input;
-enddecl
-begin
-          a=1;
-          while(a == 1) do
-              temp = exposcall("Write",-2,"Enter -");
-              temp = exposcall("Read",-2, input);
-              if(input != "halt") then
-                  pid = exposcall("Fork");
-                  if(pid < 0) then
-                      temp = exposcall("Write",-2, "Fork Failure");
-                      continue;
-                  endif;        
-                  if(pid != 0) then
-                      temp = exposcall("Wait",pid);
-                  else
-                      temp = exposcall("Exec",input);
-                      if(temp != 0) then
-                          temp = exposcall("Write",-2, "BAD COMMAND");
-                          break;
-                      endif;
-                  endif;
-              else
-                  temp = exposcall("Shutdown");
-                  break;
-              endif;
-          endwhile;
-        
-          return 0;
-end
-
-}</pre>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp, pid, a;</span>
+<span>          string input;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          a=1;</span>
+<span>          while(a == 1) do</span>
+<span>              temp = exposcall("Write",-2,"Enter -");</span>
+<span>              temp = exposcall("Read",-2, input);</span>
+<span>              if(input != "halt") then</span>
+<span>                  pid = exposcall("Fork");</span>
+<span>                  if(pid < 0) then</span>
+<span>                      temp = exposcall("Write",-2, "Fork Failure");</span>
+<span>                      continue;</span>
+<span>                  endif;</span>
+<span>                  if(pid != 0) then</span>
+<span>                      temp = exposcall("Wait",pid);</span>
+<span>                  else</span>
+<span>                      temp = exposcall("Exec",input);</span>
+<span>                      if(temp != 0) then</span>
+<span>                          temp = exposcall("Write",-2, "BAD COMMAND");</span>
+<span>                          break;</span>
+<span>                      endif;</span>
+<span>                  endif;</span>
+<span>              else</span>
+<span>                  temp = exposcall("Shutdown");</span>
+<span>                  break;</span>
+<span>              endif;</span>
+<span>          endwhile;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span></pre>
        </div>
 
 </div>      
 
-<div id="ll" >
+      
+        <div class="panel-body" id="ll"  >
               <br><br>
               <hr>
               <br><br>
-       <b style="font-size: 20px;">2. Linked list  </b><br><br>
-       <div><pre>
-type
-List
-{
-          int data;
-          List next;
-}
-endtype
-
-decl
-          List head;
-enddecl
-
-int main()
-{
-decl
-          int length, x, temp;
-          List p, q;
-enddecl
-begin
-          x = exposcall("Heapset");
-          head=null;
-          x = exposcall("Read",-1,length);
-
-          q = head;
-          while (length!=0)  do
-              temp = exposcall("Read",-1,x);
-              p= exposcall("Alloc",2);
-              p.data=x;
-              p.next=null;
-
-              if (head == null) then
-                  head=p;
-                  q=p;
-              else
-                  q.next=p;
-                  q=q.next;
-              endif;
-      
-              length=length-1;
-          endwhile;
-
-          p=head;
-          while(p!=null)  do
-              x=p.data;
-              temp= exposcall("Write",-2,x);
-              p=p.next;
-          endwhile;
-    
-          return 0;
-end
-}</pre>
+       <b style="font-size: 20px;">2. Test Program 2  </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>An integer N and N integers. </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>N integers entered in the input.</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program given below  implements a linked list for integers. The program reads an integer N from the console. It then creates a linked list and inserts N integers entered from console into the linked list in the same order. The program traverses the linked list and prints data to the console.</p><br>
+       <div><pre >
+<span>type</span>
+<span>List</span>
+<span>{</span>
+<span>          int data;</span>
+<span>          List next;</span>
+<span>}</span>
+<span>endtype</span>
+<span>decl</span>
+<span>          List head;</span>
+<span>enddecl</span>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int length, x, temp;</span>
+<span>          List p, q;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>         x = exposcall("Heapset");</span>
+<span>          head=null;</span>
+<span>          x = exposcall("Read",-1,length);</span>
+<span>          q = head;</span>
+<span>          while (length!=0)  do</span>
+<span>              temp = exposcall("Read",-1,x);</span>
+<span>              p= exposcall("Alloc",2);</span>
+<span>              p.data=x;</span>
+<span>              p.next=null;</span>
+<span>              if (head == null) then</span>
+<span>                  head=p;</span>
+<span>                  q=p;</span>
+<span>              else</span>
+<span>                  q.next=p;</span>
+<span>                  q=q.next;</span>
+<span>              endif;</span>
+<span>              length=length-1;</span>
+<span>          endwhile;</span>
+<span>          p=head;</span>
+<span>          while(p!=null)  do</span>
+<span>              x=p.data;</span>
+<span>              temp= exposcall("Write",-2,x);</span>
+<span>              p=p.next;</span>
+<span>          endwhile;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span></pre>
        </div>
 
 </div>
-      
 
-              <div id="ll_fork" >
+
+              <div class="panel-body" id="ll_fork" >
               <br><br>
               <hr>
               <br><br>
       
-       <b style="font-size: 20px; " >3. Linked list with fork  </b><br><br>
-       <div><pre>
-type
-List
-{
-          int data;
-          List next;
-}
-endtype
-decl
-          List head;
-          int  x, pid, temp, length;
-enddecl
-
-int main()
-{
-decl
-          List p, q;
-          int i;
-enddecl
-begin
-          temp = exposcall("Heapset");
-          head = null;
-          q = head;
-          length=1;
-          while (length <= 100)  do
-              p = exposcall("Alloc",2);
-              p.data = length;
-              p.next = null;
-
-              if (head == null) then
-                  head = p;
-                  q = p;
-              else
-                  q.next = p;
-                  q = q.next;
-              endif;
-     
-              length = length+1;
-          endwhile;
-    
-          pid = exposcall("Fork");
-
-          if(pid == 0) then
-              p = head;
-              while(p != null)  do
-                  x = p.data;
-                  temp = exposcall("Write",-2,x);
-                  p = p.next;
-                  if(p == null) then
-                      break;
-                  endif;
-                  p = p.next;        
-              endwhile;
-          else
-              q = head.next;
-              while(q != null)  do
-                  x = q.data;
-                  temp = exposcall("Write",-2,x);
-                  q = q.next;
-                  if(q == null) then
-                      break;
-                  endif;
-                  q = q.next;
-              endwhile;
-          endif;
-
-          return 0;
-end
-}</pre>
+       <b style="font-size: 20px; " >3. Test Program 3 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input<b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Integers 1 to 100, not necessarily in the order. </td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program creates a linked list with numbers 1 to 100 in them. The program invokes fork to create a child process. The parent and the child process reads from the shared linked list with different pointers and prints the data read to the console. Parent process prints the even numbers 2, 4, 6, 8.. and child process prints 1, 3, 5 ..   </p><br>
+       <div><pre >
+<span>type</span>
+<span>List</span>
+<span>{</span>
+<span>          int data;</span>
+<span>          List next;</span>
+<span>}</span>
+<span>endtype</span>
+<span>decl</span>
+<span>          List head;</span>
+<span>          int  x, pid, temp, length;</span>
+<span>enddecl</span>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          List p, q;</span>
+<span>          int i;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          temp = exposcall("Heapset");</span>
+<span>          head = null;</span>
+<span>          q = head;</span>
+<span>          length=1;</span>
+<span>          while (length <= 100)  do</span>
+<span>              p = exposcall("Alloc",2);</span>
+<span>              p.data = length;</span>
+<span>              p.next = null;</span>
+<span>              if (head == null) then</span>
+<span>                  head = p;</span>
+<span>                  q = p;</span>
+<span>              else</span>
+<span>                  q.next = p;</span>
+<span>                  q = q.next;</span>
+<span>              endif;</span>
+<span>              length = length+1;</span>
+<span>          endwhile;</span>
+<span>          pid = exposcall("Fork");</span>
+<span>          if(pid == 0) then</span>
+<span>              p = head;</span>
+<span>              while(p != null)  do</span>
+<span>                  x = p.data;</span>
+<span>                  temp = exposcall("Write",-2,x);</span>
+<span>                  p = p.next;</span>
+<span>                  if(p == null) then</span>
+<span>                      break;</span>
+<span>                  endif;</span>
+<span>                  p = p.next;</span>        
+<span>              endwhile;</span>
+<span>          else</span>
+<span>              q = head.next;</span>
+<span>              while(q != null)  do</span>
+<span>                  x = q.data;</span>
+<span>                  temp = exposcall("Write",-2,x);</span>
+<span>                  q = q.next;</span>
+<span>                  if(q == null) then</span>
+<span>                      break;</span>
+<span>                  endif;</span>
+<span>                  q = q.next;</span>
+<span>              endwhile;</span>
+<span>          endif;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span></pre>
        </div>
 
 </div>
