@@ -997,6 +997,10 @@
                                                 <p>Return Value: </p>
                                                 <table class="table table-bordered">
                                                     <tr>
+                                                        <td>0</td>
+                                                        <td>Success</td>
+                                                    </tr> 
+                                                    <tr>
                                                         <td>-1</td>
                                                         <td>Invalid username or password</td>
                                                     </tr> 
@@ -1007,7 +1011,7 @@
                                                                                                         
                                                 </table>
                                                 
-                                                <p>Description: This system call is used to login a new user. It can be executed only from a process with userid 0 (kernel process). It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
+                                                <p>Description: This system call is used to login a new user. It can be executed only from the login process. It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1027,9 +1031,9 @@
                                             <div class="panel-body">
                                                
                                                 <p>Arguments: None</p>
-                                                <p>Return Value: None </p>
+                                                <p>Return Value: -1 on error, otherwise does not return</p>
                                                 
-						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and Login will be the only processes running after the execution of Logout.</p>
+						<p><i>Description</i>: This system call is used to logout the current user. It can be invoked only from the shell process (PID = 2). When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and init/<font color="red">Login</font> will be the only processes running after the execution of Logout. Login is woken up at the end of logout.</p>
                                                 
                                             </div>
                                         </div>

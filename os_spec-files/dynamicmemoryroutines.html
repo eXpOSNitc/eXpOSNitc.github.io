@@ -367,11 +367,12 @@
     <td>-1 - Invalid username</td>
   </tr>
         <tr>
-    <td rowspan="2" style="color:red">Login</td>
-    <td rowspan="2">"Login"</td>		
-    <td rowspan="2">User name</td>
-    <td rowspan="2">Password</td>
-    <td rowspan="2">-</td>
+    <td rowspan="3" style="color:red">Login</td>
+    <td rowspan="3">"Login"</td>		
+    <td rowspan="3">User name</td>
+    <td rowspan="3">Password</td>
+    <td rowspan="3">-</td>
+    <td>0 - Success</tr>
     <td>-1 - Invalid username or password</tr>
     <td>-2 - Permission denied</tr> 
   </tr>
@@ -381,7 +382,7 @@
     <td >-</td>
     <td >-</td>
     <td >-</td>
-    <td >-</td>
+    <td >-1 - permission denied</td>
   </tr>
                             
     <tr>
@@ -451,8 +452,8 @@
   </tr>
 				</table>
 
-        <p><font color="red">*</font>Permission = 1 for exclusive and permission = 0 for open.  If the file
-is created with exclusive flag set, then write and delete system calls will fail when executed by any
+        <p><font color="red">*</font>If the file
+is created with <a href="../support_tools-files/constants.html">EXCLUSIVE</a> permissions, then write and delete system calls will fail when executed by any
 user other than the owner or the root (see <a href="../os_spec-files/multiuser.html" target="_blank">here</a>).</p>
 
 				  <p><b style="color:#26A65B">Note : </b> According to syntax of exposcall(), it needs four arguments. These arguments are func_code, arg1, arg2, arg3. func_code is necessary for every exposcall() to recognize the Library function/System call. The remaining number of arguments varies according to Library interface specification of the corresponding func_code. Even if exposcall() is invoked with more number of arguments than required for a particular Library function/System call, they are ignored.</p>

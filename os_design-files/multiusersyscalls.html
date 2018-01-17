@@ -407,7 +407,7 @@ Return the username.
              
                                                 
             <p>Arguments: User name, Password</p>
-                                                <p>Return Value: 0 on success?? </p>
+                                                <p>Return Value:  </p>
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <td>0</td>
@@ -424,20 +424,40 @@ Return the username.
                                                                                                         
                                                 </table>
                                                 
-                                                <p><i>Description</i>: This system call is used to login a new user. It can be executed only from a process with userid 0 (kernel process). It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created and the calling process goes to sleep till the exit of the newly created shell process.</p>
+                                                <p><i>Description</i>: This system call is used to login a new user. It can be executed only from the login process. It verifies the user. Upon successful login, a new user process (shell) with the userid of the user specified is created. The calling process goes to sleep till the exit of the newly created shell process.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
 	Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 27, 
 	indicating that the process is in the login system call.
 
-	If <b>userid</b> of the calling process is not 0, return -2.
+	//Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
+	Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+	Set the value of SP to the beginning of User Area Page.
 
+	If PID of the current process is not 1, return -2. 	/* Login process has PID = 1 */
 
-	If the user name is "kernel", return -2.
-	
+	Get the <a href="../os_design-files/disk_ds.html#user_table">User Table</a> entry curresponding to the username.
+	If an entry does not exist, return -1.
+
+	Use the <a href="../support_tools-files/spl.html">ecrypt statement</a> to encrypt the password supplied as input.
+
+	If the encypted input password does not match the ENCRYPTED PASSWORD field in the user table entry, return -1.
+
+	In the process table entry for the shell process, set STATE as CREATED and USERID as that of the user who is logging in.
+
+	Set the state of the current process in it's process table entry as (WAIT_PROCESS, 2) /* Login waits for shell to exit */
+
+	Invoke the <b>context_switch()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
+
+	Reset the MODE_FLAG and restore SP to user stack.
+	ireturn;
+
 	<b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
 	     </pre>
+	     <br>
+<h4>Question:</h4>
+<p>1. Login process does not load the shell process, but sets it's state to CREATED. Can it happen that the shell is not present in memory?</p>
          </div>
 		</div>
 		</div>
@@ -456,20 +476,41 @@ Return the username.
              
                                                 
             <p>Arguments: None</p>
-                                                <p>Return Value: None</p>
+                                                <p>Return Value: -1 on error, otherwise does not return</p>
                                                 
-						<p><i>Description</i>: This system call is used to logout the current user. When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and Login will be the only processes running after the execution of Logout.</p>
+						<p><i>Description</i>: This system call is used to logout the current user. It can be invoked only from the shell process (PID = 2). When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and init/<font color="red">Login</font> will be the only processes running after the execution of Logout. Login is woken up at the end of logout.</p>
 
 	<br>
-	<p>(NK: Don't we have to set the mode flag in all these system calls?)
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 28, 
 indicating that the process is in the logout system call.
 	
+//Switch to the Kernel Stack. see <a href="stack_smcall.html">kernel stack management during system calls</a>
+Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
+Set the value of SP to the beginning of User Area Page.
+
+If the current process is not the shell, return -1.	/* <a href="../os_design-files/misc.html#shell">Shell process</a> has the PID 2 */
+
+Kill all user processes except the shell by calling the <b>kill_all()</b> function in the <a href="../os_modules/Module_1.html">Process Manager</a> module.
+
+Set the STATE of the current process(shell) in the process table to TERMINATED.
+
+Obtain the entry point IP value from the header of the shell program. Place it in the beginning (logical addesss 4096) 
+of the stack of the shell(current process). Reset the USERSP field of the shell to 4096.
+
+Wake up the Login process by changing STATE in it's process table entry to READY.
+
+Invoke the <b>context_switch()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
+
+
 <b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG and switch back to the user stack.
 	     </pre>
+	     <br>
+<h4>Question:</h4>
+<p>1. Why don't we kill the current process (shell) by using the exit_process() module function?</p>
+
          </div>
 		</div>
 		</div>

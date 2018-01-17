@@ -195,7 +195,7 @@ Return the Per-process Resource Table entry index. &nbsp;&nbsp;/* Semaphore Desc
 Set the MODE_FLAG in the <a href="process_table.html" target="_blank">Process Table</a> to 18 and <a href="stack_smcall.html">switch</a> to kernel stack.
 
 <b>If</b> Semaphore descriptor is not valid or the entry in the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid, return -1. 
-/* The descriptor is invalid if not in the range 0 - 7, or if the table entry is invalid (-1) */
+/* The descriptor is invalid if not in the range 0 - 7, or if the resource identifier field of the table entry is not 1 */
 
 Invoke the release_semaphore() function in the <a href="../os_modules/Module_0.html">Resource Manager</a> Module.
              
@@ -246,7 +246,7 @@ Return 0.
 Set the MODE_FLAG in the <a href="process_table.html" target="_blank">Process Table</a> to 19 and <a href="stack_smcall.html">switch</a> to kernel stack.
 
 <b>If</b> Semaphore descriptor is not valid or the entry in the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid, return -1. 
-/* The descriptor is invalid if not in the range 0 - 7, or if the table entry is invalid (-1) */
+/* The descriptor is invalid if not in the range 0 - 7, or if the resource identifier field of the table entry is not 1 */
              
 <b>while</b> the semaphore is locked by a process other than the current process <b>do</b> &nbsp;&nbsp; /* Check the Locking PID field in the <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a> */
               Change the <a href="process_table.html#state" target="_blank">state</a> of the current process to (<a href="constants.html" target="_blank">WAIT_SEMAPHORE</a>, Semaphore table index of the locked semaphore).
@@ -304,7 +304,7 @@ Return 0. &nbsp;&nbsp;/* success */
 Set the MODE_FLAG in the <a href="process_table.html" target="_blank">Process Table</a> to 20 and <a href="stack_smcall.html">switch</a> to kernel stack.
 
 <b>If</b> Semaphore descriptor is not valid or the entry in the <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> is not valid, return -1. 
-/* The descriptor is invalid if not in the range 0 - 7, or if the table entry is invalid (-1) */
+/* The descriptor is invalid if not in the range 0 - 7, or if the resource identifier field of the table entry is not 1 */
          
 <b>If</b> semaphore is locked. /* Check the Locking PID in the <a href="mem_ds.html#sem_table">Semaphore table</a> */
 
