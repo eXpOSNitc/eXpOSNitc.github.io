@@ -157,7 +157,8 @@
     Get the pid of the current process from <a href="../os_design-files/process_table.html">System Status Table</a>;
     
     Push the BP register of the current process to the top of it's kernel stack. 
-    /* The ExpL application does not push the Base Pointer register (BP). See <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling conventions</a>. */
+    /* The ExpL application does not push the Base Pointer register (BP). See <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling conventions</a>. 
+    Hence it is saved to the stop of the Kernel Stack */
 
     Save the SP%512, PTBR and PTLR to the Kernel SP, PTBR and PTLR fields of the 
     <a href="../os_design-files/process_table.html">Process Table</a> entry of the current process;  
@@ -175,8 +176,13 @@
     Set the new PID in the System Status Table;
     
     if (the new Process is in CREATED state){ 		/* The process has just been forked from a parent process */
+
           Set SP to the value of UserSP field in the Process table entry of the new process;
+	  Set BP to the value stored at the beginning of the user stack.	
+	  /* BP value of the process is saved to the beginning of the kernel stack by Fork() system call at process creation. */
+
     	  Set the state of the new process as (RUNNING, - );
+
 	  Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry 0.
           Use ireturn statement to transfer control back to user mode;
     }

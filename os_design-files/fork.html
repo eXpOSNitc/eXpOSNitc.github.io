@@ -175,6 +175,10 @@ For each page shared, increment its value in the Memory Free List
 Set the page table entries for stack to the pages acquired earlier.
 
 Copy word by word the contents of the parent user stack to that of the child.
+
+Store the current BP value to the begining of the kernel stack.
+/* According to the ExpL calling convention, the BP register is not saved. 
+This value is saved here so that the context switch module can later restore it. */
        
 Set the return  value to 0 for the child process
 The PID of the child process is set as the return value for the parent process
