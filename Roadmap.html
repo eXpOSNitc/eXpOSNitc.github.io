@@ -3686,7 +3686,17 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
            2) Return to the caller. </p>
            <p style="text-indent: 0px"><code>Note :</code> <b>Get Code Page</b>, <b>Free Page Table</b> and  <b>Release Block</b> functions implemented above are final versions. They will not require modification in later stages.</p><br>
 
-    	<li><b>Implementation of <a href="os_design-files/exe_handler.html" target="_blank">Exception Handler</a></b></li>
+
+
+    	<li><b>Implementation of <a href="os_design-files/exe_handler.html" target="_blank">Exception Handler</a></b></li><br>
+
+    	<figure style="text-align: center;">
+                           <img src="img/roadmap/exception.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for Exception handler</figcaption>
+                           </figure>
+
+                           <br>
     	<p style="text-indent: 0px">
     		1) Set the MODE FLAG to -1 in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process, indicating in exception handler.
     		2) Switch to the kernel stack and backup the register context.<br>
@@ -4256,6 +4266,12 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 
 <b>Making things work</b><br><br>
 <p> Compile and load the newly written/modified files to the disk using XFS-interface.</p><br>
+
+
+<b style="color:#26A65B">Assignment 1: </b> The reader-writer program given <a href="test_prog.html#test_program_4" target="_blank">here</a> has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. The writer process can only write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. Two child processes are writer processes. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process which is the reader process reads the numbers from the buffer. Compile the program given in link above and execute the program using the shell. The program must print all numbers from 1 to 100 but need not be in sequential order.     
+   <br><br>
+
+
 
 		</div>
 		</div>
