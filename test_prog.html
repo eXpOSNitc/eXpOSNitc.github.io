@@ -345,7 +345,103 @@ pre span:before {
 </div>
 
 
+<div class="panel-body" id="test_program_4"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">4. Test Program 4 (Reader-writer Program)  </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Integers from 1 to 100, need not be in sequential order.</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The  reader-writer program provides below has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. The writer process can only write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. Two child processes are writer processes. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process which is the reader process reads the numbers from the buffer. </p><br>
+<div><pre >
+<span>type</span>
+<span>Share</span>
+<span>{</span>
+<span>          int isempty;</span>
+<span>          int data;</span>
+<span>}</span>
+<span>endtype</span>
+<span></span>
+<span>decl</span>
+<span>          Share head;</span>
+<span>enddecl</span>
+<span></span>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp,x, pidone, pidtwo, semid, iter;</span>
+<span>enddecl</span>
+<span></span>
+<span>begin</span>
+<span>          x = exposcall("Heapset");</span>
+<span>          semid = exposcall("Semget");</span> 
+<span>          head= exposcall("Alloc",2);</span>
+<span>          head.isempty=1;</span>
+<span>          pidone = exposcall("Fork");</span> 
+<span></span>      
+<span></span>      
+<span>          if (pidone == 0 ) then</span>
+<span>              iter=1;</span>
+<span>              while(iter<=100) do</span>
+<span>                  temp= exposcall("SemLock", semid);</span>
+<span>                  temp=head.isempty;</span>
+<span>                  if(temp==1) then</span>
+<span>                      head.data=iter;</span>
+<span>                      head.isempty=0;</span>
+<span>                      iter=iter+2;</span>
+<span>                  endif;</span>
+<span>                  temp= exposcall("SemUnLock", semid);</span>
+<span>              endwhile;</span> 
+<span></span>          
+<span>          else</span>
+<span>              pidtwo =  exposcall("Fork");</span>
+<span>              if(pidtwo==0) then</span>
+<span>                  iter=2;</span>
+<span>                  while(iter<=100) do</span>
+<span>                      temp= exposcall("SemLock", semid);</span>
+<span>                      temp=head.isempty;</span>
+<span>                      if(temp==1) then</span>
+<span>                          head.data=iter;</span>
+<span>                          head.isempty=0;</span>
+<span>                          iter=iter+2;</span>
+<span>                      endif;</span>
+<span>                      temp= exposcall("SemUnLock", semid);</span>
+<span>                  endwhile;</span>
+<span></span>          
+<span>              else</span>
+<span></span>                      
+<span>                  iter=1;</span>
+<span>                  while(iter<=100) do</span>
+<span>                      temp= exposcall("SemLock", semid);</span>
+<span>                      temp= head.isempty;</span>
+<span>                      if(temp==0) then</span>
+<span>                          x=head.data;</span>
+<span>                          head.isempty=1;</span>
+<span>                          temp= exposcall("Write",-2, x);</span>
+<span>                          iter=iter+1;</span>
+<span>                      endif;</span>
+<span>                      temp= exposcall("SemUnLock", semid);</span>
+<span></span>                    
+<span>                  endwhile;</span> 
+<span>              endif;</span>  
+<span></span>                
+<span>          endif;</span>
+<span>          temp= exposcall("Semrelease", semid);</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
 
+</div>
 
 
 
