@@ -357,10 +357,10 @@ pre span:before {
                                                     </tr> 
                                                     <tr>
                                                         <td><b>Output</b></td>
-                                                        <td>Integers from 1 to 100, need not be in sequential order.</td>
+                                                        <td>Integers from 1 to 100, but not necessarily in sequential order.</td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> The  reader-writer program provides below has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. The writer process can only write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. Two child processes are writer processes. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process which is the reader process reads the numbers from the buffer. </p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> The  reader-writer program provides below has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. A writer process can write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. The parent process is the reader process and its two children are writers. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process reads the numbers and prints them on to the console.</p><br>
 <div><pre >
 <span>type</span>
 <span>Share</span>
