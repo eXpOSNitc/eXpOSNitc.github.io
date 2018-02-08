@@ -148,7 +148,7 @@ If the file is not a DATA file, return -1.
 If the USER ID of the file is not equal to the user id of the current user and 
 the <a href="../os_spec-files/multiuser.html">exclusive permission</a> is set, return -1. 
 
-Check if the the file open count is 0 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;
+Check if the the file open count is -1 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;
 /* File is open, cannot be deleted */
  
 <b>For</b> each disk block allocated to the file, <b>do</b> { 	/* Check <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> */
@@ -158,7 +158,7 @@ Check if the the file open count is 0 in the <a href="./mem_ds.html#file_lock_st
 	Call the <b>release_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to free the disk block.        
 }
 
-Invalidate (set to -1) the Inode Table entry and <a href="../os_design-files/mem_ds.html#file_lock_status_table">File(Inode) Status Table</a> entry of the file.
+Invalidate (set to -1) the Inode Table of the file.
 
 Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by invalidating the entry for the file.
 

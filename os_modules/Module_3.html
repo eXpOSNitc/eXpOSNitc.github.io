@@ -278,7 +278,7 @@ If there are no free entries, <b>release_inode()</b> and return -2.  /* Reached 
 <b>If</b> the file name is "root" <b>then</b> 
 	Set the INODE INDEX field in the open file table entry to <a href="../support_tools-files/constants.html">INODE_ROOT</a>. 
 <b>else</b>
-	Increment the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a> 
+	In the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a>, if the File Open Count is -1, set it to 1. Otherwise, increment the File Open Count.
 	Set the INODE INDEX field in the open file table entry to the inode table index of the file. 
 
 Set the OPEN INSTANCE COUNT to 1 and LSEEK to 0 in the open file table entry.
@@ -303,9 +303,10 @@ Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inod
 
 In the <a href="../os_design-files/mem_ds.html#file_table">Open File Table Entry</a>, decrement the Open Instance Count.
 
-If the count becomes 0
+If the Open Instance Count becomes 0
 	Invalidate the entry by setting all fields to -1.
 	If the file is not the "root", decrement the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File (Inode) Status Table</a>.
+	If the File Open Count in File Status Table becomes 0, set it to -1.
 	/* Check the INODE_INDEX field in the Open File Table entry */
 
 return;
