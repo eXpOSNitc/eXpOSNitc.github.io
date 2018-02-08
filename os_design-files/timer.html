@@ -124,9 +124,15 @@ Set the value of SP to the beginning of User Area Page.
 
 Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
 
-// swap module will be invoked whenever necessary 
-
 Change the state of the current process in its Process Table entry from RUNNING to READY.
+
+Loop through the process table entires and increment the TICK field of each process.
+
+<b>if</b> (MEM_FREE_COUNT < <a href="../support_tools-files/constants.html">MEM_LOW</a>)	 	/* Check the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
+	Call the <b>swap_out()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>. 
+<b>else if</b> (MEM_FREE_COUNT > <a href="../support_tools-files/constants.html">MEM_HIGH</a>) 
+	Call the <b>swap_in()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>. 
+
 Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
 
 Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.

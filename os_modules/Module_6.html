@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Context Switch Module</title>
+     <title>Pager Module</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -121,90 +121,101 @@
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 
-                <h2 > Context Switch Module (Scheduler Module)</h2>
+                <h2 >Pager Module</h2>
                 <br/>
                 <br/>
                 
-                <p> Yields control from the current process and schedules the next process for execution.
-
+                <p> This module is responsible for swapping in and out processes. Swap-out is initiated from the timer interrupt when the free memory is critically low. Similiarly, if there is enough memory available in the system, swap-in is initiated by the timer.</p>.
                 </p>
               </div>
 
                  <br> <br> 
-
+  
 
 <table class="table table-bordered" style="text-align: center;">
     <tr class="success">
         <th style="text-align: center;">Function Number</th>
         <th style="text-align: center;">Function Name</th>
         <th style="text-align: center;">Arguments</th>
+        <th style="text-align: center;">Return Value</th>
     </tr>
-
-  <tr>    
-    <td>-</td>
-    <td>Switch Context</td>
-    <td>Nil</td>
+<tr>
+    <td>1</td>
+    <td>Swap Out</td>
+    <td>NIL</td>
+    <td>NIL</td>
   </tr>
 
-</table>
-   
-
-               
-   <h3>Switch Context</h3>
-   <br>
-
+<tr>
+    <td>2</td>
+    <td>Swap In</td>
+    <td>NIL</td>
+    <td>NIL</td>
+  </tr>
+</table>  
+                     
+<h3>Swap Out</h3>
+<i> <b>Description </b></i>: Invoked when the physical memory is critically low. The function chooses a process to swap out, and free it's memory by moving it to the disk. <br><br>
 <pre>
-    Get the pid of the current process from <a href="../os_design-files/process_table.html">System Status Table</a>;
-    
-    Push the BP register of the current process to the top of it's kernel stack. 
-    /* The ExpL application does not push the Base Pointer register (BP). See <a href="https://silcnitc.github.io/run_data_structures/run-time-stack.html">ExpL calling conventions</a>. 
-    Hence it is saved to the stop of the Kernel Stack */
+Set the PAGING_PROCESS field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> to PID of the current process 
+to indicate that the system is going to perform paging.
+/* The <a href="../os_modules/Module_5.html">scheduler</a> will schedule only this process and the idle process */
 
-    Save the SP%512, PTBR and PTLR to the Kernel SP, PTBR and PTLR fields of the 
-    <a href="../os_design-files/process_table.html">Process Table</a> entry of the current process;  
-    
-    <b>if</b> (PAGING_PROCESS in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> has a valid PID) /* Paging is ongoing */
-	    <b>If</b> the paging process is blocked,
-	    	Choose <a href="../os_design-files/misc.html#idle">Idle Process</a> for scehduling.
-	    <b>else</b>
-	    	Choose the paging process to be scheduled.
-    <b>else</b> 
-	    Find the next non swapped process to schedule using the <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round Robin scheduling</a> technique;
-	    /* Check the SWAP_FLAG in the process table */
-    	    If no process (that is not swapped out) is in  READY or CREATED state, select the Idle process;
-    
-    Set the PTBR and PTLR registers to the corresponding values in the process table entry
-    of the new process;
-    
-    Set the new PID in the System Status Table;
-    
-    if (the new Process is in CREATED state){ 		/* The process has just been forked from a parent process */
+Choose a process to swap out.
+	Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find a process that is in the WAIT_PROCESS state.
+	If there are no processes in the WAIT_PROCESS state, find a process in the WAIT_TERMINAL state.
+	If there are no processes in the WAIT_PROCESS and WAIT_TERMINAL state, find the process with the highest TICK.
 
-          Set SP to the value of UserSP field in the Process table entry of the new process;
-	  Set BP to the value stored at the beginning of the user stack.	
-	  /* BP value of the process is saved to the beginning of the kernel stack by Fork() system call at process creation. */
+Set the TICK field of the process table entry of the process to 0.
+/* When the process goes to swap, TICK starts again */
 
-    	  Set the state of the new process as (RUNNING, - );
+Call the <b>release_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the valid code pages of the process.
+Invalidate the <a href="../os_design-files/process_table.html#per_page_table">Page table</a> entry correpsonding to the code pages.
 
-	  Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry 0.
-          Use ireturn statement to transfer control back to user mode;
-    }
-    
-    Set the state of the new process as (RUNNING, - );
-    
-    Read the KPTR field and the UArea Page number from the Process table entry of the
-    new process;
+<b>For</b> each heap page that is not shared and is valid {	/* Shared heap pages are not swapped out. */
+	Get a free swap block by calling the <b>get_swap_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
+	Store the disk block number in the <a href="../os_design-files/process_table.html#disk_map_table">Disk Map Table</a> entry of the process curresponding to the heap page.
+	Use the <b>disk_store()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to write the heap page to the block found above
+	Call the <b>release_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the page.
+	Invalidate the Page table entry correpsonding to the page.
+}
 
-    Set SP to UArea_Page * 512 + KPTR;
-    
-    Restore the BP register of the new process from the top of it's kernel stack.
+Get three free swap block by calling the <b>get_swap_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
+Use the <b>disk_store()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to write the two stack pages and the user area page to the disk blocks found above
+Update the Disk Map Table entry of the process to store the disk block numbers of the stack and the user area page.
+Call the <b>release_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the three page.
+Invalidate the Page table entries correpsonding to the three pages.
+Set the USER AREA PAGE NUMBER field in the <a href="../os_design-files/process_table.html">process table</a> to -1.
 
-    return;
+Set the SWAP_FLAG field in the process table entry of the process to 1.
+
+In the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>, increment the SWAP_COUNT and reset the PAGING_PROCESS back to -1.	
+/* The scheduler can now resume normal scheduling */ 
+
+return;
 </pre>
+Called by the timer interrupt.</a>.
 
-Called by all blocking functions and the Timer interrupt handler. <br> <br> <br>
+<h3>Swap In</h3>
+<i> <b>Description </b></i>: Acquire the buffer corresponding to buffer number given as input. Assumes a valid PID and a valid buffer  number are given.<br><br>
+<pre>
+
+while ( Buffer is locked ){   /* Check the Locking PID field in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> */
+    Set state of the process as ( WAIT_BUFFER , Buffer Number );
+    Invoke the scheduler;
+    }
+
+Lock the Buffer by setting the PID of the current process in the Locking PID field
+in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> ;
+
+return;
+</pre>
+Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Manager</a>.
+
+
+
                      <!--end-->   
-                    
+                    <br>
                                </div>
               </div>
             </div>

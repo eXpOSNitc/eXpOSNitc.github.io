@@ -178,6 +178,12 @@
     <td>Page Number</td>
   </tr>
 
+<tr>    
+    <td>6</td>
+    <td>Get Swap Block</td>
+    <td>NIL</td>
+    <td>Block Number</td>
+  </tr>
    </table>    
                      
 
@@ -227,7 +233,7 @@ Note : Do not clear the contents of the page. A page may be shared by multiple p
    <i> <b>Description </b></i>: Returns the block number of a free disk block. Returns -1 if disk is full.<br><br>
 
 <pre>
-    loop through entries in the <a href="../os_design-files/disk_ds.html#disk_free_list">Disk Free List</a>{
+    loop through entries in the <a href="../os_design-files/disk_ds.html#disk_free_list">Disk Free List</a> from <a href="../support_tools-files/constants.html">DISK_FREE_AREA</a> to <a href="../support_tools-files/constants.html">DISK_SWAP_AREA</a> - 1{ 	/* User Block, not preallocated to the OS or swap area */
         if ( a free entry is found ){
               Set the Disk Free List entry as 1;
               Return the corresponding block number;
@@ -268,7 +274,21 @@ Note : Do not clear the contents of the page. A page may be shared by multiple p
 </pre>
 
 <br><br>
+               
+   <h3> Get Swap Block</h3>
+   <i> <b>Description </b></i>: Returns the block number of a free disk block in the swap area.<br><br>
 
+<pre>
+    loop through entries in the <a href="../os_design-files/disk_ds.html#disk_free_list">Disk Free List</a> from <a href="../support_tools-files/constants.html">DISK_SWAP_AREA</a> to <a href="../support_tools-files/constants.html">DISK_SIZE</a> - 1{ 	/* swap area */
+        if ( a free entry is found ){
+              Set the Disk Free List entry as 1;
+              Return the corresponding block number;
+        }
+    }
+    return -1;
+</pre>
+
+ 
 
 
 

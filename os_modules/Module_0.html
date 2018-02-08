@@ -258,7 +258,7 @@ Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Man
 
 <pre>
 
-while ( disk is locked or scheduler has locked the disk ){        /* Check the <i>Status</i> field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */
+while ( disk is locked ){        /* Check the <i>Status</i> field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */
         Set state of the process as ( WAIT_DISK , - );
         Invoke the scheduler;
         }
@@ -305,7 +305,7 @@ If PID given as input is not equal to the LOCKING PID in the <a href="../os_desi
 Free the lock in the File Status Table corresponding to the inode index;       /* Set the Lock field to -1 */
 
 loop through the process table{ 
-       if (the process state is ( WAIT_INODE , Inode Index ) ){
+       if (the process state is ( WAIT_FILE, Inode Index ) ){
              Set state of process as (READY , _ )
          } 
 }
