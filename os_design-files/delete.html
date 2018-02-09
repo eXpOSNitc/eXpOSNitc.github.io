@@ -145,10 +145,12 @@ If file is not present in the <a href="disk_ds.html#inode_table" target="_blank"
 
 If the file is not a DATA file, return -1.
 
-If the USER ID of the file is not equal to the user id of the current user and 
+If the current user is not root, the USER ID of the file is not equal to the user id of the current user and 
 the <a href="../os_spec-files/multiuser.html">exclusive permission</a> is set, return -1. 
 
-Check if the the file open count is -1 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, return -2.  &nbsp;&nbsp;
+Acquire a lock on the file by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.
+
+Check if the the file open count is -1 in the <a href="./mem_ds.html#file_lock_status_table" target="_blank"> File Status Table </a>. If not, release the lock and return -2.  &nbsp;&nbsp;
 /* File is open, cannot be deleted */
  
 <b>For</b> each disk block allocated to the file, <b>do</b> { 	/* Check <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> */
@@ -162,6 +164,8 @@ Invalidate (set to -1) the Inode Table of the file.
 
 Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by invalidating the entry for the file.
 
+Release the lock on the file by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.
+
 Switch back to the user stack by resoting USER SP from the process table.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
@@ -173,9 +177,8 @@ Return from system call with 0. &nbsp;&nbsp; /* indicating success */
         <h4>Questions</h4>
         <p>1. Why are we not updating the <a href="../os_design-files/mem_ds.html#file_table">Open File Table</a> when a file is being deleted?</p>
         <p>2. Why can't an open file be deleted?</p>
-        <p>3. Can it happen that some other process has locked the file in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">Inode Status Table</a> while the file is being deleted?</p>
-        <p>4. Why is the dirty bit in the buffer table cleared before the file is deleted?</p>
-        <p>5. Does disk blocks get freed anywhere else other than the delete system call?</p>
+        <p>3. Why is the dirty bit in the buffer table cleared before the file is deleted?</p>
+        <p>4. Does disk blocks get freed anywhere else other than the delete system call?</p>
                       
          </div>
 		</div>
