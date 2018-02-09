@@ -193,7 +193,7 @@ Get the Lseek position from the Open File Table entry.
                Get the offset value from lseek position. &nbsp;&nbsp;/* offset = lseek % the block size (512) */</div>
 Write the word to the File Buffer by calling the <b>buffered_write()</b> function in the <a href="../os_modules/Module_3.html" target="_blank">Buffer Manager</a> module.
 
-If Lseek equals file size, increment file size.
+If Lseek equals file size, increment file size in the inode table entry and also in the memory copy of the <a href="disk_ds.html#root_file">root file</a>.
 
 Increment the Lseek position in the Open File Table entry.
 
