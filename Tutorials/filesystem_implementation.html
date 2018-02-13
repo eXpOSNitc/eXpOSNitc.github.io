@@ -157,13 +157,13 @@
 <b style="font-size: 20px;">2. Inode Table</b>
 <br><br>
 
-<p><a href="../os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> is a global data structure that contains an entry for each file stored in the file system. When a file is created using the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Create</i> ​system call</a>, a new Inode entry is created for the file. The inode entry of a file stores the following attributes of the file : 1) filename, 2) file size, 3) user-id of the owner of the file, 4) file type (data/executable/root), 5) file access permissions and 6) the block numbers of the disk blocks allocated to a file (maximum four blocks).</p>
+<p><a href="../os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> is a global data structure that contains an entry for each file stored in the file system. When a file is created using the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Create</i> ​system call</a> or loaded into the disk using XFS-interface, a new Inode entry is created for the file. The inode entry of a file stores the following attributes of the file: 1) filename, 2) file size, 3) user-id of the owner of the file, 4) file type (data/executable/root), 5) file access permissions and 6) the block numbers of the disk blocks allocated to a file (maximum four blocks).</p>
 
 <p>When a file is created by the ​<i>Create</i> ​system call, no disk blocks are allocated for the file, and only an Inode entry is created. Hence the file size will be set to 0 initially. Filename and access permissions are supplied as arguments to ​<i>Create</i> ​system call and are set accordingly. eXpOS allows only data files to be created using ​<i>Create</i> ​system call. Hence, the file type of any file created using the <i>Create</i> system call will be set to DATA. (Executable files can only be externally loaded into the file system using ​ xfs-interface). The user-id of the process executing <i>Create</i> ​system call will set as the owner of the file. (The user-id of a process is the user-id of the user logged into the system currently. eXpOS is a ​<b>single terminal system</b>.​ Only one user can login into the system at a time and run user processes).</p>
 
 <p>As noted previously, as data is written into the file by the ​<i>Write</i> ​system call, new disk blocks may be allocated. Whenever a block is allocated for a file, the block number is recorded in the Inode table.</p>
 
-<p>A file can be created with ​<a href="../support_tools-files/constants.html" target="_blank">Exclusive Access</a> / <a href="../support_tools-files/constants.html" target="_blank">Open Access</a> permission. The access permission is given as an argument to ​<i>Create</i>​ system call. If a file is created with exclusive access, the ​<i>Delete</i> and ​<i>Write</i>​ system calls must fail if executed by any process whose user-id is not equal to root, or the owner of the file. In other words, other users except the root shall not be permitted to modify or delete such files.</p>
+<p>A file can be created with ​<a href="../support_tools-files/constants.html" target="_blank">Exclusive Access</a> / <a href="../support_tools-files/constants.html" target="_blank">Open Access</a> permission. The access permission is given as an argument to ​<i>Create</i>​ system call. If a file is created with exclusive access, the ​<i>Delete</i> and ​<i>Write</i>​ system calls must fail if executed by any process whose user-id is not equal to root, or the owner of the file. In other words, other users except the root shall not be permitted to modify or delete such files. When a file has open access permission, all users are allowed to perform any operation on the file. </p>
 <br>
 <br>
 
@@ -199,13 +199,13 @@ implementation.</p>
 
 <p>To implement this somewhat intricate file access and sharing mechanism, the OS maintains two global file data structures - the ​<b>file status table</b>​ (also called the inode status table), and the <b>open file table</b>​. Moreover, for each process the OS maintains a ​<b>per-process resource table​</b>, which contains information pertaining to the open instances of files of the particular process.</p>
 
-<p>The OS further maintains a ​<b>buffer cache​</b> which is used for caching data blocks of files in current use. A ​<b>buffer status table</b>​ is used to manage the data in the buffer table. These data structures are described below. Read the description of <a href="http://exposnitc.github.io/os_design-files/mem_ds.html" target="_blank">open file table</a> and <a href="http://exposnitc.github.io/os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> before reading further.</p>
+<p>The OS further maintains a ​<b>buffer cache​</b> which is used for caching data blocks of files in current use. A ​<b>buffer table</b>​ is used to manage the data related to the buffer cache. These data structures are described below. Read the description of <a href="http://exposnitc.github.io/os_design-files/mem_ds.html" target="_blank">open file table</a> and <a href="http://exposnitc.github.io/os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> before reading further.</p>
 <br>
 <br>
 
-<b style="font-size: 20px;">1. File Status Table</b>
+<b style="font-size: 20px;">1. File (Inode) Status Table</b>
 <br><br>
-<p>File (Inode) status table contains an entry for each file in the file system. The index of a file’s Inode table entry and file status table entry will be the same. That is, if a file’s entry occurs - say - 10<sup>th</sup> in the inode table, its entry in the inode status table will be the 10<sup>th</sup> one as well. The purpose of the table is two-fold 1) To keep track of how many times each file has been opened using the ​ open ​ system call. 2) To provide a mechanism for processes to ​<b>lock</b> a file before making updates to the file’s data/metadata.</p>
+<p>File (Inode) status table contains an entry for each file in the file system. The index of a file’s Inode table entry and file status table entry will be the same. That is, if a file’s entry occurs - say - 10<sup>th</sup> in the inode table, its entry in the file (inode) status table will be the 10<sup>th</sup> one as well. The purpose of the table is two-fold 1) To keep track of how many times each file has been opened using the ​ open ​ system call. 2) To provide a mechanism for processes to ​<b>lock</b> a file before making updates to the file’s data/metadata.</p>
 
 <p>Every time a file is opened by (any) process using the ​<i>Open</i>​ system call, the ​<b>file open count</b> field in the corresponding file status table entry is incremented. Thus, the table gives the global count of the number of open instances of a file.</p>
 
@@ -221,7 +221,7 @@ implementation.</p>
 
 <p>Whenever a file is opened by a process, an open file table entry is created for the open instance. The entry contains three fields:<br>
 a)​ The index of the inode table of the file.<br>
-b​) The count of the number of processes sharing the open instance which will be set to 1 when the file is opened as only one process is sharing the open instance. When the process executes a ​<i>Fork</i>​ system call, the share count is incremented to reflect the correct number of processes sharing the open instance. (Note: Do not confuse this count with the file open count in the file status table.)<br>
+b​) The count of the number of processes sharing the open instance, which will be set to 1 when the file is opened as only one process is sharing the open instance. When the process executes a ​<i>Fork</i>​ system call, the share count is incremented to reflect the correct number of processes sharing the open instance. (Note: Do not confuse this count with the file open count in the file status table.)<br>
 c)​ The seek pointer for the open instance is stored in the open file table. Any read/write operation on this open instance must read from / write into this position of the file and advance the pointer. When a file is opened, the seek position is set to 0. Note that the seek pointer is shared between all processes sharing the open instance.</p>
 
 <p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">OPEN_FILE_TABLE</a> is set to the beginning address of the open file table in memory (see
@@ -239,7 +239,7 @@ a)​ A flag indicating whether the entry corresponds to a file or a semaphore.<
 b)​ Index of the open file table /semaphore table entry of the open file / semaphore instance.<br>
 Here we will be concerned only about the case when the entry corresponds to an open file.</p>
 
-<p>The ​<i>Open</i> system call returns the index of this entry in the resource table as the <b>file descriptor</b> to the user. Any ​<i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ system call on the open instance of a file must be given this file descriptor as the argument. The handler for ​ <i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ ​ uses the descriptor value passed as argument to identify the open instance (determined uniquely by the open file table index associated with the file descriptor). When a process forks a child, <i>Fork</i> system call copies the entries of the resource table of the parent to the resource table of the child. Thus, the child inherits the open instances of files from the parent.</p>
+<p>The ​<i>Open</i> system call returns the index of an entry in the resource table as the <b>file descriptor</b> to the user. Any ​<i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ system call on the open instance of a file must be given this file descriptor as the argument. ​<i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ system calls use the descriptor value passed as argument to identify the open instance (determined uniquely by the open file table index associated with the file descriptor). When a process forks a child, <i>Fork</i> system call copies the entries of the resource table of the parent to the resource table of the child. Thus, the child inherits the open instances of files from the parent.</p>
 
 <p>As an example, consider the following scenario. Let process B be a child of process A. Assume that an open instance of a file by name <i>myfile.dat</i> be shared by A and B. Suppose the inode index of <i>myfile.dat</i> is 5. Assume that the open file table index for the open instance is - say 2. The following figure shows the various table entries for the open instance.</p><br>
 
@@ -256,7 +256,7 @@ Here we will be concerned only about the case when the entry corresponds to an o
 <b style="font-size: 20px;">4.​ ​ Memory buffer Cache</b>
 <br><br>
 
-<p>Whenever a process tries to ​<i>Read</i>/<i>Write</i>​ into a file, the relevant block of the file is first brought into a disk buffer in memory and the read/write is performed on the copy of the block stored in the buffer. The OS maintains 4 memory buffer pages as cache (and will be numbered 0,1,2,3. The buffers are in memory pages 71, 72, 73, 74 - see <a href="../os_implementation.html" target="_blank">memory organization</a>). A simple buffering scheme will be used here. When there is a request for the i<sup>th</sup> disk block, it will be brought to the buffer number (<i>i mod 4</i>). If the buffer is presently containing another disk block, then the OS must check whether the disk block needs a write-back (dirty) before loading the requested block. This will be described soon.</p>
+<p>Whenever a process tries to ​<i>Read</i>/<i>Write</i>​ into a file, the relevant block of the file is first brought into a disk buffer in memory and the read/write is performed on the copy of the block stored in the buffer. The OS maintains 4 memory buffer pages as cache (and will be numbered 0,1,2,3. The buffers are in memory pages 71, 72, 73, 74 - see <a href="../os_implementation.html" target="_blank">memory organization</a>). A simple buffering scheme will be used here. When there is a request for the i<sup>th</sup> disk block, it will be brought to the buffer with number (<i>i mod 4</i>). If the buffer is presently containing another disk block, then the OS must check whether the disk block needs a write-back (dirty) before loading the requested block. This will be described soon.</p>
 <br>
 <br>
 
@@ -264,9 +264,9 @@ Here we will be concerned only about the case when the entry corresponds to an o
 <br><br>
 
 <p>The buffer table is used for managing the buffer cache. The table contains one entry per each buffer page. The entry for a buffer contains:<br>
-a) ​The block number of the disk block currently stored in the buffer page.<br>
-b​) A flag indicating whether the block was modified after loading (dirty). If the buffer is
+a) ​The block number of the disk block currently stored in the buffer page. If the buffer is
 unallocated, the disk block number is set to -1.<br>
+b​) A flag indicating whether the block was modified after loading (dirty).<br>
 c) ​The PID of the process that has locked the buffer page. (-1 if no process has locked the
 buffer.)</p>
 
@@ -289,7 +289,7 @@ buffer.)</p>
 
 <p>Finally, the OS maintains an in-memory copy of all the disk data structures - viz., inode table, user table, root file and the disk free list. While the OS is running, a new user could be created or a file could be created/modified/deleted. In such cases, the update is made into the memory copy of the corresponding data structures and not the disk copy.</p>
 
-<p>The OS must write back the memory copy all disk data structures and all dirty buffers to the disk before the system is shutdown. The file system implementation described here is ​<b>not crash resilient</b>​. This means, if the OS crashes before (or during) such write back, the memory-copy to disk updates may be partial and the disk data structures may end up in inconsistent state. In such case, one or more files may be corrupted and the disk may require reformatting.</p>
+<p>The OS must write back the memory copy of all disk data structures and all dirty buffers to the disk before the system is shutdown. The file system implementation described here is ​<b>not crash resilient</b>​. This means, if the OS crashes before (or during) such write back, the memory-copy to disk updates may be partial and the disk data structures may end up in inconsistent state. In such case, one or more files may be corrupted and the disk may require reformatting.</p>
 
 <br>
 <br>
