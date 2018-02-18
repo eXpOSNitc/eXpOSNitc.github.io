@@ -4515,6 +4515,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
 /*The change in <i>Fork</i> system call to update the <a href="os_design-files/mem_ds.html#sem_table" target="_blank" 
 >semaphore table</a>, is already done in stage 22*/
 </ul><br>
+<br>
 
 <li><b>Modifications to Free User Area Page (function number = 2, <a href="os_modules/Module_1.html" target="_blank">process manager module</a> )</b></li>
 <p style="padding-left: 20px"> When a process terminates, all the files the process has opened (and haven't closed explicitly) have to be closed. This is done in the Free User Area page function. The Close function of the file manager module is invoked for every open file in the per-process resource table of the process.   </p>
@@ -4545,15 +4546,17 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
 <br>
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b><i>Read</i> system call</b></li>
-<p><i>Read</i> system call takes file descriptor and address to which word is stored as arguments. <i>Read</i> system call needs to lock the inode at the starting of the system call and relases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> are used to lock and release the inode respectively. <i>Read</i> system call reads a word from the file, pointed by position LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry) and writes it into the address provided. After reading a word from the file, the LSEEK position is incremented by one. File data is present in the disk blocks allocated to the file. To read from position LSEEK, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and read a word present at position LSEEK, <i>Read</i> invokes <b>Buffered Read</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. Reading from the root file does not require a buffer, as root file is loaded into the memory at the time of booting. memory copy of root file is present in memory page 62 and starting address is denoted by the SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a>. The word in the root file at LSEEK position is copied into the address provided. Note that the memory address provided as argument is logical address, and as system call runs in kernel mode logical address should be translated to physical address before using.</p>
+<p><i>Read</i> system call takes file descriptor and address to which word is stored as arguments. <i>Read</i> system call locks the inode at the starting of the system call and releases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> are used to lock and release the inode respectively. <i>Read</i> system call reads a word from the file, pointed by position LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry) and stores it into the address provided. After reading a word from the file, the LSEEK position is incremented by one. File data is present in the disk blocks allocated to the file. To read from position LSEEK, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and read a word present at position LSEEK, <i>Read</i> invokes <b>Buffered Read</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. Reading from the root file does not require a buffer, as root file is loaded into the memory at the time of booting. memory copy of root file is present in memory page 62 and starting address is denoted by the SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a>. The word in the root file at LSEEK position is copied into the address provided. Note that the memory address provided as argument is logical address, and as system call runs in kernel mode logical address should be translated to physical address before using.</p>
 <p>
 Read system call needs to lock the resources - Inode (file), buffer and disk before using them. These are locked in the order 1) Inode 2) buffer and 3) disk and released in the reverse order. This order is also followed while writing to a file to avoid circular wait of the resources.</p>
 
 <p style="text-indent: 0px">Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html">here</a>.</p>
 
 <br>
+
+
 <li><b>Buffered Read (function number = 2, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p><b>Buffered Read</b> takes a disk block number, offset and physical memory address of the word as arguments. The task of Buffered read is to read a word from the given disk block present at postion given by offset and store it in the given memory address. To read a word from a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Read invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the correspoding buffer, a word present at given offset in the memory buffer is copied into the address given as argument. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Read invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
+<p><b>Buffered Read</b> takes a disk block number, offset and physical memory address of the word as arguments. The task of Buffered read is to read a word from the given disk block present at postion given by offset and store it in the given memory address. To read a word from a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Read invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, a word present at given offset in the memory buffer is copied into the address given as argument. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Read invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
 
 <p style="text-indent: 0px">Implement Buffered Read function using the detailed algorithm given in the file manager module link above.</p>
 <br>
@@ -4588,7 +4591,7 @@ Read system call needs to lock the resources - Inode (file), buffer and disk bef
 <!--=========Begin Stage 25 ===========-->
  <div class="panel-heading" id="list_stage25">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse25"><span class="fa fa-check-square-o"></span>Stage 25 : Lseek, Write and Shutdown</a>
+                          <a data-toggle="collapse"  href="#collapse25"><span class="fa fa-check-square-o"></span>Stage 25 : File data modification</a>
                         </h4>
                       </div>
 
@@ -4603,7 +4606,7 @@ Read system call needs to lock the resources - Inode (file), buffer and disk bef
                             <div id="lo25" class="panel-collapse expand">
                               <ul>
 
-  
+   <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding the allocation of disk blocks to a file.</li>
                              
                               <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify <i>Shutdown</i> system call so that the file system is not left
 inconsistent when the OS shuts down.</li>
@@ -4616,11 +4619,15 @@ inconsistent when the OS shuts down.</li>
                       </div>
 
   <!--End Learning Objectives-->
+<b>Pre-requisite reading</b><br>
+    <p style="text-indent: 0px">1) Description of disk data structures - <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> and <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> <br>
+    2) Description of memory data structures - <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. </p>
+	<br>
+	<p>In this stage, We will understand how contents of a file are modified using <i>Write</i> system call. <i>Seek</i> system call which is used to change the LSEEK position for a open instance is also implemented in this stage. <i>Shutdown</i> system call is modified to terminate all processes and store back the memory buffers which are modified during <i>Write</i> system call to the disk.</p><br>
 
-  <b style="font-size: 20px">Interrupt routine 7 (<i>Write</i> system call)</b><br><br>
 
-
-<p>Interrupt routine 7 written in stage 15, write data (words) to the terminal. <i>Write</i> system call is modified to write data to a file. <i>Write</i> system call has system call number 5 and arguments to the file discriptor of a file and word to be written. </p><br>
+ <b style="font-size: 20px">Interrupt routine 7 (<i>Write</i> system call)</b><br><br>
+<p>Interrupt routine 7 written in stage 15, writes data (words) only to the terminal. <i>Write</i> system call is modified to write data to a file. <i>Write</i> system call has system call number 5. From ExpL programs, <i>Write</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>. </p><br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/FileWrite.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
@@ -4632,24 +4639,36 @@ inconsistent when the OS shuts down.</li>
 <br>
 
 <ol style="list-style-type: decimal; margin-left: 2px">
+
 <li><b>Write system call</b></li>
-<p>Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/write.html">here</a>.</p>
+<p><i>Write</i> system call takes file descriptor and a word to be written as arguments from user program. <i>Write</i> system call locks the inode at the starting of the system call and releases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> are used to lock and release the inode respectively. <i>Write</i> system call writes the given word to the file, at the offset determined by LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry). Previously present data at the position determined by LSEEK in the file is overwritten by the <i>Write</i> system call. The maximum file size possible is four disk blocks i.e. a file can save maximum 2048 words. All the four blocks are not allocated to the file at once. The block numbers of the allocated disk blocks are stored in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entry corresponding to the file. A new block is allocated to a file when <i>Write</i> tries to write at a LSEEK position where disk block corresponding to LSEEK position is not yet allocated. (Eg - Writing a word for the first time in a newly created file will allocate a single disk block).  To allocate a new block for the file, <i>Write</i> invokes Get Free Block function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. </p>
+
+
+ <p>For writing to position LSEEK in the file, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and write the given word to position LSEEK, <i>Write</i> invokes <b>Buffered Write</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. Note that it is not permitted to write to the root file.</p>
+
+<p style="text-indent: 0px">Implement <i>Write</i> system call using detailed algorithm provided <a href="os_design-files/write.html">here</a>.</p>
 
 <br>
 <li><b>Buffered Write (function number = 1, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p>Buffered Read a disk block number, offset into the page and a word as arguments.</p> 
-<p style="text-indent: 0px">Implement Buffered Read function using the detailed algorithm given in the file manager module link above.</p>
+<p><b>Buffered Write</b> takes a disk block number, offset and a word as arguments. The task of Buffered Write is to write a given word to the given disk block at postion given by offset. To write a word to a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Write invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, the given word is written at the position given by offset in the memory buffer. As the buffer is modified, the DIRTY BIT in the corresponding buffer table entry is set to 1. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Write invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
+<p style="text-indent: 0px">Implement <i>Buffered Write</i> function using the detailed algorithm given in the file manager module link above.</p>
 <br>
+<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Hazard]</b> Buffured Write and Buffered Read functions algorithm is almost identical, except in Buffered Write - given word is written to the buffer and in Bufferd Read - a word from the buffer is stored in provided address. If code for file manager module exceeds two blocks (more than 512 instructions), then implement the code for Buffered Read and Buffered Write in a single 'if block' to reduce number of instructions. </p>
+<br>
+
+
 <li><b>Get Free Block (function number = 3, <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> )</b></li>
-<p></p> 
-<p style="text-indent: 0px">Implement Get Free Block function using the detailed algorithm given in the memory manager module link above.</p>
+<p>Get Free Block function does not take any argument and returns the block number of a free block in the disk. If no free block is found, Get Free Block returns -1. A free block can be found by searching for a free entry in the <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> from position DISK_FREE_AREA to DISK_SWAP_AREA-1. A free entry in the disk free list is denoted by 0. In the disk, the blocks from 69 to 255 called User blocks, are reserved for allocating to executable and data files. SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_FREE_AREA</a> gives the starting block number for User blocks. <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> gives the starting block number of swap area. See <a href="os_implementation.html" target="_blank">disk organization</a>. </p> 
+<p style="text-indent: 0px">Implement <i>Get Free Block</i> function using the detailed algorithm given in the memory manager module link above.</p>
 <br>
 
 </ol>
 
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Write</i></b> system call and <b>Buffered Write</b>, <b>Get Free Block</b> functions are final.</p><br>
+
 
 <b style="font-size: 20px">Interrupt routine 5 (<i>Seek</i> system call)</b><br><br>
-<p>Interrupt routine 5 implements <i>Seek</i> system call along with <i>Open</i> and <i>Close</i> system calls. <i>Seek</i> has system call number 6.   </p><br>
+<p>Interrupt routine 5 implements <i>Seek</i> system call along with <i>Open</i> and <i>Close</i> system calls. <i>Seek</i> has system call number 6. From ExpL programs, <i>Seek</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
 <br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/Seek.png" style="display:block;margin-left:auto;margin-right:auto" >
@@ -4663,14 +4682,17 @@ inconsistent when the OS shuts down.</li>
 
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b>Seek system call</b></li>
+<p><i>Seek</i> system call takes file descriptor and offset as arguments from user program. <i>Seek</i> updates the LSEEK field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> corresponding to the open instance according to the provided offset value. Offset value can be any integer (positive, zero or negative). If the given offset value is 0, then LSEEK field is set to the starting of the file. For a non-zero value of offset, the given offset is added to the LSEEK position. If the new LSEEK exceeds size of the file, then LSEEK is set to file size. If the new LSEEK position becomes negative, then <i>Seek</i> system call fails and return to user program with appropriate error code without changing the LSEEK position.</p>
 <p style="text-indent: 0px">Implement <i>Seek</i> system call using detailed algorithm provided <a href="os_design-files/seek.html">here</a>.</p>
 <br>
 
 </ol>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <i>Seek</i> system call is final.</p><br>
+
 
 <b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
 
-<p>Interrupt routine 15 written in stage 21 contains just HALT instruction. In this stage, <i>Shutdown</i> system call is implemented in the interrupt routine 15. <i>Shutdown</i> system call has system call number 21 and it does not take any arguments. </p>
+<p>Now that eXpOS supports writing to the files, the disk has to be made consistent with the modified files. <i>Shutdown</i> system call is modified in this stage to store back the buffers changed by the <i>Write</i> system call. <i>Shutdown</i> system call also terminates all the processes except current process, IDLE and INIT by invoking Kill All function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Modify <i>Shutdown</i> system call by adding following steps in the already written interrupt routine 15 file.</p>
 <br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/shutdown.png" style="display:block;margin-left:auto;margin-right:auto" >
@@ -4683,27 +4705,28 @@ inconsistent when the OS shuts down.</li>
 <br>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
-  <li style="padding-left: 20px">Switch to the kernel stack and set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-  <li style="padding-left: 20px"><i>Shutdown</i> system call can be invoked only from the shell process of the root user. If the current process is not shell (PID in the <a href="os_design-files/process_table.html" target="_blank">process table</a> not equal to 1) or the current user is not root user (USERID in the process table is not equal to 1) then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
-  <li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, LOGIN (LOGIN process will be discussed in later stages.) and current process.</li>
-  <li style="padding-left: 20px"><i>Shutdown</i> system call stores back all the modified disk data structures and disk blocks. For every valid entry in the buffer table (BLOCK NUMBER is not equal to -1), if the DIRTY BIT field is set, then store back the buffer page of that buffer entry into the corresponding disk block by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
-  <li style="padding-left: 20px">Commit the changes made in the memory copies of the inode table (along with user table), the root file and the disk free list by storing them back to the disk invoking the <b>Disk Store</b> function. Refer to <a href="os_implementation.html" target="_blank">disk/memory organization</a> for block and page numbers of these data structures.</li>
-  <li style="padding-left: 20px">Halt the system using the SPL statement halt.</li>
+  
+  <li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, LOGIN (In later stages, LOGIN process is loaded as the INIT process) and the process with given PID.</li>
+  <li style="padding-left: 20px">For every valid entry in the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> (BLOCK NUMBER is not equal to -1), if the DIRTY BIT field is set, then store back the buffer page of that buffer entry into the corresponding disk block by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
+ 
   </ul>
-
-<p style="text-indent: 0px"><code>Note :</code>The implementation of the <i>Shutdown</i> system call is not final. There is a small change for the PID of the shell process when multiple users are allowed. Refer to the algorithm of <i>Shutdown</i> <a target="_blank" href="os_design-files/shutdown.html">here</a>.</p><br>
-<b>Kill All (function number = 5, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-  <p style="text-indent: 0px;">Kill All function takes PID of a process as an argument.</p>
-  <li style="padding-left: 20px">For each valid entry in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> (FILE NAME is not equal to -1) <b style="color: red">and if the file is not closed by some process ()</b>, lock the inode (file) by invoking the <b>Acquire Inode</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>.</li>
-  <li style="padding-left: 20px">For every non TERMINATED process except IDLE (PID = 0), LOGIN (INIT process is LOGIN process in later stages, PID = 1) and process with given PID, invoke <b>Exit Process</b> function of the <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes.</li>
-  <li style="padding-left: 20px">For each valid entry in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> (FILE NAME is not equal to -1), unlock the inode (file) by invoking the <b>Release Inode</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. Return to the caller.</li>
-
-</ul><br>
-
-<p style="text-indent: 0px"><code>Note :</code>The implementation of <b>Disk Store</b>, <b>Acquire Inode</b>, <b>Release Inode</b> and <b>Kill All</b> functions are final.</p>
-
 <br>
+
+
+<b>Kill All (function number = 5, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
+
+  <p><b>Kill All</b> function takes PID of a process as an argument. Kill All function terminates all the processes except IDLE,INIT and the process with given PID. Kill All first locks all the files present in the inode table by invoking <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> for every file. Locking all the inodes makes sure that, no process is in the middle of any file operation. If suppose a process (say A) is using a file and has locked the inode, then the process which has invoked Kill All will wait until process A completes the file operation and releases the inode. After acquiring all the inodes, Kill All terminates the processes (except IDLE, INIT and process with given PID) which are not TERMINATED by invoking <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> for every process. Finally, all the acquired inodes are released by invoking <b>Release Inode</b> function of resource manager module for each valid file.</p>
+<p style="text-indent: 0px">Implement Get Free Block function using the detailed algorithm given in the memory manager module link above.</p>
+<br>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of the <b><i>Shutdown</i></b> system call and <b>Kill All</b> function are final. </p><br>
+
+
+<b>Making things work</b><br><br>
+<p> Compile and load the modified files to the disk using XFS-interface.</p>
+<br>
+
+
+
   </div>
 </div>
 <!--=========End Stage 25 ===========-->
