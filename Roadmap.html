@@ -2775,6 +2775,7 @@ loadi(51,64);</pre></div> </li>
 					   <ul style="list-style-type: disc;margin-left: 20px"> 
 					   	<li>Set SP to the value in the UPTR field of the process table entry.</li>
 						<li>Set state of the newly scheduled process as RUNNING.</li>
+						<li>Store 0 in the MODE FLAG field in the process table of the process.</li>
 						<li>Switch to the user mode using the ireturn statement.</li></ul>
 					  </li>
 					<li>Set the state of the new process as RUNNING.</li>
@@ -3809,7 +3810,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
        <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE FLAG to the system call number and switch to the kernel stack. To get a new PID for the child process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new process table allocated for the child. This index is saved as the PID of the child. As there are only 16 process tables present in the memory, maximum 16 processes can run simultaneously. If a free process table is not available, Get Pcb Entry returns -1. In such case, store -1 as the return value in the stack, reset the MODE FLAG (to 0), switch to user stack and return to the user mode from the fork system call. When PID is available, proceed with the fork system call. </li>
 
-       <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and  user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
+       <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
        
        <li style="padding-left: 20px">The next step in the fork system call is initialization of the <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child process. Copy the USERID field from the process table of the parent to the child process, as the user (currently logged in) will be same for both child and parent. (We will discuss USERID later when we add multi-user support to eXpOS.) Similarly, copy the SWAP FLAG and the USER AREA SWAP STATUS fields. (These fields will be discussed later, when we discuss swapping out processes from memory to the disk.) INODE INDEX for the child and the parent processes will be same, as both of them run the same program. UPTR field should also be copied from the parent process. As mentioned earlier, content of the user stack is same for both of them, so when both of the processes resume execution in user mode, the value of SP must be the same.</li> 
 
@@ -3820,16 +3821,29 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
       <li style="padding-left: 20px">Copy the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">per-process disk map table</a> of the parent to the child. This will ensure that the disk block numbers of the code pages of the parent process are copied to the child.  Further, if the parent has swapped out heap pages, those will be shared by the child.  (This will be explained in detail in a later stage).  The eXpOS design guarentees that the stack pages and the user area page of a process will not be swapped at the time when it invokes the fork system call. Hence the disk map table entries of the parent process corresponding to the stack and user area pages will be invalid, and these entries of the child too must be set to invalid.     </li>
 
-      <!--<li>/* open file table and semaphore table*/</li>-->
  
        <li style="padding-left: 20px">Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the child process. As heap, code and library pages are shared by the parent process and the child process, copy these entries (page number and auxiliary information) form the page table of the parent to the child. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> (why do we do need to do this?). Initialize the stack page entries in the page table with the new memory page numbers obtained earlier. Note that the auxiliary information for the stack pages is same for both parent and child (why?). Copy content of the user stack pages of the parent to the user stack pages of the child word by word.</li>
+
+       <li style="padding-left: 20px">Store the value in the BP register on top of the kernel stack of child process. The processes (child) created by <i>Fork</i> starts the execution from the instruction following call to <i>Fork</i>. So, the child process needs BP value at that point of execution. Hence, BP (BP value of parent) is stored so that when the child starts it execution for the first time, it pops the value from stack and uses it. Note that even the kernel stack has a value present, the KPTR in the process table is still set to 0.</li>
 
        <li style="padding-left: 20px">Set up return values in the user stacks of the parent and the child processes.  Store the PID of the child process as return value to the parent and 0 as the return values to the child.  Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
 </ul>
 <p>The complete version of the algorithm for the fork system call is provided <a href="os_design-files/fork.html" target="_blank">here</a>.</p> <br>
 <b>Get Pcb Entry (function number = 1, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a>)</b><br><br>
 <p>The Get Pcb Entry function in the process manager, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1. A free process table entry (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a> field is set to <a href="support_tools-files/constants.html">TERMINATED</a>) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry. Initialize PTBR to the starting address of the page table  for that process (obtained using index) and PTLR to 10. Return the index to the caller.</p>
-<p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b> module function is final version.</p>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b> module function is final version.</p><br>
+
+<b>Modifications to <a href="os_modules/Module_5.html" target="_blank">Scheduler module</a></b>
+<br><br>
+<p>The context-switch (scheduler) module is modified in this stage to store the BP back from the kernel stack for the child processes.</p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">As the child process state is set to created by the <i>Fork</i>, do the following when the state of the new process found is created - </li>
+	<li style="padding-left: 20px">Before changing the stack to the user stack for the created process, store the value on top of the kernel stack (pointed by SP) to the BP register.</li>
+</ul>
+
+
+<br>
+
    <b style="font-size: 20px">Exit System Call</b> <br><br>
 
 
@@ -3858,8 +3872,9 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 <b>Modifications to the Boot module</b><br><br>
 <p>Load interrupt routine 8 from disk to memory.</p>
+
 <b>Making things work</b><br><br>
-<p>Compile and load interrupt routine 8, interrupt routine 10, module 2 into the disk using the XFS-interface.</p>
+<p>Compile and load interrupt routine 8, interrupt routine 10, module 2, module 5 into the disk using the XFS-interface.</p>
       
       <div class="container col-md-12" >
                           <div class="section_area">
@@ -4093,7 +4108,7 @@ In later stages, when a file system is added to the OS, the file system data wil
                                 <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding how semaphores help to solve the critical section problem.</li>
 
                              
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for semaphores to eXpOS</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for semaphores to eXpOS.</li>
                             </ul>                                  
                                      
                             </div>
@@ -4124,15 +4139,6 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <p>The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of each process keeps track of the resources (semaphores and files) currently used by the process.  The per-process resource table is stored in the last 16 words of the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> of a process. Per-process resource table can store details of at most eight resources at a time.  Hence the total number of semaphores and files acquired by a process at a time is at most eight.  Each per process resource table entry contains two words. The first field, called the <b>Resource Identifier</b> field, indicates whether the entry corresponds to a file or a semaphore. For representing the resource as a file, the SPL constant <a href="support_tools-files/constants.html" target="_blank">FILE</a> (0) is used and for semaphore, the SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE</a> (1) is used. The second field stores the index of the semaphore table entry if the resource is a semaphore. (If the resource is a file, an index to the open file table entry will be stored - we will see this in later stages.) See the description of <a href="os_design-files/process_table.html#per_process_table" target="_blank" >per-process resource table</a> for details.</p>  
 
 
-<p> To acquire a new semaphore, <b><i>Semget</i></b> system call is used. <i>Semget</i>  creates a new entry in the semaphore table (by invoking the <b>Acquire Semaphore</b> function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semget</i> then finds a free entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> and stores the index of the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as <b>semaphore descriptor</b> (SEMID).  To detach a semaphore from the process, <b><i>Semrelease</i></b> system call is used. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore (by invoking the <b>Release Semaphore</b> function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semrelease</i> also invalidates the per-process table entry corresponding to the SEMID given as an argument.</p>
-
-
-<p>A process locks the semaphore it is sharing using the <b><i>SemLock</i></b> system call. If the requested semaphore is currently locked by some other process, the current process blocks its execution by changing its <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> to the tuple (WAIT_SEMAPHORE, semaphore table index of requested semaphore) until the requested semaphore is unlocked. When the semaphore is unlocked, then STATE of the current process is made READY (by the process which has unlocked the semaphore). At this point, the current process locks the semaphore by changing the LOCKING PID in the semaphore table entry to the PID of the current process. A process invokes <b><i>SemUnLock</i></b> system call to unlock the semaphore it has locked earlier. <i>SemUnLock</i> has SEMID of the locked semaphore as argument. <i>SemUnLock</i> invalidates the LOCKING PID field in the semaphore table entry for the locked semaphore. All the processes waiting for the semaphore are made READY for execution.   
-</p>
-
-<p><b>Acquire Semaphore</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager</a> module is invoked from <i>Semget</i> system call. Acquire Semaphore creates an entry for the semaphore in the semaphore table and returns the index of that entry. <b>Release Semaphore</b> function of resource manager module is invoked from <i>Semrelease</i> system call. If the semaphore to be released is locked by current process, then Release Semaphore function first unlocks the semaphore. Release Semaphore function finally decrements the PROCESS COUNT of the corresponding semaphore in the semaphore table.</p>
-
-<p><code>Note :</code> If any semaphore is not released by a process during execution using <i>Semrelease</i> system call, then the semaphore is released at the time of termination of the process in <i>Exit</i> system call.  </p><br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/sem.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
@@ -4152,53 +4158,40 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
 </ul><br>
 
-<b>Semget System Call</b><br><br>
-<p><i>Semget</i> system call does not take any argument from user. It returns the semaphore descriptor if executed successfully.</p>
+<ol style="list-style-type: decimal; margin-left: 2px">
 
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Loop through the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> of the current process  to find a free entry. Free entry is indicated by -1 in the Resource Identifier field. If a free entry is found, the index of this free entry is called as semaphore descriptor and denoted as SEMID.</li>
-<li style="padding-left: 20px">If no free entry is found in the per-process resource table, this indicates the process has reached its limit of resources. In this case, store -1 as return value in the stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">To create a new semaphore entry in the semaphore table, invoke <b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html " target="_blank">resource manager module</a>. Acquire Semaphore function returns the index of the free entry of the semaphore table if found.</li>
-<li style="padding-left: 20px">If no free entry is found in <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> (<b>Acquire Semaphore</b> function returns -1), then the system has reached its limit of semaphores. In this case, store -2 as return value for <i>Semget</i> system call in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">Store the index returned by Acquire Semaphore function in the second field of the per-process resource table entry corresponding to SEMID.</li>
-<li style="padding-left: 20px">Set the Resource Identifier Field in the per-process resource table entry to <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE</a> indicating that the entry is used for semaphore resource.</li>
-<li style="padding-left: 20px">Store SEMID as the return value in the user stack. Reset the MODE FLAG to 0.</li>
- </ul>
-<p>The algorithm for <i>Semget</i> system call is provided <a href="os_design-files/semaphore_algos.html#semget" target="_blank">here</a>. </p><br>
+<li><b>Semget System Call</b></li>
+<p><b><i>Semget</i></b> system call is used to acquire a new semaphore. <i>Semget</i>  creates a new entry in the semaphore table by invoking the <b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. <i>Semget</i> then finds a free entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> and stores the index of the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as <b>semaphore descriptor</b> (SEMID).</p>
+
+<p style="text-indent: 0px;">Implement <i>Semget</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semget" target="_blank">here</a>. </p><br>
 
 
 
-<b>Semrelease System Call</b><br><br>
-<p><i>Semrelease</i> system call takes semaphore desciptor (SEMID) as argument from user program. </p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry corresponding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
-<li style="padding-left: 20px">If the validity conditions are satisfied then continue with the implementation. Invoke <b>Release Semaphore</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> with SEMID as argument to update the semaphore table.</li>
-<li style="padding-left: 20px">Invalidate the per-process resource table entry corresponding to SEMID by setting the Resource Identifier field to -1.</li>
-<li style="padding-left: 20px">Store 0 as return value in the user stack indicating success and reset the MODE FLAG to 0.</li>
-</ul>
+
+<li><b>Semrelease System Call</b></li>
+<p><b><i>Semrelease</i></b> system call takes semaphore desciptor (SEMID) as argument from user program.<i>Semrelease</i> system call is used to detach a semaphore from the process. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore by invoking the <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. <i>Semrelease</i> also invalidates the per-process table entry corresponding to the SEMID given as an argument.</p>
+
+<p style="text-indent: 0px">Implement <i>Semrelease</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semrelease" target="_blank">here</a>. </p>
+
+<p style="text-indent: 0px"><code>Note :</code> If any semaphore is not released by a process during execution using <i>Semrelease</i> system call, then the semaphore is released at the time of termination of the process in <i>Exit</i> system call.  </p><br>
 
 
-<p>The algorithm for <i>Semrelease</i> system call is provided <a href="os_design-files/semaphore_algos.html#ssemrelease" target="_blank">here</a>. </p><br>
+
+<li><b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+<p><b>Acquire Semaphore</b> function takes PID of the current process as argument. <i>Acquire Semaphore</i> finds a free entry in the semaphore table and sets the PROCESS COUNT to 1 in that entry. Finally, <i>Acquire Semaphore</i> returns the index of that free entry of semaphore table.</p>
 
 
-<b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-<p style="text-indent: 0px">Acquire Semaphore function implemented in the resource manager module (module 0) takes PID of the current process as argument. It returns the index of a free entry of semaphore table.  </p>
-<li style="padding-left: 20px">Loop through the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> and find a free entry (free entry is indicated by 0 in the PROCESS COUNT field). If no free entry is found then return -1 to the caller.</li>
-<li style="padding-left: 20px">In the free entry is found, set the PROCESS COUNT to 1 and LOCKING PID to -1. Return the index of the free entry in the semaphore table to the caller.</li>
-</ul><br>
+<p style="text-indent: 0px">Implement <i>Acquire Semaphore</i> function using the detailed algorithm provided in resource manager module link above.</p><br>
 
 
-<b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Release Semaphore function takes semaphore table index and PID of the current process as arguments.</p>
-	<li style="padding-left: 20px">If the LOCKING PID corresponding to the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> index is equal to the current PID then the semaphore must be unlocked first before releasing. To unlock the semaphore, invalidate the LOCKING PID field to -1 and change the STATE of all the processes waiting for this semaphore to READY.</li>
-	<li style="padding-left: 20px">Decrement the PROCESS COUNT field corresponding to the given semaphore table index.</li>
-</ul>
-<p style="text-indent: 0px"><code>Note :</code> The implementation of the functions <b>Acquire Semaphore</b> and <b>Release Semaphore</b> are final.</p><br>
 
+
+<li><b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+<p><b>Release Semaphore</b> function takes a semaphore index (SEMID) and PID of a process as arguments. If the semaphore to be released is locked by current process, then <i>Release Semaphore</i> function unlocks the semaphore and wakes up all the processes waiting for this semaphore. <i>Release Semaphore</i> function finally decrements the PROCESS COUNT of the semaphore in its corresponding semaphore table entry.</p>
+
+<p style="text-indent: 0px">Implement <i>Release Semaphore</i> function using the detailed algorithm provided in resource manager module link above.</p>
+<br>
+</ol>
 
 
 <b style="font-size: 20px">Implementation of Interrupt routine 14</b><br><br>
@@ -4210,50 +4203,53 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
 </ul><br>
 
+<ol style="list-style-type: decimal; margin-left: 2px">
+
+<li><b>SemLock System Call</b></li>
+<p><b><i>SemLock</i></b> system call takes a semaphore desciptor (SEMID) as an argument from user program. A process locks the semaphore it is sharing using the <i>SemLock</i> system call. If the requested semaphore is currently locked by some other process, the current process blocks its execution by changing its <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> to the tuple (WAIT_SEMAPHORE, semaphore table index of requested semaphore) until the requested semaphore is unlocked. When the semaphore is unlocked, then STATE of the current process is made READY (by the process which has unlocked the semaphore). At this point, the current process locks the semaphore by changing the LOCKING PID in the semaphore table entry to the PID of the current process. </p>
+<p style="text-indent: 0px">Implement <i>SemLock</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semlock" target="_blank">here</a>. </p>
+
+<br>
 
 
-<b>SemLock System Call</b><br><br>
-<p><i>SemLock</i> system call takes a semaphore desciptor (SEMID) as an argument from user program.</p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
-<li style="padding-left: 20px">If validity conditions are satisfied then continue with the implementation. If the requested semaphore is currently used by some other process, then the current process will wait in WAIT_SEMAPHORE state until the semaphore becomes free. Find the semaphore table index using the SEMID. While the LOCKING PID field in the semaphore table for the requested semaphore has PID of some other process, then <br>
-1) Change the STATE of the current process to the tuple (WAIT_SEMAPHORE, semaphore table index) <br>
-2) Invoke the scheduler.</li>
-<p style="padding-left: 20px;text-indent: 0px;">/*The following steps are executed only when the requested semaphore becomes free and the current process comes out of busy loop.*/</p>
-<li style="padding-left: 20px">As the requested semaphore is free to lock, change the LOCKING PID in the semaphore table to PID of the current process.</li>
-<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
-</ul>
-<p>The algorithm for <i>SemLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semlock" target="_blank">here</a>. </p><br>
+
+<li><b>SemUnLock System Call</b></li>
+<p><b><i>SemUnLock</i></b> system call takes a semaphore desciptor (SEMID) as argument. A process invokes <i>SemUnLock</i> system call to unlock the semaphore. <i>SemUnLock</i> invalidates the LOCKING PID field (store -1) in the semaphore table entry for the semaphore. All the processes waiting for the semaphore are made READY for execution.</p>
+<p style="text-indent: 0px">Implement <i>SemUnLock</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semunlock" target="_blank">here</a>. </p>
+
+<br>
 
 
-<b>SemUnLock System Call</b><br><br>
-<p><i>SemUnLock</i> system call has a semaphore desciptor (SEMID) as an argument from user program. </p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
 
-<li style="padding-left: 20px">If validity conditions are satisfied then continue with the implementation. Find the semaphore table index using the SEMID. Check the LOCKING PID value in the semaphore table entry corresponding to the semaphore table index. If the LOCKING PID value is valid and has PID of any other process, then the current process can not unlock the semaphore. In this case, store -2 as return value in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">If the LOCKING PID value is the PID of the current process, then invalidate the LOCKING PID to -1 and wake up the processes waiting for this semaphore by changing the STATE from the tuple (WAIT_SEMAPHORE, semaphore table index) to READY.</li>
-<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
-
-</ul>
-
-<p>The algorithm for <i>SemUnLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semunlock" target="_blank">here</a>. </p><br>
-
-<p style="text-indent: 0px"><code>Note :</code> The implementations of the system calls <i>Semget</i>, <i>Semrelease</i>, <i>SemLock</i> and <i>SemUnLock</i> are final.  </p><br>
-
+<p style="text-indent: 0px"><code>Note :</code> The implementation of <b><i>Semget</i></b>, <b><i>Semrelease</i></b>, <b><i>SemLock</i></b>, <b><i>SemUnLock</i></b> system calls and <b>Acquire Semaphore</b>, <b>Release Semaphore</b> module functions are final.  </p>
+</ol>
+<br>
 
 <b>Modifications to <i>Fork</i> system call</b><br><br>
-<p>In this stage, <i>Fork</i> is modified to update the semaphore table for the semaphores acquired by the parent process. In earlier stage, while implementing the <i>Fork</i> system call, we have copied the per-process resource table of parent to the child  as child process shares the semaphores (and files) acquired by the parent process. To reflect this globally, loop through the per-process resource table of parent and for every semaphore entry, increment the PROCESS COUNT field by one in the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> for the corresponding semaphore. Refer algorithm for <a href="os_design-files/fork.html" target="_blank">fork system call</a>.</p>
+<p>In this stage, <i>Fork</i> is modified to update the semaphore table for the semaphores acquired by the parent process. When a process forks, the semaphores acquired by the parent process are now shared between parent and child. To reflect this change, PROCESS COUNT field is incremented by one in the semaphore table entry for every semphore shared between parent and child. Refer algorithm for <a href="os_design-files/fork.html" target="_blank">fork system call</a>.</p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">While copying the per-process resource table of parent to the child process do following - </li>
+		<li style="padding-left: 20px">If the resource is semaphore (check the Resource Identifier field in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>), then using the sempahore table index, increment the PROCESS COUNT field in the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry.</li>
+</ul>
 <br>
 
 <b>Modifications to Free User Area Page (function number = 2, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
-<p>The user area page of every process contains the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> in the last 16 words. Free User Area Page function releases the user area page for a process. Before releasing the user area page, Free User Area Page function should release the semaphores (and files) acquired by the process. Go through the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> entries and for the semaphore entries (Resource Identifier entry equal to SEMAPHORE), release the semaphore by invoking the <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html">resource manager module</a> and invalidate that entry by setting Resource Identifier field to -1.</p>
+<p>The user area page of every process contains the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> in the last 16 words. When a process terminates, all the semaphores the process has acquired (and haven't released explicitly) have to be released. This is done in the <i>Free User Area Page</i> function. The <b>Release Semaphore</b> function of resource manager module is invoked for every valid semaphore in the per-process resource table of the process. </p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">For each entry in the per-process resource table of the process do following - </li>
+	<li style="padding-left: 20px">If the resource is valid and is semaphore (check the Resource Identifier field in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>), then invoke <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. </li>
+</ul>
 <br>
-<p style="text-indent: 0px"><code>Note :</code> <i>Fork</i> system call and <b>Free User Area page</b> function will be further modified in later stages for the file resources.</p><br>
+
+<p style="text-indent: 0px"><code>Note :</code> <b><i>Fork</i></b> system call and <b>Free User Area page</b> function will be further modified in later stages for the file resources.</p><br>
+
 <b>Modifications to boot module</b><br><br>
-<p>Initialize the semaphore table by setting PROCESS COUNT of all entries to 0. Load interrupt routine 13 and 14 from the disk to the memory. </p><br>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">Initialize the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> by setting PROCESS COUNT to 0 and LOCKING PID to -1 for all entries.</li>
+	<li style="padding-left: 20px">Load interrupt routine 13 and 14 from the disk to the memory. See <a href="os_implementation.html" target="_blank">memory organisation</a>.</li>
+</ul>
+<br>
+
 
 <b>Making things work</b><br><br>
 <p> Compile and load the newly written/modified files to the disk using XFS-interface.</p><br>
