@@ -4362,67 +4362,8 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
 </ol>
 <p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Create</i></b>, <b><i>Delete</i></b>, <b>Acquire Inode</b> and <b>Release Inode</b> are final.</p><br>
 
-<!--<p>Each inode table entry occupies 16 words of which 7 are unused presently. The FILE TYPE field in the inode table is used to indicate whether the file is a <a href="os_spec-files/eXpFS.html" target="_blank">data file, executable file or root file</a>. The SPL constants <a href="support_tools-files/constants.html" target="_blank">DATA, EXEC, ROOT</a> are used to indicate the type of the file. eXpOS allows only data files to be created using <i>Create</i> system call. The field FILE NAME stores the name of the file and the field FILE SIZE stores the size of the file. A file in eXpOS can occupy maximum four blocks. As each block has 512 words, maximum FILE SIZE possible is 2048 words and denoted by constant <a href="support_tools-files/constants.html" target="_blank">MAX_FILE_SIZE</a>. USERID field of a file stores the ID of the user who created the file (owns the file). When a file is created, the USERID field is copied from the USERID field of the process table of the current process. When multiuser support is added in later stages, there will be more significant use of this USERID field. (At present to simplify the implementation, we consider a single user operation with only one user called root, USERID of root is 1). The USERID field in the process table of INIT is set to 1 in the boot module. The PERMISSION field indicates which file operations can be performed by a user. The PERMISSION field takes two values - OPEN_ACCESS (0) and EXCLUSIVE (1). When creating a new file, the user should provide the permission as an argument to Create system call. Refer to <a href="os_spec-files/multiuser.html#file_access_permissions" target="_blank">file access permissions</a> for details. The four DATA BLOCK fields store the disk block numbers allocated to a file. When a file is created no disk blocks are allocated, hence all DISK BLOCK fields are initialized to -1. 
-An unused(free) entry in the inode table is indicated by -1 in the FILE NAME field. The starting address of the memory copy of the inode table is given by SPL constant <a href="support_tools-files/constants.html" target="_blank">INODE_TABLE</a>. See <a href="os_implementation.html" target="_blank">memory organization</a> and <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> for more details.</p>
 
-<p>Each entry in the <a >root file</a> has eight words of which the last three words are unused. The first five fields are FILE NAME, FILE SIZE, FILE TYPE, USERNAME and PERMISSION. All fields except USERNAME have the same values as that of the corresponding fields in the inode table entry for a file. In present stage, the USERNAME field for every file is set to "root". An unused(free) entry in the root file is indicated by -1 in the FILE NAME field. The SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a> refers to the starting address of of the memory copy of the root file. See <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a> for more details. </p>
-<br>
-<b style="font-size: 20px">Implementation of Interrupt routine 4</b><br><br>
-<br>
-<figure style="text-align: center;">
-                           <img src="img/roadmap/create_delete.png" style="display:block;margin-left:auto;margin-right:auto" >
-                           <br>
-                           <figcaption>Control flow for <i>Create</i> and <i>Delete</i> system calls</figcaption>
-                           </figure>
-
-                           <br> 
-
-<br>
-<p>The system calls <i>Create</i> and <i>Delete</i> are implemented in the interrupt routine 4. <i>Create</i> and <i>Delete</i> have system call numbers 1 and 4 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p>
-
-
-
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Extract the system call number from the user stack and switch to the kernel stack.</li>
-<li style="padding-left: 20px">Implement system calls <i>Create</i> and <i>Delete</i> according to the system call number extracted from above step. Steps to implement these system calls are explained below.</li>
-<li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
-</ul><br>
-<b>Create System Call</b><br><br>
- <p>Create system call has file name (string) and permission (integer) as arguments.</p>
-
- <ul style="list-style-type: disc; margin-left: 10px; ">
- 	<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
- 	<li style="padding-left: 20px">Retrieve the file name and permission provided as arguments from the user stack. Check if a file with the given file name is already present in eXpOS. This can be done by going through the entries of the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a>. If the file is already present then set the return value to 0, reset the MODE FLAG, change the stack to user stack and return to user mode. </li>
- 	<li style="padding-left: 20px">Go through the inode table to find a free entry (a free entry in the inode table is indicated by -1 in the FILENAME field). If free entry is not found indicating that the system has reached maximum limit for files, then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">In case a free entry is found, save the index of this entry for further use. Initialize the fields of the inode table entry corresponding to the found index. Set the FILE TYPE to SPL constant <a href="support_tools-files/constants.html" target="_blank">DATA</a>. Store the file name and permission given as arguments in the FILE NAME and PERMISSION fields respectively. Set the FILE SIZE to 0 as at the time of file creation, file is empty. The USERID field is set to the USERID of the current process which is present in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process. Four data block entries are invalidated as no data blocks are allocated for the file/. </li>
-
-
- 	<li style="padding-left: 20px">Initialize the <a href="os_design-files/disk_ds.html#root_file">root file</a> entry corresponding to the new file (the entry can be obtained using inode index). Set FILE NAME, FILE SIZE, FILE TYPE and PERMISSION fields as done for inode table entry. Set USERNAME field to "root". </li>
- 	<li style="padding-left: 20px">Store the return value as 0 indicating success and reset the MODE FLAG in the process table.</li>
- </ul>
-<br>
-<p style="text-indent: 0px"><code>Note :</code>The implementation of the <i>Create</i> system call is not final. <i>Create</i> will need a minor modification when multiuser support is added. The algorithm for <i>Create</i> system call is provided <a href="os_design-files/create.html" target="_blank">here</a>.</p><br>
-
-
-<b>Delete System Call</b><br><br>
-
-<p>Delete system call has file name (string) as argument.</p>
-
- <ul style="list-style-type: disc; margin-left: 10px; ">
- 	<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
- 	<li style="padding-left: 20px">Retrieve the file name provided as argument from the user stack. Loop through the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries to find the index of the file with the provided file name. If the file is not found in the inode table, store return value as 0 in the user stack, reset the MODE FLAG, change the stack to user stack and return to user mode. If the file is present, store the inode index for further use.</li>
- 	<li style="padding-left: 20px">If the FILE TYPE field in the inode table entry is not DATA then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">If given file have <a href="support_tools-files/constants.html" target="_blank">EXCLUSIVE</a> permission and current user is neither root user nor the user who created (owns) the file then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode. (Note that root user has privilege to delete any file.)</li>
- 	<li style="padding-left: 20px">If the file to be deleted is open by some process (FILE OPEN COUNT in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> is not zero), then the file can not be deleted. In this case, store -2 as the return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">For each disk block allocated to the file to be deleted,  check if the block is loaded into the buffer by referring the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> entry corresponding to the disk block number. The buffer table entry can be found using formula <i>disk block number % <a href="support_tools-files/constants.html" target="_blank">MAX_BUFFER</a></i>. If the block is loaded into the buffer, invalidate the BLOCK NUMBER field in the buffer table entry For each disk block in the inode table entry for the file, release the block by invoking <b>Release Block</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
-  
- 	<li style="padding-left: 20px">Invalidate the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file(inode) status table</a> entry for the file by setting FILE OPEN COUNT to 0. Invalidate the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a>
- 	entries for the file by setting FILE NAME to -1.</li>
- 	<li style="padding-left: 20px">Store 0 as return value indicating successful deletion of given file and reset the MODE FLAG in the process table to 0.</li></ul>
- 
-<p style="text-indent: 0px"><code>Note :</code>The implementation of the  <i>Delete</i> system call is not final. The algorithm for <i>Delete</i> system call is provided <a href="os_design-files/delete.html" target="_blank">here</a>.</p><br>
- 	<br>-->
-
+ 	
   <b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
   <p> <i>Create</i> and <i>Delete</i> system calls update the memory copies 
   of Inode table, disk free list and root file.  The changed data
@@ -4458,20 +4399,11 @@ An unused(free) entry in the inode table is indicated by -1 in the FILE NAME fie
 <li><b>Disk Store (function number = 1, <a href="os_modules/Module_4.html" target="_blank">Device manager module</a>)</b></li>
 
 <p>Disk Store function takes PID of a process, a page number and a block number as arguments. To store data into the disk, Disk Store first needs to lock the disk by invoking the <b>Acquire Disk</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. After locking the disk, Disk Store updates the <a href="os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a>. Finally, Disk Store initiates the store operation for given page number and block number and waits in WAIT_DISK state until the store operation is complete. When store operation is completed, system raises the disk interrupt which makes this process READY again.</p>
-<p> Implement <b>Disk Store</b> function using the detailed algorithm given in the device manager module link above.</p>
+<p style="text-indent:  0px"> Implement <b>Disk Store</b> function using the detailed algorithm given in the device manager module link above.</p>
 
 <p style="text-indent: 0px"><code>Note :</code>The implementation of <b>Disk Store</b> function is final.</p><br>
 
-<!--
-   <ul style="list-style-type: disc; margin-left: 10px;">
-    
-    <li style="padding-left: 20px">Lock the disk by invoking <b>Acquire Disk</b> function of resource manager module.</li>
-    <li style="padding-left: 20px">In the <a href="os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a>, set the LOAD/STORE BIT field to 1 (1 indicates store operation). Store the page number and disk block number given as arguments in PAGE NUMBER and BLOCK NUMBER fields respectively. </li>
-    <li style="padding-left: 20px">Store the page back to the disk using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> statement <i>store</i>. </li>
-    <li style="padding-left: 20px">Set the STATE of the process with given PID as WAIT_DISK and invoke the scheduler. Return to the caller.</li>
 
-</ul>
--->
 
 </ol>
 
@@ -4509,7 +4441,7 @@ An unused(free) entry in the inode table is indicated by -1 in the FILE NAME fie
  <!--=========Begin Stage 24 ===========-->
  <div class="panel-heading" id="list_stage24">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse24"><span class="fa fa-check-square-o"></span>Stage 24 : File open,close and read</a>
+                          <a data-toggle="collapse"  href="#collapse24"><span class="fa fa-check-square-o"></span>Stage 24 : File data access</a>
                         </h4>
                       </div>
 
@@ -4523,8 +4455,8 @@ An unused(free) entry in the inode table is indicated by -1 in the FILE NAME fie
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo24">Learning Objectives</a>
                             <div id="lo24" class="panel-collapse expand">
                               <ul>
-
-                                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of open, close and read system calls. </li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding the concept of buffer cache. </li>
+                                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of open, close and read system calls.</li>
                             </ul>                                  
                                      
                             </div>
@@ -4536,90 +4468,112 @@ An unused(free) entry in the inode table is indicated by -1 in the FILE NAME fie
   <!--End Learning Objectives-->
 
 
-<b>Gain the understading of the following data structures and their fields if you haven't done already - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a>, <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a> and <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a>.</b><br><br>
-<p>Open,close,Read, modify fork.(all this should be final)</p>
-<p>In current stage, we will add support to read from a file by implementing  </p>
+<b>Pre-requisite reading</b><br>
+    <p style="text-indent: 0px">1) Description of data structures - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a>, <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. </p>
+	<br>
+<!--
+<b>Gain the understanding of the following data structures and their fields if you haven't done already - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a>, <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>.</b><br><br>-->
+<p>In this stage, we will understand the mechanism of opening and closing a file with the help of <i>Open</i> and <i>Close</i> system calls. We will also understand how contents of a file can be read by using <i>Read</i> system call. <i>Fork</i> system call and <b>Free User Area Page</b> function of process manager module are also modified in this stage. </p><br>
 
 
 
 <b style="font-size: 20px">Interrupt routine 5</b><br><br>
-<!--<figure style="text-align: center;">
-                           <img src="img/roadmap/create_delete.png" style="display:block;margin-left:auto;margin-right:auto" >
+
+<p>The system calls <i>Open</i> and <i>Close</i> are implemented in the interrupt routine 5. <i>Open</i> and <i>Close</i> have system call numbers 2 and 3 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/open_close.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
                            <figcaption>Control flow for <i>Open</i> and <i>Close</i> system calls</figcaption>
                            </figure>
 
-<br>-->
-<p>The system calls <i>Open</i> and <i>Close</i> are implemented in the interrupt routine 5. <i>Open</i> and <i>Close</i> have system call numbers 2 and 3 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
-
+<br>
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b>Open system call</b></li> 
-<p><i>Open</i> system call takes filename as an argument from the user program. <i>Open</i> creates new entries for the file to be opened in the per-process resource table. When a process opens the a file twice, two separate entries are created in the per-process resource table of the process. Every entry in the per-process resource table (related to file) denotes a open instance of a file. Open system call invokes open function of file manager module to create a new entry in the open file table for and initialize the found open file table entry according to the file.   
+<p><i>Open</i> system call takes filename as an argument from the user program. To perfrom read/write operations on a file, a process first opens the file. Open system call creates a new open instance for the file and returns a file descriptor (index of the per-process resource table entry). Further operations on the open instance are performed using this file descriptor. A process can open a file several times and every time a different open instance is created (i.e. different file desciptor).</p>
+<p> <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> keeps track of all the open instances of every file in the system. Open system call creates new entries for the file in <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> and open file table. A process keeps track of a open instance by storing the index of open file table entry of the open instance in the corresponding resource table entry. When a file is opened, the OPEN INSTANCE COUNT  in the open file table is set to 1 and seek position is initialized to the starting of the file (0). File status table has an entry for every file in the system (not just opened files). When a file is opened, the FILE OPEN COUNT in the file status table entry for the file is incremented by one. Open system call invokes Open function of file manager module to deal with global data structures - <a href="os_design-files/mem_ds.html" target="_blank">file status table</a> and open file table. When a process forks, the open instances created by the process are shared between the current process and its child. As the effect of forking, the OPEN INSTANCE COUNT in the open file table entry corresponding to the open instance is incremented by one.  </p>  
 
-for that open instance in the per-process resource table of the process.   
-
-
-A new entry in the open file table is also created for the file. Open system call uses a module function calles Open to set up the open file table entry and file status table entry of the file. Open file table entry for the file saves the inode index of the file.   Implement <i>Open</i> system call using detailed algorithm provided <a href="os_design-files/open.html">here</a>.</p>
+<p style="text-indent: 0px">  Implement <i>Open</i> system call using the detailed algorithm provided <a href="os_design-files/open.html" target="_blank">here</a>.</p>
 <br>
 <li><b>Close system call</b></li>
-<p><i>Close</i> system call takes file discriptor (index of per-process resource table) as an argument from the user program.  Implement <i>Delete</i> system call using detailed algorithm provided <a href="os_design-files/close.html">here</a>. </p>
+<p>When a process no longer needs to perform read/write operations on an open instance of a file, the open instance is closed using <i>Close</i> system call. <i>Close</i> system call takes file descriptor (index of per-process resource table entry) as an argument from the user program. Even if a process does not explicitly close an open instance by invoking <i>Close</i> system call, the open instance is closed at the termination of the process by <i>Exit</i> system call.</p>  
+<p><i>Close</i> system call invalidates the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> entry (corresponding to given file descriptor) by storing -1 in the Resource Identifier field. To decrement share count of the open instance in the open file table and update the file status table accordingly, <b>Close</b> function of <a href="os_modules/Module_3.html" target="_blank">file manager module</a> is invoked by the <i>Close</i> system call.</p> 
+<p style="text-indent: 0px">Implement <i>Close</i> system call using the detailed algorithm provided <a href="os_design-files/close.html">here</a>. </p>
 <br>
+
 <li><b>Open (function number = 3, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p>Open takes a file name as an arguments. Implement Open function with the help of detailed algorithm given in the file manager module link above.</p>
+<p>Open takes a file name as an argument. Open function locates the inode index for the file and locks the inode (the file) before proceeding futher. <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> is invoked to lock the file. Locking the file is necessary to make sure that no other process deletes the file during the opening of the file. Open function creates a new entry in the open file table and the index of this entry is returned to the caller to store in the per-process resource table entry. All the fields of the open file table entry are initialized. In case the file is "root" file, INODE INDEX field is initialized to the <a href="support_tools-files/constants.html" target="_blank">INODE_ROOT</a> (0). Open function increments the FILE OPEN COUNT field by one in the file status table entry for the file, except if the file is "root" file (why?). The lock on the file is released by invoking <b>Release Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> before returning to the caller.</p>
+
+<p style="text-indent: 0px"> Implement <i>Open</i> function using the detailed algorithm given in the file manager module link above.</p>
 <br>
 <li><b>Close (function number = 4, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p>Open takes an open file table index as an arguments. Implement Close function with the help of detailed algorithm given in the file manager module link above.</p>
-</ol><br><br>
+<p>Close takes an open file table index as an argument. <i>Close</i> function decrements the share count (i.e OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html" target="_blank">open file table</a> entry) as the process no longer shares the open instance of the file. When the share count becomes zero, this indicates that all processes sharing that open instance of the file have closed the file. Hence, open file table entry corresponding to that open instance of the file is invalidated by setting the INODE INDEX field to -1 and the open count of the file (FILE OPEN COUNT field in <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> entry) is decremented.</p> 
+<p style="text-indent: 0px">Implement <i>Close</i> function using the detailed algorithm given in the file manager module link above. </p><br>
 
-<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Open</i></b> and <b><i>Close</i></b> system calls and  <b>Open</b>, <b>Close</b> functions are final.</p><br>
+
+<li><b>Modifications to <i>Fork</i> system call</b></li>
+<p style="padding-left: 20px"> There is a simple modification in the <i>Fork</i> System call. When a process forks to create a child process, the file instances currently opened by the parent are now shared between child and parent. To reflect this change, the OPEN INSTANCE COUNT field in the open file table is incremented for each open file instance in the per-process resource table of parent process. </p>
+<ul style="list-style-type: disc; margin-left: 10px;">
+
+<li style="padding-left: 20px">While Copying the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of parent to the child process do following -</li>
+<li style="padding-left: 20px">If the resource is file (check the Resource Identifier field in the per-process table), then using the open file table index, increment the OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> entry.</li>
+/*The change in <i>Fork</i> system call to update the <a href="os_design-files/mem_ds.html#sem_table" target="_blank" 
+>semaphore table</a>, is already done in stage 22*/
+</ul><br>
+
+<li><b>Modifications to Free User Area Page (function number = 2, <a href="os_modules/Module_1.html" target="_blank">process manager module</a> )</b></li>
+<p style="padding-left: 20px"> When a process terminates, all the files the process has opened (and haven't closed explicitly) have to be closed. This is done in the Free User Area page function. The Close function of the file manager module is invoked for every open file in the per-process resource table of the process.   </p>
+<ul style="list-style-type: disc; margin-left: 10px;">
+
+<li style="padding-left: 20px">For each entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of the process, do following -</li>
+<li style="padding-left: 20px">If the resource is valid and is file (check the Resource Identifier field in the per-process resource table), then invoke the Close function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>.</li>
+/*The change in the Free User Area Page to release the unrelased semaphores is already done in stage 22*/
+</ul><br>
+</ol>
+
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Open</i></b>,<b><i>Close</i></b>, <b><i>Fork</i></b> system calls and <b>Open</b>, <b>Close</b>, <b>Free User Area Page</b> functions are final.</p><br>
 
 
 
 
 <b style="font-size: 20px">Interrupt routine 6 (<i>Read</i> system call)</b><br><br>
-<br>
-<!--<figure style="text-align: center;">
-                           <img src="img/roadmap/Initial_shutdown.png" style="display:block;margin-left:auto;margin-right:auto" >
+
+<p>Interrupt routine 6 written in stage 16 reads data (words) only from the terminal. In this stage, <i>Read</i> system call is modified to read data from files. <i>Read</i> system call has system call number 7. From ExpL programs, <i>Read</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/FileRead.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
-                           <figcaption>Control flow for <i>Read</i> system call</figcaption>
+                           <figcaption>Control flow for reading a word from a file</figcaption>
                            </figure>
 
                            <br> 
 
-<br>-->
-<p>Interrupt routine 6 written in stage 16, read data (words) from the terminal. In this stage, <i>Read</i> system call is modified to read data from files. <i>Read</i> system call has system call number 7 and arguments to the file discriptor of a file and word address to which data is written. See  </p><br>
-
+<br>
 <ol style="list-style-type: decimal; margin-left: 2px">
-<li><b>Read system call</b></li>
-<p>Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html">here</a>.</p>
+<li><b><i>Read</i> system call</b></li>
+<p><i>Read</i> system call takes file descriptor and address to which word is stored as arguments. <i>Read</i> system call needs to lock the inode at the starting of the system call and relases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> are used to lock and release the inode respectively. <i>Read</i> system call reads a word from the file, pointed by position LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry) and writes it into the address provided. After reading a word from the file, the LSEEK position is incremented by one. File data is present in the disk blocks allocated to the file. To read from position LSEEK, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and read a word present at position LSEEK, <i>Read</i> invokes <b>Buffered Read</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. Reading from the root file does not require a buffer, as root file is loaded into the memory at the time of booting. memory copy of root file is present in memory page 62 and starting address is denoted by the SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a>. The word in the root file at LSEEK position is copied into the address provided. Note that the memory address provided as argument is logical address, and as system call runs in kernel mode logical address should be translated to physical address before using.</p>
+<p>
+Read system call needs to lock the resources - Inode (file), buffer and disk before using them. These are locked in the order 1) Inode 2) buffer and 3) disk and released in the reverse order. This order is also followed while writing to a file to avoid circular wait of the resources.</p>
+
+<p style="text-indent: 0px">Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html">here</a>.</p>
 
 <br>
 <li><b>Buffered Read (function number = 2, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p>Buffered Read a disk block number, offset into the page and memory address of the word as arguments. Implement Buffered Read function with the help of detailed algorithm given in the file manager module link above.</p>
+<p><b>Buffered Read</b> takes a disk block number, offset and physical memory address of the word as arguments. The task of Buffered read is to read a word from the given disk block present at postion given by offset and store it in the given memory address. To read a word from a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Read invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the correspoding buffer, a word present at given offset in the memory buffer is copied into the address given as argument. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Read invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
+
+<p style="text-indent: 0px">Implement Buffered Read function using the detailed algorithm given in the file manager module link above.</p>
 <br>
+
 <li><b>Acquire Buffer (function number = 1, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> )</b></li>
-<p>Acquire Buffer takes buffer number and PID of a process as arguments. Implement Acquire Buffer function with the help of detailed algorithm given in the resource manager module link above.</p>
-<br>
-<li><b>Relase Buffer (function number = 2, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> )</b></li>
-<p>Release Buffer buffer number and PID of a process as arguments. Implement Release Buffer function with the help of detailed algorithm given in the resource manager module link above.</p>
+<p><b>Acquire Buffer</b> takes buffer number and PID of a process as arguments. To use the buffer with given buffer number, it has to be locked first to avoid data inconsistency. A process locks a buffer by storing its PID in the LOCKING PID field of <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> entry with given buffer number. If the required buffer is locked by some other process (LOCKING PID is valid and not equal to given PID), then given process is blocked (<a href="os_design-files/process_table.html#state" target="_blank">state</a> is changed to (WAIT_BUFFER, buffer number)). The process waits in the blocked state, until the required buffer is free and the process is scheduled again. </p>
+<p style="text-indent: 0px"> Implement Acquire Buffer function using the detailed algorithm given in the resource manager module link above.</p>
 <br>
 
+<li><b>Relase Buffer (function number = 2, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+
+<p><b>Release Buffer</b> takes buffer number and PID of a process as arguments. Release Buffer function invalidates the LOCKING PID field (store -1) in the buffer table entry for given buffer number. Release Buffer also wakes up all processes waiting for the buffer with given buffer number. To wake up a process waiting for the buffer with given buffer number, change the state in the <a target="_blank" href="os_design-files/process_table.html">process table</a> from tuple (WAIT_BUFFER, buffer number) to READY. </p>
+<p style="text-indent: 0px">Implement Release Buffer function using the detailed algorithm given in the resource manager module link above.</p>
+<br>
+</ol>
 <p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Read</i></b> system call and <b>Buffered Read</b>, <b>Acquire Buffer</b>, <b>Release Buffer</b> functions are final.</p><br>
-<!--<p>File (inode) status table is a data structure present in memory used to store the lock status of each file. File status table is present in memory page 57 and occupies 240 words. There are total MAX_FILE_NUM (60) entries in the file status table. For every file present in the inode table a corresponding entry is present in file status table with the same index. Each entry of the file status table occupies four words of which last two are unused. FILE OPEN COUNT field gives the number of open instances of a file. Whenever a file is opened (using open system call) the FILE OPEN COUNT field is incremented by one in the file status table entry of that file. LOCKING PID field stores the PID of the process which has currently locked the file(inode). To perform operations read/write on the file, a process first has to lock the file by setting the LOCKING PID field to the PID of the process. An invalid entry in the file status table is indicated by -1 in the FILE OPEN COUNT field. The SPL constant <a href="support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is used to refer to the starting address of the file status table. See <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> for more details.</p>
-
-<p>To perform operations read and write on a file, the relevant disk blocks has to be present in the memory. eXpOS uses four memory pages (71 to 75) as buffers to load the disk blocks for file read/write operations. The SPL constant <a href="support_tools-files/constants.html" target="_blank">MAX_BUFFER</a> gives number of buffer pages that is 4. The data structure buffer table is used to store information regarding the disk blocks loaded into the buffer pages. The disk block to be accessed has to be loaded into a buffer page which is decided by a simple hash function -   
-<i>Buffer number = disk block number%MAX_BUFFER</i>. There are three required fields in each entry of the buffer table. BLOCK NUMBER field stores the disk number loaded into that corresponding buffer page. DIRTY BIT field indicates whether the buffer is modified or not. A buffer is locked by a process before it is accessed. LOCKING PID field stores the pid of the process that has currently locked the buffer. Buffer table entry is invalid when BLOCK NUMBER is -1. The starting address of the buffer table is given by SPL constant <a href="support_tools-files/constants.html" target="_blank">BUFFER_TABLE</a>. Refer <a href="os_design-files/mem_ds.html#buffer_table">buffer table</a> for more details.</p><br><br>
-
--->
-
-<b>Modifications to <i>Fork</i> system call</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-<p style="padding-left: 20px"> There is a simple modification in the <i>Fork</i> System call. when a process forks to create a child process, the file instnaces currently opened by the parent are now shared between child and parent. To reflect this change, the OPEN INSTANCE COUNT field in the open file table is incremented for each open file instance in the per-process resource table of a process. </p>
-
-<li style="padding-left: 20px">While Copying the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of parent to the child process do following-</li>
-<li style="padding-left: 20px">If the resource is file (check the Resource Identifier field in the per-process table), then using the open file table index, increment the OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> entry for the open instance</li>
-/*The change in <i>Fork</i> system call, when resource is semaphore, is already done in stage 22*/
-</ul><br>
 
 <b>Modifications to boot module</b><br><br>
 <ul style="list-style-type: disc; margin-left: 10px;">
@@ -4666,7 +4620,59 @@ inconsistent when the OS shuts down.</li>
                       </div>
 
   <!--End Learning Objectives-->
-<b style="font-size: 20px">Implementation of Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
+
+  <b style="font-size: 20px">Interrupt routine 7 (<i>Write</i> system call)</b><br><br>
+
+
+<p>Interrupt routine 7 written in stage 15, write data (words) to the terminal. <i>Write</i> system call is modified to write data to a file. <i>Write</i> system call has system call number 5 and arguments to the file discriptor of a file and word to be written. </p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/FileWrite.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for writing a word to a file </figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Write system call</b></li>
+<p>Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/write.html">here</a>.</p>
+
+<br>
+<li><b>Buffered Write (function number = 1, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
+<p>Buffered Read a disk block number, offset into the page and a word as arguments.</p> 
+<p style="text-indent: 0px">Implement Buffered Read function using the detailed algorithm given in the file manager module link above.</p>
+<br>
+<li><b>Get Free Block (function number = 3, <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> )</b></li>
+<p></p> 
+<p style="text-indent: 0px">Implement Get Free Block function using the detailed algorithm given in the memory manager module link above.</p>
+<br>
+
+</ol>
+
+
+<b style="font-size: 20px">Interrupt routine 5 (<i>Seek</i> system call)</b><br><br>
+<p>Interrupt routine 5 implements <i>Seek</i> system call along with <i>Open</i> and <i>Close</i> system calls. <i>Seek</i> has system call number 6.   </p><br>
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/Seek.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <i>Seek</i> system call</figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Seek system call</b></li>
+<p style="text-indent: 0px">Implement <i>Seek</i> system call using detailed algorithm provided <a href="os_design-files/seek.html">here</a>.</p>
+<br>
+
+</ol>
+
+<b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
 
 <p>Interrupt routine 15 written in stage 21 contains just HALT instruction. In this stage, <i>Shutdown</i> system call is implemented in the interrupt routine 15. <i>Shutdown</i> system call has system call number 21 and it does not take any arguments. </p>
 <br>

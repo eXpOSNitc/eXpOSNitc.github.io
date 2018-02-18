@@ -253,7 +253,7 @@ Here we will be concerned only about the case when the entry corresponds to an o
 <br>
 <p>In addition to the above data structures, the OS maintains the following global data structures:</p>
 <br>
-<b style="font-size: 20px;">4.​ ​ Memory buffer Cache</b>
+<b style="font-size: 20px;" id="memory_buffer_cache">4.​ ​ Memory buffer Cache</b>
 <br><br>
 
 <p>Whenever a process tries to ​<i>Read</i>/<i>Write</i>​ into a file, the relevant block of the file is first brought into a disk buffer in memory and the read/write is performed on the copy of the block stored in the buffer. The OS maintains 4 memory buffer pages as cache (and will be numbered 0,1,2,3. The buffers are in memory pages 71, 72, 73, 74 - see <a href="../os_implementation.html" target="_blank">memory organization</a>). A simple buffering scheme will be used here. When there is a request for the i<sup>th</sup> disk block, it will be brought to the buffer with number (<i>i mod 4</i>). If the buffer is presently containing another disk block, then the OS must check whether the disk block needs a write-back (dirty) before loading the requested block. This will be described soon.</p>
