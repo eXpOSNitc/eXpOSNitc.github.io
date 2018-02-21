@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>File System Tutorial</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="stylesheet" href="../css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER -->
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+    <!-- END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+              <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li> 
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+
+      
+    </header>
+    <!--=========== End HEADER SECTION ================--> 
+    
+   
+    <!-- Beginning of section -->
+
+   <section id="expfs" style="text-align: justify;">  <!-- this text property is added only to filesystem_implementation file -->
+    <br>
+    <br>
+    <br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                <h2>eXpOS File system and Implementation Tutorial</h2>
+                  <br>
+                  <br>
+                  <br>
+                  <!--<div class="container col-md-12">
+                    <div class="section_area">
+                      <ul class="list-group">
+                        <li class="list-group-item" style="background:#dff0d8">
+                          <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo25">Learning Objectives</a>
+                          <div id="lo25" class="panel-collapse expand">
+                            <ul>
+
+                            <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; hreg</li>
+                            
+                            </ul>                                  
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>-->
+<p style="text-indent: 0px; line-height: 2;">
+  It is necessary to read the following documentations before starting with this tutorial.<br><br>
+  1) User level view of <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS file system</a>.<br>
+  2) <a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank">Program level interface</a> to different file system calls.<br>
+  3) Understand about <a href="../os_spec-files/multiuser.html#file_access_permissions" target="_blank">file permissions</a>.<br>
+</p><br>
+
+<p style="text-indent: 0px;">To implement the file system, one needs to understand the file system data structures that the OS maintains. One should also understand how various file system routines of the OS access and update these data structures.</p>
+<br>
+<hr>
+
+<p style="text-indent: 0px;">There are two categories of file data structures. The first category consists of data that remains in the disk even when the machine is shut down (disk data structures​). These are described first:</p> 
+<br>
+<br>
+
+<b style="font-size: 20px;">1. Disk blocks and Disk Free List</b>
+<br><br>
+<p>The​ ​data of a file is stored in disk blocks. A file may have up to 4 blocks of data. The OS provides the user with an interface where the user feels that the file is sequentially stored although the actual allocation could be in non-contiguous disk blocks. The Inode table entry (described next) for a file stores the block numbers of the disk blocks which contain the file data.</p>
+
+<p>The ​<a href="../os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a>​ is a global disk data structure that indicates which disk blocks are allocated and which disk blocks are free.</p>
+
+<p>Disk blocks are allocated for a file by the <a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Write</i> ​system call</a>. When a user program issues a write request, the system call allocates new blocks whenever necessary. (In more detail, the ​ <i>Write</i> ​system call routine invokes the ​<b>Get Free Block</b> ​function of the ​<a href="../os_modules/Module_2.html" target="_blank">Memory Manager Module</a> to allocate a disk block.) Disk blocks associated with a file are de-allocated when the file is removed from the file system by the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Delete</i> ​system call</a> (by invoking the ​<b>Release Block</b> ​function of the ​<a href="../os_modules/Module_2.html" target="_blank">Memory Manager Module</a>.) Whenever blocks are allocated/released, the disk free list is also updated to indicate the allocation status.</p>
+<br>
+
+<p>The following disk data structures contain ​<b>meta-data</b> ​corresponding to each file in the system. Inode table​ ​and the root file are data structures of this kind.
+</p><br>
+<br>
+
+<b style="font-size: 20px;">2. Inode Table</b>
+<br><br>
+
+<p><a href="../os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> is a global data structure that contains an entry for each file stored in the file system. When a file is created using the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Create</i> ​system call</a> or loaded into the disk using XFS-interface, a new Inode entry is created for the file. The inode entry of a file stores the following attributes of the file: 1) filename, 2) file size, 3) user-id of the owner of the file, 4) file type (data/executable/root), 5) file access permissions and 6) the block numbers of the disk blocks allocated to a file (maximum four blocks).</p>
+
+<p>When a file is created by the ​<i>Create</i> ​system call, no disk blocks are allocated for the file, and only an Inode entry is created. Hence the file size will be set to 0 initially. Filename and access permissions are supplied as arguments to ​<i>Create</i> ​system call and are set accordingly. eXpOS allows only data files to be created using ​<i>Create</i> ​system call. Hence, the file type of any file created using the <i>Create</i> system call will be set to DATA. (Executable files can only be externally loaded into the file system using ​ xfs-interface). The user-id of the process executing <i>Create</i> ​system call will set as the owner of the file. (The user-id of a process is the user-id of the user logged into the system currently. eXpOS is a ​<b>single terminal system</b>.​ Only one user can login into the system at a time and run user processes).</p>
+
+<p>As noted previously, as data is written into the file by the ​<i>Write</i> ​system call, new disk blocks may be allocated. Whenever a block is allocated for a file, the block number is recorded in the Inode table.</p>
+
+<p>A file can be created with ​<a href="../support_tools-files/constants.html" target="_blank">Exclusive Access</a> / <a href="../support_tools-files/constants.html" target="_blank">Open Access</a> permission. The access permission is given as an argument to ​<i>Create</i>​ system call. If a file is created with exclusive access, the ​<i>Delete</i> and ​<i>Write</i>​ system calls must fail if executed by any process whose user-id is not equal to root, or the owner of the file. In other words, other users except the root shall not be permitted to modify or delete such files. When a file has open access permission, all users are allowed to perform any operation on the file. </p>
+<br>
+<br>
+
+<b style="font-size: 20px;">3. Root File</b>
+<br><br>
+<p>The <a href="../os_design-files/disk_ds.html#root_file" target="_blank">root file</a> stores human readable information about each file in the file system. The eXpFS file system does not support a hierarchical directory structure and all files are listed at a single level. Each file has an entry in the ​<b>root file</b>. The k<sup>th</sup> entry in the root file corresponds to the file whose index in the Inode table is k. The root file entry for a file contains filename, file size, file-type, user-name and access permissions. Thus, part of the the data in the Inode table is duplicated in the root file. The reason for this duplication is that root file is designed to be readable by user programs using the ​<i>Read</i> ​system call (unlike the inode table, which is accessed exclusively by OS routines only). An application readable root file allows implementation of commands like “ls” (see <a href="https://en.wikipedia.org/wiki/Ls" target="_blank">Unix command “ls”</a>) as user mode programs. <i>Write</i> ​and ​<i>Delete</i> system calls are not permitted on the root file.</p>
+
+<p>The only data in the root file entry of a file that is not present in the inode table is the user name of the owner of the file. The inode table entry of a file contains a user-id of the owner. The user-id value can be used to index into the user table (described below) to find the username corresponding to the user-id.</p>
+
+<p>When a file is created, the <i>Create</i> system call must initialize the root file entries of the file along with the Inode table entries. Similarly, when the file size is changed in the Inode table by a write to the file (in the ​<i>Write</i>​ system call), the file size value in the root file also needs to be updated.</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">4. User Table</b>
+<br><br>
+<p><a href="../os_design-files/disk_ds.html#user_table" target="_blank">User table</a> contains the names of each user who has an account in the system. Though user table is not a data structure associated with the file system, one needs to understand a little bit about this data structure for the file system implementation. The details of how and when user table entries are created are not relevant to the file system
+implementation.</p>
+
+<p>For the present purpose, it suffices to understand that each user has an entry in the user table. The entry for a user in the user table consists of a) username and b) encrypted password. The OS assigns a ​<i>user-id</i>​ to each user. ​<b>The user-id of a user is the index of the user’s entry in the user table.​</b> The first two entries of the table (corresponding to user-id 0 and 1) are reserved for special users ​<i>kernel</i> and​ <i>root</i>​.</p>
+
+<p>When a process executes the ​<i>Create</i>​ system call to create a file, ​<i>Create</i> system call looks up the process table entry of the calling process to find the user-id of the process executing ​<i>Create</i> and sets the user-id field in the Inode table. The system call then looks up the user table entry corresponding to the user-id and finds out the username and sets the user name field in the root file entry created for the file.</p>
+<br>
+<hr>
+<br>
+
+<p>The second category of data structures are transient - they are "alive" only when the OS is running (in-memory data structures). These data structures are described below:</p>
+
+<p>When the OS is running, user processes can Open/Read/Write an already created file. ​<b>When a file is opened by a process using the ​<i>Open</i> system call, a new “open instance” is created.</b> The OS keeps track of the number of open instances of a file at all times. If a file is opened multiple times (by the same or a different process), each ​<i>Open</i>​ call results in creation of a fresh open instance.</p>
+
+<p>Associated with each open instance​ ​of a file, there is a ​<b>seek pointer</b>​, which is initialized to the beginning of the file (value 0) by the ​<i>Open</i>​ system call. Whenever the file is read from/written into, the update is done to the position in the file corresponding to the seek value, and the seek value is incremented. ​<b>If a process opens a file and subsequently invokes the ​<i>Fork</i> system call, the seek pointer is shared between the parent and the child.</b> Hence, subsequent to the fork, if either the parent or the child executes ​<i>Read</i>/<i>Write</i>​ system call on the open instance, their common shared seek pointer advances. Finally, the (shared) seek pointer value can be modified (by either process) using the ​<i>Lseek</i> system call. This is the mechanism through which the OS allows multiple processes to share access to a file.</p>
+
+<p>Suppose a process closes an open instance using the ​<i>Close</i>​ system call, the ​<i>Close</i>​ system call first checks whether the open instance is shared by other (child/parent/sibling) processes. In that case, the OS simply decrements the “share count” of the open instance. If the last process that shared an open instance closes the file, then the share count reaches zero and the open instance is closed.</p>
+
+<p>To implement this somewhat intricate file access and sharing mechanism, the OS maintains two global file data structures - the ​<b>file status table</b>​ (also called the inode status table), and the <b>open file table</b>​. Moreover, for each process the OS maintains a ​<b>per-process resource table​</b>, which contains information pertaining to the open instances of files of the particular process.</p>
+
+<p>The OS further maintains a ​<b>buffer cache​</b> which is used for caching data blocks of files in current use. A ​<b>buffer table</b>​ is used to manage the data related to the buffer cache. These data structures are described below. Read the description of <a href="http://exposnitc.github.io/os_design-files/mem_ds.html" target="_blank">open file table</a> and <a href="http://exposnitc.github.io/os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> before reading further.</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">1. File (Inode) Status Table</b>
+<br><br>
+<p>File (Inode) status table contains an entry for each file in the file system. The index of a file’s Inode table entry and file status table entry will be the same. That is, if a file’s entry occurs - say - 10<sup>th</sup> in the inode table, its entry in the file (inode) status table will be the 10<sup>th</sup> one as well. The purpose of the table is two-fold 1) To keep track of how many times each file has been opened using the ​ open ​ system call. 2) To provide a mechanism for processes to ​<b>lock</b> a file before making updates to the file’s data/metadata.</p>
+
+<p>Every time a file is opened by (any) process using the ​<i>Open</i>​ system call, the ​<b>file open count</b> field in the corresponding file status table entry is incremented. Thus, the table gives the global count of the number of open instances of a file.</p>
+
+<p>Second, when a process enters a file system call and tries to access a file, the system call code must first lock access to the file to ensure that till the system call is completed, no other process is allowed to execute any file system call that accesses the file’s data/metadata. This is necessary to ensure safety under concurrent execution. The system call locks the file by setting locking-PID field of the file status table to the PID of the process executing the system call. Upon completion of the system call, the system call code must unlock the file before returning to user mode. The ​<b>Acquire Inode</b> and <b>Release Inode</b> ​functions of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a> are designed to handle file access regulation (locking).</p>
+
+<p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is set to the beginning address of the file status table in memory (see <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">2. Open File Table</b>
+<br><br>
+<p>As noted earlier, If a process opens a file using the ​<i>Open</i>​ system call and subsequently execute a ​<i>Fork</i>​ system call, the open instance of the file is shared between the parent and the child. If the child (or the parent) further execute ​<i>fork</i>, more processes will share the same open instance. Hence, there must be a mechanism to keep track of the count of processes sharing the same open instance of a file. Open file table is the data structure which keeps track of this count.</p>
+
+<p>Whenever a file is opened by a process, an open file table entry is created for the open instance. The entry contains three fields:<br>
+a)​ The index of the inode table of the file.<br>
+b​) The count of the number of processes sharing the open instance, which will be set to 1 when the file is opened as only one process is sharing the open instance. When the process executes a ​<i>Fork</i>​ system call, the share count is incremented to reflect the correct number of processes sharing the open instance. (Note: Do not confuse this count with the file open count in the file status table.)<br>
+c)​ The seek pointer for the open instance is stored in the open file table. Any read/write operation on this open instance must read from / write into this position of the file and advance the pointer. When a file is opened, the seek position is set to 0. Note that the seek pointer is shared between all processes sharing the open instance.</p>
+
+<p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">OPEN_FILE_TABLE</a> is set to the beginning address of the open file table in memory (see
+<a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
+
+<p>When a process executes a ​<i>Read</i>/<i>Write</i>​ system call on an open instance, the system call handler, along with the data read/write operation on the file, advances the seek pointer in the open file table entry corresponding to the open instance.</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">3. Per-Process Resource Table</b>
+<br><br>
+
+<p>When a process opens a file, a new entry is created for the open instance in the <a href="../os_design-files/process_table.html#per_process_table" target="_blank">per process resource table</a> of the process.<br>This entry contains two fields:<br>
+a)​ A flag indicating whether the entry corresponds to a file or a semaphore.<br>
+b)​ Index of the open file table /semaphore table entry of the open file / semaphore instance.<br>
+Here we will be concerned only about the case when the entry corresponds to an open file.</p>
+
+<p>The ​<i>Open</i> system call returns the index of an entry in the resource table as the <b>file descriptor</b> to the user. Any ​<i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ system call on the open instance of a file must be given this file descriptor as the argument. ​<i>Read</i>/<i>Write</i>/<i>Seek</i>/<i>Close</i>​ system calls use the descriptor value passed as argument to identify the open instance (determined uniquely by the open file table index associated with the file descriptor). When a process forks a child, <i>Fork</i> system call copies the entries of the resource table of the parent to the resource table of the child. Thus, the child inherits the open instances of files from the parent.</p>
+
+<p>As an example, consider the following scenario. Let process B be a child of process A. Assume that an open instance of a file by name <i>myfile.dat</i> be shared by A and B. Suppose the inode index of <i>myfile.dat</i> is 5. Assume that the open file table index for the open instance is - say 2. The following figure shows the various table entries for the open instance.</p><br>
+
+<figure style="text-align: center;">
+                           <img src="img/file_system.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">File data structures entries in the above scenario</figcaption>
+                           </figure>
+
+                           <br>
+<br>
+<p>In addition to the above data structures, the OS maintains the following global data structures:</p>
+<br>
+<b style="font-size: 20px;" id="memory_buffer_cache">4.​ ​ Memory buffer Cache</b>
+<br><br>
+
+<p>Whenever a process tries to ​<i>Read</i>/<i>Write</i>​ into a file, the relevant block of the file is first brought into a disk buffer in memory and the read/write is performed on the copy of the block stored in the buffer. The OS maintains 4 memory buffer pages as cache (and will be numbered 0,1,2,3. The buffers are in memory pages 71, 72, 73, 74 - see <a href="../os_implementation.html" target="_blank">memory organization</a>). A simple buffering scheme will be used here. When there is a request for the i<sup>th</sup> disk block, it will be brought to the buffer with number (<i>i mod 4</i>). If the buffer is presently containing another disk block, then the OS must check whether the disk block needs a write-back (dirty) before loading the requested block. This will be described soon.</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">5.​ ​ Buffer Table</b>
+<br><br>
+
+<p>The buffer table is used for managing the buffer cache. The table contains one entry per each buffer page. The entry for a buffer contains:<br>
+a) ​The block number of the disk block currently stored in the buffer page. If the buffer is
+unallocated, the disk block number is set to -1.<br>
+b​) A flag indicating whether the block was modified after loading (dirty).<br>
+c) ​The PID of the process that has locked the buffer page. (-1 if no process has locked the
+buffer.)</p>
+
+<p>The locking PID field requires some explanation. When a process tries to do read/write into certain data block of a file using ​<i>Read</i>/<i>Write</i> system call, the system call must first determine the buffer number to which the block must be loaded (using the formula indicated above) and lock the buffer before initiating disk to buffer data transfer. This is to prevent other processes from concurrently trying to load other blocks into the same buffer page.</p>
+
+<p>To understand the dynamics of how file system calls operate with the above data structures, let us consider an example. Suppose a process executes a ​<i>Write</i>​ into the open instance of a file. The <i>Write</i> system call uses the file descriptor (received as input argument) to find the index of the open file table entry corresponding to the descriptor. From the open file table entry, ​<i>Write</i> gets the seek pointer (using open file table) and index of the the inode table entry for the file. Next it locks the Inode (using ​<b>Acquire Inode</b>​ function of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a>). It then determines the disk block to which data must be written (using the seek position and the Inode table entry of the file). Now, <i>Write</i> invokes the ​<b>Buffered Write</b> function of ​<a href="../os_modules/Module_3.html" target="_blank">File Manager Module</a> to perform the write.</p>
+
+<p><b>Buffered Write</b> first calculates the buffer number corresponding to the block number and locks the buffer (invoking the ​<b>Acquire Buffer</b>​ function of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a>). It then checks whether the disk block to be written into is already present in the buffer. If not, the disk block has to be loaded first into the buffer. However, if the buffer is currently containing another disk block and if the disk block is dirty, then the disk block must be written back first. The buffer table entry for the buffer will help ​<i>Buffered Write</i> to determine whether the buffer is free, or if not free whether write back is required. Write Back is performed using the ​<b>Disk Store</b> function of the ​<a href="../os_modules/Module_4.html" target="_blank">Device Manager Module</a>. (​<i>Disk Store</i> function makes another resource lock - calls the ​<b>Acquire Disk</b> function of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a> before disk commit is done).</p>
+
+<p>Finally, after getting the buffer page free for use, ​<i>Buffered Write</i>​ brings the required disk block into the buffer page using the ​<b>Disk Load</b> function of the ​<a href="../os_modules/Module_4.html" target="_blank">Device Manager Module</a>. Now Buffered Write can write the data into the buffer. Since the contents of the block has been modified, Buffered Write sets the ​<b>dirty bit</b>​ in the buffer table entry for the buffer. Note that <i>Write</i>​ does not​ ​store the modified buffer back to the disk. The modifications are committed only when a subsequent write operation requires the buffer to be loaded with a different disk block. The OS also commits back all dirty buffers to the disk before shutdown.</p>
+
+<p>A ​<i>Read</i> operation is similar, except that the ​<b>dirty bit is not set</b>​ as the page is not modified.</p>
+
+<p>The execution of ​<i>Read</i>/<i>Write</i>​ system calls involves a sequence of resource acquisitions - namely inode, buffer and disk. The resources are acquired in the order Inode-buffer-disk and must be released in the reverse order when the actions are completed. This avoids circular wait - a sufficient condition for <a href="https://en.wikipedia.org/wiki/Deadlock" target="_blank">deadlock</a> prevention.</p>
+<br>
+<br>
+
+<b style="font-size: 20px;">6.​  In-Memory Copy of Disk data structures</b>
+<br><br>
+
+<p>Finally, the OS maintains an in-memory copy of all the disk data structures - viz., inode table, user table, root file and the disk free list. While the OS is running, a new user could be created or a file could be created/modified/deleted. In such cases, the update is made into the memory copy of the corresponding data structures and not the disk copy.</p>
+
+<p>The OS must write back the memory copy of all disk data structures and all dirty buffers to the disk before the system is shutdown. The file system implementation described here is ​<b>not crash resilient</b>​. This means, if the OS crashes before (or during) such write back, the memory-copy to disk updates may be partial and the disk data structures may end up in inconsistent state. In such case, one or more files may be corrupted and the disk may require reformatting.</p>
+
+<br>
+<br>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+    </section> 
+
+
+
+
+    <!-- End of section -->
+
+
+      <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="../js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="../js/map_js.js"></script>
+    <script src="../js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="../js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="../js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='../js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="../js/modernizr.custom.js"></script>
+    <script src="../js/classie.js"></script>
+    <script src="../js/elastic_grid.min.js"></script>
+    <script src="../js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="../js/custom.js"></script>
+  </body>
+</html>
+

@@ -1299,13 +1299,13 @@ You will have to modify the user program as well as the os startup code.
 2056<b>  MOV R0, 1</b>
 2058<b>  MOV R2, 5</b>
 2060<b>  GE R2, R0</b>
-2062<b>  JZ R2, 2076</b>
+2062<b>  JZ R2, 2074</b>
 2064<b>  MOV R1, R0</b>
 2066<b>  MUL R1, R0</b>
 2068<b>  BRKP</b>
-2072<b>  ADD R0, 1</b>
-2074<b>  JMP 2058</b>
-2076<b>  INT 10</b></pre>
+2070<b>  ADD R0, 1</b>
+2072<b>  JMP 2058</b>
+2074<b>  INT 10</b></pre>
   <br>      
             <b>Modifications to OS Startup Code</b><br><br>
             <ol style="list-style-type:decimal;margin-left:2px">
@@ -1671,7 +1671,7 @@ Set the User Area page number in the <a href="os_design-files/process_table.html
 </pre> </div> </li>
 
 <li> Set the SP to beginning of the kernel stack.
-User Area Page number is the 16th word of the Process Table. The initial value of SP must be set to this 
+User Area Page number is the 11th word of the Process Table. The initial value of SP must be set to this 
 address*512 - 1.
 <div>
 	
@@ -1804,7 +1804,7 @@ of the write system call in later stages.</p>
 
 
 
-<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the address of the word which has to be written to the terminal. Here the word we are going to write is present in R1. Register R1 doesn't have any address, but we have pushed R1 in stack (in step 1). So, we can take SP - 1 as address of the word to be printed. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
+<li> Push the system call number and arguments to the stack. For the Write system call,  the system call number is 5. Argument 1 is the file descriptor which is -2 for the terminal. Argument 2 is the word which has to be written to the terminal. Here the word we are going to write is present in R1. By convention, all system calls have 3 arguments. As we do not have a third argument in this case, push any register, say R0 on to the stack. (In this case the last argument will be ignored by the system call handler.) Refer to the low level system call interface for write <a href="os_design-files/Sw_interface.html" target="_blank"> here </a>.
 </li> 
 
 <li> Push any register, say R0 to allocate space for the return value. </li> 
@@ -1835,10 +1835,9 @@ value.</p>
 0
 0					
 MOV R0, 1
-MOV R1, 0
 MOV R2, 5
 GE R2, R0
-JZ R2, 2116
+JZ R2, 2110
 MOV R1, R0
 MUL R1, R0
 
@@ -1847,14 +1846,9 @@ PUSH R0
 PUSH R1
 PUSH R2
 
+// pushing system call number and arguments
 MOV R0, 5
 MOV R2, -2
-
-// storing address of the word in R1
-MOV R1, SP
-SUB R1, 1
-
-// pushing system call number and arguments 
 PUSH R0	
 PUSH R2
 PUSH R1
@@ -1879,7 +1873,7 @@ POP R1
 POP R0
 
 ADD R0, 1
-JMP 2060
+JMP 2058
 
 INT 10
 	</pre>
@@ -1891,17 +1885,19 @@ INT 10
      <p style="font-size:18px">Contents of the stack before and after the INT instruction</p>
      <img src="img/system_call_stack1.png" width="350px" height="350px" style="float:left; margin-right: 100px; margin-left:75px;">
      <img src="img/system_call_stack2.png" width="350px" height="350px" style="float:right; margin-left: 100px; margin-right:75px;">
-  </div>
+  </div><br><br>
   
 	Now, you will write the system call handler for processing the write request.<br><br>
 	<b style="font-size:20px">INT 7</b><br>
 	<p>The write operation is handled by Interrupt 7.
-	The address of the word to be printed is passed from the user program through its user stack as the 
-	second argument to the interrupt routine. The interrupt routine retrieves this address from the stack
-	and writes the word stored in this address to the terminal using the OUT instruction. </p>
+	The word to be printed is passed from the user program through its user stack as the 
+	second argument to the interrupt routine. The interrupt routine retrieves this word from the stack
+	and writes the word to the terminal using the OUT instruction. </p>
 	<p>Detailed instructions for doing so are given below</p>
 	<ol style="list-style-type:decimal;margin-left:2px">
-  <li>Set the MODE FLAG field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number which is 5 for write system call. To get the process table of current process, use the PID obtained from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>.  
+  <li>Set the MODE FLAG field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number which is 5 for write system call. To get the process table of current process, use the PID obtained from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>. MODE FLAG field in the process table is used to indicate whether the current process is executing in a system call, exception handler or user mode. 
+
+
   <div><pre>[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 9] = 5;</pre></div>  </li>
 	<li> Store the value of user SP in a register as we need it for further computations.
 	<div><pre>alias userSP R0;
@@ -1910,7 +1906,7 @@ userSP = SP;</pre>
 	</li>
 	
 	<li>Switch the stack from user stack to kernel stack. 
-<ol style="margin-left:20px;list-style-type:circle;">
+<ol style="margin-left:20px;list-style-type:disc;">
 	<li>Save the value of SP in the user SP field of <a href="os_design-files/process_table.html" target="_blank">Process Table </a> entry of the process.</li>
 	<li>Set the value of SP to beginning of the kernel stack.</li>
 </ol>
@@ -1933,7 +1929,7 @@ fileDescriptor=[fileDescPhysicalAddr];</pre>
 	</div>
 	</li>
 	
-	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2 - see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>. Write an IF condition to check whether file descriptor is -2 or not.  <br><br>
+	<li>Check whether the file descriptor obtained in above step is valid or not. In this stage it should be -2 because file descriptor for console is -2. (see details <a href="os_design-files/Sw_interface.html" target="_blank">here</a>.) Write an IF condition to check whether file descriptor is -2 or not.  <br><br>
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -1944,7 +1940,7 @@ endif;</pre>
 	</div>
 	</li>
 	
-	<li>If the file descriptor is not -2, store -1 as a return value. According to system call convention, return value is stored at memory location userSP -1 in the user stack. Calculate physical address of the return value corresponding to userSP - 1 using address translation mechanism.  <br><br>
+	<li>If the file descriptor is not equal to -2, store -1 as a return value. According to system call convention, return value is stored at memory location userSP -1 in the user stack. Calculate physical address of the return value corresponding to userSP - 1 using address translation mechanism.  <br><br>
 	<div>
 	<pre>if (fileDescriptor != -2) 
 then
@@ -1957,19 +1953,11 @@ endif;</pre>
 	</div>
 	</li>
 	<br>
-	<p>The following four steps has to be included in the else block.</p>
-	<li> Calculate physical address of the argument 2 and extract the value from it , which is logical address where the word is located.
+	<p>The following three steps has to be included in the else block.</p>
+	<li> Calculate physical address of the argument 2 and extract the value from it , which is the word to be printed to the console.
 	<div>
-	<pre>alias wordAddr R5;
-wordAddr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];</pre>
-	</div>
-	</li>
-	
-	<li>
-	The word address we have calculated in the above step was pushed in user mode which uses only logical addresses. Therefore, first translate this logical addresss to corresponding physical address and then extract the word to be printed from it.
-	<div>
-	<pre>alias word R6;
-word = [[PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512)];</pre>
+	<pre>alias word R5;
+word = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];</pre>
 	</div>
 	</li>
 	
@@ -1982,7 +1970,7 @@ word = [[PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512)];</pre>
 	<li>
 	Set the return value as 0 indicating success. 
 	According to system call convention, return value is stored at memory location userSP -1 in the user stack.
-	<div><pre>alias physicalAddrRetVal R7;
+	<div><pre>alias physicalAddrRetVal R6;
 physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 512);
 [physicalAddrRetVal] = 0;</pre></div></li>
 
@@ -2787,6 +2775,7 @@ loadi(51,64);</pre></div> </li>
 					   <ul style="list-style-type: disc;margin-left: 20px"> 
 					   	<li>Set SP to the value in the UPTR field of the process table entry.</li>
 						<li>Set state of the newly scheduled process as RUNNING.</li>
+						<li>Store 0 in the MODE FLAG field in the process table of the process.</li>
 						<li>Switch to the user mode using the ireturn statement.</li></ul>
 					  </li>
 					<li>Set the state of the new process as RUNNING.</li>
@@ -2879,15 +2868,15 @@ loadi(51,64);</pre></div> </li>
 
                         <p>Since the invoked module will be modifying the contents of the machine registers during its execution, The invoker must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The invoker must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
 
-                        <p>There is one important conceptual point to be explained here relating to resource acquisition.  The acquire terminal function described above waits in a loop, in which it repeatedly invokes the scheduler if the terminal is free.  <b>This kind of a waiting loop is called a busy loop.</b> <i>Why can't the process wait just once for a resource and simply proceed to acquire the resource when it is scheduled?</i> In other words, what is the need for a wait in a loop? Pause to think before you read the explanation below. You will encounter such busy loops several times in this project, inside various module functions described in later stages.</p><br>  
+                        <p>There is one important conceptual point to be explained here relating to resource acquisition.  The acquire terminal function described above waits in a loop, in which it repeatedly invokes the scheduler if the terminal is not free.  <b>This kind of a waiting loop is called a busy loop.</b> <i>Why can't the process wait just once for a resource and simply proceed to acquire the resource when it is scheduled?</i> In other words, what is the need for a wait in a loop? Pause to think before you read the explanation below. You will encounter such busy loops several times in this project, inside various module functions described in later stages.</p><br>  
 
    <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px">                    
- <p>When a process invokes the scheduler waiting for a resource, the scheduler runs the process again only after the resource becomes free.  However, the process may find that the resource is locked again when it tries to acquire the resource when it resumes execution.  This happens because when a resource is released, all processes waiting for the resource are woken up by the OS. Only the one that get scheduled first will be able to lock the resouce successfully.  Other processes will have to wait for the resource repeatedly before finally acquiring the resource.</p>
-<p>A better solution to the problem that avoids a busy loop is to have the resource manager maintain a request queue associated with each resource.  When a process requests a resource, it registers itself into a resource queue and goes into wait state.  When the resource is released, the release resource function can wake up only the process which is at head of the queue. This avoids unneccesary scheduling of all the waiting processes.  Real systems implement resource queues for system resources that also maintains the priorities of various requesting processes. In eXpOS, we avoid using resource queues to make the implementation easier. 
+ <p>When a process invokes the scheduler waiting for a resource, the scheduler runs the process again only after the resource becomes free.  However, the process may find that the resource is locked again when it tries to acquire the resource when it resumes execution.  This happens because when a resource is released, all processes waiting for the resource are woken up by the OS. Only the one that get scheduled first will be able to lock the resource successfully.  Other processes will have to wait for the resource repeatedly before finally acquiring the resource.</p>
+<p>A better solution to the problem that avoids a busy loop is to have the resource manager maintain a request queue associated with each resource.  When a process requests a resource, it registers itself into a resource queue and goes into wait state.  When the resource is released, the release resource function can wake up only the process which is at head of the queue. This avoids unnecessary scheduling of all the waiting processes.  Real systems implement resource queues for system resources that also maintains the priorities of various requesting processes. In eXpOS, we avoid using resource queues to make the implementation easier. 
  </p> </div><br>
 
 
-                           <p style="text-indent: 0px"><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it will be necessary to save the register context into the stack for proper resumption of execution.</p><br>
+                           <p style="text-indent: 0px"><code>Note:</code> We haven't saved any registers into the stack while invoking the boot module from the OS startup code or the scheduler module from the timer interrupt routine as there was no register context to be saved. However, to invoke scheduler module from other modules or interrupt routines, it is necessary to save the register context into the stack for proper resumption of execution.</p><br>
 
                            <figure style="text-align: center;">
                            <img src="img/roadmap/write.png" style="display:block;margin-left:auto;margin-right:auto" >
@@ -2902,7 +2891,7 @@ loadi(51,64);</pre></div> </li>
                                  	<li>Push all registers used till now in this interrupt routine using multipush statement in SPL. 
 							  	<div><pre>multipush(R0, R1, R2, R3,...); // number of registers will depend on your code</pre></div></li>
 							  	<li>Store the function number of Terminal Write in register R1, PID of the current process in register R2 and word to be printed to the terminal in register R3.</li>
-							  	<li>Call module 4 using call statement.</li>
+							  	<li>Call module 4 using <a href="./support_tools-files/spl.html" target="_blank">call statement</a>.</li>
 							  	<li>Ignore the value present in R0 as Terminal Write does not have any return value.</li>
 							  	<li>Use multipop statement to restore the registers pushed. Specify the same order of registers used in multipush as registers are popped in the <b>reverse order</b> in which they are specified in the multipop statement.<div><pre>multipop(R0, R1, R2, R3,...);</pre></div></li>
                                  </ol><br>
@@ -3687,7 +3676,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
        <p style="text-indent: 0px">
            1) Decrement the count of the disk block number in the memory copy of the Disk Free List.<br>
            2) Return to the caller. </p>
-           <p style="text-indent: 0px"><code>Note :</code> <b>Get Code Page</b>, <b>Free Page Table</b> and  <b>Release Block</b> functions implemented above are final versions. They will not require modification in later stages.</p><br>
+           <p style="text-indent: 0px"><code>Note :</code> <b>Get Code Page</b>, <b>Free Page Table</b> and <b>Release Block</b> functions implemented above are final versions. They will not require modification in later stages.</p><br>
 
 
 
@@ -3747,7 +3736,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
                       <div class="panel-heading" id="list_stage20">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process creation and termination</a>
+                          <a data-toggle="collapse"  href="#collapse20"><span class="fa fa-check-square-o"></span>Stage 20 : Process Creation and Termination</a>
                         </h4>
                       </div>
 
@@ -3821,7 +3810,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
        <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE FLAG to the system call number and switch to the kernel stack. To get a new PID for the child process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new process table allocated for the child. This index is saved as the PID of the child. As there are only 16 process tables present in the memory, maximum 16 processes can run simultaneously. If a free process table is not available, Get Pcb Entry returns -1. In such case, store -1 as the return value in the stack, reset the MODE FLAG (to 0), switch to user stack and return to the user mode from the fork system call. When PID is available, proceed with the fork system call. </li>
 
-       <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and  user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
+       <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
        
        <li style="padding-left: 20px">The next step in the fork system call is initialization of the <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child process. Copy the USERID field from the process table of the parent to the child process, as the user (currently logged in) will be same for both child and parent. (We will discuss USERID later when we add multi-user support to eXpOS.) Similarly, copy the SWAP FLAG and the USER AREA SWAP STATUS fields. (These fields will be discussed later, when we discuss swapping out processes from memory to the disk.) INODE INDEX for the child and the parent processes will be same, as both of them run the same program. UPTR field should also be copied from the parent process. As mentioned earlier, content of the user stack is same for both of them, so when both of the processes resume execution in user mode, the value of SP must be the same.</li> 
 
@@ -3830,18 +3819,31 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
       <li style="padding-left: 20px">The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> has details about the open instances of the files and the semaphores currently acquired by the process. Child process shares the files and the semaphores opened by the parent process.  Hence we need to copy the entries of the per-process resource table of the parent to the child.  We will discuss files and semaphores in later stages. (There is a little bit more book keeping work associated with files and semaphores. Since we have not added files or semaphores so far to the OS, we will skip this work for the time being and complete the pending tasks in later stages).</li>  
 
 
-      <li style="padding-left: 20px">Copy the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">per-process disk map table</a> of the parent to the child. This will ensure that the disk block numbers of the code pages of the parent process are copied to the child.  Further, if the parent has swapped out heap pages, those will be shared by the child.  (This will be explained in detail in a later stage).  The eXpOS design guarentees that the stack pages and the user area page of a process will not be swapped at the time when it invokes the fork system call. Hence the disk map table entries of the parent process corresponding to the stack and user area pages will be invalid, and these values will be copied to the child.   </li>
+      <li style="padding-left: 20px">Copy the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">per-process disk map table</a> of the parent to the child. This will ensure that the disk block numbers of the code pages of the parent process are copied to the child.  Further, if the parent has swapped out heap pages, those will be shared by the child.  (This will be explained in detail in a later stage).  The eXpOS design guarentees that the stack pages and the user area page of a process will not be swapped at the time when it invokes the fork system call. Hence the disk map table entries of the parent process corresponding to the stack and user area pages will be invalid, and these entries of the child too must be set to invalid.     </li>
 
-      <!--<li>/* open file table and semaphore table*/</li>-->
  
        <li style="padding-left: 20px">Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the child process. As heap, code and library pages are shared by the parent process and the child process, copy these entries (page number and auxiliary information) form the page table of the parent to the child. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> (why do we do need to do this?). Initialize the stack page entries in the page table with the new memory page numbers obtained earlier. Note that the auxiliary information for the stack pages is same for both parent and child (why?). Copy content of the user stack pages of the parent to the user stack pages of the child word by word.</li>
+
+       <li style="padding-left: 20px">Store the value in the BP register on top of the kernel stack of child process. The processes (child) created by <i>Fork</i> starts the execution from the instruction following call to <i>Fork</i>. So, the child process needs BP value at that point of execution. Hence, BP (BP value of parent) is stored so that when the child starts it execution for the first time, it pops the value from stack and uses it. Note that even the kernel stack has a value present, the KPTR in the process table is still set to 0.</li>
 
        <li style="padding-left: 20px">Set up return values in the user stacks of the parent and the child processes.  Store the PID of the child process as return value to the parent and 0 as the return values to the child.  Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
 </ul>
 <p>The complete version of the algorithm for the fork system call is provided <a href="os_design-files/fork.html" target="_blank">here</a>.</p> <br>
 <b>Get Pcb Entry (function number = 1, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a>)</b><br><br>
 <p>The Get Pcb Entry function in the process manager, finds out a free process table entry and returns the index of it to the caller. If no process table entry is free, it returns -1. A free process table entry (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a> field is set to <a href="support_tools-files/constants.html">TERMINATED</a>) can be found out by looping through all process table entries. Initialize the PID to the index of the free entry. Initialize PTBR to the starting address of the page table  for that process (obtained using index) and PTLR to 10. Return the index to the caller.</p>
-<p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b> module function is final version.</p>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b> module function is final version.</p><br>
+
+<b>Modifications to <a href="os_modules/Module_5.html" target="_blank">Scheduler module</a></b>
+<br><br>
+<p>The context-switch (scheduler) module is modified in this stage to store the BP back from the kernel stack for the child processes.</p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">As the child process state is set to created by the <i>Fork</i>, do the following when the state of the new process found is created - </li>
+	<li style="padding-left: 20px">Before changing the stack to the user stack for the created process, store the value on top of the kernel stack (pointed by SP) to the BP register.</li>
+</ul>
+
+
+<br>
+
    <b style="font-size: 20px">Exit System Call</b> <br><br>
 
 
@@ -3870,8 +3872,9 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 <b>Modifications to the Boot module</b><br><br>
 <p>Load interrupt routine 8 from disk to memory.</p>
+
 <b>Making things work</b><br><br>
-<p>Compile and load interrupt routine 8, interrupt routine 10, module 2 into the disk using the XFS-interface.</p>
+<p>Compile and load interrupt routine 8, interrupt routine 10, module 2, module 5 into the disk using the XFS-interface.</p>
       
       <div class="container col-md-12" >
                           <div class="section_area">
@@ -3918,7 +3921,7 @@ given <a href="test_prog.html#ll_fork" target="_blank">here</a>. Try to read and
 
                       <div class="panel-heading" id="list_stage21">
                         <h4 class="panel-title">
-                          <a data-toggle="collapse"  href="#collapse21"><span class="fa fa-check-square-o"></span>Stage 21 : Process synchronization</a>
+                          <a data-toggle="collapse"  href="#collapse21"><span class="fa fa-check-square-o"></span>Stage 21 : Process Synchronization</a>
                         </h4>
                       </div>
 
@@ -4105,7 +4108,7 @@ In later stages, when a file system is added to the OS, the file system data wil
                                 <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding how semaphores help to solve the critical section problem.</li>
 
                              
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for semaphores to eXpOS</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for semaphores to eXpOS.</li>
                             </ul>                                  
                                      
                             </div>
@@ -4136,15 +4139,6 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <p>The <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of each process keeps track of the resources (semaphores and files) currently used by the process.  The per-process resource table is stored in the last 16 words of the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> of a process. Per-process resource table can store details of at most eight resources at a time.  Hence the total number of semaphores and files acquired by a process at a time is at most eight.  Each per process resource table entry contains two words. The first field, called the <b>Resource Identifier</b> field, indicates whether the entry corresponds to a file or a semaphore. For representing the resource as a file, the SPL constant <a href="support_tools-files/constants.html" target="_blank">FILE</a> (0) is used and for semaphore, the SPL constant <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE</a> (1) is used. The second field stores the index of the semaphore table entry if the resource is a semaphore. (If the resource is a file, an index to the open file table entry will be stored - we will see this in later stages.) See the description of <a href="os_design-files/process_table.html#per_process_table" target="_blank" >per-process resource table</a> for details.</p>  
 
 
-<p> To acquire a new semaphore, <b><i>Semget</i></b> system call is used. <i>Semget</i>  creates a new entry in the semaphore table (by invoking the <b>Acquire Semaphore</b> function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semget</i> then finds a free entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> and stores the index of the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as <b>semaphore descriptor</b> (SEMID).  To detach a semaphore from the process, <b><i>Semrelease</i></b> system call is used. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore (by invoking the <b>Release Semaphore</b> function in <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>). <i>Semrelease</i> also invalidates the per-process table entry corresponding to the SEMID given as an argument.</p>
-
-
-<p>A process locks the semaphore it is sharing using the <b><i>SemLock</i></b> system call. If the requested semaphore is currently locked by some other process, the current process blocks its execution by changing its <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> to the tuple (WAIT_SEMAPHORE, semaphore table index of requested semaphore) until the requested semaphore is unlocked. When the semaphore is unlocked, then STATE of the current process is made READY (by the process which has unlocked the semaphore). At this point, the current process locks the semaphore by changing the LOCKING PID in the semaphore table entry to the PID of the current process. A process invokes <b><i>SemUnLock</i></b> system call to unlock the semaphore it has locked earlier. <i>SemUnLock</i> has SEMID of the locked semaphore as argument. <i>SemUnLock</i> invalidates the LOCKING PID field in the semaphore table entry for the locked semaphore. All the processes waiting for the semaphore are made READY for execution.   
-</p>
-
-<p><b>Acquire Semaphore</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager</a> module is invoked from <i>Semget</i> system call. Acquire Semaphore creates an entry for the semaphore in the semaphore table and returns the index of that entry. <b>Release Semaphore</b> function of resource manager module is invoked from <i>Semrelease</i> system call. If the semaphore to be released is locked by current process, then Release Semaphore function first unlocks the semaphore. Release Semaphore function finally decrements the PROCESS COUNT of the corresponding semaphore in the semaphore table.</p>
-
-<p><code>Note :</code> If any semaphore is not released by a process during execution using <i>Semrelease</i> system call, then the semaphore is released at the time of termination of the process in <i>Exit</i> system call releases  </p><br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/sem.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
@@ -4164,53 +4158,42 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
 </ul><br>
 
-<b>Semget System Call</b><br><br>
-<p><i>Semget</i> system call does not take any argument from user. It returns the semaphore descriptor if executed successfully.</p>
+<ol style="list-style-type: decimal; margin-left: 2px">
 
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Loop through the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> of the current process  to find a free entry. Free entry is indicated by -1 in the Resource Identifier field. If a free entry is found, the index of this free entry is called as semaphore descriptor and denoted as SEMID.</li>
-<li style="padding-left: 20px">If no free entry is found in the per-process resource table, this indicates the process has reached its limit of resources. In this case, store -1 as return value in the stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">To create a new semaphore entry in the semaphore table, invoke <b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html " target="_blank">resource manager module</a>. Acquire Semaphore function returns the index of the free entry of the semaphore table if found.</li>
-<li style="padding-left: 20px">If no free entry is found in <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> (<b>Acquire Semaphore</b> function returns -1), then the system has reached its limit of semaphores. In this case, store -2 as return value for <i>Semget</i> system call in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">Store the index returned by Acquire Semaphore function in the second field of the per-process resource table entry corresponding to SEMID.</li>
-<li style="padding-left: 20px">Set the Resource Identifier Field in the per-process resource table entry to <a href="support_tools-files/constants.html" target="_blank">SEMAPHORE</a> indicating that the entry is used for semaphore resource.</li>
-<li style="padding-left: 20px">Store SEMID as the return value in the user stack. Reset the MODE FLAG to 0.</li>
- </ul>
-<p>The algorithm for <i>Semget</i> system call is provided <a href="os_design-files/semaphore_algos.html#semget" target="_blank">here</a>. </p><br>
+<li><b>Semget System Call</b></li>
+<p><b><i>Semget</i></b> system call is used to acquire a new semaphore.
+<i>Semget</i> finds a free entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>.
+ <i>Semget</i> then creates a new entry in the semaphore table by invoking the <b>Acquire Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. The index of the semaphore table entry returned by Acquire Semaphore function is stored in the free entry of per-process resource table of the process. Finally, <i>Semget</i> system call returns the index of newly created entry in the per-process resource table as <b>semaphore descriptor</b> (SEMID).</p>
+
+<p style="text-indent: 0px;">Implement <i>Semget</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semget" target="_blank">here</a>. </p><br>
 
 
 
-<b>Semrelease System Call</b><br><br>
-<p><i>Semrelease</i> system call takes semaphore desciptor (SEMID) as argument from user program. </p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry corresponding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
-<li style="padding-left: 20px">If the validity conditions are satisfied then continue with the implementation. Invoke <b>Release Semaphore</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> with SEMID as argument to update the semaphore table.</li>
-<li style="padding-left: 20px">Invalidate the per-process resource table entry corresponding to SEMID by setting the Resource Identifier field to -1.</li>
-<li style="padding-left: 20px">Store 0 as return value in the user stack indicating success and reset the MODE FLAG to 0.</li>
-</ul>
+
+<li><b>Semrelease System Call</b></li>
+<p><b><i>Semrelease</i></b> system call takes semaphore desciptor (SEMID) as argument from user program.<i>Semrelease</i> system call is used to detach a semaphore from the process. <i>Semrelease</i> releases the acquired semaphore and wakes up all the processes waiting for the semaphore by invoking the <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. <i>Semrelease</i> also invalidates the <a >per-process resource table</a> entry corresponding to the SEMID given as an argument.</p>
+
+<p style="text-indent: 0px">Implement <i>Semrelease</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semrelease" target="_blank">here</a>. </p>
+
+<p style="text-indent: 0px"><code>Note :</code> If any semaphore is not released by a process during execution using <i>Semrelease</i> system call, then the semaphore is released at the time of termination of the process in <i>Exit</i> system call.  </p><br>
 
 
-<p>The algorithm for <i>Semrelease</i> system call is provided <a href="os_design-files/semaphore_algos.html#ssemrelease" target="_blank">here</a>. </p><br>
+
+<li><b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+<p><b>Acquire Semaphore</b> function takes PID of the current process as argument. <i>Acquire Semaphore</i> finds a free entry in the semaphore table and sets the PROCESS COUNT to 1 in that entry. Finally, <i>Acquire Semaphore</i> returns the index of that free entry of semaphore table.</p>
 
 
-<b>Acquire Semaphore (function number = 6, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-<p style="text-indent: 0px">Acquire Semaphore function implemented in the resource manager module (module 0) takes PID of the current process as argument. It returns the index of a free entry of semaphore table.  </p>
-<li style="padding-left: 20px">Loop through the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> and find a free entry (free entry is indicated by 0 in the PROCESS COUNT field). If no free entry is found then return -1 to the caller.</li>
-<li style="padding-left: 20px">In the free entry is found, set the PROCESS COUNT to 1 and LOCKING PID to -1. Return the index of the free entry in the semaphore table to the caller.</li>
-</ul><br>
+<p style="text-indent: 0px">Implement <i>Acquire Semaphore</i> function using the detailed algorithm provided in resource manager module link above.</p><br>
 
 
-<b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Release Semaphore function takes semaphore table index and PID of the current process as arguments.</p>
-	<li style="padding-left: 20px">If the LOCKING PID corresponding to the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> index is equal to the current PID then the semaphore must be unlocked first before releasing. To unlock the semaphore, invalidate the LOCKING PID field to -1 and change the STATE of all the processes waiting for this semaphore to READY.</li>
-	<li style="padding-left: 20px">Decrement the PROCESS COUNT field corresponding to the given semaphore table index.</li>
-</ul>
-<p style="text-indent: 0px"><code>Note :</code> The implementation of the functions <b>Acquire Semaphore</b> and <b>Release Semaphore</b> are final.</p><br>
 
+
+<li><b>Release Semaphore (function number = 7, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+<p><b>Release Semaphore</b> function takes a semaphore index (SEMID) and PID of a process as arguments. If the semaphore to be released is locked by current process, then <i>Release Semaphore</i> function unlocks the semaphore and wakes up all the processes waiting for this semaphore. <i>Release Semaphore</i> function finally decrements the PROCESS COUNT of the semaphore in its corresponding semaphore table entry.</p>
+
+<p style="text-indent: 0px">Implement <i>Release Semaphore</i> function using the detailed algorithm provided in resource manager module link above.</p>
+<br>
+</ol>
 
 
 <b style="font-size: 20px">Implementation of Interrupt routine 14</b><br><br>
@@ -4222,54 +4205,72 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
 <li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
 </ul><br>
 
+<ol style="list-style-type: decimal; margin-left: 2px">
+
+<li><b>SemLock System Call</b></li>
+<p><b><i>SemLock</i></b> system call takes a semaphore desciptor (SEMID) as an argument from user program. A process locks the semaphore it is sharing using the <i>SemLock</i> system call. If the requested semaphore is currently locked by some other process, the current process blocks its execution by changing its <a href="os_design-files/process_table.html#state" target="_blank">STATE</a> to the tuple (WAIT_SEMAPHORE, semaphore table index of requested semaphore) until the requested semaphore is unlocked. When the semaphore is unlocked, then STATE of the current process is made READY (by the process which has unlocked the semaphore). When the current process is scheduled and the semaphore is still unlocked the current process locks the semaphore by changing the LOCKING PID in the semaphore table entry to the PID of the current process. When the process is scheduled but finds that the semaphore is locked by some other process, current process again waits in the busy loop until the requested semaphore is unlocked. </p>
+<p style="text-indent: 0px">Implement <i>SemLock</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semlock" target="_blank">here</a>. </p>
+
+<br>
 
 
-<b>SemLock System Call</b><br><br>
-<p><i>SemLock</i> system call takes a semaphore desciptor (SEMID) as an argument from user program.</p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
-<li style="padding-left: 20px">If validity conditions are satisfied then continue with the implementation. If the requested semaphore is currently used by some other process, then the current process will wait in WAIT_SEMAPHORE state until the semaphore becomes free. Find the semaphore table index using the SEMID. While the LOCKING PID field in the semaphore table for the requested semaphore has PID of some other process, then <br>
-1) Change the STATE of the current process to the tuple (WAIT_SEMAPHORE, semaphore table index) <br>
-2) Invoke the scheduler.</li>
-<p style="padding-left: 20px;text-indent: 0px;">/*The following steps are executed only when the requested semaphore becomes free and the current process comes out of busy loop.*/</p>
-<li style="padding-left: 20px">As the requested semaphore is free to lock, change the LOCKING PID in the semaphore table to PID of the current process.</li>
-<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
-</ul>
-<p>The algorithm for <i>SemLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semlock" target="_blank">here</a>. </p><br>
+
+<li><b>SemUnLock System Call</b></li>
+<p><b><i>SemUnLock</i></b> system call takes a semaphore desciptor (SEMID) as argument. A process invokes <i>SemUnLock</i> system call to unlock the semaphore. <i>SemUnLock</i> invalidates the LOCKING PID field (store -1) in the semaphore table entry for the semaphore. All the processes waiting for the semaphore are made READY for execution.</p>
+<p style="text-indent: 0px">Implement <i>SemUnLock</i> system call using the detailed algorithm provided <a href="os_design-files/semaphore_algos.html#semunlock" target="_blank">here</a>. </p>
+
+<br>
 
 
-<b>SemUnLock System Call</b><br><br>
-<p><i>SemUnLock</i> system call has a semaphore desciptor (SEMID) as an argument from user program. </p>
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
-<li style="padding-left: 20px">Retrieve the SEMID argument from the user stack. Check the SEMID for the invalid conditions. SEMID should be in valid range. The Resource Identifier field in the <a target="_blank" href="os_design-files/process_table.html#per_process_table">per-process resource table</a> entry correspoding to SEMID should be equal to SEMAPHORE (semaphore). If these two conditions are not satisfied, then store -1 as return value, reset the mode flag, change to user stack and return to user mode.</li>
 
-<li style="padding-left: 20px">If validity conditions are satisfied then continue with the implementation. Find the semaphore table index using the SEMID. Check the LOCKING PID value in the semaphore table entry corresponding to the semaphore table index. If the LOCKING PID value is valid and has PID of any other process, then the current process can not unlock the semaphore. In this case, store -2 as return value in the user stack, reset the MODE FLAG to 0, switch to the user stack and return to user mode.</li>
-<li style="padding-left: 20px">If the LOCKING PID value is the PID of the current process, then invalidate the LOCKING PID to -1 and wake up the processes waiting for this semaphore by changing the STATE from the tuple (WAIT_SEMAPHORE, semaphore table index) to READY.</li>
-<li style="padding-left: 20px">Set the return value to 0 in user stack indicating success and reset the MODE FLAG to 0.</li>
-
-</ul>
-
-<p>The algorithm for <i>SemUnLock</i> system call is provided <a href="os_design-files/semaphore_algos.html#semunlock" target="_blank">here</a>. </p><br>
-
-<p style="text-indent: 0px"><code>Note :</code> The implementations of the system calls <i>Semget</i>, <i>Semrelease</i>, <i>SemLock</i> and <i>SemUnLock</i> are final.  </p><br>
-
+<p style="text-indent: 0px"><code>Note :</code> The implementation of <b><i>Semget</i></b>, <b><i>Semrelease</i></b>, <b><i>SemLock</i></b>, <b><i>SemUnLock</i></b> system calls and <b>Acquire Semaphore</b>, <b>Release Semaphore</b> module functions are final.  </p>
+</ol>
+<br>
 
 <b>Modifications to <i>Fork</i> system call</b><br><br>
-<p>In this stage, <i>Fork</i> is modified to update the semaphore table for the semaphores acquired by the parent process. In earlier stage, while implementing the <i>Fork</i> system call, we have copied the per-process resource table of parent to the child  as child process shares the semaphores (and files) acquired by the parent process. To reflect this globally, loop through the per-process resource table of parent and for every semaphore entry, increment the PROCESS COUNT field by one in the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> for the corresponding semaphore. Refer algorithm for <a href="os_design-files/fork.html" target="_blank">fork system call</a>.</p>
+<p>In this stage, <i>Fork</i> is modified to update the semaphore table for the semaphores acquired by the parent process. When a process forks, the semaphores acquired by the parent process are now shared between parent and child. To reflect this change, PROCESS COUNT field is incremented by one in the semaphore table entry for every semphore shared between parent and child. Refer algorithm for <a href="os_design-files/fork.html" target="_blank">fork system call</a>.</p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">While copying the per-process resource table of parent to the child process do following - </li>
+		<li style="padding-left: 20px">If the resource is semaphore (check the Resource Identifier field in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>), then using the sempahore table index, increment the PROCESS COUNT field in the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> entry.</li>
+</ul>
 <br>
 
 <b>Modifications to Free User Area Page (function number = 2, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
-<p>The user area page of every process contains the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> in the last 16 words. Free User Area Page function releases the user area page for a process. Before releasing the user area page, Free User Area Page function should release the semaphores (and files) acquired by the process. Go through the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> entries and for the semaphore entries (Resource Identifier entry equal to SEMAPHORE), release the semaphore by invoking the <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html">resource manager module</a> and invalidate that entry by setting Resource Identifier field to -1.</p>
+<p>The user area page of every process contains the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> in the last 16 words. When a process terminates, all the semaphores the process has acquired (and haven't released explicitly) have to be released. This is done in the <i>Free User Area Page</i> function. The <b>Release Semaphore</b> function of resource manager module is invoked for every valid semaphore in the per-process resource table of the process. </p>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">For each entry in the per-process resource table of the process do following - </li>
+	<li style="padding-left: 20px">If the resource is valid and is semaphore (check the Resource Identifier field in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>), then invoke <b>Release Semaphore</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. </li>
+</ul>
 <br>
-<p style="text-indent: 0px"><code>Note :</code> <i>Fork</i> system call and <b>Free User Area page</b> function will be further modified in later stages for the file resources.</p><br>
+
+<p style="text-indent: 0px"><code>Note :</code> <b><i>Fork</i></b> system call and <b>Free User Area page</b> function will be further modified in later stages for the file resources.</p><br>
+
 <b>Modifications to boot module</b><br><br>
-<p>Initialize the semaphore table by setting PROCESS COUNT of all entries to 0. Load interrupt routine 13 and 14 from the disk to the memory. </p><br>
+<ul style="list-style-type: disc; margin-left: 10px">
+	<li style="padding-left: 20px">Initialize the <a href="os_design-files/mem_ds.html#sem_table" target="_blank">semaphore table</a> by setting PROCESS COUNT to 0 and LOCKING PID to -1 for all entries.</li>
+	<li style="padding-left: 20px">Load interrupt routine 13 and 14 from the disk to the memory. See <a href="os_implementation.html" target="_blank">memory organisation</a>.</li>
+</ul>
+<br>
+
 
 <b>Making things work</b><br><br>
 <p> Compile and load the newly written/modified files to the disk using XFS-interface.</p><br>
 
+
+<div class="container col-md-12" >
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq20"><b>Q1.</b>When a process waiting for a sempahore is scheduled again after the sempahore is unlocked, is it possible that the process finds the sempahore still locked?</a>
+                            <div id="collapseq20" class="panel-collapse collapse">
+                            Yes, it is possible. As some other process waiting for the semaphore could be scheduled before the current process and could have locked the semaphore. In this case the present process finds the semaphore locked again and has to wait in a busy loop until the required sempahore is unlocked.    
+                            </div>
+    </li>
+
+    </ul>
+                          </div>
+                          </div>
 
 <b style="color:#26A65B">Assignment 1: </b> The reader-writer program given <a href="test_prog.html#test_program_4" target="_blank">here</a> has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. A writer process can write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. The parent process is the reader process and its two children are writers. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process reads the numbers and prints them on to the console. Compile the program given in link above and execute the program using the shell. The program must print all numbers from 1 to 100, but not necessarily in sequential order.   
    <br><br>
@@ -4298,11 +4299,11 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
                             <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo23">Learning Objectives</a>
                             <div id="lo23" class="panel-collapse expand">
                               <ul>
-
-                                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of create, delete, shutdown system calls</li>
+                                 <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Familiarize with eXpOS file system and implemtation.</li>
+                                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for file creation and deletion to the OS by implementing <i>Create</i> and <i>Delete</i> system calls</li>
 
                              
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Add support for file creation and deletion</li>
+                             
                             </ul>                                  
                                      
                             </div>
@@ -4312,78 +4313,447 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
                       </div>
 
 	<!--End Learning Objectives-->
-<!--<b>Read and understand  <a href="" target="_blank"> </a> documentations of eXpOS before proceeding further.</b><br><br>-->
-<p>In this stage, we will discuss how files are created and deleted by the application program with the help of file system calls <i>Create</i> and <i>Delete</i>. <i>Shutdown</i> system call is also modified in this stage.</p> 
 
-<p><i>Create</i> system call creates an empty file with the provided name. <i>Create</i> system call creates the record for the file in the disk data structures and stores the meta data related to the file. Inode table and root file are the disk data structures used to maintain permanent record of the files. The memory data structure file(inode) status table is initialized at the time of creation of the file. <i>Delete</i> system call deletes the record of the file with given name from inode table and root file. <i>Delete</i> also releases the blocks occupied by the file to be deleted. <i>Shutdown</i> system call is modified to commit back the changes made by file system calls in the memory copy of disk data structures and blocks to the disk.</p>
+	<b>Pre-requisite reading</b><br>
+    <p style="text-indent: 0px">1) It is <b>absolutely necessary</b> to read and understand <b><a href="Tutorials/filesystem_implementation.html" target="_blank">eXpOS FILE SYSTEM and Implementation Tutorial</a></b> documentation.<br>
+    2) Description of data structures- <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="os_design-files/disk_ds.html#root_file" target="_blank">Root file</a>, <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a> and <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a>. </p>
+	<br>
 
-
-<p>Inode table and root file stores details of every file present in eXpOS in the disk. eXpOS allows to have at most <a href="support_tools-files/constants.html" target="_blank">MAX_FILE_NUM</a> (60) files so both inode table and root file has MAX_FILE_NUM entries. The entry for a file in inode table is identified by a index from starting of inode table. For each file, it is required to have same index of the inode table entry and root file entry. To use the disk data structures like inode table, root file, disk free list etc while OS is running, they have to be loaded from the disk to the memory in the boot module. The memory copy of inode table is present in memory pages 59 and 60 and the memory copy of root file is present in memory page 62.</p> 
-
-<p>Each inode table entry occupies 16 words of which 7 are unused presently. The FILE TYPE field in the inode table is used to store the type of file. A file can be a <a href="os_spec-files/eXpFS.html" target="_blank">data file, executable file or root file</a>. The SPL constants <a href="support_tools-files/constants.html" target="_blank">DATA, EXEC, ROOT</a> represnts the data file, executable file and root file respectively. Create system call allows to create only data files. FILE NAME field stores the name of the file. FILE SIZE field stores the size of the file. A file in eXpOS can occupy maximum four blocks. As each block has 512 words, maximum FILE SIZE possible is 2048 words and denoted by constant <a href="support_tools-files/constants.html" target="_blank">MAX_FILE_SIZE</a>. USERID field of a file stores the ID of the user who created the file (owns the file). When a file is created, the USERID field is copiedfrom the USERID field of the process table of the current process. When multiuser support is added in later stages, there will be more significant use of this USERID field. At present to simplify the implementation, consider this is a single user system with only user called root (USERID of root is 1). The USERID field in the process table of IDLE and INIT is set to 1 in the boot module. The PERMISSION field indicates which file operations can be performed by a user. The PERMISSION field takes two values - OPEN_ACCESS (0) and EXCLUSIVE (1). When creating a new file, the user should provide the permission as an argument to Create system call. Refer details about file access permissions provided <a href="os_spec-files/multiuser.html#file_access_permissions" target="_blank">here</a>. The four DATA BLOCK fields store the disk block numbers allocated to a file. 
-The invalid entry in the inode table is indicated by -1 in the FILE NAME field. The starting address of the memory copy of the inode table is given by SPL constant <a href="support_tools-files/constants.html" target="_blank">INODE_TABLE</a>. See <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> for more details.</p>
-
-<p>Each root file entry has eight words of which last three words are unused. The first five fields are FILE NAME, FILE SIZE, FILE TYPE, USERID and PERMISSION. These fields have same values as that of the corresponding fields in the inode table entry for a file. <b style="color: red">invalid </b>. The SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a> refers to the starting address of of the memory copy of the root file. See <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a> for more details. </p>
-
-<p>File(inode) status table is a data structure present in memory used to store the lock status of each file. File status table is present in memory page 57 and occupies 240 words. There are total MAX_FILE_NUM (60) entries in the file status table. For every file present in the inode table a corresponding entry is present in file status table with the same index. Each entry of the file status table occupies four words of which last two are unused. FILE OPEN COUNT field gives the number of open instances of a file. Whenever a file is opened (using open system call) the FILE OPEN COUNT field is incremented by one in the file status table entry of that file. LOCKING PID field stores the PID of the process which has currently locked the file(inode). To perform operations read/write on the file, a process first has to lock the file by setting the LOCKING PID field to the PID of the process. <!--An invalid entry in the file status table is indicated by zero in the FILE OPEN COUNT field.--> The SPL constant <a href="support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is used to refer to the starting address of the file status table. See <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> for more details.</p>
-
-<p>To perform operations read and write on a file, the relevant disk blocks has to be present in the memory. eXpOS uses four memory pages (71 to 75) as buffers to load the disk blocks for file read/write operations. The SPL constant <a href="support_tools-files/constants.html" target="_blank">MAX_BUFFER</a> gives number of buffer pages that is 4. The data structure buffer table is used to store information regarding the disk blocks loaded into the buffer pages. The disk block to be accessed has to be loaded into a buffer page which is decided by a simple hash function -   
-<i>Buffer number = disk block number%MAX_BUFFER</i>. There are three required fields in each entry of the buffer table. BLOCK NUMBER field stores the disk number loaded into that corresponding buffer page. DIRTY BIT field indicates whether the buffer is modified or not. A buffer is locked by a process before it is accessed. LOCKING PID field stores the pid of the process that has currently locked the buffer. Buffer table entry is invalid when BLOCK NUMBER is -1. The starting address of the buffer table is given by SPL constant <a href="support_tools-files/constants.html" target="_blank">BUFFER_TABLE</a>. Refer <a href="os_design-files/mem_ds.html#buffer_table">buffer table</a> for more details.</p><br><br>
+<p>In this stage, we will discuss how files are created and deleted by the application program with the help of file system calls <i>Create</i> and <i>Delete</i>. <i>Shutdown</i> system call will be modified in this stage.</p> 
 
 
-<b style="font-size: 20px">Implementation of Interrupt routine 4</b><br><br>
-<p>The system calls <i>Create</i> and <i>Delete</i> are implemented in the interrupt routine 4. <i>Create</i> and <i>Delete</i> have system call numbers 1 and 4 respectively.</p>
+<p><i>Create</i> system call creates an empty file with the name given as input. <i>Create</i> system call initializes the disk data structures with meta data related to the file. <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> and <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a> are the disk data structures used to maintain permanent record of files. <i>Delete</i> system call deletes the record of the file with the given name from inode table and root file. <i>Delete</i> also releases the disk blocks occupied by the file to be deleted. The <i>Shutdown</i> system call is modified to commit the changes made by <i>Create</i> and <i>Delete</i> system calls in the memory copy of the disk data structures back into the disk.</p>
 
-<br>
+
+<p>Inode table and root file stores details of every eXpOS file stored  in the disk. eXpOS allows at most <a href="support_tools-files/constants.html" target="_blank">MAX_FILE_NUM</a> (60) files to be stored in the disk. Hence, both inode table and root file has MAX_FILE_NUM entries. The entry for a file in the inode table is identified by an index of its record in the inode table. For each file, the inode table entry and root file entry should have the same index. The disk data structures have to be loaded from the disk to the memory in order to use them while OS is running. The OS maintains the memory copy of the inode table in memory pages 59 and 60. Also the memory copy of root file is present in memory page 62. See <a href="os_implementation.html" target="_blank">memory organization</a> for more details. </p> <br>
+
+<b style="font-size: 20px">Interrupt routine 4</b><br><br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/create_delete.png" style="display:block;margin-left:auto;margin-right:auto" >
                            <br>
                            <figcaption>Control flow for <i>Create</i> and <i>Delete</i> system calls</figcaption>
                            </figure>
 
+<br>
+<p>The system calls <i>Create</i> and <i>Delete</i> are implemented in the interrupt routine 4. <i>Create</i> and <i>Delete</i> have system call numbers 1 and 4 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Create system call</b></li> 
+<p><i>Create</i> system call takes filename and permission (integer 0 or 1) as arguments from the user program. As <i>Create</i> allows to create only data file, it is recommended to use <i>.dat</i> as extension for file names. <i>Create</i> finds a free entry (indicated by -1 in the FILE NAME field) in the inode table to store details related to the new file. The fields in the free inode table entry and corresponding root file entry are  initialized with the meta-data of the new file.</p> 
+
+<p>The USERID field in the inode table is initialized to the USERID field from the process table of the current process. Hence, the user executing the <i>Create</i> system call becomes the <b>owner</b> of the file. The USERNAME field in the root file entry is initialized to the username corresponding to the USERID. The username can be obtained from memory copy of the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> with index as USERID. User table in the disk is initialized by the XFS-interface (during disk formatting) to create two users - kernel and root.</p>
+<p style="text-indent: 0px"> Implement <i>Create</i> system call using the detailed algorithm provided <a href="os_design-files/create.html">here</a>.</p>
+<br>
+<li><b>Delete system call</b></li>
+<p><i>Delete</i> system call takes file name as an argument from the user program. A file can not be deleted if it is currently opened by one or more processes. <i>Delete</i> first acquires the lock on the file by invoking <b>Acquire Inode</b> function from <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. <i>Delete</i> then invalidates the record of the file in entries of the inode table and root file. Also, the blocks allocated to the file are released. Finally, <i>Delete</i> releases the lock on file by invoking <b>Release Inode</b> function of the resource manager module.</p>
+
+<p>There is one subtility involved in deleting a file. If any of the disk blocks of the deleted file are in the buffer cache, and if the buffer page is marked dirty, the OS will write back the buffer page into the disk block when another disk block needs to be brought into the same buffer page.  
+However, such write back is unnecessary if the file is deleted (and can even be catastrophic- why?). Hence, Delete system call must clear the dirty
+bit (in the buffer table) of all the buffered disk blocks of the file.    
+
+ </p>
+
+<p style="text-indent: 0px"> Implement <i>Delete</i> system call using the detailed algorithm provided <a href="os_design-files/delete.html">here</a>. </p>
+<br>
+<li><b>Acquire Inode (function number = 4, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> )</b></li>
+<p>Acquire Inode takes an inode index and PID of a process as arguments. To lock the inode (file), <b>Acquire Inode</b> first waits in a busy loop by changing state to (WAIT_FILE, inode index) until the file becomes free. After the inode becomes free and current process resumes execution, acquire inode checks whether the file is deleted from the system. (This check is necessary because, some other process may delete the file while the current process was waiting for the inode to be free.) <b>Acquire Inode</b> then locks the inode by setting LOCKING PID field in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> to the given PID.</p>
+<p style="text-indent: 0px">Implement Acquire Inode function using the detailed algorithm given in the resource manager module link above.</p>
+
+<br>
+
+<li><b>Release Inode (function number = 5, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> )</b></li>
+<p>Release Inode takes an inode index and PID of a process as arguments. Release Inode frees the inode (file) by invalidating the LOCKING PID field in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a>. The function then wakes up the processes waiting for the file with given inode index by changing state of those processes to READY.</p>
+<p style="text-indent: 0px"> Implement Release Inode function using the  detailed algorithm given in the resource manager module link above. </p>
+
+<!--
+<li><b>Release Block (function number = 4, <a href="os_modules/Module_2.html" target="_blank">Memory manager module</a> )</b></li>
+<p>There is one subtility involved in deleting a file. If any of the disk blocks of the deleted file is in the buffer cache, and if the buffer page is marked dirty, the OS will write back the buffer page into the disk block when another disk block needs to be brought into the same buffer page.  
+However, such write back is unnecessary if the file is deleted (and can even be catastrophic- why?). Hence, Delete system call must clear the dirty
+bit (in the buffer table) of all the buffered disk blocks of the file.    
+
+ </p>-->
+</ol>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Create</i></b>, <b><i>Delete</i></b>, <b>Acquire Inode</b> and <b>Release Inode</b> are final.</p><br>
+
+
+ 	
+  <b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
+  <p> <i>Create</i> and <i>Delete</i> system calls update the memory copies 
+  of Inode table, disk free list and root file.  The changed data
+  structures are not committed into the disk by these system calls.
+  The disk update for these data structures are done during system
+  shutdown. 
+   </p>
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/Initial_shutdown.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <i>Shutdown</i> system call</figcaption>
+                           </figure>
+
                            <br> 
 
 <br>
 
-<ul style="list-style-type: disc; margin-left: 10px; ">
-<li style="padding-left: 20px">Extract the system call number from the user stack and switch to the kernel stack.</li>
-<li style="padding-left: 20px">Implement system calls <i>Create</i> and <i>Delete</i> according to the system call number extracted from above step. Steps to implement these system calls are explained below.</li>
-<li style="padding-left: 20px">Change back to the user stack and return to the user mode.</li>
+<p>Interrupt routine 15 written in stage 21 contains just HALT instruction. In this stage, <i>Shutdown</i> system call is implemented in the interrupt routine 15. <i>Shutdown</i> system call has system call number 21 and it does not have any arguments. </p><br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Shutdown system call</b></li>
+
+    <ul style="list-style-type: disc; margin-left: 10px; ">
+    <li style="padding-left: 20px">Switch to the kernel stack and set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
+    <li style="padding-left: 20px"><i>Shutdown</i> system call can be invoked only from the shell process of the root user. If the current process is not shell (PID in the <a href="os_design-files/process_table.html" target="_blank">process table</a> is not equal to 1) or the current user is not root user (USERID in the process table is not equal to 1) then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
+    <li style="padding-left: 20px">Commit the changes made in the memory copies of the <b>inode table</b> (along with user table), the <b>root file</b> and the <b>disk free list</b> by storing them back to the disk invoking the <b>Disk Store</b> function of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. Refer to <a href="os_implementation.html" target="_blank">disk/memory organization</a> for block and page numbers of these data structures. Finally, halt the system using the <a href="./support_tools-files/spl.html" target="_blank">SPL statement</a> halt.</li>
+    </ul>
+
+    <p style="text-indent: 0px"><code>Note :</code>The implementation of the <i>Shutdown</i> system call is not final. Implementation will change in later stages.</p><br>
+
+
+<li><b>Disk Store (function number = 1, <a href="os_modules/Module_4.html" target="_blank">Device manager module</a>)</b></li>
+
+<p>Disk Store function takes PID of a process, a page number and a block number as arguments. To store data into the disk, Disk Store first needs to lock the disk by invoking the <b>Acquire Disk</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. After locking the disk, Disk Store updates the <a href="os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a>. Finally, Disk Store initiates the store operation for given page number and block number and waits in WAIT_DISK state until the store operation is complete. When store operation is completed, system raises the disk interrupt which makes this process READY again.</p>
+<p style="text-indent:  0px"> Implement <b>Disk Store</b> function using the detailed algorithm given in the device manager module link above.</p>
+
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b>Disk Store</b> function is final.</p><br>
+
+
+
+</ol>
+
+<b>Modifications to boot module</b><br><br>
+<ul style="list-style-type: disc; margin-left: 10px;">
+<li style="padding-left: 20px">Load interrupt routine 4 and root file from the disk to the memory. See the memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
+<li style="padding-left: 20px">Initialize the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> by setting LOCKING PID and FILE OPEN COUNT fields of all entries to -1.</li>
+<li style="padding-left: 20px">Initialize the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> by setting BLOCK NUMBER and LOCKING PID fields to -1 and DIRTY BIT to 0 in all entries.</li>
+<li style="padding-left: 20px">At present to simplify the implementation, we consider a single user system with only one user called root, USERID of root is 1. Hence, set the USERID field in the process table of INIT to 1. Later when INIT is forked, the USERID field is copied to the process table of the child process.  </li>
 </ul><br>
-<b>Create System Call</b><br><br>
- <p>Create system call has file name (string) and permission (integer) as arguments.</p>
+<b>Making things work</b><br><br>
+<p> Compile and load the newly written/modified files to the disk using XFS-interface.</p>
 
- <ul style="list-style-type: disc; margin-left: 10px; ">
- 	<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
- 	<li style="padding-left: 20px">Retrieve the file name and permission provided as arguments from the user stack. Check if a file with the given file name is already present in eXpOS. This can be done by going through the entries of the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a>. If the file is already present then set the return value to 0, reset the MODE FLAG, change the stack to user stack and return to user mode. </li>
- 	<li style="padding-left: 20px">Go through the inode table to find a free entry (a free entry in the inode table is indicated by -1 in the FILENAME field). If free entry is not found indicating that the system has reached maximum limit for files, then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">In case a free entry is found, save the index of this entry for further use. Every file has one entry in each inode table, root file and file status table to save the meta data related to file. A particular file uses the same index (inode index obtained above) to refer its corresponding entries in inode table, root file and file status table.</li>
- 	<li style="padding-left: 20px">Initialize the fields of the inode table entry corresponding to the found index. Set the FILE TYPE to SPL constant <a href="support_tools-files/constants.html" target="_blank">DATA</a>. Store the file name and permission given as arguments in the FILE NAME and PERMISSION fields respectively. Set the FILE SIZE to 0 as at the time of file creation, file is empty. The USERID field is set to the USERID of the current process which is present in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process. Four data block entries are invalidated (-1). </li>
 
- 	<li style="padding-left: 20px">Initialize the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file (inode) status table</a> entry corresponding to the new file (the entry can be obtained using inode index). Set the FILE OPEN COUNT field to 0 as at present no process has opened this file. Set the LOCKING PID field to -1.</li>
- 	<li style="padding-left: 20px">Initialize the <a href="os_design-files/disk_ds.html#root_file">root file</a> entry corresponding to the new file (the entry can be obtained using inode index). Set FILE NAME, FILE SIZE, FILE TYPE, USERID and PERMISSION fields as done for inode table entry. </li>
- 	<li style="padding-left: 20px">Store the return value as 0 indicating success and reset the MODE FLAG in the process table.</li>
- </ul>
-<p>The algorithm for <i>Create</i> system call is provided <a href="os_design-files/create.html" target="_blank">here</a>.</p><br>
-<b>Delete System Call</b><br><br>
-<p>Delete system call has file name (string) as argument.</p>
+<div class="container col-md-12" >
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
 
- <ul style="list-style-type: disc; margin-left: 10px; ">
- 	<li style="padding-left: 20px">Set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
- 	<li style="padding-left: 20px">Retrieve the file name provided as argument from the user stack. Loop through the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entries to find the index of the file with the provided file name. If the file is not found in the inode table, store return value as 0 in the user stack, reset the MODE FLAG, change the stack to user stack and return to user mode. If the file is present, store the inode index for further use.</li>
- 	<li style="padding-left: 20px">If the FILE TYPE field in the inode table entry is not DATA then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">If given file have <a href="support_tools-files/constants.html" target="_blank">EXCLUSIVE</a> permission and current user is not same as the user who created the file then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode. The root user is excluded from the above condition as root user has privilege to delete any file.</li>
- 	<li style="padding-left: 20px">If the file to be deleted is open by some process (FILE OPEN COUNT in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> is not zero), then the file can not be deleted. In this case, store -2 as the return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">For each disk block allocated to the file to be deleted, check if the block is loaded into the buffer by referring the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> entry corresponding to the disk block number. The buffer table entry can be found using formula <i>disk block number % <a href="support_tools-files/constants.html" target="_blank">MAX_BUFFER</a></i>. If the block is loaded into the buffer, invalidate the BLOCK NUMBER field in the buffer table entry. For each disk block in the inode table entry for the file, release the block by invoking <b>Release Block</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
- 	<li style="padding-left: 20px">Invalidate the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file(inode) status table</a> entry for the file by setting FILE OPEN COUNT to 0. Invalidate the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a>
- 	entries for the file by setting FILE NAME to -1.</li>
- 	<li style="padding-left: 20px">Store 0 as return value indicating successful deletion of given file and reset the MODE FLAG in the process table to 0.</li></ul>
- 	<p>The algorithm for <i>Delete</i> system call is provided <a href="os_design-files/delete.html" target="_blank">here</a>.</p><br>
-<p style="text-indent: 0px"><code>Note :</code>The implementation of the system calls <i>Create</i> and <i>Delete</i> are final.</p>
- 	<br>
-<b style="font-size: 20px">Implementation of Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
+<a data-toggle="collapse"  href="#collapseq21"><b>Q1.</b> What is the need for <i>Delete</i> system call to lock the file before deleting it? </a>
+                            <div id="collapseq21" class="panel-collapse collapse">
+                            Locking the file in <i>Delete</i> system call makes sure that some other process will not be able to open the file or perform any other operation on the file during the deletion of the file.  
+                            </div>
+    </li>
 
-<p>Interrupt routine 15 written in stage 21 contains just HALT instruction. In this stage, <i>Shutdown</i> system call is implemented in the interrupt routine 15. <i>Shutdown</i> system call has system call number 21 and it does not take any arguments. </p>
+    </ul>
+                          </div>
+                          </div><br>
+<b style="color:#26A65B">Assignment 1:</b> Write an ExpL program to take file name(string) and permission(integer) as input from the console and create a file with the provided input. (It is recommended to have .dat as extension for data files.) Run this program using shell. Using XFS-interface check if the entry for the file is created in inode table and root file. <br><br>
+<b style="color:#26A65B">Assignment 2: </b>Write an ExpL program to take file name(string) as input from the console and delete a file with provided input. Run the program using shell. Using XFS-interface check if the entry for the file is deleted from inode table and root file. Check the program for different files- like files created using <i>Create</i> system call, files not present in disk and files loaded using XFS-interface having some data (eg- sample.dat used in stage 2).<br><br>
+</div>
+</div>
+ <!--=========end Stage 23 ===========-->
+
+ <!--=========Begin Stage 24 ===========-->
+ <div class="panel-heading" id="list_stage24">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse24"><span class="fa fa-check-square-o"></span>Stage 24 : File Read</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse24" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!--Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo24">Learning Objectives</a>
+                            <div id="lo24" class="panel-collapse expand">
+                              <ul>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding buffer cache. </li>
+                                <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of <i>Open</i>, <i>Close</i> and <i>Read</i> system calls.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+  <!--End Learning Objectives-->
+
+
+<b>Pre-requisite reading</b><br>
+    <p style="text-indent: 0px">1) Description of data structures - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a>, <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. </p>
+	<br>
+<!--
+<b>Gain the understanding of the following data structures and their fields if you haven't done already - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File(inode) status table</a>, <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>.</b><br><br>-->
+<p>In this stage, we will understand the mechanism of opening and closing a file with the help of <i>Open</i> and <i>Close</i> system calls. We will also understand how contents of a file can be read by using <i>Read</i> system call. <i>Fork</i> system call and <b>Free User Area Page</b> function of process manager module are also modified in this stage. </p><br>
+
+
+
+<b style="font-size: 20px">Interrupt routine 5</b><br><br>
+
+<p>The system calls <i>Open</i> and <i>Close</i> are implemented in the interrupt routine 5. <i>Open</i> and <i>Close</i> have system call numbers 2 and 3 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/open_close.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <i>Open</i> and <i>Close</i> system calls</figcaption>
+                           </figure>
+
+<br>
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Open system call</b></li> 
+<p><i>Open</i> system call takes a filename as an argument from the user program. To perform read/write operations on a file, a process must open the file first. <i>Open</i> system call creates a new <b>open instance</b> for the file and returns a <b>file descriptor</b> (index of the new <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> entry created for the open instance). Further operations on the open instance are performed using this file descriptor. A process can open a file several times and each time a different open instance (and new descriptor) is created. The global data structure, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> keeps track of all the open file instances in the system.  (A new 
+entry is created in this table whenever the <i>Open</i> system call is invoked with any file name.)  <a href="os_design-files/mem_ds.html#file_lock_status_table">File status table</a> is a global data structure that maintains an entry for every file in the system (not just opened files).</p>
+
+<p><i>Open</i> system call creates new entries for the file to be opened in the per-process resource table and the open file table. A process keeps track of an open instance by storing the index of the open file table entry of the instance in (the corresponding) resource table entry. When a file is opened, the OPEN INSTANCE COUNT in the open file table is set to 1 and <b>seek</b> position is initialized to the starting of the file (0).</p>
+
+<p>Each time when a file is opened, the FILE OPEN COUNT in the file status table entry for the file is incremented by one. <i>Open</i> system call invokes <b>Open</b> function of <a href="os_modules/Module_3.html" target="_blank">file manager module</a> to deal with global data structures - <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> and <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a>. When a process executes a <i>Fork</i> system call, the open instances of files (and semaphores) created by the process are shared between the current process and its child. As an effect of <i>Fork</i>, the OPEN INSTANCE COUNT in the open file table entry corresponding to the open instance is incremented by one.</p>  
+
+
+
+<p>
+  It is necessary not to be confused between FILE OPEN COUNT (in the file status 
+  table) and OPEN INSTANCE COUNT (in the open file table).  The former keeps track of the global count of how many times <i>Open</i> system call has been invoked with each file in the system - that is the number of open instances of a file at a given point of time. This count is decremented each time when a <i>Close</i> is invoked on the file by any process. Each open instance could be further <b>shared</b> between multiple processes (via <i>Fork</i>). OPEN INSTANCE COUNT value of a particular open instance essentially keeps track of this "share count".  
+</p>
+<p style="text-indent: 0px">Implement <i>Open</i> system call using the detailed algorithm provided <a href="os_design-files/open.html" target="_blank">here</a>.</p>
+<br>
+
+
+<li><b>Close system call</b></li>
+<p>When a process no longer needs to perform read/write operations on an open instance of a file, the open instance may be closed using the <i>Close</i> system call. Even if a process does not explicitly close an open instance by invoking <i>Close</i> system call, the open instance is closed at the termination of the process by <i>Exit</i> system call.</p>  
+
+<p><i>Close</i> system call takes a file descriptor (index of the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> entry) as argument from the user program. <i>Close</i> system call invalidates the per-process resource table entry (corresponding to given file descriptor) by storing -1 in the Resource Identifier field. To decrement share count of the open instance in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> and update the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> accordingly, <b>Close</b> function of <a href="os_modules/Module_3.html" target="_blank">file manager module</a> is invoked by the <i>Close</i> system call.</p> 
+<p style="text-indent: 0px">Implement <i>Close</i> system call using the detailed algorithm provided <a href="os_design-files/close.html">here</a>. </p>
+<br>
+
+<li><b>Open (function number = 3, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
+<p><b>Open</b> function is invoked by <i>Open</i> system call to update the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> and the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> when a file is opened. Open takes a file name as an argument. This function locates the inode index for the file in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> and <b>locks the inode</b> before proceeding further. <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> is invoked to lock the file. Locking the file is necessary to make sure that no other process tries to delete the file concurrently. Open function creates a new entry in the open file table and returns the index of this entry to the caller. (Note that this index recieved as return value is stored in the per-process resource table entry by the <i>Open</i> system call.) All the fields of the open file table entry are initialized. In case the file is "root" file, INODE INDEX field is initialized to the <a href="support_tools-files/constants.html" target="_blank">INODE_ROOT</a> (0). Open function increments the FILE OPEN COUNT field by one in the file status table entry for the file, except if the file is "root" file. (FILE OPEN COUNT is irrelevent for the root file as the root file is pre-loaded into the memory at boot time and can never be deleted.) The lock on the file is released by invoking <b>Release Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> before returning to the caller.</p>
+
+<p style="text-indent: 0px"> Implement <i>Open</i> function using the detailed algorithm given in the file manager module link above.</p>
+<br>
+<li><b>Close (function number = 4, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
+<p><b>Close</b> function is invoked by the <i>Close</i> system call to update the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> and the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> when a file is closed. Close takes an open file table index as argument. <i>Close</i> function decrements the share count (i.e OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html" target="_blank">open file table</a> entry) as the process no longer shares the open instance of the file. When the share count becomes zero, this indicates that all processes sharing that open instance of the file have closed the file. Hence, open file table entry corresponding to that open instance of the file is invalidated by setting the INODE INDEX field to -1 and the open count of the file (FILE OPEN COUNT field in <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> entry) is decremented.</p> 
+<p style="text-indent: 0px">Implement <i>Close</i> function using the detailed algorithm given in the file manager module link above. </p><br>
+
+
+<li><b>Modifications to <i>Fork</i> system call</b></li>
+<p style="padding-left: 20px"> There is a simple modification required to the <i>Fork</i> System call. When a process forks to create a child process, the file instances currently opened by the parent are now shared between child and parent. To reflect this change, the OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> is incremented for each open file instance in the per-process resource table of parent process. </p>
+<ul style="list-style-type: disc; margin-left: 10px;">
+
+<li style="padding-left: 20px">While Copying the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of parent to the child process do following -</li>
+<li style="padding-left: 20px">If the resource is a file (check the Resource Identifier field in the per-process resource table), then using the open file table index, increment the OPEN INSTANCE COUNT field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> entry.</li>
+/*The change in <i>Fork</i> system call to update the <a href="os_design-files/mem_ds.html#sem_table" target="_blank" 
+>semaphore table</a>, is already done in stage 22*/
+</ul><br>
+<br>
+
+<li><b>Modifications to Free User Area Page (function number = 2, <a href="os_modules/Module_1.html" target="_blank">process manager module</a> )</b></li>
+<p style="padding-left: 20px"> When a process terminates, all the files the process has opened (and haven't closed explicitly) have to be closed. This is done in the Free User Area page function. The <b>Close</b> function of the <a href="os_modules/Module_3.html">file manager module</a> is invoked for every open file in the per-process resource table of the process.</p>
+<ul style="list-style-type: disc; margin-left: 10px;">
+
+<li style="padding-left: 20px">For each entry in the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a> of the process, do following -</li>
+<li style="padding-left: 20px">If the resource is valid and is file (check the Resource Identifier field in the per-process resource table), then invoke the Close function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>.</li>
+/*The change in the Free User Area Page to release the unrelased semaphores is already done in stage 22*/
+</ul><br>
+</ol>
+
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Open</i></b>,<b><i>Close</i></b>, <b><i>Fork</i></b> system calls and <b>Open</b>, <b>Close</b>, <b>Free User Area Page</b> functions are final.</p><br>
+
+
+
+
+<b style="font-size: 20px">Interrupt routine 6 (<i>Read</i> system call)</b><br><br>
+
+<p>Interrupt routine 6 written in stage 16 reads data (words) only from the terminal. In this stage, <i>Read</i> system call is modified to read data from files. <i>Read</i> system call has system call number 7. From ExpL programs, <i>Read</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/FileRead.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for reading a word from a file</figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b><i>Read</i> system call</b></li>
+<p><i>Read</i> system call takes as input a file descriptor and the address of a word into which data should be read. <i>Read</i> system call locks the inode (corresponding to the file descriptor) at the beginning of the system call and releases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> are used to lock and release the inode respectively.</p>
+
+<p><i>Read</i> system call reads the word at the position pointed to by the 
+value of LSEEK (in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry) and stores it into the memory address provided as input. After reading the word from the file, LSEEK is incremented by one. </p>
+
+<p>As file data is stored in the disk blocks allocated to the file, in order to read from position pointed to by LSEEK, the disk block containing the word pointed to by LSEEK has to be loaded first into the memory. eXpOS maintains a <b>buffer cache</b> (see <a href="os_implementation.html" target="_blank">memory organization</a>)that can store up to four disk blocks in memory simultaneously. The cache pages are numbered 0,1,2 and 3 and are stored in memory pages 71, 72, 73 and 74.  The simple caching scheme we user here is the following.  If we want to bring disk block <i>N</i> into memory, the cache page <i>N mod 4</i> will be used.  Hence, if the disk block number to be loaded is - say 195 - then the cache page number to which the block will be noded is 3 and hence, the block will be loaded to page number 74.  The functions <b>Buffered Read</b> and <b>Buffered Write</b> of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a> are designed to handle buffer management. <i>Read</i> invokes <b>Buffered Read</b> function to bring the required disk block into the memory buffer and read the word present at position LSEEK. </p>
+
+<p><b>Reading from the root file does not require a buffer, as root file is already loaded into the memory at boot-time.</b> Memory copy of the root file is present in memory page 62 and the start address of this page is denoted by the SPL constant <a href="support_tools-files/constants.html" target="_blank">ROOT_FILE</a>. The word in the root file at LSEEK position is copied into the address provided. Note that the memory address provided as argument is a logical address, and as system call runs in kernel mode logical address should be translated to physical address before storing data.</p>
+
+<p><i>Read</i> system call needs to lock the resources - Inode (file), buffer and disk before using them. These are locked in the order 1) Inode 2) buffer and 3) disk and released in the reverse order. This order is also followed while writing to a file. Ordering of resource acquisition is imposed in order to avoid processes getting into <b>circular wait</b> for resources. Avoiding circular wait prevents <a href="https://en.wikipedia.org/wiki/Deadlock" target="_blank">deadlocks</a>. </p>
+
+<p style="text-indent: 0px">Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html">here</a>.</p>
+
+<br>
+
+
+<li><b>Buffered Read (function number = 2, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
+
+<p><b>Buffered Read</b> takes as input 1) a disk block number, 2) an offset value and 3) a physical memory address. The task of Buffered read is to read a word at position specified by the offset within the given disk block and store it into the given <b>physical</b> memory address. To read a word from a disk block, it has to be present in the memory. <b><a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a></b> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>.</p>
+<p> To use a buffer page, it has to be locked first by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, <b>Buffered Read</b> invokes the function <b>Disk Load</b> of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, the word present at the given offset in the memory buffer is copied into the address given as argument.</p>
+<p>The buffer page to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer page has been modified earlier (<b>dirty bit</b> in the buffer table is set), the disk block present in the buffer has to be stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Read invokes <b>Disk Store</b> function of <a>device manager module.</a> </p>
+<p>
+After completion of the read operation, Buffered Read unlocks the buffer page by  invoking <b>Release Buffer</b> function of <a>resource manager module</a>. Now that the buffer is unlocked, other processes are allowed to use the buffer.</p> 
+
+<p style="text-indent: 0px">Implement Buffered Read function using the detailed algorithm given in the file manager module link above.</p>
+<br>
+
+<li><b>Acquire Buffer (function number = 1, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> )</b></li>
+<p><b>Acquire Buffer</b> takes a buffer number and PID of a process as arguments. This function is invoked by the <b>Buffered Read</b> and <b>Buffered Write</b> functions of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a> to lock a buffer before its use. A process needs to acquire a buffer before accessing it to prevent data inconsistency that may arise if other
+processes are allowed to access the buffer concurrently.</p>  
+
+ <p>Acquire Buffer locks a buffer by storing the given PID in the LOCKING PID field of the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> entry corresponding to the given buffer number. If the required buffer is locked by some other process (some other process has set the LOCKING PID), then the process with the given PID is blocked (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a> is changed to (WAIT_BUFFER, buffer number) in the <a href="os_design-files/process_table.html" target="_blank">process table</a>). The process waits in the blocked state, until the required buffer is free. When the process which has acquired the buffer releases the buffer by invoking <b>Release Buffer</b> function (described next), the state of this blocked process is made READY and <b>Acquire Buffer</b> attempts to lock the buffer again. </p>
+<p style="text-indent: 0px"> Implement Acquire Buffer function using the detailed algorithm given in the resource manager module link above.</p>
+<br>
+
+<li><b>Release Buffer (function number = 2, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b></li>
+<p>A process uses the <b>Release Buffer</b> function to release a buffer page that it has acquired earlier.</p>
+
+<p><b>Release Buffer</b> takes as input the number of a buffer page to be released and the PID of a process. Release Buffer function invalidates the LOCKING PID field (store -1) in the buffer table entry corresponding to the given buffer number. Release Buffer also wakes up all processes waiting for the buffer with given buffer number by changing the STATE in the <a target="_blank" href="os_design-files/process_table.html">process table</a> from tuple (WAIT_BUFFER, buffer number) to READY. </p>
+<p style="text-indent: 0px">Implement Release Buffer function using the detailed algorithm given in the resource manager module link above.</p>
+<br>
+</ol>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Read</i></b> system call and <b>Buffered Read</b>, <b>Acquire Buffer</b>, <b>Release Buffer</b> functions are final.</p><br>
+
+<b>Modifications to boot module</b><br><br>
+<ul style="list-style-type: disc; margin-left: 10px;">
+<li style="padding-left: 20px">Load interrupt routine 5 and module 3 from the disk to the memory. See the memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
+<li style="padding-left: 20px">Initialize all entries of the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> by setting INODE INDEX field to -1 and OPEN INSTANCE COUNT field to 0.</li>
+</ul><br>
+
+<b>Making things work</b><br><br>
+<p> Compile and load the newly written/modified files to the disk using XFS-interface.</p>
+
+
+  </div>
+</div>
+<!--=========End Stage 24 ===========-->
+
+<!--=========Begin Stage 25 ===========-->
+ <div class="panel-heading" id="list_stage25">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse25"><span class="fa fa-check-square-o"></span>Stage 25 : File Write</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse25" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!--Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo25">Learning Objectives</a>
+                            <div id="lo25" class="panel-collapse expand">
+                              <ul>
+
+   <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understanding the allocation of disk blocks to a file.</li>
+   <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of <i>Write</i> and <i>Seek</i> system calls.</li>
+                             
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Modify <i>Shutdown</i> system call so that file writes are committed to the disk properly.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+  <!--End Learning Objectives-->
+<b>Pre-requisite reading</b><br>
+    <p style="text-indent: 0px">1) Description of disk data structures - <a href="os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> and <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> <br>
+    2) Description of memory data structures - <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>, <a href="os_design-files/mem_ds.html#file_table" target="_blank">Open file table</a> and <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. </p>
+	<br>
+	<p>In this stage, We will learn how contents of a file are modified using <i>Write</i> system call. <i>Seek</i> system call which is used to change the LSEEK position for a open instance is also implemented in this stage. <i>Shutdown</i> system call is modified to terminate all processes and store back the memory buffers which are modified during <i>Write</i> system call to the disk.</p><br>
+
+
+ <b style="font-size: 20px">Interrupt routine 7 (<i>Write</i> system call)</b><br><br>
+<p>Interrupt routine 7 written in stage 15, writes data (words) only to the terminal. In this stage, we will modify <i>Write</i> system call to write data into a file. <i>Write</i> system call has system call number 5. From ExpL programs, <i>Write</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>. </p><br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/FileWrite.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for writing a word to a file </figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+
+<li><b>Write system call</b></li>
+<p><i>Write</i> system call takes as arguments 1) a file descriptor and 2) a word to be written into the file. <i>Write</i> system call locks the inode at the beginning of the system call and releases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">Resource Manager Module</a> are used to lock and release inodes. </p>
+
+
+<p>After acquiring the Inode, <i>Write</i> system call writes the given word to the file, at the offset determined by LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry). Previously present data, if any, at the position determined by LSEEK is overwritten by the write operation. The maximum file size permitted by eXpOS is four disk blocks. Hence, write fails if the LSEEK value exceeds 2047.</p>
+
+<p>The <i>Write</i> system call finds the logical block number corresponding to the LSEEK position using the formula LSEEK / 512.  LSEEK % 512 gives the offset position
+in the block to which data must be written into. For example, if the LSEEK value is 1024, then the block number will be 2 (third data block) and the offset is 0. The block numbers of the disk blocks that had been allocated for the file so far are stored in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entry corresponding to the file.</p>
+
+<p>In the above example, suppose that the file had been allocated three or more
+blocks earlier. Then, the physical block number corresponding to logical block number = 2 will have a valid entry in the Inode table for the file. Hence, <i>Write</i> system call must bring that block into the buffer and write the data into the required offset position within the block. However, if there is no disk block allocated for logical block number = 2 (that is the file had been allocated only 2 blocks so far), then <i>Write</i> system call must allocate a new block for the file.</p>
+
+<p>eXpOS design ensures that the value of LSEEK can never exceed the file size.  This ensures that a write operation allocates exactly one new block for a file when 
+the LSEEK value is a multiple of 512 and is equal to the file size (why?). In particular, the first data block for a newly created file is allocated upon the first write into the file. To allocate a new block for the file, <i>Write</i> invokes <b>Get Free Block</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</p>
+
+
+ <p>For writing to position LSEEK in the file, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and write the given word to position LSEEK, <i>Write</i> invokes <b>Buffered Write</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. 
+
+ <p>Write (and Delete) fails if the user id of the process calling Write has no access permission to modify the file (see file access permissions).  Since in the present stage the user id of all processes is set to root, Write fails 
+ only on the root file and executable files.</p>
+
+<p style="text-indent: 0px">Implement <i>Write</i> system call using detailed algorithm provided <a href="os_design-files/write.html">here</a>.</p>
+
+<br>
+<li><b>Buffered Write (function number = 1, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
+<p><b>Buffered Write</b> takes a disk block number, offset and a word as arguments. The task of Buffered Write is to write a given word to the given disk block at postion given by offset. To write a word to a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Write invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, the given word is written at the position given by offset in the memory buffer. As the buffer is modified, the DIRTY BIT in the corresponding buffer table entry is set to 1. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Write invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
+<p style="text-indent: 0px">Implement <i>Buffered Write</i> function using the detailed algorithm given in the file manager module link above.</p>
+<br>
+<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Hazard]</b> Buffured Write and Buffered Read functions algorithm is almost identical, except in Buffered Write - given word is written to the buffer and in Bufferd Read - a word from the buffer is stored in provided address. If code for file manager module exceeds two blocks (more than 512 instructions), then implement the code for Buffered Read and Buffered Write in a single 'if block' to reduce number of instructions. </p>
+<br>
+
+
+<li><b>Get Free Block (function number = 3, <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> )</b></li>
+<p>Get Free Block function does not take any argument and returns the block number of a free block in the disk. If no free block is found, Get Free Block returns -1. A free block can be found by searching for a free entry in the <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> from position DISK_FREE_AREA to DISK_SWAP_AREA-1. A free entry in the disk free list is denoted by 0. In the disk, the blocks from 69 to 255 called User blocks, are reserved for allocating to executable and data files. SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_FREE_AREA</a> gives the starting block number for User blocks. <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> gives the starting block number of swap area. See <a href="os_implementation.html" target="_blank">disk organization</a>. </p> 
+<p style="text-indent: 0px">Implement <i>Get Free Block</i> function using the detailed algorithm given in the memory manager module link above.</p>
+<br>
+
+</ol>
+
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Write</i></b> system call and <b>Buffered Write</b>, <b>Get Free Block</b> functions are final.</p><br>
+
+
+<b style="font-size: 20px">Interrupt routine 5 (<i>Seek</i> system call)</b><br><br>
+<p>Interrupt routine 5 implements <i>Seek</i> system call along with <i>Open</i> and <i>Close</i> system calls. <i>Seek</i> has system call number 6. From ExpL programs, <i>Seek</i> system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/Seek.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <i>Seek</i> system call</figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b>Seek system call</b></li>
+<p><i>Seek</i> system call takes file descriptor and offset as arguments from user program. <i>Seek</i> updates the LSEEK field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> corresponding to the open instance according to the provided offset value. Offset value can be any integer (positive, zero or negative). If the given offset value is 0, then LSEEK field is set to the starting of the file. For a non-zero value of offset, the given offset is added to the LSEEK position. If the new LSEEK exceeds size of the file, then LSEEK is set to file size. If the new LSEEK position becomes negative, then <i>Seek</i> system call fails and return to user program with appropriate error code without changing the LSEEK position.</p>
+<p style="text-indent: 0px">Implement <i>Seek</i> system call using detailed algorithm provided <a href="os_design-files/seek.html">here</a>.</p>
+<br>
+
+</ol>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <i>Seek</i> system call is final.</p><br>
+
+
+<b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
+
+<p>Now that eXpOS supports writing to the files, the disk has to be made consistent with the modified files. <i>Shutdown</i> system call is modified in this stage to store back the buffers changed by the <i>Write</i> system call. <i>Shutdown</i> system call also terminates all the processes except current process, IDLE and INIT by invoking Kill All function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Modify <i>Shutdown</i> system call by adding following steps in the already written interrupt routine 15 file.</p>
 <br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/shutdown.png" style="display:block;margin-left:auto;margin-right:auto" >
@@ -4396,66 +4766,31 @@ The invalid entry in the inode table is indicated by -1 in the FILE NAME field. 
 <br>
 
 <ul style="list-style-type: disc; margin-left: 10px; ">
- 	<li style="padding-left: 20px">Switch to the kernel stack and set the MODE FLAG in the <a href="os_design-files/process_table.html" target="_blank">process table</a> to the system call number.</li>
- 	<li style="padding-left: 20px"><i>Shutdown</i> system call can be invoked only from the shell process of the root user. If the current process is not shell (PID in the <a href="os_design-files/process_table.html" target="_blank">process table</a> not equal to 1) or the current user is not root user (USERID in the process table is not equal to 1) then store -1 as return value, reset the MODE FLAG, change the stack to user stack and return to user mode.</li>
- 	<li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, LOGIN (LOGIN process will be discussed in later stages.) and current process.</li>
- 	<li style="padding-left: 20px"><i>Shutdown</i> system call stores back all the modified disk data structures and disk blocks. For every valid entry in the buffer table (BLOCK NUMBER is not equal to -1), if the DIRTY BIT field is set, then store back the buffer page of that buffer entry into the corresponding disk block by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
- 	<li style="padding-left: 20px">Commit the changes made in the memory copies of the inode table (along with user table), the root file and the disk free list by storing them back to the disk invoking the <b>Disk Store</b> function. Refer to <a href="os_implementation.html" target="_blank">disk/memory organization</a> for block and page numbers of these data structures.</li>
- 	<li style="padding-left: 20px">Halt the system using the SPL statement halt.</li>
- 	</ul>
-
-<p style="text-indent: 0px"><code>Note :</code>The implementation of the <i>Shutdown</i> system call is not final. There is a small change for the PID of the shell process when multiple users are allowed. Refer to the algorithm of <i>Shutdown</i> <a target="_blank" href="os_design-files/shutdown.html">here</a>.</p><br>
-<b>Kill All (function number = 5, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Kill All function takes PID of a process as an argument.</p>
-	<li style="padding-left: 20px">For each valid entry in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> (FILE NAME is not equal to -1) <b style="color: red">and if the file is not closed by some process ()</b>, lock the inode (file) by invoking the <b>Acquire Inode</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>.</li>
-	<li style="padding-left: 20px">For every non TERMINATED process except IDLE (PID = 0), LOGIN (INIT process is LOGIN process in later stages, PID = 1) and process with given PID, invoke <b>Exit Process</b> function of the <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes.</li>
-	<li style="padding-left: 20px">For each valid entry in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> (FILE NAME is not equal to -1), unlock the inode (file) by invoking the <b>Release Inode</b> function of the <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. Return to the caller.</li>
-
-</ul><br>
-<b>Acquire Inode (function number = 4, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Acquire Inode function takes a inode index and PID of a process as arguments.</p>
-	<li style="padding-left: 20px"></li>
-	<li style="padding-left: 20px">If the inode becomes invalid (check if FILE NAME field in the <a href="os_design-files/disk_ds.html
-	#inode_table" target="_blank">inode table</a> is -1), then store -1 as return value in R0 and return to the caller.</li>
-	<li style="padding-left: 20px">Lock the inode(file) by setting the LOCKING PID field in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> entry corresponding to given inode index to the PID given as argument.</li>
-	<li style="padding-left: 20px">Store 0 as return value and return to the caller.</li>
-
-</ul><br>
-
-
-<b>Release Inode (function number = 5, <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Release Inode function takes a inode index and PID of a process as arguments.</p>
-	<li style="padding-left: 20px">If the LOCKING PID in the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> entry corresponding to the inode index is not equal to the given PID, then store -1 as return value in register R0 and return to the caller.</li>
-	<li style="padding-left: 20px">Unlock the file by setting LOCKING PID to -1 in the file status table entry corresponding to the inode index. </li>
-	<li style="padding-left: 20px">Loop through the <a href="os_design-files/process_table.html" target="_blank">process table</a> entries and change the STATE of the processes with state (WAIT_FILE, inode index) to READY. Store 0 in register R0 as return value and return to the caller.</li>
-</ul><br>
-
-
-<b>Disk Store (function number = 1, <a href="os_modules/Module_4.html" target="_blank">Device manager module</a>)</b><br><br>
-<ul style="list-style-type: disc; margin-left: 10px;">
-	<p style="text-indent: 0px;">Disk Block function takes PID of a process, a page number and a block number as arguments.</p>
-	<li style="padding-left: 20px">Lock the disk by invoking <b>Acquire Disk</b> function of resource manager module.</li>
-	<li style="padding-left: 20px">In the <a href="os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a>, set the LOAD/STORE BIT field to 1 (1 indicates store operation). Store the page number and disk block number given as arguments in PAGE NUMBER and BLOCK NUMBER fields respectively. </li>
-	<li style="padding-left: 20px">Store the page back to the disk using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> statement <i>store</i>. </li>
-	<li style="padding-left: 20px">Set the STATE of the process with given PID as WAIT_DISK and invoke the scheduler. Return to the caller.</li>
-
-</ul><br>
-
-<p style="text-indent: 0px"><code>Note :</code>The implementation of <b>Disk Store</b>, <b>Acquire Inode</b>, <b>Release Inode</b> and <b>Kill All</b> functions are final.</p>
-
+  
+  <li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, LOGIN (In later stages, LOGIN process is loaded as the INIT process) and the process with given PID.</li>
+  <li style="padding-left: 20px">For every valid entry in the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> (BLOCK NUMBER is not equal to -1), if the DIRTY BIT field is set, then store back the buffer page of that buffer entry into the corresponding disk block by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
+ 
+  </ul>
 <br>
-<b>Modifications to boot module</b><br><br>
-<p>Load interrupt routine 4 and root file from the disk to the memory. See the memory organization <a href="os_implementation.html" target="_blank">here</a>. Initialize the <a href="os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> by setting FILE OPEN COUNT field of all entries to 0. Initialize the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> by setting BLOCK NUMBER field to -1 in all entries. </p><br>
+
+
+<b>Kill All (function number = 5, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
+
+  <p><b>Kill All</b> function takes PID of a process as an argument. Kill All function terminates all the processes except IDLE,INIT and the process with given PID. Kill All first locks all the files present in the inode table by invoking <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> for every file. Locking all the inodes makes sure that, no process is in the middle of any file operation. If suppose a process (say A) is using a file and has locked the inode, then the process which has invoked Kill All will wait until process A completes the file operation and releases the inode. After acquiring all the inodes, Kill All terminates the processes (except IDLE, INIT and process with given PID) which are not TERMINATED by invoking <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> for every process. Finally, all the acquired inodes are released by invoking <b>Release Inode</b> function of resource manager module for each valid file.</p>
+<p style="text-indent: 0px">Implement Get Free Block function using the detailed algorithm given in the memory manager module link above.</p>
+<br>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of the <b><i>Shutdown</i></b> system call and <b>Kill All</b> function are final. </p><br>
+
 
 <b>Making things work</b><br><br>
-<p> Compile and load the newly written/modified files to the disk using XFS-interface.</p><br>
+<p> Compile and load the modified files to the disk using XFS-interface.</p>
+<br>
 
+
+
+  </div>
 </div>
-</div>
- <!--=========end Stage 23 ===========-->
+<!--=========End Stage 25 ===========-->
 <!--=========== Intoduction Section Ending ===============-->
 
 </section>
