@@ -377,64 +377,64 @@ pre span:before {
 <span>int main()</span>
 <span>{</span>
 <span>decl</span>
-<span>          int temp,x, pidone, pidtwo, semid, iter;</span>
+<span>          int temp, x, pidone, pidtwo, semid, iter;</span>
 <span>enddecl</span>
 <span></span>
 <span>begin</span>
 <span>          x = exposcall("Heapset");</span>
 <span>          semid = exposcall("Semget");</span> 
-<span>          head= exposcall("Alloc",2);</span>
-<span>          head.isempty=1;</span>
+<span>          head = exposcall("Alloc",2);</span>
+<span>          head.isempty = 1;</span>
 <span>          pidone = exposcall("Fork");</span> 
 <span></span>      
 <span></span>      
 <span>          if (pidone == 0 ) then</span>
 <span>              iter=1;</span>
-<span>              while(iter<=100) do</span>
-<span>                  temp= exposcall("SemLock", semid);</span>
-<span>                  temp=head.isempty;</span>
-<span>                  if(temp==1) then</span>
-<span>                      head.data=iter;</span>
-<span>                      head.isempty=0;</span>
-<span>                      iter=iter+2;</span>
+<span>              while(iter <= 100) do</span>
+<span>                  temp = exposcall("SemLock", semid);</span>
+<span>                  temp = head.isempty;</span>
+<span>                  if(temp == 1) then</span>
+<span>                      head.data = iter;</span>
+<span>                      head.isempty = 0;</span>
+<span>                      iter = iter+2;</span>
 <span>                  endif;</span>
-<span>                  temp= exposcall("SemUnLock", semid);</span>
+<span>                  temp = exposcall("SemUnLock", semid);</span>
 <span>              endwhile;</span> 
 <span></span>          
 <span>          else</span>
 <span>              pidtwo =  exposcall("Fork");</span>
-<span>              if(pidtwo==0) then</span>
-<span>                  iter=2;</span>
-<span>                  while(iter<=100) do</span>
-<span>                      temp= exposcall("SemLock", semid);</span>
-<span>                      temp=head.isempty;</span>
-<span>                      if(temp==1) then</span>
-<span>                          head.data=iter;</span>
-<span>                          head.isempty=0;</span>
-<span>                          iter=iter+2;</span>
+<span>              if(pidtwo == 0) then</span>
+<span>                  iter = 2;</span>
+<span>                  while(iter <= 100) do</span>
+<span>                      temp = exposcall("SemLock", semid);</span>
+<span>                      temp = head.isempty;</span>
+<span>                      if(temp == 1) then</span>
+<span>                          head.data = iter;</span>
+<span>                          head.isempty = 0;</span>
+<span>                          iter = iter+2;</span>
 <span>                      endif;</span>
-<span>                      temp= exposcall("SemUnLock", semid);</span>
+<span>                      temp = exposcall("SemUnLock", semid);</span>
 <span>                  endwhile;</span>
 <span></span>          
 <span>              else</span>
 <span></span>                      
-<span>                  iter=1;</span>
-<span>                  while(iter<=100) do</span>
-<span>                      temp= exposcall("SemLock", semid);</span>
-<span>                      temp= head.isempty;</span>
-<span>                      if(temp==0) then</span>
-<span>                          x=head.data;</span>
-<span>                          head.isempty=1;</span>
-<span>                          temp= exposcall("Write",-2, x);</span>
-<span>                          iter=iter+1;</span>
+<span>                  iter = 1;</span>
+<span>                  while(iter <= 100) do</span>
+<span>                      temp = exposcall("SemLock", semid);</span>
+<span>                      temp = head.isempty;</span>
+<span>                      if(temp == 0) then</span>
+<span>                          x = head.data;</span>
+<span>                          head.isempty = 1;</span>
+<span>                          temp = exposcall("Write",-2, x);</span>
+<span>                          iter = iter+1;</span>
 <span>                      endif;</span>
-<span>                      temp= exposcall("SemUnLock", semid);</span>
+<span>                      temp = exposcall("SemUnLock", semid);</span>
 <span></span>                    
 <span>                  endwhile;</span> 
 <span>              endif;</span>  
 <span></span>                
 <span>          endif;</span>
-<span>          temp= exposcall("Semrelease", semid);</span>
+<span>          temp = exposcall("Semrelease", semid);</span>
 <span>          return 0;</span>
 <span>end</span>
 <span>}</span>
@@ -443,6 +443,63 @@ pre span:before {
 
 </div>
 
+
+
+<div class="panel-body" id="test_program_5"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">4. Test Program 5</b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>Name of a data file (String)</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Content of the given file</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program takes names of data files as input and opens the file first. It then forks to create a child process. The content of the file with shared open instance (shared LSEEK) will be printed to the terminal concurrently by parent and child. To synchronize the use open instance between parent and child a  semaphore is used.</p><br>
+<div><pre>
+<span>decl</span>
+<span>          int i, semid, pid, data, temp, filedis, a;</span>
+<span>          string filename;</span>
+<span>enddecl</span>
+<span></span>
+<span>int main()</span>
+<span>{</span>
+<span>begin</span>
+<span>          temp = exposcall("Read",-1,filename);</span> 
+<span>          filedis = exposcall("Open", "numbers.dat");</span>
+<span>          semid = exposcall("Semget");</span>
+<span>          pid = exposcall("Fork");</span>
+<span>          a = 0;</span>
+<span>          data = -1;</span>
+<span>          if(pid > 0) then</span>
+<span>              while(a != -2)  do</span>
+<span>                  temp = exposcall("SemLock", semid);</span>
+<span>                  a = exposcall("Read",filedis,data);</span>
+<span>                  temp = exposcall("Write",-2,data);</span>
+<span>                  temp = exposcall("SemUnLock", semid);</span>
+<span>              endwhile;</span>
+<span>              temp = exposcall("Semrelease", semid);</span>
+<span>          else</span>
+<span>              while(a != -2)  do</span>
+<span>                  temp = exposcall("SemLock", semid);</span>
+<span>                  a = exposcall("Read",filedis,data);</span>
+<span>                  temp = exposcall("Write",-2,data);</span>
+<span>                  temp = exposcall("SemUnLock", semid);</span>
+<span>              endwhile;</span>
+<span>              temp = exposcall("Semrelease", semid);</span>
+<span>          endif;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
 
 
        </div>

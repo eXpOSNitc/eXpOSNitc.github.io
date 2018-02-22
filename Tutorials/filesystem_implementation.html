@@ -130,7 +130,7 @@
   It is necessary to read the following documentations before starting with this tutorial.<br><br>
   1) User level view of <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS file system</a>.<br>
   2) <a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank">Program level interface</a> to different file system calls.<br>
-  3) Understand about <a href="../os_spec-files/multiuser.html#file_access_permissions" target="_blank">file permissions</a>.<br>
+  3) Read about <a href="../os_spec-files/multiuser.html#file_access_permissions" target="_blank">file permissions</a>.<br>
 </p><br>
 
 <p style="text-indent: 0px;">To implement the file system, one needs to understand the file system data structures that the OS maintains. One should also understand how various file system routines of the OS access and update these data structures.</p>
@@ -193,7 +193,7 @@ implementation.</p>
 
 <p>When the OS is running, user processes can Open/Read/Write an already created file. ​<b>When a file is opened by a process using the ​<i>Open</i> system call, a new “open instance” is created.</b> The OS keeps track of the number of open instances of a file at all times. If a file is opened multiple times (by the same or a different process), each ​<i>Open</i>​ call results in creation of a fresh open instance.</p>
 
-<p>Associated with each open instance​ ​of a file, there is a ​<b>seek pointer</b>​, which is initialized to the beginning of the file (value 0) by the ​<i>Open</i>​ system call. Whenever the file is read from/written into, the update is done to the position in the file corresponding to the seek value, and the seek value is incremented. ​<b>If a process opens a file and subsequently invokes the ​<i>Fork</i> system call, the seek pointer is shared between the parent and the child.</b> Hence, subsequent to the fork, if either the parent or the child executes ​<i>Read</i>/<i>Write</i>​ system call on the open instance, their common shared seek pointer advances. Finally, the (shared) seek pointer value can be modified (by either process) using the ​<i>Lseek</i> system call. This is the mechanism through which the OS allows multiple processes to share access to a file.</p>
+<p>Associated with each open instance​ ​of a file, there is a ​<b>seek pointer</b>​, which is initialized to the beginning of the file (value 0) by the ​<i>Open</i>​ system call. Whenever the file is read from/written into, the update is done to the position in the file corresponding to the seek value, and the seek value is incremented. ​<b>If a process opens a file and subsequently invokes the ​<i>Fork</i> system call, the seek pointer is shared between the parent and the child.</b> Hence, subsequent to the fork, if either the parent or the child executes ​<i>Read</i>/<i>Write</i>​ system call on the open instance, their common shared seek pointer advances. Finally, the (shared) seek pointer value can be modified (by either process) using the ​<i>Seek</i> system call. This is the mechanism through which the OS allows multiple processes to share access to a file.</p>
 
 <p>Suppose a process closes an open instance using the ​<i>Close</i>​ system call, the ​<i>Close</i>​ system call first checks whether the open instance is shared by other (child/parent/sibling) processes. In that case, the OS simply decrements the “share count” of the open instance. If the last process that shared an open instance closes the file, then the share count reaches zero and the open instance is closed.</p>
 
