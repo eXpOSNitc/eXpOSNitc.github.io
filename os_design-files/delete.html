@@ -145,8 +145,9 @@ If file is not present in the <a href="disk_ds.html#inode_table" target="_blank"
 
 If the file is not a DATA file, return -1.
 
-If the current user is not root, the USER ID of the file is not equal to the user id of the current user and 
-the <a href="../os_spec-files/multiuser.html">exclusive permission</a> is set, return -1. 
+<b>If</b> the <a href="../os_spec-files/multiuser.html">exclusive permission</a> is set
+	<b>if</b> the current user is not root and the current user doesnot own the file
+		return -1. 
 
 Acquire a lock on the file by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.
 
