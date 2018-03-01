@@ -139,9 +139,11 @@
 
 <p style="text-indent: 0px;">There are two categories of file data structures. The first category consists of data that remains in the disk even when the machine is shut down (disk data structures​). These are described first:</p> 
 <br>
-<br>
 
-<b style="font-size: 20px;">1. Disk blocks and Disk Free List</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">1. Disk blocks and Disk Free List</h2>
 <br><br>
 <p>The​ ​data of a file is stored in disk blocks. A file may have up to 4 blocks of data. The OS provides the user with an interface where the user feels that the file is sequentially stored although the actual allocation could be in non-contiguous disk blocks. The Inode table entry (described next) for a file stores the block numbers of the disk blocks which contain the file data.</p>
 
@@ -151,10 +153,14 @@
 <br>
 
 <p>The following disk data structures contain ​<b>meta-data</b> ​corresponding to each file in the system. Inode table​ ​and the root file are data structures of this kind.
-</p><br>
+</p>
+</div>
 <br>
 
-<b style="font-size: 20px;">2. Inode Table</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">2. Inode Table</h2>
 <br><br>
 
 <p><a href="../os_design-files/disk_ds.html#inode_table" target="_blank">Inode table</a> is a global data structure that contains an entry for each file stored in the file system. When a file is created using the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Create</i> ​system call</a> or loaded into the disk using XFS-interface, a new Inode entry is created for the file. The inode entry of a file stores the following attributes of the file: 1) filename, 2) file size, 3) user-id of the owner of the file, 4) file type (data/executable/root), 5) file access permissions and 6) the block numbers of the disk blocks allocated to a file (maximum four blocks).</p>
@@ -164,20 +170,26 @@
 <p>As noted previously, as data is written into the file by the ​<i>Write</i> ​system call, new disk blocks may be allocated. Whenever a block is allocated for a file, the block number is recorded in the Inode table.</p>
 
 <p>A file can be created with ​<a href="../support_tools-files/constants.html" target="_blank">Exclusive Access</a> / <a href="../support_tools-files/constants.html" target="_blank">Open Access</a> permission. The access permission is given as an argument to ​<i>Create</i>​ system call. If a file is created with exclusive access, the ​<i>Delete</i> and ​<i>Write</i>​ system calls must fail if executed by any process whose user-id is not equal to root, or the owner of the file. In other words, other users except the root shall not be permitted to modify or delete such files. When a file has open access permission, all users are allowed to perform any operation on the file. </p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">3. Root File</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">3. Root File</h2>
 <br><br>
 <p>The <a href="../os_design-files/disk_ds.html#root_file" target="_blank">root file</a> stores human readable information about each file in the file system. The eXpFS file system does not support a hierarchical directory structure and all files are listed at a single level. Each file has an entry in the ​<b>root file</b>. The k<sup>th</sup> entry in the root file corresponds to the file whose index in the Inode table is k. The root file entry for a file contains filename, file size, file-type, user-name and access permissions. Thus, part of the the data in the Inode table is duplicated in the root file. The reason for this duplication is that root file is designed to be readable by user programs using the ​<i>Read</i> ​system call (unlike the inode table, which is accessed exclusively by OS routines only). An application readable root file allows implementation of commands like “ls” (see <a href="https://en.wikipedia.org/wiki/Ls" target="_blank">Unix command “ls”</a>) as user mode programs. <i>Write</i> ​and ​<i>Delete</i> system calls are not permitted on the root file.</p>
 
 <p>The only data in the root file entry of a file that is not present in the inode table is the user name of the owner of the file. The inode table entry of a file contains a user-id of the owner. The user-id value can be used to index into the user table (described below) to find the username corresponding to the user-id.</p>
 
 <p>When a file is created, the <i>Create</i> system call must initialize the root file entries of the file along with the Inode table entries. Similarly, when the file size is changed in the Inode table by a write to the file (in the ​<i>Write</i>​ system call), the file size value in the root file also needs to be updated.</p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">4. User Table</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">4. User Table</h2>
 <br><br>
 <p><a href="../os_design-files/disk_ds.html#user_table" target="_blank">User table</a> contains the names of each user who has an account in the system. Though user table is not a data structure associated with the file system, one needs to understand a little bit about this data structure for the file system implementation. The details of how and when user table entries are created are not relevant to the file system
 implementation.</p>
@@ -185,9 +197,11 @@ implementation.</p>
 <p>For the present purpose, it suffices to understand that each user has an entry in the user table. The entry for a user in the user table consists of a) username and b) encrypted password. The OS assigns a ​<i>user-id</i>​ to each user. ​<b>The user-id of a user is the index of the user’s entry in the user table.​</b> The first two entries of the table (corresponding to user-id 0 and 1) are reserved for special users ​<i>kernel</i> and​ <i>root</i>​.</p>
 
 <p>When a process executes the ​<i>Create</i>​ system call to create a file, ​<i>Create</i> system call looks up the process table entry of the calling process to find the user-id of the process executing ​<i>Create</i> and sets the user-id field in the Inode table. The system call then looks up the user table entry corresponding to the user-id and finds out the username and sets the user name field in the root file entry created for the file.</p>
+</div>
 <br>
 <hr>
 <br>
+
 
 <p>The second category of data structures are transient - they are "alive" only when the OS is running (in-memory data structures). These data structures are described below:</p>
 
@@ -201,9 +215,11 @@ implementation.</p>
 
 <p>The OS further maintains a ​<b>buffer cache​</b> which is used for caching data blocks of files in current use. A ​<b>buffer table</b>​ is used to manage the data related to the buffer cache. These data structures are described below. Read the description of <a href="http://exposnitc.github.io/os_design-files/mem_ds.html" target="_blank">open file table</a> and <a href="http://exposnitc.github.io/os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a> before reading further.</p>
 <br>
-<br>
 
-<b style="font-size: 20px;">1. File (Inode) Status Table</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">1. File (Inode) Status Table</h2>
 <br><br>
 <p>File (Inode) status table contains an entry for each file in the file system. The index of a file’s Inode table entry and file status table entry will be the same. That is, if a file’s entry occurs - say - 10<sup>th</sup> in the inode table, its entry in the file (inode) status table will be the 10<sup>th</sup> one as well. The purpose of the table is two-fold 1) To keep track of how many times each file has been opened using the ​ open ​ system call. 2) To provide a mechanism for processes to ​<b>lock</b> a file before making updates to the file’s data/metadata.</p>
 
@@ -212,10 +228,13 @@ implementation.</p>
 <p>Second, when a process enters a file system call and tries to access a file, the system call code must first lock access to the file to ensure that till the system call is completed, no other process is allowed to execute any file system call that accesses the file’s data/metadata. This is necessary to ensure safety under concurrent execution. The system call locks the file by setting locking-PID field of the file status table to the PID of the process executing the system call. Upon completion of the system call, the system call code must unlock the file before returning to user mode. The ​<b>Acquire Inode</b> and <b>Release Inode</b> ​functions of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a> are designed to handle file access regulation (locking).</p>
 
 <p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is set to the beginning address of the file status table in memory (see <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">2. Open File Table</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">2. Open File Table</h2>
 <br><br>
 <p>As noted earlier, If a process opens a file using the ​<i>Open</i>​ system call and subsequently execute a ​<i>Fork</i>​ system call, the open instance of the file is shared between the parent and the child. If the child (or the parent) further execute ​<i>fork</i>, more processes will share the same open instance. Hence, there must be a mechanism to keep track of the count of processes sharing the same open instance of a file. Open file table is the data structure which keeps track of this count.</p>
 
@@ -228,10 +247,12 @@ c)​ The seek pointer for the open instance is stored in the open file table. A
 <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
 
 <p>When a process executes a ​<i>Read</i>/<i>Write</i>​ system call on an open instance, the system call handler, along with the data read/write operation on the file, advances the seek pointer in the open file table entry corresponding to the open instance.</p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">3. Per-Process Resource Table</b>
+<div>
+<br><br>
+<h2 style="font-size: 22px;">3. Per-Process Resource Table</h2>
 <br><br>
 
 <p>When a process opens a file, a new entry is created for the open instance in the <a href="../os_design-files/process_table.html#per_process_table" target="_blank">per process resource table</a> of the process.<br>This entry contains two fields:<br>
@@ -251,16 +272,24 @@ Here we will be concerned only about the case when the entry corresponds to an o
 
                            <br>
 <br>
+</div>
+
+<div id="memory_buffer_cache">
 <p>In addition to the above data structures, the OS maintains the following global data structures:</p>
+
+
 <br>
-<b style="font-size: 20px;" id="memory_buffer_cache">4.​ ​ Memory buffer Cache</b>
+<h2 style="font-size: 22px;">4.​ ​ Memory buffer Cache</h2>
 <br><br>
 
 <p>Whenever a process tries to ​<i>Read</i>/<i>Write</i>​ into a file, the relevant block of the file is first brought into a disk buffer in memory and the read/write is performed on the copy of the block stored in the buffer. The OS maintains 4 memory buffer pages as cache (and will be numbered 0,1,2,3. The buffers are in memory pages 71, 72, 73, 74 - see <a href="../os_implementation.html" target="_blank">memory organization</a>). A simple buffering scheme will be used here. When there is a request for the i<sup>th</sup> disk block, it will be brought to the buffer with number (<i>i mod 4</i>). If the buffer is presently containing another disk block, then the OS must check whether the disk block needs a write-back (dirty) before loading the requested block. This will be described soon.</p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">5.​ ​ Buffer Table</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">5.​ ​ Buffer Table</h2>
 <br><br>
 
 <p>The buffer table is used for managing the buffer cache. The table contains one entry per each buffer page. The entry for a buffer contains:<br>
@@ -281,15 +310,19 @@ buffer.)</p>
 <p>A ​<i>Read</i> operation is similar, except that the ​<b>dirty bit is not set</b>​ as the page is not modified.</p>
 
 <p>The execution of ​<i>Read</i>/<i>Write</i>​ system calls involves a sequence of resource acquisitions - namely inode, buffer and disk. The resources are acquired in the order Inode-buffer-disk and must be released in the reverse order when the actions are completed. This avoids circular wait - a sufficient condition for <a href="https://en.wikipedia.org/wiki/Deadlock" target="_blank">deadlock</a> prevention.</p>
-<br>
+</div>
 <br>
 
-<b style="font-size: 20px;">6.​  In-Memory Copy of Disk data structures</b>
+
+<div>
+<br><br>
+<h2 style="font-size: 22px;">6.​  In-Memory Copy of Disk data structures</h2>
 <br><br>
 
 <p>Finally, the OS maintains an in-memory copy of all the disk data structures - viz., inode table, user table, root file and the disk free list. While the OS is running, a new user could be created or a file could be created/modified/deleted. In such cases, the update is made into the memory copy of the corresponding data structures and not the disk copy.</p>
 
 <p>The OS must write back the memory copy of all disk data structures and all dirty buffers to the disk before the system is shutdown. The file system implementation described here is ​<b>not crash resilient</b>​. This means, if the OS crashes before (or during) such write back, the memory-copy to disk updates may be partial and the disk data structures may end up in inconsistent state. In such case, one or more files may be corrupted and the disk may require reformatting.</p>
+</div>
 
 <br>
 <br>
