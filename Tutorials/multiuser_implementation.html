@@ -41,6 +41,12 @@
     <link href='../css/varela.css' rel='stylesheet' type='text/css'>
     <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
+
+    <style type="text/css">
+      p{
+        margin-bottom: 14px;
+      }
+    </style>
   </head>
   <body> 
      <!-- BEGAIN PRELOADER -->
@@ -130,7 +136,7 @@
   It is necessary to read the following documentations before starting with this tutorial.<br><br>
   1) User level specification of <a href="../os_spec-files/multiuser.html" target="_blank">eXpOS multi-user model</a>.<br>
   2) <a href="../os_spec-files/systemcallinterface.html#multiusersystemcalls" target="_blank">Multi-user system call specification</a>.<br>
-  3) Specification of <a href="" target="_blank">Shell commands and system utilities</a>.<br>
+  3) Specification of <a href="../os_spec-files/shell_spec.html" target="_blank">Shell commands and system utilities</a>.<br>
 </p><br>
 
 <p>eXpOS implements a very primitive support for multiple users to login into the system. eXpOS supports only one terminal. Hence, only one user is permitted to login into the system at one time and another user can login only after the current user logs out. The OS permits only a maximum of 16 users to be created. Of these 16, two are default users - the ​<b>kernel</b>​ and the <b>root​</b>.</p>
@@ -147,35 +153,50 @@
 <hr>
 <br>
 
-<p>To understand the dynamics of user management, we need to look at the steps taken by the OS during startup.</p>
-
-<p>At the time of OS startup, the OS loads the disk block containing the user table into memory page 60 (see <a href="../os_implementation.html" target="_blank">memory organization</a>). The OS startup code hand creates two processes - the idle process (PID=0) and the INIT process (PID=1). The INIT process of eXpOS is called the <b>login process</b>. The user-id of the idle process and the login process are set to 0 in their respective process table entries. Hence, both processes are treated as special “kernel processes”.</p>
+<p>To understand the dynamics of user management, we need to look at the steps taken by the OS during startup. At the time of OS startup, the OS loads the disk block containing the user table into memory page 60 (see <a href="../os_implementation.html" target="_blank">memory organization</a>). The OS startup code hand creates two processes - the idle process (PID=0) and the INIT process (PID=1). The INIT process of eXpOS is called the <b>login process</b>. The user-id of the idle process and the login process are set to 0 in their respective process table entries. Hence, both processes are treated as special “kernel processes”.</p>
 
 <h2 style="font-size: 22px;">Login and Shell Processes</h2>
 <br><br>
 <p>The login process executes a loop and asks the user to enter a <i>login name</i> and (unencrypted) <i>text password</i>. The login process supplies these arguments to the <b>Login</b> system call. <i>Login</i> system call checks whether there is an entry in the user table corresponding to the login name given. If so, it encrypts the text password given as argument (using the ENCRYPT instruction) and matches the result with the encrypted password stored in the user table entry of the user. If either check fails, then <i>Login</i> system call returns an error code. In this case, the login process announces “login failure” and continues to ask for another username and password. Note that the first user to login after running FDISK must be the root user with the password “root” (without quotes).</p>
 
-<p>If the username and password matches a user, <b style="color: red">the <i>Login</i> system call allocates a new address space in memory and loads the shell program into the address space.  (Hence, <i>login</i> does the work of both fork and exec in one step)</b>. <b>The newly created shell process is assigned user-id of the logged in user and its Parent PID is set to the PID of the login process. Hence, the new process runs the shell in the context of the logged in user.</b> Consequently, any other program executed by the shell will also execute in the context of the same user as the Fork system call copies the user-id of the parent to the child. The login process has done its work for the time being, and will go into sleep waiting for the exit of the shell process spawned for the user (essentially doing the work of Wait system call as well internally). After waking up (which can happen only when the shell executes the Logout system call) <i>Login</i> resumes execution by asking for the username and password of the next user. Note that login runs in an infinite loop and never terminates. </p>
+<p>If the username and password matches a user, the <i>Login</i> system call sets the <b>shell program</b> ready for execution. The shell program’s code is pre-loaded into the memory, and stack pages are allocated, and page table entries for PID=2 are set to these values during boot time. Hence, the effective work of <i>Login</i> is to just set the process ready to run.   The <b>shell process is assigned user-id of the logged in user and its Parent PID is set to the PID of the login process.  Hence, the shell process runs the shell in the context of the logged in user</b>.  Consequently, any other program executed by the shell will also execute in the context of the same user as the <i>Fork</i> system call copies the user-id of the parent to the child. The login process has done its work for the time being, and will go into sleep waiting for the exit of the shell process spawned for the user (essentially doing the work of <i>Wait</i> system call as well internally). After waking up (which can happen only when the shell executes the <i>Logout</i> system call), Login resumes execution by asking for the username and password of the next user. Note that login runs in an infinite loop and never terminates. <b>The shell is always executed with PID=2.</b>  
+ </p>
 
 <p><b>The shell is always executed with PID = 2.</b> Once the shell process starts execution from the context of a user, system calls for process management, file management, interprocess communication and process synchronization work in the normal way. As the shell program is a special system program supplied by the OS designer, by design, it never executes the <i>Exit</i> system call. The only way in which the shell can wake up the login process is to execute the <i>Logout</i> system call. The shell executes the <i>Logout</i> system call when the user enters the shell command “logout”. <i>Logout</i> system call terminates all processes of the current user (including the shell) and wakes up the login process so that the next user may be logged in. Hence <i>Logout</i> system call, in effect, does the work of the <i>Exit</i> system call on all currently active processes of the currently logged in user. eXpOS specification stipulates that the <i>Logout</i> system call can be executed only by the shell process (PID = 2).</p>
 
 <br>
 <h2 style="font-size: 22px;">Multi-user system calls</h2>
 <br><br>
-<p style="text-indent: 0px;">eXpOS has <b>system calls that can be executed only from the shell</b> (PID=2). Below are the list of system calls executed from shell: <br>
-1) <i>Newusr</i> - to create a new user<br>
-2) <i>Remusr</i> - to remove a user<br> 
-3) <i>Setpwd</i> - set the password of a user<br> 
-<b style="color: red">4) <i>Getuid</i> - to get the user-id of the currently logged in user<br> 
-5) <i>Getuname</i> - to get the username of the currently logged in user</b><br>
-6) <i>Logout</i> - logout the current user and<br> 
-7) <i>Shutdown</i> - to shutdown the system after committing the memory copies of all disk data structures into the disk <br>
-Among these, <b><i>Newusr</i>, <i>Remusr</i> and <i>Shutdown</i> can be executed from the shell of the root user only</b>. Only the root user is permitted to change the password of other users using the Setpwd system call. (See <a href="../os_spec-files/multiuser.html" target="_blank">specification</a>.)</p> 
+
+<p style="text-indent: 0px">eXpOS <b>system calls for user management</b> are:</p>
+<ol style="list-style-type: decimal;margin-left: 30px;margin-bottom: 20px">
+<li style="font-size:17px; margin-bottom: 4px"><i>Newusr</i> - to create a new user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Remusr</i> - to remove a user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Setpwd</i> - set the password of a user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Getuid</i> - to get the user-id of the currently logged in user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Getuname</i> - to get the username of the currently logged in user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Logout</i> - logout the current user</li>
+<li style="font-size:17px; margin-bottom: 8px"><i>Shutdown</i> - to shutdown the system after committing the memory copies of all disk data structures into the disk</li>
+
+</ol>
+
+<p style="text-indent: 0px;">
+Among these, <b><i>Newusr</i>, <i>Remusr</i> and <i>Shutdown</i> can be executed from the shell of the root user only and <i>Setpwd</i> and <i>Logout</i> can be executed from the shell process of any user</b>. Only the root user is permitted to change the password of other users using the <i>Setpwd</i> system call. (See <a href="../os_spec-files/multiuser.html" target="_blank">specification</a>.)</p>
+<!--
+<p style="text-indent: 0px;">eXpOS <b>system calls for user management</b> are: <br>
+1)  <i>Newusr</i> - to create a new user<br>
+2)  <i>Remusr</i> - to remove a user<br> 
+3)  <i>Setpwd</i> - set the password of a user<br> 
+4)  <i>Getuid</i> - to get the user-id of the currently logged in user<br> 
+5)  <i>Getuname</i> - to get the username of the currently logged in user<br>
+6)  <i>Logout</i> - logout the current user and<br> 
+7)  <i>Shutdown</i> - to shutdown the system after committing the memory copies of all disk data structures into the disk <br><br></p>-->
+ 
 
 
 <p>The <i>security model</i> guaranteed to the user by the above scheme is the following.  A user may run any eXpFS executable program using the shell, and the program will be to access any file which the user has access to. The program can also spawn more processes, all running with permissions allowed for the logged in user. The program cannot delete or write into files which the user does not have write permission. The program is also not allowed to do things that “harm the user’s account” - like changing the user’s password etc., or tamper with the accounts of other users. The only way for a user to change one’s password is to do so using the shell. One user cannot change the password of others. A normal user can log out of the system using the shell, but cannot shut down the system.</p>
 
-<p>The system administrator, <i>root</i>, can run programs that access, modify or delete the files of any user. The root can also use the shell to delete a user’s account. (Note: The <i>Remusr</i> system call requires that all files owned by a user must be deleted before the account can be deleted. This is necessary to ensure that the system is not left with “abandoned” files when a user’s account is deleted). The root is permitted to change the password of any user. Root is the only user who is authorized to run the shell command to shutdown the system. Also see the specification of the eXpOS shell [LINK].</p>
+<p>The system administrator, <i>root</i>, can run programs that access, modify or delete the files of any user. The root can also use the shell to delete a user’s account. (Note: The <i>Remusr</i> system call requires that all files owned by a user must be deleted before the account can be deleted. This is necessary to ensure that the system is not left with “abandoned” files when a user’s account is deleted). The root is permitted to change the password of any user. Root is the only user who is authorized to run the shell command to shutdown the system. Also see the specification of the <a href="../os_spec-files/shell_spec.html" target="_blank">eXpOS shell</a>.</p>
 
 
 <br><br>

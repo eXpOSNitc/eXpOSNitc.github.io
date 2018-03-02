@@ -41,6 +41,11 @@
     <link href='../css/varela.css' rel='stylesheet' type='text/css'>
     <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
+<style type="text/css">
+      p{
+        margin-bottom: 14px;
+      }
+    </style>
   </head>
   <body> 
      <!-- BEGAIN PRELOADER -->
@@ -131,14 +136,13 @@
   1) User level view of <a href="../os_spec-files/eXpFS.html" target="_blank">eXpFS file system</a>.<br>
   2) <a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank">Program level interface</a> to different file system calls.<br>
   3) Read about <a href="../os_spec-files/multiuser.html#file_access_permissions" target="_blank">file permissions</a>.<br>
-</p><br>
+</p>
 
 <p style="text-indent: 0px;">To implement the file system, one needs to understand the file system data structures that the OS maintains. One should also understand how various file system routines of the OS access and update these data structures.</p>
 <br>
 <hr>
 
 <p style="text-indent: 0px;">There are two categories of file data structures. The first category consists of data that remains in the disk even when the machine is shut down (disk data structures​). These are described first:</p> 
-<br>
 
 
 <div>
@@ -151,15 +155,14 @@
 
 <p>Disk blocks are allocated for a file by the <a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Write</i> ​system call</a>. When a user program issues a write request, the system call allocates new blocks whenever necessary. (In more detail, the ​ <i>Write</i> ​system call routine invokes the ​<b>Get Free Block</b> ​function of the ​<a href="../os_modules/Module_2.html" target="_blank">Memory Manager Module</a> to allocate a disk block.) Disk blocks associated with a file are de-allocated when the file is removed from the file system by the ​<a href="../os_spec-files/systemcallinterface.html#filesystemcalls" target="_blank"><i>Delete</i> ​system call</a> (by invoking the ​<b>Release Block</b> ​function of the ​<a href="../os_modules/Module_2.html" target="_blank">Memory Manager Module</a>.) Whenever blocks are allocated/released, the disk free list is also updated to indicate the allocation status.</p>
 <br>
-
-<p>The following disk data structures contain ​<b>meta-data</b> ​corresponding to each file in the system. Inode table​ ​and the root file are data structures of this kind.
-</p>
 </div>
-<br>
+<p style="text-indent: 0px">The following disk data structures contain ​<b>meta-data</b> ​corresponding to each file in the system. Inode table​ ​and the root file are data structures of this kind.
+</p>
+
 
 
 <div>
-<br><br>
+<br>
 <h2 style="font-size: 22px;">2. Inode Table</h2>
 <br><br>
 
@@ -227,7 +230,7 @@ implementation.</p>
 
 <p>Second, when a process enters a file system call and tries to access a file, the system call code must first lock access to the file to ensure that till the system call is completed, no other process is allowed to execute any file system call that accesses the file’s data/metadata. This is necessary to ensure safety under concurrent execution. The system call locks the file by setting locking-PID field of the file status table to the PID of the process executing the system call. Upon completion of the system call, the system call code must unlock the file before returning to user mode. The ​<b>Acquire Inode</b> and <b>Release Inode</b> ​functions of the ​<a href="../os_modules/Module_0.html" target="_blank">Resource Manager Module</a> are designed to handle file access regulation (locking).</p>
 
-<p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is set to the beginning address of the file status table in memory (see <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
+<p style="text-indent: 0px">The SPL constant <a href="../support_tools-files/constants.html" target="_blank">FILE_STATUS_TABLE</a> is set to the beginning address of the file status table in memory (see <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
 </div>
 <br>
 
@@ -243,7 +246,7 @@ a)​ The index of the inode table of the file.<br>
 b​) The count of the number of processes sharing the open instance, which will be set to 1 when the file is opened as only one process is sharing the open instance. When the process executes a ​<i>Fork</i>​ system call, the share count is incremented to reflect the correct number of processes sharing the open instance. (Note: Do not confuse this count with the file open count in the file status table.)<br>
 c)​ The seek pointer for the open instance is stored in the open file table. Any read/write operation on this open instance must read from / write into this position of the file and advance the pointer. When a file is opened, the seek position is set to 0. Note that the seek pointer is shared between all processes sharing the open instance.</p>
 
-<p>The SPL constant <a href="../support_tools-files/constants.html" target="_blank">OPEN_FILE_TABLE</a> is set to the beginning address of the open file table in memory (see
+<p style="text-indent: 0px">The SPL constant <a href="../support_tools-files/constants.html" target="_blank">OPEN_FILE_TABLE</a> is set to the beginning address of the open file table in memory (see
 <a href="../os_implementation.html" target="_blank">memory organization</a>).</p>
 
 <p>When a process executes a ​<i>Read</i>/<i>Write</i>​ system call on an open instance, the system call handler, along with the data read/write operation on the file, advances the seek pointer in the open file table entry corresponding to the open instance.</p>
@@ -307,7 +310,7 @@ buffer.)</p>
 
 <p>Finally, after getting the buffer page free for use, ​<i>Buffered Write</i>​ brings the required disk block into the buffer page using the ​<b>Disk Load</b> function of the ​<a href="../os_modules/Module_4.html" target="_blank">Device Manager Module</a>. Now Buffered Write can write the data into the buffer. Since the contents of the block has been modified, Buffered Write sets the ​<b>dirty bit</b>​ in the buffer table entry for the buffer. Note that <i>Write</i>​ does not​ ​store the modified buffer back to the disk. The modifications are committed only when a subsequent write operation requires the buffer to be loaded with a different disk block. The OS also commits back all dirty buffers to the disk before shutdown.</p>
 
-<p>A ​<i>Read</i> operation is similar, except that the ​<b>dirty bit is not set</b>​ as the page is not modified.</p>
+<p style="text-indent: 0px;">A ​<i>Read</i> operation is similar, except that the ​<b>dirty bit is not set</b>​ as the page is not modified.</p>
 
 <p>The execution of ​<i>Read</i>/<i>Write</i>​ system calls involves a sequence of resource acquisitions - namely inode, buffer and disk. The resources are acquired in the order Inode-buffer-disk and must be released in the reverse order when the actions are completed. This avoids circular wait - a sufficient condition for <a href="https://en.wikipedia.org/wiki/Deadlock" target="_blank">deadlock</a> prevention.</p>
 </div>

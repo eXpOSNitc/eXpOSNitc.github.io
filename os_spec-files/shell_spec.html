@@ -6,7 +6,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-     <title>Multi-user Extension to eXpOS</title>
+     <title>eXpOS Shell</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -40,6 +40,11 @@
     <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
     <link href='../css/varela.css' rel='stylesheet' type='text/css'>
     <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+ <style type="text/css">
+      p{
+        margin-bottom: 14px;
+      }
+    </style>
 
   </head>
   <body> 
@@ -105,24 +110,75 @@
              
                 <!-- START ABOUT HEADING -->
               <div class="heading">
-                <h2 >Multi-user Extension to eXpOS</h2>
+                <h2 >eXpOS Shell specification</h2>
                 <br/>
                 <br/>
 
 <p>The eXpOS shell program is designed to repeatedly ask for user commands and execute the command specified by the user.  There are two types of commands that the user can input to the shell:</p><br>
 
+<div>
 <h2 style="font-size: 20px;">Built in Shell commands</h2>
 <br><br>
  <p>These are 1) <i>newusr</i> (to create a new user), 2) <i>remusr</i> (to remove a user), 3) <i>setpwd</i> (set the password of a user), 4) <i>getuid</i> (to get the user-id of the currently logged in user), 5) <i>getuname</i> (to get the username of the currently logged in user), 6)<i>logout</i> (logout the current user) and 7) <i>shutdown</i> (to shutdown the system after committing back the memory copies of all disk data structures into the disk).</p>
 
- <p>Upon receipt of one of these commands, the shell directly asks the user for the input arguments for the corresponding system call (for example - <i>setpwd</i> requires the <i>username</i> and the <i>new password</i> to be entered) and invokes the corresponding system call directly to execute the command.  In all the above cases except <i>logout</i> and <i>shutdown</i>, the shell continues to ask the user for the next command after execution of the system call.</p>
+ <p>Upon receipt of one of these commands, the shell directly asks the user for the input arguments for the corresponding system call (for example - <i>setpwd</i> requires the <i>username</i> and the <i>new password</i> to be entered) and invokes the corresponding system call directly to execute the command.  In all the above cases except <i>logout</i> and <i>shutdown</i>, the shell continues to ask the user for the next command after execution of the system call. If the executed system call for the input command is not successful, then shell simply prints "BAD COMMAND".</p>
  <br>
+</div>
 
+<div id="executable_commands">
+<br>
+<br>
 <h2 style="font-size: 20px;">Executable commands/filenames</h2>
 <br><br>
- <p>An executable command is essentially the name of an executable file.  In such case, the first spawns a child using the <i>Fork</i> system call and the parent (shell) waits for the child to do an <i>Exit</i> upon completion of command execution. The child runs the input file using the <i>Exec</i> system call. If <i>Exec</i> fails, the child prints “Bad Command” and executes the <i>Exit</i> system call to activate the shell again.</p>
+ <p>An executable command is essentially the name of an executable file.  In such case, shell first spawns a child using the <i>Fork</i> system call and the parent (shell) waits for the child to do an <i>Exit</i> upon completion of command execution. The child runs the input file using the <i>Exec</i> system call. If <i>Exec</i> fails, then child prints “BAD COMMAND” and executes the <i>Exit</i> system call to activate the shell again.</p>
 
 <p>eXpOS specifies that some standard executable programs called (<b>system utilities</b>) are supplied to the user along with the OS implementation. These programs essentially helps the user to manipulate files using the shell. They are listed below: </p>
+<br>
+
+<ul class="list-group">
+                 <li class="list-group-item list-group-item-success"><b>1. List of all files</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>ls.xsm</b></tt></li>
+                    <li class="list-group-item" style="color:black"> <i>Input</i> : <tt><b>-</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Displays the names of all the files loaded into the XFS-interface.</li></ul>
+                 </li> 
+
+                 <li class="list-group-item list-group-item-success"><b>2. Remove a File</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>rm.xsm</b></tt></li>
+                    <li class="list-group-item" style="color:black"> <i>Input</i> : <tt>filename</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Removes a data file <i>filename</i> from the disk.</li></ul>
+                 </li> 
+
+                 <li class="list-group-item list-group-item-success"><b>3. Copy content of one file to another</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>cp.xsm</b></tt></li>
+                    <li class="list-group-item" style="color:black"> <i>Input</i> : <tt>filename1, filename2</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Copies the data from the file <i>filename1</i> to the file <i>filename2</i>.</li></ul>
+                 </li> 
+
+                 <li class="list-group-item list-group-item-success"><b>4. Print the contents of a file</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>cat.xsm</b></tt></li>
+                    <li class="list-group-item" style="color:black"> <i>Input</i> : <tt>filename</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Displays the contents of the file <i>filename</i>.</li></ul>
+                 </li> 
+
+                 <li class="list-group-item list-group-item-success"><b>5. List of all users</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>lu.xsm</b></tt></li>
+                     <li class="list-group-item" style="color:black"> <i>Input</i> : <tt><b>-</b></tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Displays the names of all the users in the system.</li></ul>
+                 </li> 
+                 <li class="list-group-item list-group-item-success"><b>6. Remove all files of a user</b> <br/><br/>
+                <ul class="list-group">
+                    <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>ru.xsm</b></tt></li>
+                    <li class="list-group-item" style="color:black"> <i>Input</i> : <tt>Username</tt></li>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Deletes all the data files owned by the user with  Username.</li></ul>
+                 </li> 
+
+</ul>
+</div>
 
 
                 </div> 
