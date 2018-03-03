@@ -277,7 +277,7 @@ pre span:before {
                                                     </tr>
                                                   </table>
                                                 <p style="text-indent: 0px"><b>Description :</b> The program creates a linked list with numbers 1 to 100 in them. The program invokes fork to create a child process. The parent and the child process reads from the shared linked list with different pointers and prints the data read to the console. Parent process prints the even numbers 2, 4, 6, 8.. and child process prints 1, 3, 5 ..   </p><br>
-       <div><pre >
+       <div><pre>
 <span>type</span>
 <span>List</span>
 <span>{</span>
@@ -323,7 +323,7 @@ pre span:before {
 <span>                  if(p == null) then</span>
 <span>                      break;</span>
 <span>                  endif;</span>
-<span>                  p = p.next;</span>        
+<span>                  p = p.next;</span>
 <span>              endwhile;</span>
 <span>          else</span>
 <span>              q = head.next;</span>
@@ -361,7 +361,7 @@ pre span:before {
                                                     </tr>
                                                   </table>
                                                 <p style="text-indent: 0px"><b>Description :</b> The  reader-writer program provides below has two writers and one reader. The parent process will create two child processes by invoking <i>fork</i>. The parent and two child processes share a buffer of one word. At a time only one process can read/write to this buffer. To acheive this, these three processes use a shared semaphore. A writer process can write to the buffer if it is empty and the reader process can only read from the buffer if it is full. Before the word in the buffer is overwritten the reader  process must read it and print the word to the console. The parent process is the reader process and its two children are writers. One child process writes even numbers from 1 to 100 and other one writes odd numbers from 1 to 100 to the buffer. The parent process reads the numbers and prints them on to the console.</p><br>
-<div><pre >
+<div><pre>
 <span>type</span>
 <span>Share</span>
 <span>{</span>
@@ -369,25 +369,20 @@ pre span:before {
 <span>          int data;</span>
 <span>}</span>
 <span>endtype</span>
-<span></span>
 <span>decl</span>
 <span>          Share head;</span>
 <span>enddecl</span>
-<span></span>
 <span>int main()</span>
 <span>{</span>
 <span>decl</span>
 <span>          int temp, x, pidone, pidtwo, semid, iter;</span>
 <span>enddecl</span>
-<span></span>
 <span>begin</span>
 <span>          x = exposcall("Heapset");</span>
-<span>          semid = exposcall("Semget");</span> 
+<span>          semid = exposcall("Semget");</span>
 <span>          head = exposcall("Alloc",2);</span>
 <span>          head.isempty = 1;</span>
-<span>          pidone = exposcall("Fork");</span> 
-<span></span>      
-<span></span>      
+<span>          pidone = exposcall("Fork");</span>
 <span>          if (pidone == 0 ) then</span>
 <span>              iter=1;</span>
 <span>              while(iter <= 100) do</span>
@@ -399,8 +394,7 @@ pre span:before {
 <span>                      iter = iter+2;</span>
 <span>                  endif;</span>
 <span>                  temp = exposcall("SemUnLock", semid);</span>
-<span>              endwhile;</span> 
-<span></span>          
+<span>              endwhile;</span>
 <span>          else</span>
 <span>              pidtwo =  exposcall("Fork");</span>
 <span>              if(pidtwo == 0) then</span>
@@ -415,9 +409,7 @@ pre span:before {
 <span>                      endif;</span>
 <span>                      temp = exposcall("SemUnLock", semid);</span>
 <span>                  endwhile;</span>
-<span></span>          
 <span>              else</span>
-<span></span>                      
 <span>                  iter = 1;</span>
 <span>                  while(iter <= 100) do</span>
 <span>                      temp = exposcall("SemLock", semid);</span>
@@ -429,10 +421,8 @@ pre span:before {
 <span>                          iter = iter+1;</span>
 <span>                      endif;</span>
 <span>                      temp = exposcall("SemUnLock", semid);</span>
-<span></span>                    
-<span>                  endwhile;</span> 
-<span>              endif;</span>  
-<span></span>                
+<span>                  endwhile;</span>
+<span>              endif;</span>
 <span>          endif;</span>
 <span>          temp = exposcall("Semrelease", semid);</span>
 <span>          return 0;</span>
@@ -449,7 +439,7 @@ pre span:before {
               <br><br>
               <hr>
               <br><br>
-       <b style="font-size: 20px;">4. Test Program 5</b><br><br>
+       <b style="font-size: 20px;">5. Test Program 5</b><br><br>
        <table class="table table-bordered">
                                                     <tr>
                                                         <td><b>Input</b></td>
@@ -466,11 +456,10 @@ pre span:before {
 <span>          int i, semid, pid, data, temp, filedis, a;</span>
 <span>          string filename;</span>
 <span>enddecl</span>
-<span></span>
 <span>int main()</span>
 <span>{</span>
 <span>begin</span>
-<span>          temp = exposcall("Read",-1,filename);</span> 
+<span>          temp = exposcall("Read",-1,filename);</span>
 <span>          filedis = exposcall("Open", "numbers.dat");</span>
 <span>          semid = exposcall("Semget");</span>
 <span>          pid = exposcall("Fork");</span>
@@ -501,6 +490,167 @@ pre span:before {
 
 </div>
 
+<div class="panel-body" id="test_program_6"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">6. Test Program 6</b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>A file name (String) and permission (Integer)</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Integers from 1 to 100, but not necessarily in sequential order.</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program takes a file name and permission as input and creates a new file with given inputs. It then forks to create two child processes. Similar to Reader-Writer program seen before, the two child processes act as writers and parent as reader. A file open instances is shared between two writers and there is separate open instance of the same file for reader. Two writers will write numbers from 1 to 100 to file - one writer will write even numbers other will write odd numbers and reader will read from the file and print to the console concurrently. To synchronize the use of the shared open instance between two writers a semaphore is used. </p><br>
+<div><pre>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp, x, a, pidone, pidtwo, semid, iter, data, permission, fd;</span>
+<span>          string filename;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          temp=exposcall("Read",-1,filename);</span>
+<span>          temp=exposcall("Read",-1,permission);</span>
+<span>          temp=exposcall("Create",filename, permission);</span>
+<span>          pidone = exposcall("Fork");</span>
+<span>          if (pidone != 0 ) then</span>
+<span>              fd=exposcall("Open",filename);</span>
+<span>              iter=1;</span>
+<span>              while(iter <= 100) do</span>
+<span>                  a=exposcall("Read",fd, data);</span>
+<span>                  if(a!=-2) then</span>
+<span>                      temp=exposcall("Write",-2, data);</span>
+<span>                      iter=iter+1;</span>
+<span>                 endif;</span>
+<span>              endwhile;</span>
+<span>          else</span>
+<span>              semid = exposcall("Semget");</span>
+<span>              fd=exposcall("Open",filename);</span>
+<span>              pidtwo =  exposcall("Fork");</span>
+<span>              if(pidtwo == 0) then</span>
+<span>                  iter = 1;</span>
+<span>                  while(iter <= 100) do</span>
+<span>                      temp = exposcall("SemLock", semid);</span>
+<span>                      temp=exposcall("Write",fd, iter);</span>
+<span>                      temp = exposcall("SemUnLock", semid);</span>
+<span>                      iter=iter+2;</span>
+<span>                  endwhile;</span>
+<span>              else</span>
+<span>                  iter = 2;</span>
+<span>                  while(iter <= 100) do</span>
+<span>                      temp = exposcall("SemLock", semid);</span>
+<span>                      temp=exposcall("Write",fd, iter);</span>
+<span>                      temp = exposcall("SemUnLock", semid);</span>
+<span>                      iter=iter+2;</span>
+<span>                  endwhile;</span>
+<span>              endif;</span>
+<span>              temp = exposcall("Semrelease", semid);</span>
+<span>          endif;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
+<div class="panel-body" id="test_program_7"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">7. Test Program 7 (Extended Shell)</b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>Built in shell command/ Name of XSM executable file (String)</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>Ouput of corresponding to shell command or executable file.</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> This shell program is imporvised version of shell program given before. The shell program supports the execution of built-in shell commands and executable files provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>.  </p><br>
+<div><pre>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp, pid, a, flag;</span>
+<span>          string input, username, password, uid, name;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          a=1;</span>
+<span>          while(a == 1) do</span>
+<span>              temp = exposcall("Read",-1, input);</span>
+<span>              flag=0;</span>
+<span>              if(input == "halt") then</span>
+<span>                  flag=1;</span>
+<span>                  name="Shutdown";</span>
+<span>              endif;</span>
+<span>              if(input == "logout") then</span>
+<span>                  flag=1;</span>
+<span>                  name="Logout";</span>
+<span>              endif;</span>
+<span>              if(flag==1) then</span>
+<span>                   temp= exposcall(name);</span>
+<span>              endif;</span>
+<span>              if(input == "newusr") then</span>
+<span>                  flag=2;</span>
+<span>                  name="Newusr";</span>
+<span>              endif;</span>
+<span>              if(input == "setpwd") then</span>
+<span>                  flag=2;</span>
+<span>                  name="Setpwd";</span>
+<span>              endif;</span>
+<span>              if(flag==2) then</span>
+<span>                  temp = exposcall("Read",-1, username);</span>
+<span>                  temp = exposcall("Read",-1, password);</span>
+<span>                  temp= exposcall(name, username, password);</span>
+<span>              endif;</span>
+<span>              if(input == "remusr") then</span>
+<span>                  flag=3;</span>
+<span>                  name="Rewusr";</span>
+<span>              endif;</span>
+<span>              if(input == "getuid") then</span>
+<span>                  flag=3;</span>
+<span>                  name="Getuid";</span>
+<span>              endif;</span>
+<span>              if(input == "getuname") then</span>
+<span>                  flag=3;</span>
+<span>                  name="Getuname";</span>
+<span>              endif;</span>
+<span>              if(flag==3) then</span>
+<span>                  temp = exposcall("Read",-1, username);</span>
+<span>                  temp= exposcall(name, username);</span>
+<span>              endif;</span>
+<span>              if(flag == 0) then</span>
+<span>                  pid = exposcall("Fork");</span>
+<span>                  if(pid < 0) then</span>
+<span>                      temp = exposcall("Write",-2, "Fork Fail");</span>
+<span>                      continue;</span>
+<span>                  endif;</span>
+<span>                  if(pid != 0) then</span>
+<span>                      temp = exposcall("Wait",pid);</span>
+<span>                  else</span>
+<span>                      temp = exposcall("Exec",input);</span>
+<span>                      if(temp != 0) then</span>
+<span>                          temp = exposcall("Write",-2, "BAD COMMAND");</span>
+<span>                          break;</span>
+<span>                      endif;</span>
+<span>                  endif;</span>
+<span>              endif;</span>
+<span>          endwhile;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
 
        </div>
        </div>
