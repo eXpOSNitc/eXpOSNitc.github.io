@@ -133,14 +133,14 @@
                                                                                                         
                                                 </table>
                                                 
-             <p><i>Description</i>: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by root and kernel.</p>
+                                                <p>Description: This system call is used to create a new user. It checks whether the user already exists. If not, it creates a new user with the username and password specified. This system call can be executed only by the shell process of root user.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 22, 
 indicating that the process is in the newusr system call.
 
-If the userid of the invoking process is not 0 or 1, return -2.
+If the current user is not root, or if the current process is not the shell, return -2.
 
 Loop through the <a href="disk_ds.html#user_table">User Table</a> and exit returning -1 if an entry for the user already exists.
 
@@ -200,21 +200,21 @@ Return 0
                                                     </tr>	                                                                                                   
                                                 </table>
                                                 
-                                                <p><i>Description</i>: This system call is used to remove an existing user. It can be executed only by the root user and kernel. The root user and kernel cannot be removed.</p>
+                                                <p>Description: This system call is used to remove an existing user. This system call can be executed from the shell proces of the root user. The root user and kernel cannot be removed. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
             <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 23, 
 indicating that the process is in the remuser system call.
 
-If the userid of the invoking process is not 0 or 1, return -2.
+If the current user is not root, or if the current process is not the shell, return -2.
 
 If the user to be removed is the "root" or "kernel" return -2.
 
-Loop through the <a href="disk_ds.html#root_file">Root File</a> and exit returning -3 if there are files of the user present on disk.
-
 Loop through the <a href="disk_ds.html#user_table">User Table</a> and find the entry curresponding to the user.
 If the entry is not found, return -1.
+
+Loop through the <a href="disk_ds.html#root_file">Root File</a> and exit returning -3 if there are files of the user present on disk.
 
 Invalidate the entry by setting the USERNAME and ENCRYPTED PASSWORD fields to -1.
 
@@ -261,18 +261,20 @@ Return 0.
                                                                                                         
                                                 </table>
                                                 
-                                                <p><i>Description</i>: This system call is used to change the password of an existing user. A user can set only his/her password. Root user and kernel can set any user's password. The system call returns -1 in an unauthorised attempt to change another user's password.</p>
+                                                <p>Description: This system call is used to change the password of an existing user. This system call can be exected only from the shell process. A user can set only his/her password. Root user can set any user's password. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
              <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 24, 
 indicating that the process is in the setpwd system call.
 
+If the current process is not the shell, return -1.
+
 Loop through the <a href="disk_ds.html#user_table">User Table</a> and finds the entry curresponding to the user name.
 If entry is not found, return -2.
 
 If (userid of the process is not equal to the userid of the user) {
-	If (the current user is not kernel or root)) { 
+	If (the current user is not root)) { 
 		Return -1 
 	}
 }
@@ -333,8 +335,6 @@ Loop through the <a href="disk_ds.html#user_table">User Table</a>:
 	If username is equal to USERNAME field of the entry
 		return index of the entry
 
-Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
-
 Return -1
 	
 <b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
@@ -381,10 +381,11 @@ indicating that the process is in the getuname system call.
 If (UserID < 0 or UserID > 15)
 	Return -1
 
+If the user table entry curresponding to the userid is invalid, return -1.
+
 Fetch the user name from the <a href="disk_ds.html#user_table">User Table</a>.
 
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
-
 Return the username.
 	
 <b>Note: </b> At each point of return from the system call, remember to reset the MODE FLAG.
@@ -478,7 +479,7 @@ Return the username.
             <p>Arguments: None</p>
                                                 <p>Return Value: -1 on error, otherwise does not return</p>
                                                 
-						<p><i>Description</i>: This system call is used to logout the current user. It can be invoked only from the shell process (PID = 2). When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and init/<font color="red">Login</font> will be the only processes running after the execution of Logout. Login is woken up at the end of logout.</p>
+						<p><i>Description</i>: This system call is used to logout the current user. It can be invoked only from the shell process (PID = 2). When the logout system call is invoked, all running processes of the current user are terminated and all resources released. Idle and init/<font color="red">Login</font> will be the only processes running after the execution of Logout. Login process is woken up at the end of logout.</p>
 
 	<br>
               <br>
@@ -497,6 +498,7 @@ Kill all user processes except the shell by calling the <b>kill_all()</b> functi
 
 Set the STATE of the current process(shell) in the process table to TERMINATED.
 
+/* Shell should be set ready to run when the next user logs in. */
 Obtain the entry point IP value from the header of the shell program. Place it in the beginning (logical addesss 4096) 
 of the stack of the shell(current process). Reset the USERSP field of the shell to 4096.
 
