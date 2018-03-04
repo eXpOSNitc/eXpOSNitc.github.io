@@ -1773,7 +1773,7 @@ ireturn;
  services like writing to a file/console, forking a process etc.   Each system call routine is written inside
  some software interrupt handler.  For example, the write system call of eXpOS is coded inside the INT 7 handler.  
  An interrupt handler may contain code for several system calls. 
- (For example, in the eXpOS implementation on XSM, the routines for create, delete and seek system calls 
+ (For example, in the eXpOS implementation on XSM, the routines for create and  delete system calls 
  are coded inside the INT 4 handler - find details<a href="os_design-files/Sw_interface.html" target="_blank"> here</a>). To identify the correct routine, the OS assigns a unique system call number to each system call routine.  To invoke a system call from a program, the program must pass the system call number (along with other arguments to the system call) and invoke the corresponding
  software interrupt using the INT instruction.  The arguments and the system call number are passed through the user 
  program's stack.</p>  
@@ -2000,6 +2000,7 @@ loadi(17,30);
 
 	<br>
 	<b>Making Things Work</b><br><br>
+	<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Tip]</b> From this stage onwards, you have to load multiple files using XFS-interface. To make things easier, create a batch file containing XFS-interface commands to load the required files and run this batch file using <b>run</b> command. See the usage of <b>run</b> command in <a href="./support_tools-files/xfs-interface.html" target="_blank">XFS-interface documentation</a>.   </p>
 	<ol style="list-style-type:decimal;margin-left:2px">
 	<li>
 	Save this file in your UNIX machine as $HOME/myexpos/spl/spl_progs/sample_int7.spl
@@ -2960,6 +2961,7 @@ alias currentPID R2;</pre></div></li>
 							<br>
 
 							  <b>Making things work</b><br><br>
+
 							  <ol style="list-style-type: decimal;margin-left: 2px">
 							  	<li>Compile and load boot module code, module 0, module 4, modified INT 7 routine using XFS-interface.</li>
 							  	<li>Run the machine with two programs one printing even numbers and another printing odd numbers from 1 to 100 along with the idle process.</li>
@@ -3824,7 +3826,9 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
  
        <li style="padding-left: 20px">Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the child process. As heap, code and library pages are shared by the parent process and the child process, copy these entries (page number and auxiliary information) form the page table of the parent to the child. For each page shared, increment the corresponding share count in the <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> (why do we do need to do this?). Initialize the stack page entries in the page table with the new memory page numbers obtained earlier. Note that the auxiliary information for the stack pages is same for both parent and child (why?). Copy content of the user stack pages of the parent to the user stack pages of the child word by word.</li>
 
-       <li style="padding-left: 20px">Store the value in the BP register on top of the kernel stack of child process. The processes (child) created by <i>Fork</i> starts the execution from the instruction following call to <i>Fork</i>. So, the child process needs BP value at that point of execution. Hence, BP (BP value of parent) is stored so that when the child starts it execution for the first time, it pops the value from stack and uses it. Note that even the kernel stack has a value present, the KPTR in the process table is still set to 0.</li>
+       <li style="padding-left: 20px">Store the value in the BP register on top of the kernel stack of child process. This value will be used to initialize the BP register of the child process by the scheduler when the child is scheduled for the first time.  
+
+       <!--The processes (child) created by <i>Fork</i>starts the execution from the instruction following call to <i>Fork</i>. So, the child process needs BP value at that point of execution. Hence, BP (BP value of parent) is stored so that when the child starts it execution for the first time, it pops the value from stack and uses it. Note that even the kernel stack has a value present, the KPTR in the process table is still set to 0.--></li>
 
        <li style="padding-left: 20px">Set up return values in the user stacks of the parent and the child processes.  Store the PID of the child process as return value to the parent and 0 as the return values to the child.  Reset the MODE FLAG of the parent process. Switch to the user stack of the parent process and return to the user mode.</li>
 </ul>
@@ -3835,10 +3839,10 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
 <b>Modifications to <a href="os_modules/Module_5.html" target="_blank">Scheduler module</a></b>
 <br><br>
-<p>The context-switch (scheduler) module is modified in this stage to store the BP back from the kernel stack for the child processes.</p>
+<p>The context-switch (scheduler) module is modified in this stage. The BP register of the child has to be initiazed by the scheduler for the first time as child is in created state. Refer to the detailed schedular algorithm <a href="os_modules/Module_5.html" target="_blank">here</a>.</p>
 <ul style="list-style-type: disc; margin-left: 10px">
-	<li style="padding-left: 20px">As the child process state is set to created by the <i>Fork</i>, do the following when the state of the new process found is created - </li>
-	<li style="padding-left: 20px">Before changing the stack to the user stack for the created process, store the value on top of the kernel stack (pointed by SP) to the BP register.</li>
+	<li style="padding-left: 20px">When the process is in created state, add folllowing steps before switching to user stack.</li>
+	<li style="padding-left: 20px">Store the value in the first word of the kernel stack to the BP register.</li>
 </ul>
 
 
@@ -4076,10 +4080,10 @@ In later stages, when a file system is added to the OS, the file system data wil
   
   <br><br>
 
-  <b style="color:#26A65B">Assignment 2: </b>Modify <a href="test_prog.html#ll_fork" target="_blank">the program</a> given in assignment-2 of previous stage to use <i>Wait</i> and <i>Signal</i> system calls to synchronize the order of printing the numbers. The program given creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the child prints the  1st, 3rd, 5th, 7th... etc. entries of the list whereas the parent prints the 2nd, 4th, 6th, 8th....etc. entries of the list. Modify the program to invoke <i>Wait</i> system call from parent with PID of child process before printing a number and child to invoke <i>Signal</i> system call after child prints an entry. Usage of <i>Wait</i> and <i>Signal</i> system calls make sure that numbers are printed in sequential order. Run this program using the shell.  
+  <!--<b style="color:#26A65B">Assignment 2: </b>Modify <a href="test_prog.html#ll_fork" target="_blank">the program</a> given in assignment-2 of previous stage to use <i>Wait</i> and <i>Signal</i> system calls to synchronize the order of printing the numbers. The program given creates linked list of the first 100 numbers. The program then forks to create a child so that the parent and the child has separate pointers to the head of the shared linked list.  Now, the child prints the  1st, 3rd, 5th, 7th... etc. entries of the list whereas the parent prints the 2nd, 4th, 6th, 8th....etc. entries of the list. Modify the program to invoke <i>Wait</i> system call from parent with PID of child process before printing a number and child to invoke <i>Signal</i> system call after child prints an entry. Usage of <i>Wait</i> and <i>Signal</i> system calls make sure that numbers are printed in sequential order. Run this program using the shell.  
    <br><br>
-
-   <b style="color:#26A65B">Assignment 3: </b> Write an ExpL program 'pid.expl' which invokes <i>Getpid</i> system call and prints the pid. Write another ExpL program which invokes <i>Fork</i> system call three times back to back. Then, the program shall use <i>Exec</i> system call to execute pid.xsm file. Run this program using the shell.
+-->
+   <b style="color:#26A65B">Assignment 2: </b> Write an ExpL program 'pid.expl' which invokes <i>Getpid</i> system call and prints the pid. Write another ExpL program which invokes <i>Fork</i> system call three times back to back. Then, the program shall use <i>Exec</i> system call to execute pid.xsm file. Run this program using the shell.
    <br><br>
 		</div>
 		</div>
@@ -4267,6 +4271,13 @@ ensure data consistency.  eXpOS provides <b>binary semaphores</b> which can be u
                             Yes, it is possible. As some other process waiting for the semaphore could be scheduled before the current process and could have locked the semaphore. In this case the present process finds the semaphore locked again and has to wait in a busy loop until the required sempahore is unlocked.    
                             </div>
     </li>
+     <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq21"><b>Q2.</b>A process first locks a semaphore using SemLock system call and then forks to create a child. As the semaphore is now shared between child and parent, what will be locking status for the semaphore? </a>
+                            <div id="collapseq21" class="panel-collapse collapse">
+                            The sempahore will still be locked by the parent process. In <i>Fork</i> system call, the PROCESS COUNT in the semaphore table is incremented by one but LOCKING PID field is left untouched. 
+                            </div>
+    </li>
 
     </ul>
                           </div>
@@ -4436,8 +4447,8 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                           <ul class="list-group">
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq21"><b>Q1.</b> What is the need for <i>Delete</i> system call to lock the file before deleting it? </a>
-                            <div id="collapseq21" class="panel-collapse collapse">
+<a data-toggle="collapse"  href="#collapseq22"><b>Q1.</b> What is the need for <i>Delete</i> system call to lock the file before deleting it? </a>
+                            <div id="collapseq22" class="panel-collapse collapse">
                             Locking the file in <i>Delete</i> system call makes sure that some other process will not be able to open the file or perform any other operation on the file during the deletion of the file.  
                             </div>
     </li>
@@ -4587,7 +4598,7 @@ value of LSEEK (in the <a href="os_design-files/mem_ds.html#file_table">open fil
 
 <p><i>Read</i> system call needs to lock the resources - Inode (file), buffer and disk before using them. These are locked in the order 1) Inode 2) buffer and 3) disk and released in the reverse order. This order is also followed while writing to a file. Ordering of resource acquisition is imposed in order to avoid processes getting into <b>circular wait</b> for resources. Avoiding circular wait prevents <a href="https://en.wikipedia.org/wiki/Deadlock" target="_blank">deadlocks</a>. </p>
 
-<p style="text-indent: 0px">Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html">here</a>.</p>
+<p style="text-indent: 0px">Implement <i>Read</i> system call using detailed algorithm provided <a href="os_design-files/read.html" target="_blank">here</a>.</p>
 
 <br>
 
@@ -4628,8 +4639,9 @@ processes are allowed to access the buffer concurrently.</p>
 
 <b>Making things work</b><br><br>
 <p> Compile and load the newly written/modified files to the disk using XFS-interface.</p>
-
-
+<br>
+<b style="color:#26A65B">Assignment 1:</b> Write an ExpL program to take file name as input from the console, read the contents of the file and print to the console. Run this program using shell. Load external data files needed for the program using XFS-interface, as at present eXpOS does not support writing to a file. Check the program with following data files as input - 1) sample.dat from stage 2, 2) "numbers.dat" containing numbers 1 to 2047 separated by new line. (You may write a C program to generate the file "numbers.dat".)<br><br>
+<b style="color:#26A65B">Assignment 2:</b> Run the program provided <a href="test_prog.html#test_program_5" target="_blank">here</a> using shell. Use data files from previous question as input. The program takes name of a data file as input and opens the file first. It then forks to create child process. The content of the file with shared open instance (shared LSEEK) will be printed to the terminal concurrently by parent and child. A semaphore is used to synchronize the use of the open instance between parent and child.<br><br>
   </div>
 </div>
 <!--=========End Stage 24 ===========-->
@@ -4690,36 +4702,36 @@ processes are allowed to access the buffer concurrently.</p>
 <p><i>Write</i> system call takes as arguments 1) a file descriptor and 2) a word to be written into the file. <i>Write</i> system call locks the inode at the beginning of the system call and releases the lock at the end of the system call. The functions <b>Acquire Inode</b> and <b>Release Inode</b> of <a href="os_modules/Module_0.html" target="_blank">Resource Manager Module</a> are used to lock and release inodes. </p>
 
 
-<p>After acquiring the Inode, <i>Write</i> system call writes the given word to the file, at the offset determined by LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry). Previously present data, if any, at the position determined by LSEEK is overwritten by the write operation. The maximum file size permitted by eXpOS is four disk blocks. Hence, write fails if the LSEEK value exceeds 2047.</p>
+<p>After acquiring the Inode, <i>Write</i> system call writes the given word to the file, at the offset determined by LSEEK (field in the <a href="os_design-files/mem_ds.html#file_table">open file table</a> entry). Previously present data, if any, at the position determined by LSEEK is overwritten by the write operation. The maximum file size permitted by eXpOS is four disk blocks. Hence, <i>Write</i> fails if the LSEEK value exceeds 2047.</p>
 
-<p>The <i>Write</i> system call finds the logical block number corresponding to the LSEEK position using the formula LSEEK / 512.  LSEEK % 512 gives the offset position
-in the block to which data must be written into. For example, if the LSEEK value is 1024, then the block number will be 2 (third data block) and the offset is 0. The block numbers of the disk blocks that had been allocated for the file so far are stored in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entry corresponding to the file.</p>
+<p>The <i>Write</i> system call finds the <b>logical block number</b> corresponding to the LSEEK position using the formula LSEEK / 512.  LSEEK % 512 gives the <b>offset position</b> in the block to which data must be written into. For example, if the LSEEK value is 1024, then the block number will be 2 (third data block) and the offset is 0. The block numbers of the disk blocks that had been allocated for the file so far are stored in the <a href="os_design-files/disk_ds.html#inode_table" target="_blank">inode table</a> entry corresponding to the file.</p>
 
 <p>In the above example, suppose that the file had been allocated three or more
-blocks earlier. Then, the physical block number corresponding to logical block number = 2 will have a valid entry in the Inode table for the file. Hence, <i>Write</i> system call must bring that block into the buffer and write the data into the required offset position within the block. However, if there is no disk block allocated for logical block number = 2 (that is the file had been allocated only 2 blocks so far), then <i>Write</i> system call must allocate a new block for the file.</p>
+blocks earlier. Then, the physical block number corresponding to logical block number = 2 will have a valid entry in the inode table for the file. Hence, <i>Write</i> system call must bring that block into the buffer and write the data into the required offset position within the block. However, if there is no disk block allocated for logical block number = 2 (that is the file had been allocated only 2 blocks so far), then <i>Write</i> system call must allocate a new block for the file.</p>
 
-<p>eXpOS design ensures that the value of LSEEK can never exceed the file size.  This ensures that a write operation allocates exactly one new block for a file when 
+<p>eXpOS design ensures that the value of LSEEK can never exceed the file size. This ensures that a write operation allocates exactly one new block for a file when 
 the LSEEK value is a multiple of 512 and is equal to the file size (why?). In particular, the first data block for a newly created file is allocated upon the first write into the file. To allocate a new block for the file, <i>Write</i> invokes <b>Get Free Block</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</p>
 
 
- <p>For writing to position LSEEK in the file, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and write the given word to position LSEEK, <i>Write</i> invokes <b>Buffered Write</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. 
+ <p>For writing to position LSEEK in the file, the disk block corresponding to position LSEEK has to be present in the memory. To bring the required disk block into the memory buffer and write the given word to position LSEEK, <i>Write</i> invokes <b>Buffered Write</b> function of the <a href="os_modules/Module_3.html" target="_blank">file manager module</a>. Buffered Write function expects the physical block number as argument. <i>Write</i> system call finds the physical block number corresponding to the logical block number from the inode table entry of the file. </p> 
 
- <p>Write (and Delete) fails if the user id of the process calling Write has no access permission to modify the file (see file access permissions).  Since in the present stage the user id of all processes is set to root, Write fails 
+ <p>Write (and Delete) fails if the user id of the process calling Write has no access permission to modify the file (see <a href="os_spec-files/multiuser.html#file_access_permissions" target="_blank">file access permissions</a>).  Since in the present stage the user id of all processes is set to root, Write fails 
  only on the root file and executable files.</p>
 
-<p style="text-indent: 0px">Implement <i>Write</i> system call using detailed algorithm provided <a href="os_design-files/write.html">here</a>.</p>
+<p style="text-indent: 0px">Implement <i>Write</i> system call using detailed algorithm provided <a href="os_design-files/write.html" target="_blank">here</a>.</p>
 
 <br>
 <li><b>Buffered Write (function number = 1, <a href="os_modules/Module_3.html" target="_blank">file manager module</a> )</b></li>
-<p><b>Buffered Write</b> takes a disk block number, offset and a word as arguments. The task of Buffered Write is to write a given word to the given disk block at postion given by offset. To write a word to a disk block, it has to be present in the memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number given by formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Write invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, the given word is written at the position given by offset in the memory buffer. As the buffer is modified, the DIRTY BIT in the corresponding buffer table entry is set to 1. The buffer to which a disk block has to be loaded may contain some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading a new disk block. To store a disk block back into the disk, Buffered Write invokes <b>Disk Store</b> function of device manager module. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
+<p><b>Buffered Write</b> takes a disk block number, offset and a word as arguments. The task of Buffered Write is to write the given word to the given disk block at the position specified by the offset. To write a word to a disk block, the disk block has to be brought into memory. <a href="Tutorials/filesystem_implementation.html#memory_buffer_cache" target="_blank">Memory buffer cache</a> is used for this purpose. The disk block is loaded (if not loaded already) into the buffer page with buffer number specified by the formula - <i>(disk block number%4)</i>. To use a buffer page, it has to be locked by invoking <b>Acquire Buffer</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a>. To load a disk block into a memory buffer page, Buffered Write invokes the function <b>Disk Load</b> of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. After loading the given disk block into the corresponding buffer, the given word is written to the memory buffer at the position specified by the offset. <b>As the buffer is modified, the DIRTY BIT in the corresponding buffer table entry is set to 1.</b></p>
+<p>Buffered Write may find that, the buffer page to which a disk block has to be loaded contains some other disk block. In such case, if the buffer is modified (dirty bit is set), the disk block present in the buffer is stored back into the disk before loading the new disk block. To store a disk block back into the disk, Buffered Write invokes <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. Finally, the buffer page is released by invoking <b>Release Buffer</b> function of resource manager module.</p> 
 <p style="text-indent: 0px">Implement <i>Buffered Write</i> function using the detailed algorithm given in the file manager module link above.</p>
 <br>
-<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Hazard]</b> Buffured Write and Buffered Read functions algorithm is almost identical, except in Buffered Write - given word is written to the buffer and in Bufferd Read - a word from the buffer is stored in provided address. If code for file manager module exceeds two blocks (more than 512 instructions), then implement the code for Buffered Read and Buffered Write in a single 'if block' to reduce number of instructions. </p>
+<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Hazard]</b> Algorithms of Buffered Write and Buffered Read functions are almost identical, except that in Buffered Write - given word is written to the buffer whereas in Buffered Read - a word is read from the buffer. If your code for file manager module exceeds maximum number of assembly instructions permitted for a eXpOS module (512 instructions), then implement the code for <b>Buffered Read</b> and <b>Buffered Write</b> in a single 'if block' to reduce number of instructions. </p>
 <br>
 
 
 <li><b>Get Free Block (function number = 3, <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> )</b></li>
-<p>Get Free Block function does not take any argument and returns the block number of a free block in the disk. If no free block is found, Get Free Block returns -1. A free block can be found by searching for a free entry in the <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> from position DISK_FREE_AREA to DISK_SWAP_AREA-1. A free entry in the disk free list is denoted by 0. In the disk, the blocks from 69 to 255 called User blocks, are reserved for allocating to executable and data files. SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_FREE_AREA</a> gives the starting block number for User blocks. <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> gives the starting block number of swap area. See <a href="os_implementation.html" target="_blank">disk organization</a>. </p> 
+<p><b>Get Free Block</b> function does not take any argument and returns the block number of a free block in the disk. If no free block is found, Get Free Block returns -1. A free block can be found by searching for a free entry in the <a href="os_design-files/disk_ds.html#disk_free_list">disk free list</a> from position DISK_FREE_AREA to DISK_SWAP_AREA-1. A free entry in the disk free list is denoted by 0. In the disk, the blocks from 69 to 255 called User blocks, are reserved for allocation to executable and data files. SPL constant <a href="support_tools-files/constants.html" target="_blank">DISK_FREE_AREA</a> gives the starting block number for User blocks. <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> gives the starting block number of swap area. See <a href="os_implementation.html" target="_blank">disk organization</a>.</p> 
 <p style="text-indent: 0px">Implement <i>Get Free Block</i> function using the detailed algorithm given in the memory manager module link above.</p>
 <br>
 
@@ -4743,7 +4755,7 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b>Seek system call</b></li>
-<p><i>Seek</i> system call takes file descriptor and offset as arguments from user program. <i>Seek</i> updates the LSEEK field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> corresponding to the open instance according to the provided offset value. Offset value can be any integer (positive, zero or negative). If the given offset value is 0, then LSEEK field is set to the starting of the file. For a non-zero value of offset, the given offset is added to the LSEEK position. If the new LSEEK exceeds size of the file, then LSEEK is set to file size. If the new LSEEK position becomes negative, then <i>Seek</i> system call fails and return to user program with appropriate error code without changing the LSEEK position.</p>
+<p><i>Seek</i> system call is used to move LSEEK pointer value for an open instance according to users requirement. <i>Seek</i> system call takes as argument a file descriptor and an offset from the user program. <i>Seek</i> updates the LSEEK field in the <a href="os_design-files/mem_ds.html#file_table" target="_blank">open file table</a> corresponding to the open instance according to the provided offset value. Offset value can be any integer (positive, zero or negative). If the given offset value is 0, then LSEEK field is set to the starting of the file. For a non-zero value of offset, the given offset is added to the current LSEEK value. If the new LSEEK exceeds size of the file, then LSEEK is set to file size. If the new LSEEK position becomes negative, then <i>Seek</i> system call fails and return to user program with appropriate error code without changing the LSEEK position.</p>
 <p style="text-indent: 0px">Implement <i>Seek</i> system call using detailed algorithm provided <a href="os_design-files/seek.html">here</a>.</p>
 <br>
 
@@ -4753,7 +4765,7 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <b style="font-size: 20px">Interrupt routine 15 (<i>Shutdown</i> system call)</b><br><br>
 
-<p>Now that eXpOS supports writing to the files, the disk has to be made consistent with the modified files. <i>Shutdown</i> system call is modified in this stage to store back the buffers changed by the <i>Write</i> system call. <i>Shutdown</i> system call also terminates all the processes except current process, IDLE and INIT by invoking Kill All function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Modify <i>Shutdown</i> system call by adding following steps in the already written interrupt routine 15 file.</p>
+<p>Now that eXpOS supports writing to the files, the disk has to be consistent with the modified files before the system shuts down. <i>Shutdown</i> system call is modified in this stage to store back the buffers changed by the <i>Write</i> system call. <i>Shutdown</i> system call also terminates all the processes except current process, IDLE and INIT by invoking <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Finally <i>Shutdown</i> halts the system after disk is made consistent.</p>
 <br>
 <figure style="text-align: center;">
                            <img src="img/roadmap/shutdown.png" style="display:block;margin-left:auto;margin-right:auto" >
@@ -4764,33 +4776,192 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
                            <br> 
 
 <br>
-
+ <p style="text-indent: 0px">Modify <i>Shutdown</i> system call (interrupt routine 15) to perform the following addition steps.</p>
 <ul style="list-style-type: disc; margin-left: 10px; ">
   
-  <li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, LOGIN (In later stages, LOGIN process is loaded as the INIT process) and the process with given PID.</li>
+  <li style="padding-left: 20px">Invoke <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a>. Kill All terminates all the processes except IDLE, INIT and the process calling <i>Shutdown</i>.</li>
   <li style="padding-left: 20px">For every valid entry in the <a href="os_design-files/mem_ds.html#buffer_table" target="_blank">buffer table</a> (BLOCK NUMBER is not equal to -1), if the DIRTY BIT field is set, then store back the buffer page of that buffer entry into the corresponding disk block by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</li>
  
   </ul>
+ <p style="text-indent: 0px">Implement <i>Shutdown</i> system call using detailed algorithm provided <a href="os_design-files/shutdown.html">here</a>.</p>
+
 <br>
 
 
 <b>Kill All (function number = 5, <a href="os_modules/Module_1.html" target="_blank">process manager module</a>)</b><br><br>
 
-  <p><b>Kill All</b> function takes PID of a process as an argument. Kill All function terminates all the processes except IDLE,INIT and the process with given PID. Kill All first locks all the files present in the inode table by invoking <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> for every file. Locking all the inodes makes sure that, no process is in the middle of any file operation. If suppose a process (say A) is using a file and has locked the inode, then the process which has invoked Kill All will wait until process A completes the file operation and releases the inode. After acquiring all the inodes, Kill All terminates the processes (except IDLE, INIT and process with given PID) which are not TERMINATED by invoking <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> for every process. Finally, all the acquired inodes are released by invoking <b>Release Inode</b> function of resource manager module for each valid file.</p>
-<p style="text-indent: 0px">Implement Get Free Block function using the detailed algorithm given in the memory manager module link above.</p>
+  <p><b>Kill All</b> function takes PID of a process as an argument. Kill All terminates all the processes except IDLE, INIT and the process with given PID. Kill All first locks all the files present in the inode table by invoking <b>Acquire Inode</b> function of <a href="os_modules/Module_0.html" target="_blank">resource manager module</a> for every file. Locking all the inodes makes sure that, no process is in the middle of any file operation. If suppose a process (say A) is using a file and has locked the inode, then the process which has invoked Kill All will wait until process A completes the file operation and releases the inode. After acquiring all the inodes, Kill All terminates all the processes (except IDLE, INIT and process with given PID) by invoking <b>Exit Process</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> for every process. Finally, all the acquired inodes are released by invoking <b>Release Inode</b> function of resource manager module for each valid file.</p>
+<p style="text-indent: 0px">Implement Kill All function using the detailed algorithm given in the process manager module link above.</p>
 <br>
 <p style="text-indent: 0px"><code>Note :</code>The implementation of the <b><i>Shutdown</i></b> system call and <b>Kill All</b> function are final. </p><br>
 
+
+<b>Implementation of Shell executable file commands</b><br><br>
+<p>Linux shell support file commands which makes working with files present in the system easier. An example of such file commands that Linux support is "ls". (Command "ls" lists all the files present in the current directory.) Now that all file realated system calls are supported by eXpOS, we can implement few of these commands in eXpOS. This will enrich user experience for handling the files. Support for file commands ls, rm, cp, cat will be added to shell by implementing executable files for the commands. To implement the command ls, write a program ls.expl according to specification given in <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a>. Furthur compile this program to generate executable file ls.xsm and load into the disk using XFS-interface. To run command "ls", run the executable file ls.xsm from the shell.  Implement commands ls, rm, cp, cat as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p>
+
+<br>
 
 <b>Making things work</b><br><br>
 <p> Compile and load the modified files to the disk using XFS-interface.</p>
 <br>
 
-
+<b style="color:#26A65B">Assignment 1:</b> Write an ExpL program to take file name(string) and permission(integer) as input from the console and create a file with the provided input. Write numbers from 1 to 100 into the file and afterwards read from the same file and print its content to the terminal. Run this program using shell.<br>
+<br>
+<b style="color:#26A65B">Assignment 2:</b> Write an ExpL program to take name of the file as input which is already present in the system. Append numbers 1 to 513 to the file and afterwords read the contents of the file and print to the terminal. Run this program using shell.<br>
+<br>
+<b style="color:#26A65B">Assignment 3:</b> Run the program provided <a href="test_prog.html#test_program_6" target="_blank">here</a> using shell. The program takes a file name and permission as input and creates a new file with given input. It then forks to create two child processes. The two child processes act as writers and parent as reader. A file open instance is shared between two writers and there is separate open instance of the same file for reader. Two writers will write numbers from 1 to 100 to file - one writer will write even numbers and other will write odd numbers. Reader will read from the file and print to the console concurrently. To synchronize the use of the shared open instance between two writers a semaphore is used. The program prints integers from 1 to 100, not necessarily in sequential order.<br><br>
 
   </div>
 </div>
 <!--=========End Stage 25 ===========-->
+
+<!--=========Begin Stage 26 ===========-->
+ <div class="panel-heading" id="list_stage26">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse"  href="#collapse26"><span class="fa fa-check-square-o"></span>Stage 26 : User Management</a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse26" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!--Begin Learning Objectives-->
+                          <div class="container col-md-12">
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item" style="background:#dff0d8">
+                            <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse"  href="#lo26">Learning Objectives</a>
+                            <div id="lo26" class="panel-collapse expand">
+                              <ul>
+
+   <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Adding support in eXpOS to manage multiple users.</li>
+   
+                             
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of multi-user system calls.</li>
+                            </ul>                                  
+                                     
+                            </div>
+                          </li>
+                          </ul>
+                        </div>
+                      </div>
+
+  <!--End Learning Objectives-->
+<b>Pre-requisite reading</b><br><br>
+    <p style="text-indent: 0px">1) It is <b>absolutely necessary</b> to read and understand <b><a href="Tutorials/multiuser_implementation.html" target="_blank">multi-user management and implementation</a></b> documentation.<br>
+    2) Description of data structures- <a href="os_design-files/disk_ds.html#user_table" target="_blank">User Table</a><br>
+    2) Description of special processes - <a href="os_spec-files/misc.html" target="_blank">Init, Shell and Login process</a> </p>
+	<br>
+<p>In this stage, we will enable eXpOS to handle multiple users by implementing multi-user system calls. <i>Newusr</i> and <i>Remusr</i> system calls are implemented to create new users and delete existing users in the system. The data structure called <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> is maintained to store user name and encrypted password of each user in the system. The index of the user table entry for a user is the USERID for the user. Two special users called "kernel" (USERID = 0) and "root" (USERID = 1) are already initialized in the user table. Password of "kernel" is unspecified and "root" user is given default password "root". System calls <i>Setpwd</i>, <i>Getuname</i> and <i>Getuid</i> are also implemented in this stage. </p>
+
+<p><i>Login</i> and <i>Logout</i> system calls are implemented to enable users to login into the system and logout from the system. From this stage onwards, a special process called <b>login process</b> will be used as init process. Login process enables users to login into the system with their user name and password. After a user logs into the system, shell process will be started in the context of the logged in user. Shell program is also improvised in this stage to support <a href="os_spec-files/shell_spec.html" target="_blank">built-in shell commands</a>.</p>
+
+<br>
+
+<b style="font-size: 20px">Interrupt routine 17</b><br><br>
+
+<p>The <i>Login</i> system call is implemented in the interrupt routine 17. <i>Login</i> has system call number 27. From ExpL programs, this system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b><i>Login</i> system call</b></li>
+<p><i>Login</i> system call takes as arguments an user name (string) and an unencrypted password (string). <i>Login</i> system call can only be invoked from the <a href="os_design-files/misc.html#login" target="_blank">login process</a>. The init process of eXpOS is called login process. Login process will ask the user to enter user name and password from the console and invokes <i>Login</i> system call with provided login credentials. </p>
+
+<p>To login a user into the system, <i>Login</i> system call checks whether the user with given user name and password is present in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> or not. Note that the password given as input is unencrypted and should be encrypted (using <a href="os_design-files/" target="_blank">encrypt statement</a>) before comparing to ENCRYPTED PASSWORD field in the user table. <i>Login</i> system call fails if the user with given user name and password is not found.</p>
+<p>When a user with given login credentials is found, <i>Login</i> system call makes the shell process (PID = 2) ready for execution by changing the STATE field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell process to CREATED. Although, login process does not explicitly invoke <i>Fork</i> and <i>Exec</i> system calls to create child, conceptualy login process is considered as parent of shell process. So the PPID field in the process table entry of shell process is set to PID of login process (PID = 1). Also, login process must wait for shell process to terminate, so STATE of login process is changed to the tuple (WAIT_PROCESS, PID of shell). Then, Scheduler is invoked in order to schedule shell process for execution. </p>
+
+
+<p style="text-indent: 0px">Implement <i>Login</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#login" target="_blank">here</a>.</p>
+
+<br>
+</ol><br>
+
+
+<b style="font-size: 20px">Interrupt routine 12</b><br><br>
+
+
+<p>The <i>Logout</i> system call is implemented in the interrupt routine 12. <i>Logout</i> has system call number 28. From ExpL programs, this system call is called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b><i>Logout</i> system call</b></li>
+<p><i>Logout</i> system call is used to logout the current user from the system and does not take any arguments. <i>Logout</i> system call can only be executed from the shell process. Before leaving the system, all the non-terminated processes of the user should be terminated. As a consequence of terminating the processes, the resources acquired by these processes will be released. <i>Logout</i> system call invokes <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes. Recall that Kill All function terminates all processes in the system except idle, init (login) and current process.</p>
+<p><i>Logout</i> system call changes the STATE of current process to TERMINATED. The starting IP of the shell process is stored at first word of user stack of shell, so that next time when a new user is logged in and shell process is scheduled for the first time in the context of the user, shell will run as newly created process. Login process (PID = 1) is made ready for execution and scheduler is invoked to schedule login process. </p>
+<p style="text-indent: 0px">Implement <i>Logout</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#logout" target="_blank">here</a>.</p>
+
+<br>
+</ol>
+<br>
+<b style="font-size: 20px">Interrupt routine 16</b><br><br>
+<p>The system calls <i>Newusr</i>, <i>Remusr</i>, <i>Setpwd</i>, <i>Getuname</i> and <i>Getuid</i> are implemented in the interrupt routine 16.  <i>Newusr</i>, <i>Remusr</i>, <i>Setpwd</i>, <i>Getuname</i> and <i>Getuid</i> have system call numbers 22, 23, 24, 25, 26 respectively. From ExpL programs, these system calls are called using <a href="os_spec-files/dynamicmemoryroutines.html" target="_blank">exposcall function</a>.</p><br>
+
+<ol style="list-style-type: decimal; margin-left: 2px">
+<li><b><i>Newusr</i> system call</b></li>
+<p>An user name and an unencrypted text password are arguments to the <i>Newusr</i> system call. <b><i>Newusr</i></b> system call can only be invoked from the <a>shell process</a> of the root and kernel users. As kernel user is non-loggable user, <i>Newusr</i> will be invoked mostly from the shell process of the root user.</p> 
+<p><i>Newusr</i> finds a free entry for the new user in the <a href="os_design-files/disk_ds.html#user_table" target="_blank" >user table</a> and initialize this entry with the provided user name and password. The password is encrypted (using <a href="support_tools-files/spl.html" target="_blank">encrypt statement</a>) before storing it into the user table.</p>
+
+<p style="text-indent: 0px">Implement <i>Newusr</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#newusr" target="_blank">here</a>.</p>
+
+<br>
+<li><b><i>Remusr</i> system call</b></li>
+<p><b><i>Remusr</i></b> system call takes user name of the user to be removed as an argument. <i>Rewusr</i> system call can only be invoked from the <a>shell process</a> of the root and kernel users. A user can not be removed from the system if the user is owner of one or more files in the system. To remove a user from the system, <i>Remusr</i> system call invalidates the entry in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> corresponding to given username by storing -1 in the USERNAME and ENCRYPTED PASSWORD fields. Note that the special users "root" and "kernel" can not be removed using <i>Remusr</i> system call.</p>
+<p style="text-indent: 0px">Implement <i>Remusr</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#remusr" target="_blank">here</a>.</p>
+
+<br>
+<li><b><i>Setpwd</i> system call</b></li>
+<p><b><i>Setpwd</i></b> changes the password of a user to newly provided password. It takes as arguments an user name and a new password from application program. <i>Setpwd</i> can only be executed by shell process. A user is permitted to change only its own password. The privileged users "root" and "kernel" have permission to change the password of any user. The "root" user is provided the default password "root". The password of root user can be changed later using <i>Setpwd</i>. <i>Setpwd</i> encrypts the provided password and replaces the ENCRYPTED PASSWORD field in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> entry corresponding to provided user name. </p>
+<p style="text-indent: 0px">Implement <i>Setpwd</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#setpwd" target="_blank">here</a>.</p>
+<br>
+
+<li><b><i>Getuname</i> and <i>Getuid</i> system calls</b></li>
+<p><b><i>Getuname</i></b> takes as argument a USERID from user program. <i>Getuname</i> returns the user name of the given USERID from the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a>. <b><i>Getuid</i></b> takes a user name (string) as an argument from the user program. <i>Getuid</i> returns the USERID of the given user name. The system calls <i>Getuname</i> and <i>Getuid</i> can be executed from any process of any user.</p>
+<p style="text-indent: 0px">Implement <i>Getuid</i> and <i>Getuname</i> system calls using detailed algorithms provided <a href="os_design-files/multiusersyscalls.html#getuid" target="_blank">here</a>.</p>
+<br></ol><br>
+<b>Modification to <i>Shutdown</i> system call</b><br><br>
+<p>There is a slight modification in <i>Shutdown</i> system call. <i>Shutdown</i> system call can only be invoked from shell process. Until this stage, shell process was loaded as init program with PID = 1, but now login process is loaded as init and shell is loaded with PID = 2. So in <i>Shutdown</i> system call, modify the condition to check whether current process is shell or not, by comparing current PID to 2 (from previous value 1).</p><br>
+
+<b>Modifications to boot module</b><br><br>
+<p>The boot module is modified to initialize the Shell process. Shell process has PID equal to 2. The process table entry and page table with index as 2 is initialized in the boot module for shell process. Heap, user stack and kernel stack pages are also allocated for the shell.</p>
+<ul style="list-style-type: disc; margin-left: 10px;">
+<li style="padding-left: 20px"></a>Load shell process, int 16, int 12, int 17 from disk to memory. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
+<li style="padding-left: 20px">Allocate two heap pages, two user stack pages and one kernel stack page for shell process. (Free memory pages are available from 83 onwards.) Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the shell process (PID = 2) as done for Init process in stage 9.</li>
+
+<li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the shell process (PID = 2) as follows- Set the STATE field to TERMINATED. Store PID and PPID fields to 2 and 1 respectively. Store the kernel stack page number allocated above in the USER AREA PAGE NUMBER field. Set the KERNEL STACK POINTER field to 0 and USER STACK POINTER to 8*512. Also initialize PTBR and PTLR fields for the shell process.</li>
+<li style="padding-left: 20px">Store the starting IP address from the header of the first code page on the top of user stack for the shell process, as done for the init process previously.</li>
+<li style="padding-left: 20px">Change the initialization of <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> according to the memory pages allocated to the shell process.</li>
+</ul><br>
+
+<b>Login program</b><br><br>
+<p>Login program is run as init process from this stage onwards. This program asks user for a user name and a password to log into the system. Login process uses <i>Login</i> system call to log in the user into the system. This process is repeated in a loop. Write login program using the pseudocode provided <a href="os_design-files/misc.html#login" target="_blank">here</a> and load the XSM excutable as init program using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. </p><br>
+
+
+<b>Extended Shell program</b><br><br>
+<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell spcification</a>. The expl shell program is provided <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
+<p>Now that multiple user related system calls are supported in eXpOS, the shell commands -  "lu" and "ru" can be implemented. Implement commands lu, ru as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p><br>
+
+<b>Making things work</b><br><br>
+<p> Compile and load the newly written/modified files to the disk using XFS-interface.</p>
+<br>
+
+<div class="container col-md-12" >
+                          <div class="section_area">
+                          <ul class="list-group">
+                           <li class="list-group-item">
+
+<a data-toggle="collapse"  href="#collapseq23"><b>Q1.</b> Why <i>Newusr</i>, <i>Remusr</i> and <i>Setpwd</i> system calls are permitted to execute only from shell program whereas <i>Getuid</i> and <i>Getuname</i> can be executed from any application program? </a>
+                            <div id="collapseq23" class="panel-collapse collapse">
+                            The system calls <i>Newusr</i>, <i>Remusr</i> and <i>Setpwd</i> modify the data related to users in the user table. <i>Getuid</i> and <i>Getuname</i> system calls only access data related to users. As application programs other than Shell are not allowed to modify the user related data, system calls <i>Newusr</i>, <i>Remusr</i>, <i>Setpwd</i> are only executed from shell process.  
+  
+                            </div>
+    </li>
+
+    </ul>
+                          </div>
+                          </div><br>
+<b style="color:#26A65B">Assignment 1:</b> Test the system calls, login and shell process by performing following sequence of actions - <br>1) Login into the system as root user and change the password of root user using Setpwd command <br> 2) Create new user using Newusr command <br> 3) Log out from system <br> 4) Login as newly created user <br> 5) Create new files and perform file operations on them <br> 5) List all users using "lu.xsm" executable file <br> 6) Logout and again login as root user <br> 7) Remove files owned by the new user using excutable file command "ru.xsm" from the shell of root.<br>
+You can furthur test the system by running all build-in shell commands and excutable files commands to make sure that implementation is correct.<br>
+<br>
+
+</div>
+</div>
+
 <!--=========== Intoduction Section Ending ===============-->
 
 </section>
