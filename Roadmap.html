@@ -2869,7 +2869,7 @@ loadi(51,64);</pre></div> </li>
 
                         <p>Since the invoked module will be modifying the contents of the machine registers during its execution, The invoker must save the registers in use into the (kernel) stack of the process before invoking the module.  The module sets its return value in register R0 before returning to the caller. The invoker must extract the return value, pop back the saved registers and resume execution. SPL provides the facility to push and pop multiple registers in one statement using multipush and mutlipop respectively. Refer to the usage of multipush and multipop statements in <a href="support_tools-files/spl.html" target="_blank">SPL</a> before proceeding further.</p>
 
-                        <p>There is one important conceptual point to be explained here relating to resource acquisition.  The acquire terminal function described above waits in a loop, in which it repeatedly invokes the scheduler if the terminal is not free.  <b>This kind of a waiting loop is called a busy loop.</b> <i>Why can't the process wait just once for a resource and simply proceed to acquire the resource when it is scheduled?</i> In other words, what is the need for a wait in a loop? Pause to think before you read the explanation below. You will encounter such busy loops several times in this project, inside various module functions described in later stages.</p><br>  
+                        <p>There is one important conceptual point to be explained here relating to resource acquisition. The Acquire Terminal function described above waits in a loop, in which it repeatedly invokes the scheduler if the terminal is not free.  <b>This kind of a waiting loop is called a busy loop or <a href="https://en.wikipedia.org/wiki/Busy_waiting" target="_blank" >busy wait</a>.</b> <i>Why can't the process wait just once for a resource and simply proceed to acquire the resource when it is scheduled?</i> In other words, what is the need for a wait in a loop? Pause to think before you read the explanation below. You will encounter such busy loops several times in this project, inside various module functions described in later stages.</p><br>  
 
    <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px">                    
  <p>When a process invokes the scheduler waiting for a resource, the scheduler runs the process again only after the resource becomes free.  However, the process may find that the resource is locked again when it tries to acquire the resource when it resumes execution.  This happens because when a resource is released, all processes waiting for the resource are woken up by the OS. Only the one that get scheduled first will be able to lock the resource successfully.  Other processes will have to wait for the resource repeatedly before finally acquiring the resource.</p>
@@ -4797,7 +4797,9 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 
 <b>Implementation of Shell executable file commands</b><br><br>
-<p>Linux shell support file commands which makes working with files present in the system easier. An example of such file commands that Linux support is "ls". (Command "ls" lists all the files present in the current directory.) Now that all file realated system calls are supported by eXpOS, we can implement few of these commands in eXpOS. This will enrich user experience for handling the files. Support for file commands ls, rm, cp, cat will be added to shell by implementing executable files for the commands. To implement the command ls, write a program ls.expl according to specification given in <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a>. Furthur compile this program to generate executable file ls.xsm and load into the disk using XFS-interface. To run command "ls", run the executable file ls.xsm from the shell.  Implement commands ls, rm, cp, cat as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p>
+<p>Linux shell support file commands which makes working with files present in the system easier. An example of such file commands that Linux support is "ls". (Command "ls" lists all the files present in the current directory.) Now that all file related system calls are supported by eXpOS, we can implement few of these commands in eXpOS. This will enrich user experience for handling the files. Support for file commands ls, rm, cp, cat will be added to shell by implementing executable files for the commands. To implement the command ls, write a program ls.expl according to specification given in <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a>. Compile this program to generate executable file ls.xsm and load into the disk using XFS-interface. To run command "ls", run the executable file ls.xsm from the shell.</p>  
+
+<p style="text-indent: 0px">Implement commands <b>ls, rm, cp, cat</b> as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p>
 
 <br>
 
@@ -4805,9 +4807,9 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 <p> Compile and load the modified files to the disk using XFS-interface.</p>
 <br>
 
-<b style="color:#26A65B">Assignment 1:</b> Write an ExpL program to take file name(string) and permission(integer) as input from the console and create a file with the provided input. Write numbers from 1 to 100 into the file and afterwards read from the same file and print its content to the terminal. Run this program using shell.<br>
+<b style="color:#26A65B">Assignment 1:</b> Write an ExpL program to take file name(string) and permission(integer) as input from the console and create a file with the provided name and permission. Write numbers from 1 to 1100 into the file and print the contents of the file in the reverse order (You will need Seek system call to do this). Run this program using shell.<br>
 <br>
-<b style="color:#26A65B">Assignment 2:</b> Write an ExpL program to take name of the file as input which is already present in the system. Append numbers 1 to 513 to the file and afterwords read the contents of the file and print to the terminal. Run this program using shell.<br>
+<b style="color:#26A65B">Assignment 2:</b> Write an ExpL program to append numbers from 2000 to 2513 to the file created in first assignment and print the contents of the file in reverse order. Run this program using shell.<br>
 <br>
 <b style="color:#26A65B">Assignment 3:</b> Run the program provided <a href="test_prog.html#test_program_6" target="_blank">here</a> using shell. The program takes a file name and permission as input and creates a new file with given input. It then forks to create two child processes. The two child processes act as writers and parent as reader. A file open instance is shared between two writers and there is separate open instance of the same file for reader. Two writers will write numbers from 1 to 100 to file - one writer will write even numbers and other will write odd numbers. Reader will read from the file and print to the console concurrently. To synchronize the use of the shared open instance between two writers a semaphore is used. The program prints integers from 1 to 100, not necessarily in sequential order.<br><br>
 
@@ -4849,11 +4851,12 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 <b>Pre-requisite reading</b><br><br>
     <p style="text-indent: 0px">1) It is <b>absolutely necessary</b> to read and understand <b><a href="Tutorials/multiuser_implementation.html" target="_blank">multi-user management and implementation</a></b> documentation.<br>
     2) Description of data structures- <a href="os_design-files/disk_ds.html#user_table" target="_blank">User Table</a><br>
-    2) Description of special processes - <a href="os_spec-files/misc.html" target="_blank">Init, Shell and Login process</a> </p>
+    2) Description of special processes - <a href="os_spec-files/misc.html" target="_blank">Init (Login) and Shell process</a> </p>
 	<br>
-<p>In this stage, we will enable eXpOS to handle multiple users by implementing multi-user system calls. <i>Newusr</i> and <i>Remusr</i> system calls are implemented to create new users and delete existing users in the system. The data structure called <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> is maintained to store user name and encrypted password of each user in the system. The index of the user table entry for a user is the USERID for the user. Two special users called "kernel" (USERID = 0) and "root" (USERID = 1) are already initialized in the user table. Password of "kernel" is unspecified and "root" user is given default password "root". System calls <i>Setpwd</i>, <i>Getuname</i> and <i>Getuid</i> are also implemented in this stage. </p>
+<p>In this stage, we will enable eXpOS to handle multiple users by implementing <a href="os_spec-files/systemcallinterface.html#multiusersystemcalls" target="_blank">multi-user system calls</a>. <i>Newusr</i> and <i>Remusr</i> system calls are implemented to create new users and delete existing users in the system. The data structure called <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> is maintained to store user name and encrypted password of each user in the system. The index of the user table entry for a user is the USERID for the user. Two special users called "kernel" (USERID = 0) and "root" (USERID = 1) are already initialized in the user table at the time of disk formatting (executing fdisk command in XFS-interface). Password of "kernel" is unspecified and "root" user is given default password "root" (The user table will store the encrypted form of the string "root"). System calls <i>Setpwd</i>, <i>Getuname</i> and <i>Getuid</i> are also implemented in this stage. </p>
 
-<p><i>Login</i> and <i>Logout</i> system calls are implemented to enable users to login into the system and logout from the system. From this stage onwards, a special process called <b>login process</b> will be used as init process. Login process enables users to login into the system with their user name and password. After a user logs into the system, shell process will be started in the context of the logged in user. Shell program is also improvised in this stage to support <a href="os_spec-files/shell_spec.html" target="_blank">built-in shell commands</a>.</p>
+
+<p><i>Login</i> and <i>Logout</i> system calls are implemented to enable users to login into the system and logout from the system. From this stage onwards, we will modify the INIT process to work as a special <b>login process</b>, running with PID=1 and owned by the kernel (user id is set to 0). Login process enables users to login into the system with their user name and password. After a user logs into the system, the OS (the login system call) will schedule the shell process with PID=2. <b>The shell will run in the context of the logged in user</b> (that is, user id of the shell will be set to the user id of the logged in user). Note that the address space for the shell process would be already set up in the memory by the OS boot code.  Hence the login process simply sets the shell process to ready state and invoke the scheduler to start its execution. The Shell program will be modified in this stage to support <a href="os_spec-files/shell_spec.html" target="_blank">built-in shell commands</a>.</p>
 
 <br>
 
@@ -4863,12 +4866,12 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b><i>Login</i> system call</b></li>
-<p><i>Login</i> system call takes as arguments an user name (string) and an unencrypted password (string). <i>Login</i> system call can only be invoked from the <a href="os_design-files/misc.html#login" target="_blank">login process</a>. The init process of eXpOS is called login process. Login process will ask the user to enter user name and password from the console and invokes <i>Login</i> system call with provided login credentials. </p>
+<p><i>Login</i> system call takes two arguments 1) a user name (string) and 2) an unencrypted password (string). <b><i>Login</i> system call can only be invoked from the <a href="os_design-files/misc.html#login" target="_blank">login process</a> (PID = 1).</b> The init process of eXpOS is called login process. Login process will ask the user to enter user name and password from the console and invokes <i>Login</i> system call with provided login credentials.</p>
 
 <p>To login a user into the system, <i>Login</i> system call checks whether the user with given user name and password is present in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> or not. Note that the password given as input is unencrypted and should be encrypted (using <a href="os_design-files/" target="_blank">encrypt statement</a>) before comparing to ENCRYPTED PASSWORD field in the user table. <i>Login</i> system call fails if the user with given user name and password is not found.</p>
-<p>When a user with given login credentials is found, <i>Login</i> system call makes the shell process (PID = 2) ready for execution by changing the STATE field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell process to CREATED. Although, login process does not explicitly invoke <i>Fork</i> and <i>Exec</i> system calls to create child, conceptualy login process is considered as parent of shell process. So the PPID field in the process table entry of shell process is set to PID of login process (PID = 1). Also, login process must wait for shell process to terminate, so STATE of login process is changed to the tuple (WAIT_PROCESS, PID of shell). Then, Scheduler is invoked in order to schedule shell process for execution. </p>
+<p>When a user with given login credentials is found, <i>Login</i> system call makes the shell process (PID = 2) ready for execution by changing the STATE field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell process to CREATED. Although, login process does not explicitly invoke <i>Fork</i> and <i>Exec</i> system calls to create child, conceptually login process is considered as parent of shell process. So the PPID field in the process table entry of shell process is set to PID of login process (PID = 1). Also, login process must wait for shell process to terminate, so STATE of login process is changed to the tuple (WAIT_PROCESS, PID of shell). Then, Scheduler is invoked in order to schedule shell process for execution. </p>
 
-
+<p>Note that the shell process is already loaded into the address space in boot module so Login system call is not required to load shell process into the memory.</p>
 <p style="text-indent: 0px">Implement <i>Login</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#login" target="_blank">here</a>.</p>
 
 <br>
@@ -4882,8 +4885,8 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b><i>Logout</i> system call</b></li>
-<p><i>Logout</i> system call is used to logout the current user from the system and does not take any arguments. <i>Logout</i> system call can only be executed from the shell process. Before leaving the system, all the non-terminated processes of the user should be terminated. As a consequence of terminating the processes, the resources acquired by these processes will be released. <i>Logout</i> system call invokes <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes. Recall that Kill All function terminates all processes in the system except idle, init (login) and current process.</p>
-<p><i>Logout</i> system call changes the STATE of current process to TERMINATED. The starting IP of the shell process is stored at first word of user stack of shell, so that next time when a new user is logged in and shell process is scheduled for the first time in the context of the user, shell will run as newly created process. Login process (PID = 1) is made ready for execution and scheduler is invoked to schedule login process. </p>
+<p><i>Logout</i> system call is used to logout the current user from the system and does not take any arguments. <b><i>Logout</i> system call can only be executed from the shell process (PID = 2).</b> Before leaving the system, all the non-terminated processes of the user should be terminated. As a consequence of terminating the processes, the resources acquired by these processes will be released. <i>Logout</i> system call invokes <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes. Recall that Kill All function terminates all processes in the system except idle, init (login) and the current process.</p>
+<p><i>Logout</i> system call changes the STATE of current process (shell) to TERMINATED. <b>The starting IP of the shell process is stored at first word of user stack of shell, so that the next time when a new user is logged in and shell process is scheduled for the first time in the context of the new user, shell will run as newly created process.</b> Login process (PID = 1) is made ready for execution and scheduler is invoked to schedule login process. </p>
 <p style="text-indent: 0px">Implement <i>Logout</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#logout" target="_blank">here</a>.</p>
 
 <br>
@@ -4894,19 +4897,19 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b><i>Newusr</i> system call</b></li>
-<p>An user name and an unencrypted text password are arguments to the <i>Newusr</i> system call. <b><i>Newusr</i></b> system call can only be invoked from the <a>shell process</a> of the root and kernel users. As kernel user is non-loggable user, <i>Newusr</i> will be invoked mostly from the shell process of the root user.</p> 
+<p>A user name and an unencrypted text password are arguments to the <i>Newusr</i> system call. <b><i>Newusr</i> system call can only be invoked from the <a>shell process</a> of the root user.</b></p> 
 <p><i>Newusr</i> finds a free entry for the new user in the <a href="os_design-files/disk_ds.html#user_table" target="_blank" >user table</a> and initialize this entry with the provided user name and password. The password is encrypted (using <a href="support_tools-files/spl.html" target="_blank">encrypt statement</a>) before storing it into the user table.</p>
 
 <p style="text-indent: 0px">Implement <i>Newusr</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#newusr" target="_blank">here</a>.</p>
 
 <br>
 <li><b><i>Remusr</i> system call</b></li>
-<p><b><i>Remusr</i></b> system call takes user name of the user to be removed as an argument. <i>Rewusr</i> system call can only be invoked from the <a>shell process</a> of the root and kernel users. A user can not be removed from the system if the user is owner of one or more files in the system. To remove a user from the system, <i>Remusr</i> system call invalidates the entry in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> corresponding to given username by storing -1 in the USERNAME and ENCRYPTED PASSWORD fields. Note that the special users "root" and "kernel" can not be removed using <i>Remusr</i> system call.</p>
+<p><b><i>Remusr</i></b> system call takes the user name of the user to be removed as an argument. <b><i>Remusr</i> system call can only be invoked from the <a>shell process</a> of the root user. A user can not be removed from the system if the user is the owner of one or more files in the system.</b> To remove a user from the system, <i>Remusr</i> system call invalidates the entry in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> corresponding to given username by storing -1 in the USERNAME and ENCRYPTED PASSWORD fields. Note that the special users "root" and "kernel" can not be removed using <i>Remusr</i> system call.</p>
 <p style="text-indent: 0px">Implement <i>Remusr</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#remusr" target="_blank">here</a>.</p>
 
 <br>
 <li><b><i>Setpwd</i> system call</b></li>
-<p><b><i>Setpwd</i></b> changes the password of a user to newly provided password. It takes as arguments an user name and a new password from application program. <i>Setpwd</i> can only be executed by shell process. A user is permitted to change only its own password. The privileged users "root" and "kernel" have permission to change the password of any user. The "root" user is provided the default password "root". The password of root user can be changed later using <i>Setpwd</i>. <i>Setpwd</i> encrypts the provided password and replaces the ENCRYPTED PASSWORD field in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> entry corresponding to provided user name. </p>
+<p><b><i>Setpwd</i></b> changes the password of a user to newly provided password. It takes as arguments a user name and a new password from application program. <i>Setpwd</i> can only be executed by shell process. A user is permitted to change only its own password. The privileged user "root" has permission to change the password of any user. The "root" user is provided the default password "root". The password of root user can be changed later using <i>Setpwd</i>. <i>Setpwd</i> encrypts the provided password and replaces the ENCRYPTED PASSWORD field in the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a> entry corresponding to provided user name. </p>
 <p style="text-indent: 0px">Implement <i>Setpwd</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#setpwd" target="_blank">here</a>.</p>
 <br>
 
@@ -4919,9 +4922,32 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <b>Modifications to boot module</b><br><br>
 <p>The boot module is modified to initialize the Shell process. Shell process has PID equal to 2. The process table entry and page table with index as 2 is initialized in the boot module for shell process. Heap, user stack and kernel stack pages are also allocated for the shell.</p>
+
+<p>The boot module will set the shell process to TERMINATED state so that it will not be
+scheduled.  The state of the shell process will be set to CREATED by the login system
+call when a valid user is logged in. This ensures that the shell process is scheduled
+only after a valid user is logged in.</p>
+
+<code>Implementation Note:</code>
+<br>
+<p> Since Idle Shell and Login process are system processes that does pre-defined functionality, it is easy to design ExpL programs or them so that 
+1) they require no heap pages 2) they require only one user stack page each.
+3) Idle and login code will fit into just one code page each (shell will be
+hard to implement without two pages of code). Hence, we will modify the  boot code so as to allocate only one stack page apart from the user area page
+and code pages for Idle, Shell and Login processes.</p>  
+
+<p>Note that the <a href="os_implementation.html" target="_blank">memory organization</a> allocates two pages each for Idle and Login.  Since the code for Idle and Login can fit into just one page, the second page can be allocated for their user stack.  Kernel stack
+pages will have to be allocated in the free memory area.  This leads to better
+memory utilization so that more concurrent processes may be run with the 
+available memory.  The page table entries for unallocated heap pages/stack 
+page must be set to invalid.</p>  
+
+
 <ul style="list-style-type: disc; margin-left: 10px;">
+
+<p style="">Additional steps to be done in the boot module are described below:</p>
 <li style="padding-left: 20px"></a>Load shell process, int 16, int 12, int 17 from disk to memory. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
-<li style="padding-left: 20px">Allocate two heap pages, two user stack pages and one kernel stack page for shell process. (Free memory pages are available from 83 onwards.) Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the shell process (PID = 2) as done for Init process in stage 9.</li>
+<li style="padding-left: 20px">Allocate  two user stack pages and one kernel stack page for shell process. (Free memory pages are available from 83 onwards.) Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the shell process (PID = 2) as done for Init process in stage 9.</li>
 
 <li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the shell process (PID = 2) as follows- Set the STATE field to TERMINATED. Store PID and PPID fields to 2 and 1 respectively. Store the kernel stack page number allocated above in the USER AREA PAGE NUMBER field. Set the KERNEL STACK POINTER field to 0 and USER STACK POINTER to 8*512. Also initialize PTBR and PTLR fields for the shell process.</li>
 <li style="padding-left: 20px">Store the starting IP address from the header of the first code page on the top of user stack for the shell process, as done for the init process previously.</li>
@@ -4929,11 +4955,11 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 </ul><br>
 
 <b>Login program</b><br><br>
-<p>Login program is run as init process from this stage onwards. This program asks user for a user name and a password to log into the system. Login process uses <i>Login</i> system call to log in the user into the system. This process is repeated in a loop. Write login program using the pseudocode provided <a href="os_design-files/misc.html#login" target="_blank">here</a> and load the XSM excutable as init program using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. </p><br>
+<p>Login program is run as the Init process from this stage onwards. This program asks user for a user name and a password to log into the system. Login process uses <i>Login</i> system call to log in the user into the system. This is repeated in a loop. Write login program using the pseudocode provided <a href="os_design-files/misc.html#login" target="_blank">here</a> and load the XSM excutable as init program using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. </p><br>
 
 
 <b>Extended Shell program</b><br><br>
-<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell spcification</a>. The expl shell program is provided <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
+<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell spcification</a>. An implementation of the expl shell program is given <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
 <p>Now that multiple user related system calls are supported in eXpOS, the shell commands -  "lu" and "ru" can be implemented. Implement commands lu, ru as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p><br>
 
 <b>Making things work</b><br><br>

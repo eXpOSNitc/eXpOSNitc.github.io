@@ -122,11 +122,9 @@
  <p>These are 1) <i>newusr</i> (to create a new user), 2) <i>remusr</i> (to remove a user), 3) <i>setpwd</i> (set the password of a user), 4) <i>getuid</i> (to get the user-id of the currently logged in user), 5) <i>getuname</i> (to get the username of the currently logged in user), 6) <i>logout</i> (logout the current user) and 7) <i>shutdown</i> (to shutdown the system after committing back the memory copies of all disk data structures into the disk).</p>
 
  <p>Upon receipt of one of these commands, the shell directly asks the user for the input arguments for the corresponding system call (for example - <i>setpwd</i> requires the <i>username</i> and the <i>new password</i> to be entered) and invokes the corresponding system call directly to execute the command.  In all the above cases except <i>logout</i> and <i>shutdown</i>, the shell continues to ask the user for the next command after execution of the system call. If the executed system call for the input command is not successful, then shell simply prints "BAD COMMAND".</p>
- <br>
 </div>
 
 <div id="executable_commands">
-<br>
 <br>
 <br>
 <h2 style="font-size: 20px;">Executable commands/filenames</h2>
@@ -175,10 +173,16 @@
                 <ul class="list-group">
                     <li class="list-group-item" style="color:black"> <i>Command</i> : <tt><b>ru.xsm</b></tt></li>
                     <li class="list-group-item" style="color:black"> <i>Input</i> : <tt>username</tt></li>
-                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Deletes all the data files owned by the user with name <i>username</i>.</li></ul>
+                    <li class="list-group-item" style="color:black"><i>Semantics</i> : Deletes all the data files owned by the user with name <i>username</i>. (Typically it is executed from the root user to delete all the files owned by a user before removing the user from the system.)</li></ul>
                  </li> 
 
 </ul>
+<br>
+<p>A sample shell implementation is given <a href="../test_prog.html#test_program_7" target="_blank" >here</a>. The details of implementation of system utilities are left to the OS programmer. Since eXpOS ABI does not support command line arguments, these programs may need to ask the user for inputs (like <i>filename</i> in the case of the <i>cat</i> command) using the <i>Read</i> system call.</p> 
+
+<p>The eXpOS specification stipulates that shell always executes from the context of the currently logged in user. The shell is spawned by the <a href="../os_design-files/misc.html#login" target="_blank">login process</a>.</p> 
+
+
 </div>
 
 
