@@ -4873,8 +4873,9 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 
 <p>Note that the shell process is already loaded into the address space in boot module so Login system call is not required to load shell process into the memory.</p>
 <p style="text-indent: 0px">Implement <i>Login</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#login" target="_blank">here</a>.</p>
-
 <br>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Login</i></b> system call is final.</p>
+
 </ol><br>
 
 
@@ -4888,8 +4889,9 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 <p><i>Logout</i> system call is used to logout the current user from the system and does not take any arguments. <b><i>Logout</i> system call can only be executed from the shell process (PID = 2).</b> Before leaving the system, all the non-terminated processes of the user should be terminated. As a consequence of terminating the processes, the resources acquired by these processes will be released. <i>Logout</i> system call invokes <b>Kill All</b> function of <a href="os_modules/Module_1.html" target="_blank">process manager module</a> to terminate the processes. Recall that Kill All function terminates all processes in the system except idle, init (login) and the current process.</p>
 <p><i>Logout</i> system call changes the STATE of current process (shell) to TERMINATED. <b>The starting IP of the shell process is stored at first word of user stack of shell, so that the next time when a new user is logged in and shell process is scheduled for the first time in the context of the new user, shell will run as newly created process.</b> Login process (PID = 1) is made ready for execution and scheduler is invoked to schedule login process. </p>
 <p style="text-indent: 0px">Implement <i>Logout</i> system call using detailed algorithm provided <a href="os_design-files/multiusersyscalls.html#logout" target="_blank">here</a>.</p>
-
 <br>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Logout</i></b> system call is final.</p>
+
 </ol>
 <br>
 <b style="font-size: 20px">Interrupt routine 16</b><br><br>
@@ -4916,9 +4918,13 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 <li><b><i>Getuname</i> and <i>Getuid</i> system calls</b></li>
 <p><b><i>Getuname</i></b> takes as argument a USERID from user program. <i>Getuname</i> returns the user name of the given USERID from the <a href="os_design-files/disk_ds.html#user_table" target="_blank">user table</a>. <b><i>Getuid</i></b> takes a user name (string) as an argument from the user program. <i>Getuid</i> returns the USERID of the given user name. The system calls <i>Getuname</i> and <i>Getuid</i> can be executed from any process of any user.</p>
 <p style="text-indent: 0px">Implement <i>Getuid</i> and <i>Getuname</i> system calls using detailed algorithms provided <a href="os_design-files/multiusersyscalls.html#getuid" target="_blank">here</a>.</p>
-<br></ol><br>
+<br>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Newusr</i></b>, <b><i>Remusr</i></b>, <b><i>Setpwd</i></b>, <b><i>Getuname</i></b> and <b><i>Getuid</i></b> system calls are final.</p>
+
+</ol><br>
 <b>Modification to <i>Shutdown</i> system call</b><br><br>
-<p>There is a slight modification in <i>Shutdown</i> system call. <i>Shutdown</i> system call can only be invoked from shell process. Until this stage, shell process was loaded as init program with PID = 1, but now login process is loaded as init and shell is loaded with PID = 2. So in <i>Shutdown</i> system call, modify the condition to check whether current process is shell or not, by comparing current PID to 2 (from previous value 1).</p><br>
+<p>There is a slight modification in <i>Shutdown</i> system call. <i>Shutdown</i> system call can only be invoked from shell process. Until this stage, shell process was loaded as init program with PID = 1, but now login process is loaded as init and shell is loaded with PID = 2. So in <i>Shutdown</i> system call, modify the condition to check whether current process is shell or not, by comparing current PID to 2 (from previous value 1).</p>
+<p style="text-indent: 0px"><code>Note :</code>The implementation of <b><i>Shutdown</i></b> system call is final.</p><br>
 
 <b>Modifications to boot module</b><br><br>
 <p>The boot module is modified to initialize the Shell process. Shell process has PID equal to 2. The process table entry and page table with index as 2 is initialized in the boot module for shell process. Heap, user stack and kernel stack pages are also allocated for the shell.</p>
@@ -4926,26 +4932,19 @@ the LSEEK value is a multiple of 512 and is equal to the file size (why?). In pa
 <p>The boot module will set the shell process to TERMINATED state so that it will not be
 scheduled.  The state of the shell process will be set to CREATED by the login system
 call when a valid user is logged in. This ensures that the shell process is scheduled
-only after a valid user is logged in.</p>
+only after a valid user is logged in.</p><br>
 
 <code>Implementation Note:</code>
-<br>
-<p> Since Idle Shell and Login process are system processes that does pre-defined functionality, it is easy to design ExpL programs or them so that 
-1) they require no heap pages 2) they require only one user stack page each.
-3) Idle and login code will fit into just one code page each (shell will be
-hard to implement without two pages of code). Hence, we will modify the  boot code so as to allocate only one stack page apart from the user area page
-and code pages for Idle, Shell and Login processes.</p>  
+<br><br>
+<p> Since Idle, Shell and Login processes are system processes that does pre-defined functionality, it is easy to design ExpL programs for them so that 1) they require no heap pages 2) they require only one user stack page each 3) Idle and login code will fit into just one code page each (shell will be
+hard to implement without two pages of code). Hence, we will modify the  boot code so as to allocate only one stack page apart from the user area page and code pages for Idle, Shell and Login processes.</p>  
 
-<p>Note that the <a href="os_implementation.html" target="_blank">memory organization</a> allocates two pages each for Idle and Login.  Since the code for Idle and Login can fit into just one page, the second page can be allocated for their user stack.  Kernel stack
-pages will have to be allocated in the free memory area.  This leads to better
-memory utilization so that more concurrent processes may be run with the 
-available memory.  The page table entries for unallocated heap pages/stack 
-page must be set to invalid.</p>  
+<p>Note that the <a href="os_implementation.html" target="_blank">memory organization</a> allocates two pages each for Idle and Login. Since the code for Idle and Login can fit into just one page, the second page can be allocated for their user stack. Kernel stack pages will have to be allocated in the free memory area. This leads to better memory utilization so that more concurrent processes may be run with the available memory.  The page table entries for unallocated heap pages, stack page and code pages must be set to invalid.</p>  
 
 
 <ul style="list-style-type: disc; margin-left: 10px;">
 
-<p style="">Additional steps to be done in the boot module are described below:</p>
+<p style="">Steps to be done in the boot module o reflect the above changes are described below:</p>
 <li style="padding-left: 20px"></a>Load shell process, int 16, int 12, int 17 from disk to memory. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
 <li style="padding-left: 20px">Allocate  two user stack pages and one kernel stack page for shell process. (Free memory pages are available from 83 onwards.) Initialize the <a href="os_design-files/process_table.html#per_page_table" target="_blank">page table</a> of the shell process (PID = 2) as done for Init process in stage 9.</li>
 
