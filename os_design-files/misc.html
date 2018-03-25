@@ -114,28 +114,48 @@
              <p>Arguments: None</p>
             <p>Return Value:None</p>
                                                 
-             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes.It initializes data structures, loads root file, FAT, etc into the memory. </p>
+             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes. It initializes data structures, loads root file, disk free list, etc into the memory. </p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p>Load the software interrupts and handler routines to memory.
-</p>
-             <p>Load the init program to memory and set up its machine context.
-</p>
-             <p>Load the idle program to memory and set up its machine context.
-</p>
+
+<pre>
+  Load IDLE process and boot module from disk to memory. See <a href="../os_implementation.html" target="_blank">disk/memory organization</a>.
+  Set SP to (userarea pagenumber of idle) * 512 + 1 and call module 7. //running the boot module in the context of idle.
+
+  // after returning from the boot module
+  /* Initialize the IDLE process.*/
+
+  Initialize the Page table base register to PAGE_TABLE_BASE.
+  Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set the valid bit to 0. // idle doesn't invoke any library function
+  Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit to 1 and write bit to 0. 
+  Set remaining code page entries to -1 and valid bit to 0.
+  Set the first stack page entry to 70 and valid bit to 1, write bit to 1. Set second stack page entry to -1 and valid bit to 0.
+
+  Initialize the <a href="../os_design-files/process_table.html" target="_blank">process table</a> for IDLE process.
+  Initialize the Tick, pid, userid as 0, state as RUNNING,
+  user area page number as 76 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+  PTBR to PAGE_TABLE_BASE and PTLR as 10.
+
+  Store the IP value (from the header of the IDLE) on top of first user stack page [70*512] = [69*512 +1].
+
+  Schedule IDLE process for excecution.
+
+</pre>
+
+             <!--
+             <p>Load the software interrupts and handler routines to memory.</p>
+             <p>Load the init program to memory and set up its machine context.</p>
+             <p>Load the idle program to memory and set up its machine context.</p>
 <p>Load the Shared Library into memory.</p>
 <p>Load the root file into memory.</p>
 
 <p>if first entry in the Root File is not that of the root file, create an entry for it.</p>
 
-             <p>Load the disk data structures to the memory.
-</p> 
+             <p>Load the disk data structures to the memory.</p> 
 
 <p>if first entry in Inode Table does not correspond to root file, set the first entry as the root file</p>
-             <p>Initialize all the memory data structures.
-</p>
-             <p>Schedule the init process for execution.
-.</p>
+             <p>Initialize all the memory data structures.</p>
+             <p>Schedule the init process for execution.</p>-->
 <br>
 <h4>Questions</h4>
 <p>1. why is the disk transfer (loading all the routines and data structures) done synchronously?</p>
@@ -218,7 +238,7 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2>INIT<font color="red">Login</font> Process</h2>
+              <h2>INIT/<font color="red">Login</font> Process</h2>
                <br>
                <br>                                      
 

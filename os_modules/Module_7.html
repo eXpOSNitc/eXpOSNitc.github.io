@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title>Boot Module</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
+
+    <!-- CSS
+    ================================================== -->       
+    <!-- Bootstrap css file-->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome css file-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Superslide css file-->
+    <link rel="../stylesheet" href="css/superslides.css">
+    <!-- Slick slider css file -->
+    <link href="../css/slick.css" rel="stylesheet"> 
+    <!-- smooth animate css file -->
+    <link rel="stylesheet" href="../css/animate.css">  
+    <!-- Elastic grid css file -->
+    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <!-- Circle counter cdn css file -->
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <!-- Default Theme css file -->
+    <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
+    <!-- Main structure css file -->
+    <link href="../style.css" rel="stylesheet">
+   
+    <!-- Google fonts -->
+    <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
+    <link href='../css/varela.css' rel='stylesheet' type='text/css'>
+    <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+ <style type="text/css">
+   
+   pre{
+    font-family: Times new Roman; 
+    font-size: 15px;"
+   }
+
+ </style>>   
+
+  </head>
+  <body> 
+     <!-- BEGAIN PRELOADER 
+    <div id="preloader">
+      <div id="status">&nbsp;</div>
+    </div>
+     END PRELOADER -->
+
+  
+    <!--=========== BEGIN HEADER SECTION ================-->
+    <header id="header">
+      <!-- BEGIN MENU -->
+      <div class="menu_area">
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+          <div class="container">
+          <div class="navbar-header">
+            <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            <!-- LOGO -->
+
+            <!-- TEXT BASED LOGO -->
+            <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
+            
+                              
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
+	      <li><a href="../index.html">Home</a></li>
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
+               <li><a href="../Downloads.html" target="_blank">Downloads</a></li> <!--Change here--> 
+               <li><a href="../faq.html" target="_blank">FAQ</a></li>
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
+            </ul>           
+          </div>
+          </div>     
+        </nav>  
+      </div>
+      <!-- END MENU -->
+
+      
+    </header>
+		
+    <!--=========== End HEADER SECTION ================--> 
+    
+    <!--begin section-->
+    <section id="abi" style="text-align:justify">
+		<br>
+		<br>
+		<br>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="about_area">
+             
+                <!-- START ABOUT HEADING -->
+              <div class="heading">
+                
+                <h2 > Boot Module </h2>
+                <br/>
+                <br/>
+                
+                <p> This module is responsible for hand creating the INIT and SHELL processes. It loads the other modules, interrupt routines and disk data structures from disk to memory. It also initializes different memory data structures. Boot module is invoked by the OS Startup code at the time of booting.
+
+                </p><br></div>
+
+<div><h4>Algorithm:</h4></div>
+
+<pre>
+   Load exception handler, timer interrupt handler, disk interrupt handler,
+   console (terminal) interrupt handler, library, all interrupt routines [4 - 17],
+   modules [0 - 6], INIT, SHELL from disk to memory. 
+   /* Module 7 (boot module) and IDLE will be loaded by OS startup code */
+   See <a href="../os_implementation.html" target="_blank">disk/memory organization</a>.
+
+   Load the disk data structures to the memory pages of their memory copies
+   disk free list, root file, inode table, user table.
+
+   /* Initialize the INIT (Login) process */
+
+   Initialize the Page table base register to PAGE_TABLE_BASE + 20.
+   Set the memory pages 63 and 64 for library in the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a>. Set the reference bit to 0, valid bit to 1, write bit to 0.
+   Set the heap page entries in the page table to -1 and valid bit to 0.
+   Set the first code page entry to 65 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit to 1 and write bit to 0. 
+   Set remaining code page entries to -1 and valid bit to 0.
+   Set the first stack page entry to 66 and valid bit to 1, write bit to 1. Set second stack page entry to -1 and valid bit to 0.
+   <!--
+   <a data-toggle="collapse"   href="#collapse7mod">Set the Page table entries for INIT process</a>
+   <div id="collapse7mod" class="panel-collapse collapse">
+                 
+                 Initialize the Page table base register to PAGE_TABLE_BASE + 20.
+                 Set the memory pages 63 and 64 for library in the <a href="../os_design-files/process_table.html#per_process_table" target="_blank">page table</a>. Set the reference bit to 0, valid bit to 1, write bit to 0.
+                 Set the heap page entries in the page table to -1 and valid bit to 0.
+                 Set the first code page entry to 65 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit 1 and write bit to 0. Set remaining code page entries to -1 and valid bit to 0.
+                 Set the first stack page entry to 66 and valid bit to 1, write bit to 1. Set second stack page entry to -1 and valid bit to 0.</div> -->
+   Initialize the <a href="../os_design-files/process_table.html" target="_blank">process table</a> for INIT process.
+   Initialize the Tick as 0, pid as 1, userid as 0, state as CREATED,
+   user area page number as 77 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+   PTBR to PAGE_TABLE_BASE + 20 and PTLR as 10.
+
+   Store the IP value (from the header of the INIT) on top of first user stack page [66*512] = [65*512+1].
+   <!--<a data-toggle="collapse"   href="#collapse7mod">Initialize the process table for INIT process.</a>
+   <div id="collapse7mod" class="panel-collapse collapse">
+                 
+                 Initialize the Tick as 0, pid as 1, userid as 0, state as CREATED,
+                 user area page number as 77 (allocated from free user space), 
+                 KPTR to 0, UPTR to 4096 (starting of first user stack page),
+                 PTBR to PAGE_TABLE_BASE + 20, PTLR as 10.</div>-->
+    /* Initialize the SHELL process */
+
+   Initialize the Page table base register to PAGE_TABLE_BASE + 40.
+   Set the memory pages 63 and 64 for library in the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a>. Set the reference bit to 0, valid bit to 1, write bit to 0.
+   Set the heap page entries in the page table to -1 and valid bit to 0.
+   Set the first and second code page entries to 67 and 68 respectively (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit to 1 and write bit to 0.
+   Set remaining code page entries to -1 and valid bit to 0.
+   Set the first and second stack page entries to 78 and 79 (allocated from free user space). Valid bit to 1, write bit to 1.
+
+   Initialize the <a href="../os_design-files/process_table.html" target="_blank">process table</a> for SHELL process.
+   Initialize the Tick as 0, pid as 2, userid as 0, state as TERMINATED,
+   user area page number as 80 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+   PTBR to PAGE_TABLE_BASE + 40 and PTLR as 10.
+
+   Store the IP value (from the header of the SHELL) on top of first user stack page [78*512] = [67*512 +1].
+
+   /* Initialize all memory data structures */
+
+   Set the states of all processes (other than INIT, IDLE and SHELL) in the <a href="../os_design-files/process_table.html" target="_blank">process table</a> to TERMINATED.
+   Reset the status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a> and <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a> to 0.
+   Initialize the <a href="../os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> entries to 0 (free) or 1 (allocated).
+   // presently 80 memory pages are allocated
+
+   Initialize <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> entries. Mem free count as 47, wait mem count as 0, swapped count as 0, paging process as -1.
+   Initialize <a href="../os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> for shell. First two code page entries with 9, 10 and all other entries to -1.
+   Invalidate <a href="../os_design-files/process_table.html#per_process_table" target="_blank">per process resource table</a> of INIT and SHELL (all entries are set to -1).
+   Store 0 in the process count field for all entries in <a href="../os_design-files/mem_ds.html#sem_table" target="_blank">Semaphore table</a>.
+   Initialize block number to -1, dirty bit to 0 and locking pid to -1 for the four buffer pages in the <a href="../os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer table</a>.
+   Set open file count and locking pid to -1 for all entries in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">file status table</a>. Set the inode index to -1 in the <a <a href="../os_design-files/mem_ds.html" target="_blank">open file table</a> for all entries.
+
+
+</pre>
+
+
+Called by OS startup code. <br> <br> <br>
+                     <!--end-->   
+                    
+                               </div>
+              </div>
+            </div>
+          </div>
+        </div>       
+      </div>
+       	
+		 
+    </section>
+    
+    <!--end section-->
+                
+ <!--=========== BEGIN FOOTER ================-->
+     <footer id="footer">
+       <div class="container">
+         <div class="row">
+           <div class="col-lg-6 col-md-6 col-sm-6">
+             <div class="footer_left">
+               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+             </div>
+           </div>
+         </div>
+       </div>
+      </footer>
+      <!--=========== END FOOTER ================-->
+
+     <!-- Javascript Files
+     ================================================== -->
+  
+     <!-- initialize jQuery Library -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Google map -->
+    <script src="js/map_js.js"></script>
+    <script src="js/jquery.ui.map.js"></script>
+     <!-- For smooth animatin  -->
+    <script src="js/wow.min.js"></script> 
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- superslides slider -->
+    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+    <!-- slick slider -->
+    <script src="js/slick.min.js"></script>    
+    <!-- for circle counter -->
+    <script src='js/jquery.circliful.min.js'></script>
+    <!-- for portfolio filter gallery -->
+    <script src="js/modernizr.custom.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/elastic_grid.min.js"></script>
+    <script src="js/portfolio_slider.js"></script>
+
+    <!-- Custom js-->
+    <script src="js/custom.js"></script>
+  </body>
+</html>
