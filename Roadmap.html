@@ -4952,44 +4952,46 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 
 <p>Note that the <a href="os_implementation.html" target="_blank">memory organization</a> allocates two pages each for Idle and Login. Since the code for Idle and Login can fit into just one page, the second page can be allocated for their user stack. Kernel stack pages will have to be allocated in the free memory area. This leads to better memory utilization so that more concurrent processes may be run with the available memory.  The page table entries for unallocated heap pages, stack page and code pages must be set to invalid.</p>  
 <ul style="list-style-type: disc; margin-left: 10px;">
-
-<p style=""><b>Steps to be done in the OS startup code to reflect the above changes are described below:</b></p>
+<br>
+<p style="text-indent: 0px"><b>Steps to be done in the OS startup code to reflect the above changes are described below:</b></p>
 <li style="padding-left: 20px"></a>Changes for idle process allocation</li>
    <ol style="padding-left: 60px">
-	<li>Load only first code page from disk to memory instead of 2 code pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
-<li> Allocate second code page 70 to first page of user stack (only one page for user stack) and allocate memory page 76 to kernel stack. </li>
-<li> Change the page table entries according to above allocation also change the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry for USER AREA PAGE field. </li>
-<li> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
+	<li style="padding-left: 20px">Load only the first code page from disk to memory (instead of two code pages). See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
+<li style="padding-left: 20px"> Allocate second code page (70) as user stack page for idle (only one page for user stack is needed). Allocate memory page 76 for kernel stack of idle. </li>
+<li style="padding-left: 20px"> Change the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of idle. </li>
+<li style="padding-left: 20px"> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
 </ol> 
 </ul>
 
 <ul style="list-style-type: disc; margin-left: 10px;"><br>
 
-<p style=""><b>Steps to be done in the boot module to reflect the above changes are described below:</b></p>
+<p style="text-indent: 0px"><b>Steps to be done in the boot module to reflect the above changes are described below:</b></p>
 <li style="padding-left: 20px"></a>Load shell process, int 16, int 12 (Logout), int 17 from disk to memory. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
 <li style="padding-left: 20px"></a>Changes for init process allocation</li>
    <ol style="padding-left: 60px">
-	<li>Load only first code page from disk to memory instead of 2 code pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
-<li> Allocate second code page 66 to first page of user stack (only one page for user stack) and allocate memory page 77 to kernel stack.   </li>
-<li> Invalidate the heap page entries in the page table of the INIT process. Change the page table entries according to above allocation also change the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry for USER AREA PAGE field. </li>
-<li> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
-<li> Remove <a>disk map table</a> initialization for the init process as it is not needed any longer. </li>
+	<li style="padding-left: 20px">Load only the first code page from disk to memory instead of two code pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
+<li style="padding-left: 20px">Allocate second code page (66) as user stack page for init (only one page for user stack is needed). Allocate memory page 77 for kernel stack of init.   </li>
+<li style="padding-left: 20px"> Invalidate the heap page entries in the page table of the INIT process. Change the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of init. </li>
+<li style="padding-left: 20px"> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
+<li style="padding-left: 20px"> Remove <a>disk map table</a> initialization for the init process as it is not needed any longer. </li>
 </ol> 
 
 <li style="padding-left: 20px"></a>Shell process allocation</li>
    <ol style="padding-left: 60px">
-	<li>Load two code page from disk to memory. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
-	<li>Allocate memory pages 63 and 64 for library in page table. Allocate memory pages 78 and 79 for stack of the shell in the page table also allocate memory page 80 to kernel stack.   </li>
+	<li style="padding-left: 20px">Load two code pages from disk to memory. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
+	<li style="padding-left: 20px">Allocate memory pages 78 and 79 for user stack of shell. Also allocate memory page 80 for kernel stack of shell.   </li>
 
-<li> Invalidate the heap page entries in the page table of the INIT process. Change the page table entries according to above allocation also change the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry for USER AREA PAGE field to store 80.</li>
+<li style="padding-left: 20px">Invalidate the heap page entries in the page table of the INIT process. Initialize the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell.</li>
 
 <li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the shell process (PID = 2) as follows- Set the STATE field to TERMINATED. Store PID and PPID fields to 2 and 1 respectively. Store the kernel stack page number allocated above in the USER AREA PAGE NUMBER field. Set the KERNEL STACK POINTER field to 0 and USER STACK POINTER to 8*512. Also initialize PTBR and PTLR fields for the shell process.</li>
-<li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> entry of the shell process (PID = 2) as follows- Store the block numbers of the two code pages in the disk map table entry of the shell. Invalidate all other entries of the disk map table entry by storing -1.  </li>
+
+<li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> entry of the shell process (PID = 2) as follows - Store the block numbers of the two code pages in the disk map table entry of the shell. Invalidate all other entries of the disk map table entry by storing -1.  </li>
 <li style="padding-left: 20px">Store the starting IP address from the header of the first code page on the top of user stack for the shell process, as done for the init process previously.</li>
 </ol>
+<p style="padding-left: 60px; text-indent: 0px">Note that shell process will be set up for execution but STATE of the shell process is set to TERMINATED in the boot module. The shell process will be made READY only upon successful login.</p> 
 
-<li style="padding-left: 20px">Change the initialization of <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> according to the memory pages allocated above for idle, init and shell process.</li>
-<li style="padding-left: 20px">Initialize the MEM_FREE_COUNT in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> to 47 as now 47 memory pages are availaible.</li>
+<li style="padding-left: 20px;">Change the initialization of <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> according to the memory pages allocated for idle, init and shell processes.</li>
+<li style="padding-left: 20px">Update the MEM_FREE_COUNT in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> to 47 as now 47 memory pages are available.</li>
 </ul><br>
 
 <b>Login program</b><br><br>
@@ -5044,10 +5046,10 @@ You can furthur test the system by running all build-in shell commands and excut
                             <div id="lo27" class="panel-collapse expand">
                               <ul>
 
-   <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Adding support in eXpOS for effective memory management.</li>
-   
+    <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Understand the disk swap-out and swap-in mechanisms.</li>
                              
-                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implementation of the pager module.</li>
+                              <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp; Implement the pager module that supports Swap in and Swap out functions.</li>
+                             
                             </ul>                                  
                                      
                             </div>
@@ -5062,16 +5064,34 @@ You can furthur test the system by running all build-in shell commands and excut
     1) Revisit the description of data structures- <a href="os_design-files/process_table.html" target="_blank">Process table</a>, <a href="os_design-files/process_table.html#per_page_table" target="_blank">Page table</a>, <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System status table</a>, <a href="os_design-files/process_table.html#disk_map_table" target="_blank">Disk Map table</a>. <br>
     </p>
 	<br>
-<p>In this stage, we will understand how the limited physical memory pages of eXpOS are used effectively. We will also implement functions <b>Swap Out</b> and <b>Swap In</b> of <a href="os_modules/Module_6.html" target="_blank">Pager module</a> (module 6 ) for memory management. Some modifications are done in <i>Timer Interrupt</i> and <i>Context Switch module</i> also.</p>
+<p>In this stage, we will learn how the limited physical memory pages of the XSM machine can be used effectively to run maximum number of concurrent processes. To achieve this, we will implement the functions <b>Swap Out</b> and <b>Swap In</b> of <a href="os_modules/Module_6.html" target="_blank">Pager module</a> (module 6). Corresponding modifications are done in <a href="os_design-files/timer.html" target="_blank">Timer Interrupt</a> and <a href="os_modules/Module_5.html" target="_blank">Context Switch module</a> as well.</p>
 
-<p>ExpOS gives provision to execute 16 processes concurrently in the system and the memory pages available for user processes are 52 (from 76 to 127 - See <a href="os_implementation.html" target="_blank">memory organization</a>). Consider a case, where every process uses four code, two heap, two user stack and one kernel stack pages, then each process will need 9 memory pages. In this situation, eXpOS will run out of memory before all 16 processes can be brought into the memory, as all processes require 144 memory pages in total. A solution to conquer this problem is - when the OS runs out of memory pages to allocate, the in-active memory pages used by the processes in the memory are swapped out to the disk and memory pages are freed for allocation. The swapped out pages in the disk are swapped back into the memory, when they are required and memory is available again. This gives illusion of more memory than actual available memory and this memory management is called as <a href="https://en.wikipedia.org/wiki/Virtual_memory" target="_blank">Virtual Memory</a>.</p>
+<p>ExpOS gives provision to execute 16 processes concurrently in the system and the number of memory pages available for user processes are 52 (from 76 to 127 - See <a href="os_implementation.html" target="_blank">memory organization</a>). Consider a case, where every process uses four code, two heap, two user stack and one kernel stack pages. Then each process will need 9 memory pages. In this situation, the OS will run out of memory before all 16 processes can be brought into the memory, as the memory  required will be 144 pages in total. A solution to this problem is following - when the OS falls short of free memory pages needed for a process, try to identify some inactive process whose  memory pages could be swapped out to the disk.  The memory pages freed this way can be allocated to the new process.  At a later point of time, the OS can swap back the swapped out pages when the inactive process needs to be re-activated.  This gives illusion of more memory than actual available memory.
+(Also see <a href="https://en.wikipedia.org/wiki/Virtual_memory" target="_blank">Virtual Memory</a>.)</p>
 
-<p>eXpOS uses an approach for memory management where the system does not wait for the memory to become completely occupied. eXpOS swaps out the processes when the free (available) memory pages are below a critical level. The critical level in eXpOS is denoted by <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> (4). When available memory pages are less than four, eXpOS calls <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a>. <i>Swap Out</i> function selects a suitable process to swap out to the disk. The memory pages used by the selected process are moved into the disk blocks and the memory pages are released (except memory pages of library). The code pages are not required to move to the disk as disk already contains copy of the code pages. However, the heap, user stack and kernel stack pages are swapped out to the swap area in the disk. eXpOS has 256 reserved blocks in the disk (256 to 511 - see <a href="os_implementation.html" target="_blank">disk organization</a>) for swapping purpose. This area is called 'swap area'.</p>
+<p>eXpOS uses an approach for memory management where the system does not wait for all the memory to become completely exhausted before initiating a process swap out. Instead, the OS regularly checks for the status of available memory. <b>At any time if the OS finds that the available (free) memory drops below a critical level, a swap out is initiated.</b>  In such case, the OS identifies a relatively inactive process and swaps out some of the pages of the process to make more free memory available.    The critical level in eXpOS is denoted by <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> (MEM_LOW is equal to 4 in present design). When available memory pages are less than MEM_LOW, eXpOS calls <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a>. <i>Swap Out</i> function selects a suitable process to swap out to the disk. The memory pages used by the selected process are moved into the disk blocks and the memory pages are released (except memory pages of library). The code pages are not required to move to the disk as disk already contains copy of the code pages. However, the heap, user stack and kernel stack pages are swapped out to the swap area in the disk. eXpOS has 256 reserved blocks in the disk (256 to 511 - see <a href="os_implementation.html" target="_blank">disk organization</a>) for swapping purpose. This area is called <b>swap area</b>.</p>
 
-<p>The swapped out processes are swapped back into the disk, when available memory pages exceed certain level denoted as <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a> (12). When available memory pages are more than 12, eXpOS calls <b>Swap In</b> function of pager module. <i>Swap In</i> function selects a suitable process to swap into the memory. New memory pages are allocated to the process and disk blocks corresponding to the process are loaded into the allocated memory pages. The strategies used by eXpOS to select a suitable process for swap out and swap in are discussed later.</p>
+<p>The swapped out processes are swapped back into the disk, when available memory pages exceed certain level denoted as <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a> (MEM_HIGH is equal to 12 in present design). When available memory pages are more than MEM_HIGH, eXpOS calls <b>Swap In</b> function of pager module. <i>Swap In</i> function selects a suitable process to swap into the memory. New memory pages are allocated to the process and disk blocks corresponding to the process are loaded into the allocated memory pages. The strategies used by eXpOS to select a suitable process for swap out and swap in are discussed later.</p>
+
+<p>When does the OS check for MEM_LOW/MEM_HIGH condition?  This is done in the <a href="os_design-files/timer.html" target="_blank">timer interrupt handler</a>.
+Since the system enters the timer routine at regular intervals, this design ensures that 
+regular monitoring of memory status is achieved. The timer interrupt handler will 
+call Swap-in/Swap-out function appropriately depending on the memory status.  Swap-in/Swap-out
+will happen from the context of the currently running process (that is, the process from
+which timer interrupt handler was entered). We call this process as the <b>paging process</b>.</p>  
+
+<p><b>Once a swap-in/swap-out is initiated, the OS will not schedule any process other than
+the paging process and the idle process until the swap-in/swap-out is completed. 
+This policy is taken to avoid unpredicatable conditions that can arise if other processes rapidly acquire/release memory and change the memory availability in the system while a swap operation is ongoing.</b> This design, though not very efficient, is simple to implement and yet achieves the goal
+of having the full quota of 16 process in concurrent execution. (Note that the size of
+the process table in the eXpOS implementation outlined here limits the number of concurrent processes to 16 ). Note that the idle process is scheduled during swap-in/swap-out when swap-in/swap-out operation waits for a disk-memory transfer. Finally, the design ensures that swap-in/swap-out
+will never be initiated from the context of the idle process.  Hence, the idle process
+will never get blocked. </p>   
+
+
 <br>
 <b style="font-size: 20px">Modifications to Timer Interrupt</b><br><br>
-<p> Timer interrupt is modified to check whether the available memory is below <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> or above <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a>. When free memory pages are below MEM_LOW, the <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a> is invoked to initiate swapping out. When available memory pages are above MEM_HIGH, the <b>Swap In</b> function of pager module is invoked to initiate swapping in of processes. The process which invokes the modules function <b>Swap Out</b> and <b>Swap In</b> for paging is called as <b>paging process</b>. Note that idle process can not be a paging process. The reason is - while paging (swap in/swap out) is going on, only paging process is scheduled for execution to complete the paging first. If paging process is blocked, the default process idle is scheduled. So if idle process starts paging, there is no other default process to schedule in case idle is blocked during paging.</p>
+<p> Timer interrupt is modified to check whether the available memory is below <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> or above <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a> before invoking the context switch module . When free memory pages are below MEM_LOW, the <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a> is invoked to initiate swapping out. When available memory pages are above MEM_HIGH, the <b>Swap In</b> function of pager module is invoked to initiate swapping in of processes. <b>The process from whose context, timer interrupt invokes the modules function Swap Out and Swap In is called as paging process</b>. Note that idle process can not be a paging process. The reason is - while swap in/swap out is going on, only the paging process is scheduled for execution so that the swap-in/swap-out operation is completed first. If paging process is blocked during swap-out/swap-in, the default process-idle is scheduled. So if idle process starts paging, there is no other default process to schedule in case idle is blocked during swap-in/swap-out operation.</p>
 <p>Timer interrupt is also modified to increment the TICK field of every NON-TERMINATED process. The TICK field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> gives a measure of how long a process is present in memory or how long a process is present in the disk in swapped state.</p>
 <p style="text-indent: 0px">Modify Timer Interrupt implemented in earlier stages according to the detailed algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>.</p><br><br>
 
