@@ -574,7 +574,7 @@ pre span:before {
                                                         <td>Ouput of corresponding to shell command or executable file.</td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> This shell program is imporvised version of shell program given before. The shell program supports the execution of built-in shell commands and executable files provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>.  </p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> The given program will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is then traversed from the start to the end and numbers are printed to the terminal.</p><br>
 <div><pre>
 <span>int main()</span>
 <span>{</span>
@@ -651,6 +651,76 @@ pre span:before {
        </div>
 
 </div>
+
+
+
+<div class="panel-body" id="test_program_8"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">8. Test Program 8 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output</b></td>
+                                                        <td>100 integers - PID*100+1 to PID*100+100</td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> This shell program is imporvised version of shell program given before. The shell program supports the execution of built-in shell commands and executable files provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>.  </p><br>
+<div><pre>
+<span>type</span>
+<span>List</span>
+<span>{</span>
+<span>          int data;</span>
+<span>          List next;</span>
+<span>}</span>
+<span>endtype</span>
+<span>decl</span>
+<span>          List head;</span>
+<span>enddecl</span>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int endval, temp, pid, iter;</span>
+<span>          List p, q;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          temp = exposcall("Heapset");</span>
+<span>          head=null;</span>
+<span>          q = head;</span>
+<span>          pid = exposcall("Getpid");</span>
+<span>          iter = pid*100+1;</span>
+<span>          endval= iter+99;</span>
+<span>          while (iter <= endval)  do</span>
+<span>              p= exposcall("Alloc",2);</span>
+<span>              p.data=iter;</span>
+<span>              p.next=null;</span>
+<span>              if (head == null) then</span>
+<span>                  head=p;</span>
+<span>                  q=p;</span>
+<span>              else</span>
+<span>                  q.next=p;</span>
+<span>                  q=q.next;</span>
+<span>              endif;</span>
+<span>              iter=iter+1;</span>
+<span>          endwhile;</span>
+<span>          p=head;</span>
+<span>          while(p!=null)  do</span>
+<span>              iter=p.data;</span>
+<span>              temp= exposcall("Write",-2,iter);</span>
+<span>              p=p.next;</span>
+<span>          endwhile;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
 
        </div>
        </div>
