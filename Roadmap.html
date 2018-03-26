@@ -4959,7 +4959,7 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 	<li style="padding-left: 20px">Load only the first code page from disk to memory (instead of two code pages). See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
 <li style="padding-left: 20px"> Allocate second code page (70) as user stack page for idle (only one page for user stack is needed). Allocate memory page 76 for kernel stack of idle. </li>
 <li style="padding-left: 20px"> Change the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of idle. </li>
-<li style="padding-left: 20px"> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
+<li style="padding-left: 20px"> Store the starting IP address from the header of the first code page on the top of new user stack as the user stack page number is changed now for idle. </li>
 </ol> 
 </ul>
 
@@ -4969,10 +4969,11 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 <li style="padding-left: 20px"></a>Load shell process, int 16, int 12 (Logout), int 17 from disk to memory. See disk and memory organization <a href="os_implementation.html" target="_blank">here</a>.</li>
 <li style="padding-left: 20px"></a>Changes for init process allocation</li>
    <ol style="padding-left: 60px">
-	<li style="padding-left: 20px">Load only the first code page from disk to memory instead of two code pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
+	<li style="padding-left: 20px">Load only the first code page from disk to memory (instead of two code pages). See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
 <li style="padding-left: 20px">Allocate second code page (66) as user stack page for init (only one page for user stack is needed). Allocate memory page 77 for kernel stack of init.   </li>
 <li style="padding-left: 20px"> Invalidate the heap page entries in the page table of the INIT process. Change the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of init. </li>
-<li style="padding-left: 20px"> As stack page is changed, change the starting stack page while storing the starting IP on top f the stack. </li>
+<li style="padding-left: 20px"> Store the starting IP address from the header of the first code page on the top of new user stack as the user stack page number is changed now for init. </li>
+
 <li style="padding-left: 20px"> Remove <a>disk map table</a> initialization for the init process as it is not needed any longer. </li>
 </ol> 
 
@@ -4981,14 +4982,14 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 	<li style="padding-left: 20px">Load two code pages from disk to memory. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>.</li> 
 	<li style="padding-left: 20px">Allocate memory pages 78 and 79 for user stack of shell. Also allocate memory page 80 for kernel stack of shell.   </li>
 
-<li style="padding-left: 20px">Invalidate the heap page entries in the page table of the INIT process. Initialize the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell.</li>
+<li style="padding-left: 20px">Set the library page entries to 63 and 64 in the page table of shell. Invalidate the heap page entries in the page table. Initialize the page table entries for stack and code pages according to above allocation. Also change the user area page number in the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of shell.</li>
 
 <li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html" target="_blank">process table</a> entry of the shell process (PID = 2) as follows- Set the STATE field to TERMINATED. Store PID and PPID fields to 2 and 1 respectively. Store the kernel stack page number allocated above in the USER AREA PAGE NUMBER field. Set the KERNEL STACK POINTER field to 0 and USER STACK POINTER to 8*512. Also initialize PTBR and PTLR fields for the shell process.</li>
 
 <li style="padding-left: 20px"> Initialize the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> entry of the shell process (PID = 2) as follows - Store the block numbers of the two code pages in the disk map table entry of the shell. Invalidate all other entries of the disk map table entry by storing -1.  </li>
-<li style="padding-left: 20px">Store the starting IP address from the header of the first code page on the top of user stack for the shell process, as done for the init process previously.</li>
+<li style="padding-left: 20px">Store the starting IP address from the header of the first code page on the top of user stack for the shell process.</li>
 </ol>
-<p style="padding-left: 60px; text-indent: 0px">Note that shell process will be set up for execution but STATE of the shell process is set to TERMINATED in the boot module. The shell process will be made READY only upon successful login.</p> 
+<p style="padding-left: 60px; text-indent: 0px">Note that shell process is set up for execution but STATE of the shell process is set to TERMINATED in the boot module. The shell process will be made READY only upon successful login of the user.</p> 
 
 <li style="padding-left: 20px;">Change the initialization of <a href="os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> according to the memory pages allocated for idle, init and shell processes.</li>
 <li style="padding-left: 20px">Update the MEM_FREE_COUNT in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> to 47 as now 47 memory pages are available.</li>
