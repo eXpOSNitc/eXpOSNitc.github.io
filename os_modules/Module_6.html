@@ -226,6 +226,8 @@ to indicate that the system is going to perform paging.
 Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find the <b>swapped</b> process in the READY state with the highest TICK.
 If there is no such process in the READY state, reset the PAGING_PROCESS field to -1 and Return.
 
+Set the TICK field of the process table entry of the selected process to 0.
+
 <b>For</b> each heap page that is swapped out {	/* Check the <a href="../os_design-files/process_table.html#disk_map_table">Disk Map Table</a>. */
 	Call the <b>get_free_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to allocate a memory page.
 	Get the disk block number in the <a href="../os_design-files/process_table.html#disk_map_table">Disk Map Table</a> entry of the process corresponding to the heap page.
