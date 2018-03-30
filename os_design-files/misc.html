@@ -112,33 +112,35 @@
                <br>                                      
              
              <p>Arguments: None</p>
-            <p>Return Value:None</p>
+            <p>Return Value: None</p>
                                                 
-             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes. It initializes data structures, loads root file, disk free list, etc into the memory. </p>
+             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes. It initializes data structures, loads root file, disk free list, etc into the memory. OS startup code invokes <a href="../os_modules/Module_7.html" target="_blank">Boot Module</a> to help the booting.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 
 <pre>
   Load IDLE process and boot module from disk to memory. See <a href="../os_implementation.html" target="_blank">disk/memory organization</a>.
-  Set SP to (userarea pagenumber of idle) * 512 + 1 and call module 7. //running the boot module in the context of idle.
+  Set SP to (user area page number of idle) * 512 + 1 and call module 7. //running the boot module in the context of idle.
 
   // after returning from the boot module
+
   /* Initialize the IDLE process.*/
 
-  Initialize the Page table base register to PAGE_TABLE_BASE.
-  Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set the valid bit to 0. // idle doesn't invoke any library function
-  Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit to 1 and write bit to 0. 
-  Set remaining code page entries to -1 and valid bit to 0.
-  Set the first stack page entry to 70 and valid bit to 1, write bit to 1. Set second stack page entry to -1 and valid bit to 0.
-
-  Initialize the <a href="../os_design-files/process_table.html" target="_blank">process table</a> for IDLE process.
-  Initialize the Tick, pid, userid as 0, state as RUNNING,
-  user area page number as 76 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
-  PTBR to PAGE_TABLE_BASE and PTLR as 10.
-
+  <a data-toggle="collapse" href="#collapse2">Initialize the Page table for IDLE process (PID = 0)</a>
+<div id="collapse2" class="panel-collapse collapse">
+        Initialize the Page table base register (PTBR) to PAGE_TABLE_BASE.
+        Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set auxiliary information for these pages to "0000". // idle doesn't invoke any library function
+        Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set auxiliary information for valid code pages to "0100". 
+        Set remaining code page entries to -1 and auxiliary information to "0000".
+        Set the first stack page entry to 70 and auxiliary information for this page to "0110".
+        Set second stack page entry to -1 and auxiliary information to "0000".</div>
+  <a data-toggle="collapse" href="#collapse4">Initialize the process table for IDLE process.</a>
+<div id="collapse4" class="panel-collapse collapse">        Initialize the field of <a href="../os_design-files/process_table.html" target="_blank">process table</a> as -  TICK, PID, USERID as 0, STATE as RUNNING,
+        USER AREA PAGE NUMBER as 76 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+        PTBR to PAGE_TABLE_BASE and PTLR as 10.</div>
   Store the IP value (from the header of the IDLE) on top of first user stack page [70*512] = [69*512 +1].
 
-  Schedule IDLE process for excecution.
+  Schedule IDLE process for excecution. (Return to user mode.)
 
 </pre>
 

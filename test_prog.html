@@ -880,18 +880,18 @@ pre span:before {
                                                         <td> -               </td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "numbers.dat" with open permission and open the file. The program also invokes Semget for a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutatively (PID*1000 to PID*1000+99) to the file "numbers.dat". After all processes complete writing to the file "numbers.dat" (Share count becomes 1300), Exec system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. </p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "numbers.dat" with open permission and open the file. The program also invokes Semget to acquire a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutatively (PID*1000 to PID*1000+99) to the file "numbers.dat". Exec system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. </p><br>
 <div><pre>
-<span>type</span>
+<!--<span>type</span>
 <span>Share</span>
 <span>{</span>
 <span>          int count;</span>
 <span>}</span>
-<span>endtype</span>
+<span>endtype</span>-->
 <span>decl</span>
 <span>          int fd, temp, permission, data, semid, iter, pid, endval, count;</span>
 <span>          string filename;</span>
-<span>          Share numbers;</span>
+<!--<span>          Share numbers;</span>-->
 <span>enddecl</span>
 <span>int main()</span>
 <span>{</span>
@@ -900,9 +900,9 @@ pre span:before {
 <span>        permission=1;</span>
 <span>        temp = exposcall("Create",filename, permission);</span>
 <span>        semid = exposcall("Semget");</span>
-<span>        temp = exposcall("Heapset");</span>
+<!--<span>        temp = exposcall("Heapset");</span>
 <span>        numbers= exposcall("Alloc",1);</span>
-<span>        numbers.count=0;</span>
+<span>        numbers.count=0;</span>-->
 <span>        fd=exposcall("Open",filename);</span>
 <span>        if(fd>=0) then</span>
 <span>            pid=exposcall("Fork");</span>
@@ -920,21 +920,21 @@ pre span:before {
 <span>                temp=exposcall("Write",fd, data);</span>
 <span>                data=data+1;</span>
 <span>            endwhile;</span>
-<span>            numbers.count=numbers.count+100;</span>
+<!--<span>            numbers.count=numbers.count+100;</span>-->
 <span>            temp=exposcall("SemUnLock", semid);</span>
 <span>            temp=exposcall("Close",fd);</span>
 <span>        else</span>
 <span>            temp=exposcall("Write",-2, "OPEN FAIL");</span>
 <span>        endif;</span>
-<span>        iter=1;</span>
+<!--<span>        iter=1;</span>
 <span>        while(iter==1) do</span>
 <span>            temp=exposcall("SemLock", semid);</span>
 <span>            count=numbers.count;</span>
 <span>            temp=exposcall("SemUnLock", semid);</span>
-<span>            if(count==1300) then</span>
-<span>                temp=exposcall("Exec", "pgm2.xsm");</span>
-<span>            endif;</span>
-<span>        endwhile;</span> 
+<span>            if(count==1300) then</span>-->
+<span>        temp=exposcall("Exec", "pgm2.xsm");</span>
+<!--<span>            endif;</span>
+<span>        endwhile;</span>--> 
 <span>        return 0;</span>
 <span>end</span>
 <span>}</span>
