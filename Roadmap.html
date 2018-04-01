@@ -3980,7 +3980,7 @@ become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">or
   <p>The Shell is a user program that implements an interactive user interface for the OS.  In the present stage, we will run the shell as the INIT program, so that the shell will interact with the user.
 </p>
 <p>
-  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "halt", the program executes the <i>Shutdown</i> system call to shutdown the OS.  Otherwise, the shell program forks and create a child process.  The parent process then waits for the child to exit using the <i>Wait</i> system call.  The child process will try to execute the <i>command</i> (that is, execute the file with name <i>command</i>.)  If no such file exists, <i>Exec</i> fails and the child prints "bad command" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next <i>command</i>.</p>  
+  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "Shutdown", the program executes the <i>Shutdown</i> system call to halt the OS.  Otherwise, the shell program forks and create a child process. The parent process then waits for the child to exit using the <i>Wait</i> system call. The child process will try to execute the <i>command</i> (that is, execute the file with name <i>command</i>.)  If no such file exists, <i>Exec</i> fails and the child prints "BAD COMMAND" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next <i>command</i>.</p>  
 
   <br>
 
@@ -5000,7 +5000,7 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 
 
 <b>Extended Shell program</b><br><br>
-<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell spcification</a>. An implementation of the expl shell program is given <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
+<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>. An implementation of the ExpL shell program is given <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
 <p>Now that multiple user related system calls are supported in eXpOS, the shell commands -  "lu" and "ru" can be implemented. Implement commands lu, ru as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p><br>
 
 <b>Making things work</b><br><br>

@@ -146,11 +146,11 @@ pre span:before {
        <table class="table table-bordered">
                                                     <tr>
                                                         <td><b>Input<b></td>
-                                                        <td>Executable file name/string "halt"</td>
+                                                        <td>Executable file name/string "Shutdown"</td>
                                                     </tr> 
                                                     <tr>
                                                         <td><b>Output</b></td>
-                                                        <td>Executes given xsm program/halt system if input is "halt"</td>
+                                                        <td>Executes given xsm program/halt system if input is "Shutdown"</td>
                                                     </tr>
                                                   </table>
                                                 <p style="text-indent: 0px"><b>Description :</b> shell version II without the multiuser</p><br>
@@ -164,9 +164,9 @@ pre span:before {
 <span>begin</span>
 <span>          a=1;</span>
 <span>          while(a == 1) do</span>
-<span>              temp = exposcall("Write",-2,"Enter -");</span>
+<span>              temp = exposcall("Write",-2,"---Enter---");</span>
 <span>              temp = exposcall("Read",-1, input);</span>
-<span>              if(input != "halt") then</span>
+<span>              if(input != "Shutdown") then</span>
 <span>                  pid = exposcall("Fork");</span>
 <span>                  if(pid < 0) then</span>
 <span>                      temp = exposcall("Write",-2, "Fork Failure");</span>
@@ -574,60 +574,43 @@ pre span:before {
                                                         <td>Ouput of corresponding to shell command or executable file.</td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> The given program will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is then traversed from the start to the end and numbers are printed to the terminal.</p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> Shell program given below reads command from console. If the command is halt, then program will invoke Shutdown system call. If the command is built in shell command, then shell will read suitable number of arguments from the console and corresponding system call is invoked from shell itself. If the command is an executable file, shell will fork and exec with the given executable file. </p>
+                                                <p>Note that the shell program should fit in 2 blocks/pages provided in <a href="os_implementation.html" target="_blank">disk/memory organization</a>. The program given below is optimized to fits in 2 blocks/pages. In order to optimize the code, the program violates some of the type checkings. Even with type checking errors, the program will still compile and execute correctly. Also some system calls are invoked with arguments, even though the system call does not need any arguments. This will not cause any problem as these arguments will simply be ignored in the corresponding system call. </p><br>
 <div><pre>
 <span>int main()</span>
 <span>{</span>
 <span>decl</span>
-<span>          int temp, pid, a, flag;</span>
-<span>          string input, username, password, uid, name;</span>
+<span>          int temp, pid, a, flag, retcom;</span>
+<span>          string input, username, password;</span>
 <span>enddecl</span>
 <span>begin</span>
 <span>          a=1;</span>
 <span>          while(a == 1) do</span>
+<span>              temp = exposcall("Write",-2, "---Enter---");</span>
 <span>              temp = exposcall("Read",-1, input);</span>
 <span>              flag=0;</span>
-<span>              if(input == "halt") then</span>
+<span>              if(input == "Logout" OR input == "Shutdown") then</span>
 <span>                  flag=1;</span>
-<span>                  name="Shutdown";</span>
 <span>              endif;</span>
-<span>              if(input == "logout") then</span>
+<span>              if(input == "Remusr" OR input == "Getuid" OR input == "Getuname") then</span>
 <span>                  flag=1;</span>
-<span>                  name="Logout";</span>
+<span>                  temp = exposcall("Read",-1, username);</span>
 <span>              endif;</span>
-<span>              if(flag==1) then</span>
-<span>                   temp= exposcall(name);</span>
-<span>              endif;</span>
-<span>              if(input == "newusr") then</span>
-<span>                  flag=2;</span>
-<span>                  name="Newusr";</span>
-<span>              endif;</span>
-<span>              if(input == "setpwd") then</span>
-<span>                  flag=2;</span>
-<span>                  name="Setpwd";</span>
-<span>              endif;</span>
-<span>              if(flag==2) then</span>
+<span>              if(input == "Newusr" OR input == "Setpwd") then</span>
+<span>                  flag=1;</span>
 <span>                  temp = exposcall("Read",-1, username);</span>
 <span>                  temp = exposcall("Read",-1, password);</span>
-<span>                  temp= exposcall(name, username, password);</span>
 <span>              endif;</span>
-<span>              if(input == "remusr") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Rewusr";</span>
-<span>              endif;</span>
-<span>              if(input == "getuid") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Getuid";</span>
-<span>              endif;</span>
-<span>              if(input == "getuname") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Getuname";</span>
-<span>              endif;</span>
-<span>              if(flag==3) then</span>
-<span>                  temp = exposcall("Read",-1, username);</span>
-<span>                  temp= exposcall(name, username);</span>
-<span>              endif;</span>
-<span>              if(flag == 0) then</span>
+<span>              if(flag==1) then</span>
+<span>                  retcom = exposcall(input, username, password);</span>
+<span>                  if(retcom < 0) then</span>
+<span>                      temp = exposcall("Write",-2, "BAD COMMAND");</span>
+<span>                  else</span>
+<span>                      if(input == "Getuid" OR input == "Getuname") then</span>
+<span>                          temp = exposcall("Write",-2, retcom);</span>
+<span>                      endif;</span>
+<span>                  endif;</span>
+<span>              else</span>
 <span>                  pid = exposcall("Fork");</span>
 <span>                  if(pid < 0) then</span>
 <span>                      temp = exposcall("Write",-2, "Fork Fail");</span>
