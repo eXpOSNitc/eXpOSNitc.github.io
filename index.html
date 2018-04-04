@@ -122,7 +122,7 @@
                   </a>
                                  </li>
                <li>
-                  <a href="http://xosnitc.github.io" title="Read about XOS" class="pull-right no-submenu" data-toggle="">
+                  <a href="http://xosnitc.github.io" title="Read about XOS" class=" no-submenu" data-toggle="">
                      <em class="fa fa-link"></em>
                      <span class="item-text">Read about XOS</span>
                   </a>
@@ -171,30 +171,39 @@
                	
                 <div style="font-size:15px">
                 <br/><br/>
-                  <p>Project <b>eXpOS</b> or eXperimental Operating System is an educational platform to develop an  operating system. It is an instructional tool for students to learn and implement OS data structures and functionalities on a simulated machine called <a href="arch_spec.html" target="_blank"><b>XSM</b></a> (eXperimental String Machine). The OS is programmed using a custom language known as <a href="support_tools-files/spl.html" target="_blank"><b>SPL</b></a> (System Programmer's Language) and application programs, which run on the OS, are programmed using <a href="support_tools-files/expl.html" target="_blank"><b>ExpL</b></a> (Experimental Language).</p>
+
+
+                <p>Project eXpOS (eXperimental Operating System) is an on-line educational platform which helps undergraduate students to learn the working on an operating system.  A detailed project roadmap that is part of the platform provides step by step guidance to the student towards writing a small operating system from scratch. The student learns the implementation of various OS data structures and kernel routines during the course of the project.  The OS written by the student will run on a machine simulator supplied along with the platform.  The project assumes that the student has undergone a course in computer organization, and is comfortable with programming.</p> <br/>
+
+
+               <p>If you wish to work on the project, the approach we suggest is to follow the project roadmap. The roadmap takes you through a step by step journey towards the complete implementation of the operating system. At each step, you will be asked to read concepts, specifications and interfaces that are required for that step. In fact, you will be asked to read only what is necessary for completing that step. The links to the relevant reading material will be given at appropriate places in the roadmap. <a href="Roadmap.html" target="_blank">Proceed to Roadmap <em class="fa fa-external-link"></em></a></p><br/>
+
+               <p>If you are curious about what the "final system" you are going to build looks like, we give a brief overview here. You are warned not to get lost in the links. The roadmap will ask you to read the appropriate parts of the documentation as and when required.</p>
+                <!--  <p>Project <b>eXpOS</b> or eXperimental Operating System is an educational platform to develop an  operating system. It is an instructional tool for students to learn and implement OS data structures and functionalities on a simulated machine called <a href="arch_spec.html" target="_blank"><b>XSM</b></a> (eXperimental String Machine). The OS is programmed using a custom language known as <a href="support_tools-files/spl.html" target="_blank"><b>SPL</b></a> (System Programmer's Language) and application programs, which run on the OS, are programmed using <a href="support_tools-files/expl.html" target="_blank"><b>ExpL</b></a> (Experimental Language).</p>
 				
 					<br/>
 
 					<p>The methodology we suggest for you is to follow the roadmap.  The <b>roadmap</b> takes you through a step by step journey towards the complete implementation of the eXpOS operating system.  At each step, you will be asked to read  concepts, specifications and interfaces which you must learn to complete that step.  In fact, you will be asked to read <b>only</b> what is necessary for doing that step. The links to the reading material will be given at appropriate places in the roadmap. <a href="Roadmap.html"  target="_blank">Proceed to Roadmap <em class="fa fa-external-link"></em></a></p>
 					
 					<br/>
-					<p>However, if you are curious about what the "final system" you are going to build looks like, we give a brief overview here. You are warned not to get lost in the links. The roadmap will ask you to read the appropriate parts of the documentation as and when required. </p>
+					<p>However, if you are curious about what the "final system" you are going to build looks like, we give a brief overview here. You are warned not to get lost in the links. The roadmap will ask you to read the appropriate parts of the documentation as and when required. </p>-->
 					<br/>
 					
 				<p><img src="img/User_View.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
 				
-				<p>In the above figure, an architecture simulator for the eXperimental String Machine (XSM) is given to you. Your primary job is to implement the eXpOS kernel for this machine in such a way that application programs can be executed by your kernel. You will also be asked to write a few application programs,­ like the shell (for providing a user interface).</p>
-				<p>Clearly, in order to write the OS, one must be told its two interfaces – the interface to the architecture below and the interface to the executable application programs above. The former is given to you in the <a href="arch_spec.html" target="_blank"> XSM architecture </a> specification. The latter which specifies the interface between executable applications and the OS, called the <a href="abi.html" target="_blank"> Application Binary Interface</a> specification is also given to you. There are also two additional interfaces (not shown in the figure) described below:</p>
+				<p>In the above figure, an architecture simulator for the eXperimental String Machine (XSM) is given to you. Your primary job is to implement the eXpOS kernel for this machine in such a way that application programs can be executed by your kernel. You will also be asked to write a few application programs,­ like the shell (for providing a user interface).</p><br/>
+				<p>Clearly, in order to write the OS kernel, one must be given its two interfaces – the interface to the architecture below and the interface to the executable application programs above. The former is given to you in the <a href="arch_spec.html" target="_blank"> XSM architecture </a> specification. The latter, called the <a href="abi.html" target="_blank"> Application Binary Interface</a> specification, is also given to you. There are also two additional interfaces (not shown in the figure) described below:</p>
 				
 				<p>1. The format in which data and executable files are stored in the disk is standardized and given in the <a href="support_tools-files/xfs-interface.html" target="_blank">eXpFS file system specification</a>. This standardization allows portability of files between eXpOS and other systems. You must implement the OS file system satisfying this interface specification.</p>
-				<p>2. Specification for a small application layer software called the <a href="os_spec-files/misc.html#SixcollapseFive" target="_blank"> eXpOS Library </a> is given to you. The library is a special application program that stands between the OS kernel and other application programs. The library provides a generic interface through which other applications can access the OS system calls. Dynamic memory management services of the OS are also implemented by the library. You will be provided with the source code to implement the library. Your OS kernel must load the library into memory and link it to the application programs at run time.</p>
+				<p>2. Specification for a small application layer software called the <a href="os_spec-files/misc.html#SixcollapseFive" target="_blank"> eXpOS Library </a> is given to you. The library is a special application program that stands between the OS kernel and other application programs. The library provides a generic interface through which other applications can access the OS system calls. Dynamic memory management services of the OS are also implemented by the library. The library code will be supplied to you. Your OS kernel must load the library into memory and link it to the application programs at run time.</p><br/>
 				
 				<p>Since you start with a bare machine with no software on it, you need some external mechanism to:</p>
 				<p>1. Write the kernel modules and get them as XSM executable programs.</p>
 				<p>2. Store these modules into the machine's disk so that they can be loaded to the memory and executed when the machine is powered on.</p>
+            <br/>
 				<p>We provide you with support tools for achieving the above objectives.</p>
-				<p>For the first task, a cross compiler for an enriched XSM assembly language called the <a href="support_tools-files/spl.html" target="_blank"> System Programming Language (SPL) </a> is given to you. You can write the OS modules in the SPL language from your host (UNIX) environment and generate XSM target programs using the SPL compiler.</p>
-				<p>For the second task, we provide you with an interface software called the <a href="support_tools-files/xfs-interface.html" target="_blank"> XFS interface</a>. This tool allows you to transfer executable kernel modules from your host (UNIX) system to specified blocks of the XSM disk. Thus you can load the XSM target modules into the appropriate areas of the XSM disk.</p>
+				<p>For the first task, a cross compiler for an enriched XSM assembly language called the <a href="support_tools-files/spl.html" target="_blank"> System Programming Language (SPL) </a> is given to you. You can write the OS modules in the SPL language from your host (LINUX/UNIX) environment and generate XSM target programs using the SPL compiler.</p>
+				<p>For the second task, we provide you with an interface software called the <a href="support_tools-files/xfs-interface.html" target="_blank"> XFS interface</a>. This tool allows you to transfer executable kernel modules from your host (LINUX/UNIX) system to specified blocks of the XSM disk. Thus, you can load the XSM target modules into the appropriate areas of the XSM disk.</p><br/>
 				<p>The following figure illustrates the OS development environment from an OS programmer's viewpoint.</p>
 				
 				<p><img src="img/Kernel_Module.png" style="display:block;margin-left:auto;margin-right:auto"></img></p>
@@ -210,7 +219,7 @@
 				<p>The collection of development tools given to you including the XSM simulator, compilers for ExpL and SPL and XFS Interface will be referred to as the "eXpOS package” in the eXpOS documentation.</p>
 				
 				<p>The <a href="os_spec.html" target="_blank"> eXpOS specification</a> provides an informal description of OS from the view point of the user/application programmer.</p>
-				<p>The <a href="faq.html" target="_blank">eXpOS FAQ</a> provides some more information.</p>
+				<p>The <a href="faq.html" target="_blank">eXpOS FAQ</a> and <a href="About_us.html" target="_blank">About us</a> pages provides some more information.</p>
 				<p>We wish you enjoy doing the project following the <a href="Roadmap.html" target="_blank">Roadmap</a>.</p>
 				
 						

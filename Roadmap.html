@@ -695,7 +695,10 @@ HALT </pre>
 			  <div>
 			  <pre>
 HELLO_WORLD
-Machine is halting.</pre>
+Machine is halting.</pre><br>
+<p style="text-indent: 0px"><code>Note :</code>  The XSM simulator given to you is an assembly language interpeter for XSM.  Hence, it is possible to load and run assembly 
+language programs on the simulator (unlike real systems where
+binary programs need to be supplied).</p>
 			  </div>
 			  
 			  <!--=========== BEGIN contents SECTION ================-->
@@ -746,8 +749,10 @@ Machine is halting.</pre>
                           </div>
                           <!-- End Learning Objectives-->
 
-                          
-                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of disk using the XFS Interface, and get it executed by the machine as in the previous stage.  </p>
+                          <p>SPL (Systems Programming Language) allows high level programs to be written for the XSM machine (eliminating the need to write all the code in assembly language). SPL is not a full fledged programming language, but is an extension to the XSM assembly language with support for high level constructs like if-then-else, while-do etc. Programs written in SPL language needs to be compiled to XSM assembly code using the SPL compiler supplied along with the eXpOS package before loading for execution on the XSM simulator. You will be writing the eXpOS kernel using the SPL language.</p>      
+
+
+                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of the disk as the OS startup code, using the XFS- Interface, and get it executed by the machine as in the previous stage.</p>
                           
                          
                           <ol style="list-style-type:decimal;margin-left:2px">
@@ -775,6 +780,7 @@ endwhile; </pre>
                                 <pre>cd $HOME/myexpos/spl
 ./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
+                            <li>Go through the generated assembly code in file 'oddnos.xsm' and make sure that the generated assembly code indeed gives the desired output.</li>
 
                             
                             <li> 
@@ -1109,8 +1115,11 @@ We also load the exception handler routine to memory.  The machine may raise an 
 <pre>load --exhandler ../spl/progs/haltprog.xsm</pre><br>
 
 <b> OS Startup Code </b> <br><br> 
-    <p> The OS startup code will load the init process and set the OS data structures necessary
-      to run the program. Finally, it transfers control to the init program using the IRET instruction. 
+	
+	 <p>The OS startup code of any operating system, which is the first piece of OS code to be executed on bootstrap, is responsible for loading the rest of the OS into the memory, initialize OS data structures and set up the first user program for execution.</p>   
+
+
+     <p>In this stage, we will write the OS startup code to load the init program and setup the OS data structures necessary to run the program as a process. Finally, the OS startup code will transfer control to the init program using the IRET instruction. 
      </p>
      
   <ol style="list-style-type:decimal;margin-left:2px">
