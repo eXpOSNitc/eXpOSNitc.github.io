@@ -717,10 +717,10 @@ pre span:before {
                                                     </tr> 
                                                     <tr>
                                                         <td><b>Output </b></td>
-                                                        <td>-  </td>
+                                                        <td>Out of 13 processes created, if N processes complete execution, then N data files each containing 100 consecutive integers (PID-3)*100+1 to PID-3)*100+100 are created. </td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "num.dat" with open permission. Integers 1 to 1300 are written to this file and file is closed. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes and Exec system call is invoked with file "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_9" target="_blank">here</a>. </p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "num.dat" with open permission. Integers 1 to 1300 are written to this file and file is closed. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes and Exec system call is invoked with file "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_10" target="_blank">here</a>. </p><br>
 <div><pre>
 <span>int main()</span>
 <span>{</span>
@@ -860,7 +860,7 @@ pre span:before {
                                                     </tr> 
                                                     <tr>
                                                         <td><b>Output </b></td>
-                                                        <td> -               </td>
+                                                        <td> Out of 13 processes created, if N processes complete execution, then N data files each containing 100 consecutive integers from X*1000+1  to X*1000+100 (where X &isin; {3,4..15}) are created.  </td>
                                                     </tr>
                                                   </table>
                                                 <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "numbers.dat" with open permission and open the file. The program also invokes Semget to acquire a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutatively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". Exec system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. </p><br>
@@ -942,7 +942,7 @@ pre span:before {
                                                         <td>A file will be created containing 100 consecutive numbers from data file "numbers.dat". </td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b>  This program can not be run individualy. Test program 11 will invoke Exec with below given program with name "pgm2.xsm". Make sure to compile and save this program as "pgm2.xsm". Below given program will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers each X*1000 -X*1000+99, where X=[3,4..15].</p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b>  This program can not be run individualy. Test program 11 will invoke Exec with below given program with name "pgm2.xsm". Make sure to compile and save this program as "pgm2.xsm". Below given program will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers each X*1000 -X*1000+99, where X=[3,4..15]. The numbers written by a process in the newly created file need not be the same numbers the process has written in "numbers.dat" file.</p><br>
 <div><pre>
 <span>decl</span>
 <span>          int data;</span>

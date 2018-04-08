@@ -330,7 +330,34 @@
 
                             
                           <p>
-                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates the <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment. The xfs-interface is used for transferring files between your linux system and the xsm disk.
+ 							The eXpOS package that you had downloaded in the previous stage consists mainly of a machine simulator. The machine is called the <a href="/support_tools-files/xsm-simulator.html" target="_blank">eXperimental String Machine (XSM)</a> and consists of a processor, memory and disk. Some support tools that help you to program the machine are also provided.</p>  
+
+
+
+ 							<p>One important point to note about the system is that the machine is a bare, and comes with no software in it (except for a boot ROM).  Hence, the only way to insert some software code into the system is to prepare the code "outside" (that is, in your Linux/Unix system) and insert your code into the machine. The support tools provided along with the package are precisely designed to help you with this task.</p>  
+
+ 							<p>The package comes with three major support tools - two compilers and a disk interface tool called <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-Interface</a>.  The compilers allow you to write  high level code and translate it into the XSM machine code. We will look at them in later stages.  The XFS-Inteface tool helps you to transfer files between your Linux/Unix system and the XSM machines disk.</p>  
+
+                           <p> XSM machine's disk contains 512 blocks, each capable of storing
+                            512 words.  When files are stored in the disk, some format has 
+                            to be followed so that one can figure out where in the disk 
+                            are the blocks of a file located.</p>  
+
+                   <p>XSM disk is formatted to what is known as the  
+                      <a href="os_spec-files/eXpFS.html" target="_blank">eXpFS file system format</a>. The format specifies how data as well as
+                      meta-data for each file stored in the disk must be organized.  The XFS inteface tool allows you to load data files (and executable files as well) from your Linux/Unix system into the XSM disk in accordance with the eXpFS format.  </p>
+
+ 							
+ 							<p>The eXpFS format specifies that each data/executable file can span across at most four data blocks, and that the index to these blocks along with the name and the size of the file must be stored in a pre-define area of the disk called the <a href="os_design-files/disk_ds.html" target="_blank">Inode table</a>.  (The inode table is stored in disk blocks 3 and 4).
+ 							There are also other pre-defined areas of the disk that stores 
+ 							meta data about the disk (see description of the <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a> and
+ 							the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> for more details). When you use XFS interface
+ 							to load a file from your Linux/Unix system to the XSM disk, the 
+ 							interface tool will correctly fill all the required meta data 
+ 							information as stipulated by the eXpFS format.</p>   
+
+
+                            <p>The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates the <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment. The xfs-interface is used for transferring files between your linux system and the xsm disk.
                             </p>
                             <br>
                             <figure><img src="img/xfs-interface.png" style="display:block;margin-left:auto;margin-right:auto"></img>
@@ -668,7 +695,10 @@ HALT </pre>
 			  <div>
 			  <pre>
 HELLO_WORLD
-Machine is halting.</pre>
+Machine is halting.</pre><br>
+<p style="text-indent: 0px"><code>Note :</code>  The XSM simulator given to you is an assembly language interpeter for XSM.  Hence, it is possible to load and run assembly 
+language programs on the simulator (unlike real systems where
+binary programs need to be supplied).</p>
 			  </div>
 			  
 			  <!--=========== BEGIN contents SECTION ================-->
@@ -719,8 +749,10 @@ Machine is halting.</pre>
                           </div>
                           <!-- End Learning Objectives-->
 
-                          
-                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of disk using the XFS Interface, and get it executed by the machine as in the previous stage.  </p>
+                          <p>SPL (Systems Programming Language) allows high level programs to be written for the XSM machine (eliminating the need to write all the code in assembly language). SPL is not a full fledged programming language, but is an extension to the XSM assembly language with support for high level constructs like if-then-else, while-do etc. Programs written in SPL language needs to be compiled to XSM assembly code using the SPL compiler supplied along with the eXpOS package before loading for execution on the XSM simulator. You will be writing the eXpOS kernel using the SPL language.</p>      
+
+
+                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of the disk as the OS startup code, using the XFS- Interface, and get it executed by the machine as in the previous stage.</p>
                           
                          
                           <ol style="list-style-type:decimal;margin-left:2px">
@@ -748,6 +780,7 @@ endwhile; </pre>
                                 <pre>cd $HOME/myexpos/spl
 ./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
+                            <li>Go through the generated assembly code in file 'oddnos.xsm' and make sure that the generated assembly code indeed gives the desired output.</li>
 
                             
                             <li> 
@@ -1082,8 +1115,11 @@ We also load the exception handler routine to memory.  The machine may raise an 
 <pre>load --exhandler ../spl/progs/haltprog.xsm</pre><br>
 
 <b> OS Startup Code </b> <br><br> 
-    <p> The OS startup code will load the init process and set the OS data structures necessary
-      to run the program. Finally, it transfers control to the init program using the IRET instruction. 
+	
+	 <p>The OS startup code of any operating system, which is the first piece of OS code to be executed on bootstrap, is responsible for loading the rest of the OS into the memory, initialize OS data structures and set up the first user program for execution.</p>   
+
+
+     <p>In this stage, we will write the OS startup code to load the init program and setup the OS data structures necessary to run the program as a process. Finally, the OS startup code will transfer control to the init program using the IRET instruction. 
      </p>
      
   <ol style="list-style-type:decimal;margin-left:2px">
@@ -5208,10 +5244,10 @@ will never get blocked. </p>
 
     <b style="color:#26A65B">Assignment 3:</b> Run the program provided <a href="test_prog.html#test_program_9" target="_blank">here</a> using shell in the context of a user. The program will create a file with name as "num.dat" and permission as <i>open access</i>. Integers 1 to 1300 are written to this file and file is closed. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes and <i>Exec</i> system call is invoked with file "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_10" target="_blank">here</a>. "pgm1.xsm" will create a new file according to the PID of the process and read 100 numbers from file "num.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 consecutive numbers (PID-3)*100+1 to (PID-3)*100+100.<br><br>
 
-    <b style="color:#26A65B">Assignment 4:</b> Run the program provided <a href="test_prog.html#test_program_11" target="_blank">here</a> using shell in the context of a user. The program will create a file with name as "numbers.dat" and permission as <i>open access</i> and open the file. The program also invokes <i>Semget</i> for a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". <!--After all processes complete writing to the file "numbers.dat" (Share count becomes 1300), --><i>Exec</i> system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. "pgm2.xsm" will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers from X*1000 to X*1000+99, where X=[3,4..15]. The numbers written by a process in the newly created file need not be the same numbers the process has written in "numbers.dat" file. <br><br>  
+    <b style="color:#26A65B">Assignment 4:</b> Run the program provided <a href="test_prog.html#test_program_11" target="_blank">here</a> using shell in the context of a user. The program will create a file with name as "numbers.dat" and permission as <i>open access</i> and open the file. The program also invokes <i>Semget</i> for a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". <!--After all processes complete writing to the file "numbers.dat" (Share count becomes 1300), --><i>Exec</i> system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. "pgm2.xsm" will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers from X*1000 to X*1000+99, where X &isin; {3,4..15}. The numbers written by a process in the newly created file need not be the same numbers the process has written in "numbers.dat" file. <br><br>  
 
 
-    <code>Note :</code>To run the program provided by the user, Shell process first invokes <i>fork</i> to create a child process. Shell will wait until this first child process completes its execution. But, Shell will not wait for any other child processes created by fork during execution of the program given by the user. So, shell may resume execution even if some processes created by the given program are running in the background. Hence, don't halt the system immediately when the shell prompt appears as some other processes may be running in the background.
+    <code>Note :</code>To run the program provided by the user, Shell process first invokes <i>fork</i> to create a child process. Shell will wait until this first child process completes its execution. When the first child exits, shell will resume execution even if some processes created by the given program are running in the background. This can lead to the following interesting situation.  Suppose that all active processes execept idle, login and shell were swapped out and the shell is waiting for terminal input from the user. In this case, the OS will not swap in any process till the shell wakes up (why?).  Consequently, the swapped out processes will not run until the shell wakes up.  Hence, you will have to issue some command to shell, so the system keeps on running.  
 <br>                    
   </div>
   </div>

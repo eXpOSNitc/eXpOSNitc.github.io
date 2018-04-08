@@ -156,9 +156,11 @@
 <br> <br>
 
 <p>	In this case, the scheduler modules was invoked from some other kernel code - typically some blocking system call, exception
-handler etc.  Here, the calling module/handler should save its context (registers in use) in its kernel stack 
+handler etc.  Here, it is the responsibility of the calling module/handler to save its context (registers in use) in its kernel stack 
 before invoking the scheduler module.  Later, when the scheduler returns to this handler/module, the handler/module should restore the context and resume execution.  See the <a href="stack_module.html" target="_blank"> Kernel Stack management during module calls</a> for more details.
 
+</p>
+<p>In spite of the above convention, <b>the ExpL compiler fails to save the value of BP register before making a system call.</b>  To solve this problem, a patch is added to the scheduler so that the scheduler saves the current value of BP register to the kernel stack of the process being scheduled out.  
 </p>
 
 <br>
@@ -184,20 +186,20 @@ before invoking the scheduler module.  Later, when the scheduler returns to this
       <div class="container">
       	<div class="row">
 	<p style="margin:0"><h4><b>Actions done by the scheduler: </b></h4></p>
+&nbsp;&nbsp;&nbsp;1. Save register BP to the kernel stack of current process.<br> 
 
-&nbsp;&nbsp;&nbsp;1. Find the pid of the next process to be scheduled.<br> 
 &nbsp;&nbsp;&nbsp;2. Save the current kernel stack pointer offset in the KPTR field of the process table.<br>
 
 &nbsp;&nbsp;&nbsp;3. Save the current PTBR and PTLR values in the process table of the leaving process. (This operation is redundant)
 <br>
+&nbsp;&nbsp;&nbsp;4. Find the pid of the next process to be scheduled.<br> 
 
-&nbsp;&nbsp;&nbsp;4. Restore the PTBR and PTLR values from the process table of the entering process.
+&nbsp;&nbsp;&nbsp;5. Restore the PTBR, PTLR and kernel stack pointer (KPTR) values from the process table of the entering process.
 <br>
-&nbsp;&nbsp;&nbsp;5. Set the state of the entering process as running. 
-(State of the leaving process is set before calling the scheduler module * ).
+&nbsp;&nbsp;&nbsp;6. Restore register BP from the top of kernel stack of entering process.<br>
+&nbsp;&nbsp;&nbsp;7. Identify whether the state<font style="color: red">*</font> of the new process is a READY/CREATED from the state field of the process table. (A process that has never been scheduled for execution previously will be in CREATED state. The fork system call creates the child process in the CREATED state.)
 
-<br>
-&nbsp;&nbsp;&nbsp;6. Identify wheather the new process is a READY process or a newly CREATED process from the state field of the process table.  (A process that has never been scheduled for execution previously will be in CREATED state. The fork system call creates the child process in the CREATED state.)
+ 
 
 
 <br><br>
@@ -287,9 +289,8 @@ IRET
   user mode.)
 <br><br>         
 
-* A process may invoke the scheduler for several reasons.  As noted earlier as Case 1, one reason is that the time slice of the process is finished.  Other possibilities (handled under Case 2) includes waiting for disk, terminal, semaphore, file etc.  
-Before calling the scheduler a process must set the STATE field of the process table entry to indicate the correct reason 
-for invoking the scheduler.  Note that the scheduler cannot set the STATE field as only the caller will know the cause.  
+<p style="text-indent: 0px"><font style="color: red">*</font><code>Note :</code> A process may invoke the scheduler for several reasons.  As noted earlier as Case 1, one reason is that the time slice of the process is finished.  Other possibilities (handled under Case 2) includes waiting for disk, terminal, semaphore, file etc. Before calling the scheduler a process must set the STATE field of the process table entry to indicate the correct reason 
+for invoking the scheduler.  Note that the scheduler cannot set the STATE field as only the caller will know the cause.</p> <br><br> 
 
  <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
