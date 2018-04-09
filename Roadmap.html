@@ -330,7 +330,34 @@
 
                             
                           <p>
-                            The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates the <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment. The xfs-interface is used for transferring files between your linux system and the xsm disk.
+ 							The eXpOS package that you had downloaded in the previous stage consists mainly of a machine simulator. The machine is called the <a href="/support_tools-files/xsm-simulator.html" target="_blank">eXperimental String Machine (XSM)</a> and consists of a processor, memory and disk. Some support tools that help you to program the machine are also provided.</p>  
+
+
+
+ 							<p>One important point to note about the system is that the machine is a bare, and comes with no software in it (except for a boot ROM).  Hence, the only way to insert some software code into the system is to prepare the code "outside" (that is, in your Linux/Unix system) and insert your code into the machine. The support tools provided along with the package are precisely designed to help you with this task.</p>  
+
+ 							<p>The package comes with three major support tools - two compilers and a disk interface tool called <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-Interface</a>.  The compilers allow you to write  high level code and translate it into the XSM machine code. We will look at them in later stages.  The XFS-Inteface tool helps you to transfer files between your Linux/Unix system and the XSM machines disk.</p>  
+
+                           <p> XSM machine's disk contains 512 blocks, each capable of storing
+                            512 words.  When files are stored in the disk, some format has 
+                            to be followed so that one can figure out where in the disk 
+                            are the blocks of a file located.</p>  
+
+                   <p>XSM disk is formatted to what is known as the  
+                      <a href="os_spec-files/eXpFS.html" target="_blank">eXpFS file system format</a>. The format specifies how data as well as
+                      meta-data for each file stored in the disk must be organized.  The XFS inteface tool allows you to load data files (and executable files as well) from your Linux/Unix system into the XSM disk in accordance with the eXpFS format.  </p>
+
+ 							
+ 							<p>The eXpFS format specifies that each data/executable file can span across at most four data blocks, and that the index to these blocks along with the name and the size of the file must be stored in a pre-define area of the disk called the <a href="os_design-files/disk_ds.html" target="_blank">Inode table</a>.  (The inode table is stored in disk blocks 3 and 4).
+ 							There are also other pre-defined areas of the disk that stores 
+ 							meta data about the disk (see description of the <a href="os_design-files/disk_ds.html#root_file" target="_blank">root file</a> and
+ 							the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">disk free list</a> for more details). When you use XFS interface
+ 							to load a file from your Linux/Unix system to the XSM disk, the 
+ 							interface tool will correctly fill all the required meta data 
+ 							information as stipulated by the eXpFS format.</p>   
+
+
+                            <p>The <a href="os_spec-files/eXpFS.html" target="_blank"><b>eXperimental Filesystem (eXpFS)</b></a> is a simulated filesystem. A UNIX file named "disk.xfs" simulates the <a href="./arch_spec-files/machine_organisation.html" target="_blank"><b>hard disk</b></a> of the XSM machine. Building eXpOS begins with understanding the underlying filesystem (eXpFS) and its interface <a href="./support_tools-files/xfs-interface.html" target="_blank">(xfs-interface)</a> to the host (UNIX) environment. The xfs-interface is used for transferring files between your linux system and the xsm disk.
                             </p>
                             <br>
                             <figure><img src="img/xfs-interface.png" style="display:block;margin-left:auto;margin-right:auto"></img>
@@ -668,7 +695,10 @@ HALT </pre>
 			  <div>
 			  <pre>
 HELLO_WORLD
-Machine is halting.</pre>
+Machine is halting.</pre><br>
+<p style="text-indent: 0px"><code>Note :</code>  The XSM simulator given to you is an assembly language interpeter for XSM.  Hence, it is possible to load and run assembly 
+language programs on the simulator (unlike real systems where
+binary programs need to be supplied).</p>
 			  </div>
 			  
 			  <!--=========== BEGIN contents SECTION ================-->
@@ -719,8 +749,10 @@ Machine is halting.</pre>
                           </div>
                           <!-- End Learning Objectives-->
 
-                          
-                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of disk using the XFS Interface, and get it executed by the machine as in the previous stage.  </p>
+                          <p>SPL (Systems Programming Language) allows high level programs to be written for the XSM machine (eliminating the need to write all the code in assembly language). SPL is not a full fledged programming language, but is an extension to the XSM assembly language with support for high level constructs like if-then-else, while-do etc. Programs written in SPL language needs to be compiled to XSM assembly code using the SPL compiler supplied along with the eXpOS package before loading for execution on the XSM simulator. You will be writing the eXpOS kernel using the SPL language.</p>      
+
+
+                          <p>In this stage you will write a program in SPL and compile it using the <a href="support_tools-files/spl.html" target="_blank">SPL</a> compiler. After compilation, the target machine code is generated.  We will then load this compiled code to block 0 of the disk as the OS startup code, using the XFS- Interface, and get it executed by the machine as in the previous stage.</p>
                           
                          
                           <ol style="list-style-type:decimal;margin-left:2px">
@@ -748,6 +780,7 @@ endwhile; </pre>
                                 <pre>cd $HOME/myexpos/spl
 ./spl $HOME/myexpos/spl/spl_progs/oddnos.spl</pre>
                             </li> 
+                            <li>Go through the generated assembly code in file 'oddnos.xsm' and make sure that the generated assembly code indeed gives the desired output.</li>
 
                             
                             <li> 
@@ -1082,8 +1115,11 @@ We also load the exception handler routine to memory.  The machine may raise an 
 <pre>load --exhandler ../spl/progs/haltprog.xsm</pre><br>
 
 <b> OS Startup Code </b> <br><br> 
-    <p> The OS startup code will load the init process and set the OS data structures necessary
-      to run the program. Finally, it transfers control to the init program using the IRET instruction. 
+	
+	 <p>The OS startup code of any operating system, which is the first piece of OS code to be executed on bootstrap, is responsible for loading the rest of the OS into the memory, initialize OS data structures and set up the first user program for execution.</p>   
+
+
+     <p>In this stage, we will write the OS startup code to load the init program and setup the OS data structures necessary to run the program as a process. Finally, the OS startup code will transfer control to the init program using the IRET instruction. 
      </p>
      
   <ol style="list-style-type:decimal;margin-left:2px">
@@ -3980,7 +4016,7 @@ become <a href="https://en.wikipedia.org/wiki/Orphan_process" target="_blank">or
   <p>The Shell is a user program that implements an interactive user interface for the OS.  In the present stage, we will run the shell as the INIT program, so that the shell will interact with the user.
 </p>
 <p>
-  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "halt", the program executes the <i>Shutdown</i> system call to shutdown the OS.  Otherwise, the shell program forks and create a child process.  The parent process then waits for the child to exit using the <i>Wait</i> system call.  The child process will try to execute the <i>command</i> (that is, execute the file with name <i>command</i>.)  If no such file exists, <i>Exec</i> fails and the child prints "bad command" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next <i>command</i>.</p>  
+  The shell asks you to enter a string (called a <i>command</i>).  If the string entered is "Shutdown", the program executes the <i>Shutdown</i> system call to halt the OS.  Otherwise, the shell program forks and create a child process. The parent process then waits for the child to exit using the <i>Wait</i> system call. The child process will try to execute the <i>command</i> (that is, execute the file with name <i>command</i>.)  If no such file exists, <i>Exec</i> fails and the child prints "BAD COMMAND" and exits.  Otherwise, the <i>command</i> file will be executed. In either case, upon completion of the child process, the parent process wakes up.  The parent then goes on to ask the user for the next <i>command</i>.</p>  
 
   <br>
 
@@ -5000,7 +5036,7 @@ hard to implement without two pages of code). Hence, we will modify the  boot co
 
 
 <b>Extended Shell program</b><br><br>
-<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell spcification</a>. An implementation of the expl shell program is given <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
+<p>Shell program is improvised to support the built-in shell commands and XSM executable commands/files according to the specification provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>. An implementation of the ExpL shell program is given <a href="test_prog.html#test_program_7" target="_blank">here</a>. Compile and load this program as shell into the disk using <a href="support_tools-files/xfs-interface.html" target="_blank">XFS-interface</a>. This program will be run as shell when a user logs into the system. </p>
 <p>Now that multiple user related system calls are supported in eXpOS, the shell commands -  "lu" and "ru" can be implemented. Implement commands lu, ru as executable files according to the specification of <a href="os_spec-files/shell_spec.html#executable_commands" target="_blank">executable commands/files</a> and load into the disk as executable files.</p><br>
 
 <b>Making things work</b><br><br>
@@ -5092,36 +5128,86 @@ will never get blocked. </p>
 
 <br>
 <b style="font-size: 20px">Modifications to Timer Interrupt</b><br><br>
-<p> Timer interrupt is modified to check whether the available memory is below <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> or above <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a> before invoking the context switch module . When free memory pages are below MEM_LOW, the <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a> is invoked to initiate swapping out. When available memory pages are above MEM_HIGH, the <b>Swap In</b> function of pager module is invoked to initiate swapping in of processes. <b>The process from whose context, timer interrupt invokes the modules function Swap Out and Swap In is called as paging process</b>. Note that idle process can not be a paging process. The reason is - while swap in/swap out is going on, only the paging process is scheduled for execution so that the swap-in/swap-out operation is completed first. If paging process is blocked during swap-out/swap-in, the default process-idle is scheduled. So if idle process starts paging, there is no other default process to schedule in case idle is blocked during swap-in/swap-out operation.</p>
-<p>Timer interrupt is also modified to increment the TICK field of every NON-TERMINATED process. The TICK field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> gives a measure of how long a process is present in memory or how long a process is present in the disk in swapped state.</p>
+
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/timer_interrupt.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for timer interrupt</figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+<p> Timer interrupt is modified as follows- before invoking context switch module timer interrupt  checks whether the available memory is below <a href="support_tools-files/constants.html" target="_blank">MEM_LOW</a> or above <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a> . If the number of free memory pages is below MEM_LOW, the <b>Swap Out</b> function of <a href="os_modules/Module_6.html" target="_blank">pager module</a> is invoked to initiate swap out. If the number of available memory pages is above MEM_HIGH, the <b>Swap In</b> function of the pager module is invoked to initiate swap in of processes. <b>The process from whose context, timer interrupt invokes the module functions Swap Out and Swap In is called as paging process</b>. Note that idle process can not be a paging process. <!--The reason is the following. While swap-in/swap-out is on going, only the paging process is scheduled for execution so that the swap-in/swap-out operation is completed before.-->If paging process is blocked during swap-out/swap-in, the default process-idle is scheduled. <!--So if idle process starts paging, there is no other default process to schedule in case idle is blocked during swap-in/swap-out operation.--></p>
+
+
+<p>Another modification in the Timer interrupt is to increment the TICK field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of every NON-TERMINATED process. When a process is created by the Fork system call, the TICK value of the process is set to 0 in the process table. Each time the system enters the timer interrupt handler, the TICK value of the process is incremented. The TICK value of a process is reset to zero whenever the process is swapped out or swapped in. Thus the tick value of a process that is not swapped out indicates for how long that process had been in memory without being swapped out. Similarly, the tick value of a swapped out process indicates how long the process had been in swapped state. The swap-in/swap-out algorithms will use the value of TICK to determine the process which had been in swapped state (or not swapped state) for the longest time for swapping in (or out).</p>
+
+
 <p style="text-indent: 0px">Modify Timer Interrupt implemented in earlier stages according to the detailed algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>.</p><br><br>
 
+
+
 <b style="font-size: 20px">Pager Module (Module 6)</b><br><br>
-<p>Pager module is responsible for swapping out and swapping in of the processes for effective memory management. </p><br>
+<p>Pager module is responsible for selecting processes to swap-out/swap-in and also to conduct the swap-out/swap-in operations for effective memory management.</p><br>
 <ol style="list-style-type: decimal; margin-left: 2px">
 <li><b>Swap Out (function number = 1, <a href="os_modules/Module_6.html" target="_blank">Pager module</a> )</b></li>
-<p>Swap Out function is invoked from the timer interrupt and does not take any arguments. As mentioned earlier the process which invokes the Swap Out from the timer interrupt is referred as <b>paging process</b>. Swap Out function first chooses a suitable process to swap out to the disk. Note that paging process can not be selected as a swap out process, as currently running process can not be swapped out. The processes which are not running and are in WAIT_PROCESS or WAIT_TERMINAL state are considered first to swap out (why?). When no such process is found, the process which has stayed longest in the memory is selected for swapping out to the disk. To detect the processes which has stayed longest in the memory, TICK field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> is used. Thus the process with the highest TICK is selected for swapping out.</p>
-<p>Now that, a process is selected to swap out, the TICK field for the selected process is initialized to 0 to measure how much time the process will be in the disk. The code pages for the swapping out process are released and page table entries are invalidated for code pages. The process selected for swapping out, can have shared heap pages. These shared heap pages are not swapped out into the disk. Non-shared heap pages, user stack pages and kernel stack page are stored in the swap area in the disk. Get Swap Block function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> is invoked to find free blocks in the swap area. Later these memory pages are stored into the found disk blocks by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a> and <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> is updated with the disk numbers of corresponding pages. Afterwords memory pages of the process are released using <b>Release Page</b> function of memory manager module and page table etries for these pages are invalidated. Also the SWAP FLAG in the process table of the swapped out process is set to 1, indicating that the process is swapped out. </p>
+
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/swap_out.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <b>Swap Out</b></figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+<p>Swap Out function is invoked from the <a href="os_design-files/timer.html" target="_blank">timer interrupt handler</a> and does not take any arguments. As mentioned earlier, the process which invokes Swap Out from the timer interrupt handler is referred to as the <b>paging process</b>. To indicate that swap-out is ongoing, the PID of the paging process is stored in the PAGING_PROCESS field of the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>. This information will be useful while making scheduling decisions in the <a href="os_modules/Module_5.html" target="_blank">context switch module</a>.</p>
+<p>Swap Out function first chooses a suitable process for swapping out into the disk. Note that paging process will not be selected as a swap out process, as the currently running process should not be swapped out. The processes which are not running and are in WAIT_PROCESS or WAIT_TERMINAL state are considered first for swapping out (why?). When no such process is found, the process which has stayed longest in the memory is selected for swapping out into the disk. To detect the processes which has stayed longest in the memory, the TICK field in the <a href="os_design-files/process_table.html" target="_blank">process table</a> is used. Thus the process with the highest TICK is selected for swapping out.</p>
+<p>Now that, a process is selected to swap out, the TICK field for the selected process is initialized to 0. The code pages for the swapping-out process are released and the page table entries of the code pages are invalidated. The process selected for swapping out, can have shared heap pages. To simplify implementation, shared heap pages are not swapped out into the disk. Non-shared heap pages, user stack pages and kernel stack page are stored in the swap area in the disk. <b>Get Swap Block</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> is invoked to find free blocks in the swap area. These memory pages are stored into the allocated disk blocks by invoking <b>Disk Store</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a> and <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a> is updated with the disk numbers of corresponding pages. Memory pages of the process are released using <b>Release Page</b> function of memory manager module and page table entries for these pages are invalidated. Also the SWAP FLAG in the process table of the swapped out process is set to 1, indicating that the process is swapped out. </p>
 <p style="text-indent: 0px">Implement <i>Swap Out</i> function using the detailed algorithm given in the pager module link above.</p><br>
 
 <li><b>Swap In (function number = 2, <a href="os_modules/Module_6.html" target="_blank">Pager module</a> )</b></li>
-<p> <b><i>Swap In</i></b> function is invoked from the timer interrupt and does not take any arguments. Similar to Swap Out function, the process which invokes the Swap In from the timer interrupt is referred as <b>paging process</b>. The Swap In function selects a suitable process from the swapped out processes, to swap back into the memory as memory is now available. When selecting a suitable process for swapping into the memory, the process which has stayed for longest time in the disk and which is in READY state is selected (the process with the highest TICK among the swapped out processses).</p>
-<p>Now that, a process is selected to swap in the memory, the TICK field for the selected process is initialized to 0 to measure how much time the process will run in the system. Code pages of the swapping in process are not loaded into the memory in Swap In function, as the code pages can be loaded later when exception occurs during execution of the process. First the free memory pages for heap pages, user stack pages and kernel stack page are found using <b>Get Free Page</b> function of <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> and disk blocks of the process are loaded into these free memory pages by using <b>Disk Load</b> function of <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. The Page table is updated for new heap, user stack and kernel stack pages. The swap disk blocks used by these pages are relased using <b>Release Block</b> function of the memory manager module and <a href="os_design-files/process_table.html#disk_map_table" target="_blank">Disk map table</a> is invalidated for these pages. Also the SWAP FLAG in the process table of the swapped out process is set to 0, indicating that the process is no longer swapped out.</p>
+<br>
+
+<br>
+<figure style="text-align: center;">
+                           <img src="img/roadmap/swap_in.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption>Control flow for <b>Swap In</b></figcaption>
+                           </figure>
+
+                           <br> 
+
+<br>
+<p> <b><i>Swap In</i></b> function is invoked from the <a href="os_design-files/timer.html" target="_blank">timer interrupt handler</a> and does not take any arguments. To indicate that swap-in is ongoing, the PID of the paging process is stored in the PAGING_PROCESS field in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>. This information will be useful while making scheduling decisions in the <a href="os_modules/Module_5.html" target="_blank">context switch module</a>.</p>
+<p>The Swap In function selects a suitable process from the swapped out processes, to swap back into the memory as memory is now available. When selecting a suitable process for swapping into the memory, the process which has stayed for longest time in the disk and is ready to run is selected (that is, the process with the highest TICK among the swapped-out READY processes is selected).</p>
+<p>Now that, a process is selected to swap back into the memory, the TICK field for the selected process is initialized to 0. Code pages of the swapping-in process are not loaded into the memory, as these pages can be loaded later when exception occurs during execution of the process. Free memory pages for the heap, user stack and kernel stack are allocated using the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a> and disk blocks of the process are loaded into these memory pages using the <b>Disk Load</b> function of the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>. The Page table is updated for the new heap, user stack and kernel stack pages. The swap disk blocks used by these pages are released using <b>Release Block</b> function of the memory manager module and <a href="os_design-files/process_table.html#disk_map_table" target="_blank">Disk map table</a> is invalidated for these pages. Also the SWAP FLAG in the process table of the swapped in process is set to 0, indicating that the process is no longer swapped out.</p>
 <p style="text-indent: 0px">Implement <i>Swap In</i> function using the detailed algorithm given in the pager module link above.</p><br>
 
+<p style="text-indent: 0px"><code>Note :</code><b>[Implementation Hazard]</b> There is a possibility that the code of the Pager module will exceed more than 2 disk blocks (more than 512 instructions). Try to write optimized code to fit the pager module code in 2 blocks. You can use the following strategy to reduce the number of instructions. According to given algorithm for <b>Swap Out</b> function, the actions done for code pages, heap pages, stack pages (user/kernel) are written separately. This results in calling Release Page function 3 times, Get Swap Block and Disk Store functions 2 times each. Combine these actions into a single while loop where each module function is called only once. The loop should traverse through the page table entries one by one (except library page entries) and perform appropriate actions if the page table entry for a page is valid. Apply similar strategy for <b>Swap In</b> function also. </p>
+<br>
+
+
 <li><b>Get Swap Block (function number = 6, <a href="os_modules/Module_2.html" target="_blank">Memory Manager Module</a> )</b></li>
-<p><b>Get Swap Block</b> function of memory manager module does not take any arguments. The function returns a free block from the swap area (disk blocks 256 to 511 - see <a href="os_implementation.html" target="_blank">disk organization</a>) of the eXpOS. Get Swap Block searches for a free block from <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> (starting of disk swap area) to <a href="support_tools-files/constants.html" target="_blank">DISK_SIZE</a>-1 (ending of the eXpOS disk). If a free block is found, the block number is returned. If no free block in swap area is found, -1 is returned to the caller. </p>
+<p><b>Get Swap Block</b> function does not take any arguments. The function returns a free block from the swap area (disk blocks 256 to 511 - see <a href="os_implementation.html" target="_blank">disk organization</a>) of the eXpOS. Get Swap Block searches for a free block from <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a> (starting of disk swap area) to <a href="support_tools-files/constants.html" target="_blank">DISK_SIZE</a>-1 (ending of the eXpOS disk). If a free block is found, the block number is returned. If no free block in swap area is found, -1 is returned to the caller. </p>
 <p style="text-indent: 0px">Implement <i>Get Swap Block</i> function using the detailed algorithm given in the memory manager module link above.</p><br>
 
+<p style="text-indent: 0px"><code>Note :</code>The implementation of module functions <b><i>Swap Out</i></b>, <b><i>Swap In</i></b>, <b><i>Get Swap Block</i></b> are final.</p><br>
+
+
 <b >Modification to Context Switch Module (Module 5)</b><br><br>
-<p>Previously Context Switch module (scheduler module) will select a new process to schedule according to the Round Robin scheduling algorithm. The procedure of selecting a process to execute is slightly modified in this stage. If a paging process exists in the system, only paging process is scheduled to complete the swapping out or swapping in completely. If the paging process is in blocked state then idle process (PID = 0) is scheduled. If there is no paging process then, the next READY/CREATED process which is not in swapped out state is scheduled for execution. If no process is in READY or CREATED state, idle is scheduled.</p>
+<p>Previously, the <a href="os_modules/Module_5.html" target="_blank">Context Switch module</a> (scheduler module) would select a new process to schedule according to the Round Robin scheduling algorithm. The procedure for selecting a process to execute is slightly modified in this stage. If swap-in/swap-out is ongoing (that is, if the PAGING_PROCESS field of the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> is set), the context switch module always tries to schedule the paging process so that the swap operation is completed before other processes are run. However, if the paging process is in blocked state, then the idle process (PID = 0) is scheduled. If there is no paging process then, the next READY/CREATED process which is not in swapped out state is scheduled for execution in normal Round Robin order. Finally, if no process is in READY or CREATED state, then the idle process is scheduled.</p>
 <p style="text-indent: 0px">Modify Context Switch module implemented in earlier stages according to the detailed algorithm given <a href="os_modules/Module_5.html" target="_blank">here</a>.</p><br><br>
 <b>Modifications to boot module </b><br><br>
+
 <ul style="list-style-type: disc; margin-left: 10px;">
 
-<p style="text-indent: 0px"> Modify Boot module to add below steps :  </p>
-<li style="padding-left: 20px">Load module 6 form disk to memory pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>. </li>
-<li style="padding-left: 20px">Initialize the SWAPPED_COUNT field to 0 and PAGING_PROCESS field to -1 in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> to 0.</li>
+<p style="text-indent: 0px"> Modify <a href="os_modules/Module_7.html" target="_blank">Boot module</a> to add the following steps :  </p>
+<li style="padding-left: 20px">Load module 6 (Pager Module) form disk to memory pages. See <a href="os_implementation.html" target="_blank">disk/memory organization</a>. </li>
+<li style="padding-left: 20px">Initialize the SWAPPED_COUNT field to 0 and PAGING_PROCESS field to -1 in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> to 0, as initially there are no swapped out processes.</li>
 <li style="padding-left: 20px">Initialize the TICK field to 0 for all the 16 <a href="os_design-files/process_table.html" target="_blank">process table</a> entries. </li>
 
 </ul>
@@ -5129,7 +5215,7 @@ will never get blocked. </p>
 <div class="container col-md-12" >
                           <div class="section_area">
                           <ul class="list-group">
-                         <!-- <li class="list-group-item">
+                      <!--  <li class="list-group-item">
 
 <a data-toggle="collapse"  href="#collapseq24"><b>Q1.</b> Why the processes with state WAIT_PROCESS is given high preference and then WAIT_TERMINAL are preferred to while selecting swap out process?</a>
                             <div id="collapseq24" class="panel-collapse collapse">
@@ -5139,7 +5225,7 @@ will never get blocked. </p>
     </li>-->
                            <li class="list-group-item">
 
-<a data-toggle="collapse"  href="#collapseq25"><b>Q2.</b> Why only READY state processes are selected for swap in, even though swapped out processes can be in blocked state also?</a>
+<a data-toggle="collapse"  href="#collapseq25"><b>Q1.</b> Why only READY state processes are selected for swap in, even though swapped out processes can be in blocked state also?</a>
                             <div id="collapseq25" class="panel-collapse collapse">
                               It is not very useful to swap in a process which is in blocked state into the memory. As the process is in blocked state, even after swapping in, the process will not execute until it is made READY. Until the process is made READY, it will just occupy memory pages which could be used for some other READY/RUNNING process. 
   
@@ -5148,11 +5234,21 @@ will never get blocked. </p>
 
     </ul>
                           </div>
-                          </div><br>
+                          </div>
 
-    <b style="color:#26A65B">Assignment 1:</b> Write an ExpL program which invokes <i>Fork</i> system call four times back to back. Then, the program shall use <i>Exec</i> system call to execute pid.xsm file (used in <a href="#collapse21" target="_blank">stage 21</a>) to print the PID of the processes. Invoking four Forks back to back is supposed to create 16 new processes, but only 13 new processes will be created as eXpOS will run out of process table entries. Run this program using the shell.  <br><br>
+                          <br>
 
-    <b style="color:#26A65B">Assignment 2:</b> Modify the program written above to invoke <i>Exec</i> system call with the program provided <a href="test_prog.html#test_program_8" target="_blank">here</a>. The program given in above link will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is later traversed and numbers are printed to the console. Run this program using the shell.  <br><br>                      
+    <b style="color:#26A65B">Assignment 1:</b> Write an ExpL program which invokes <i>Fork</i> system call four times back to back. Then, the program shall use <i>Exec</i> system call to execute pid.xsm file (used in <a href="#collapse21" target="_blank">stage 21</a>) to print the PID of the processes. Invoking four Forks back to back is supposed to create 16 new processes, but only 13 new processes will be created as eXpOS will run out of process table entries. Run this program using the shell in the context of a user. <br><br>
+
+    <b style="color:#26A65B">Assignment 2:</b> Modify the program written above to invoke <i>Exec</i> system call with the program provided <a href="test_prog.html#test_program_8" target="_blank">here</a>. The program given in above link will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is later traversed and numbers are printed to the console. Run this program using the shell in the context of a user.  <br><br>
+
+    <b style="color:#26A65B">Assignment 3:</b> Run the program provided <a href="test_prog.html#test_program_9" target="_blank">here</a> using shell in the context of a user. The program will create a file with name as "num.dat" and permission as <i>open access</i>. Integers 1 to 1300 are written to this file and file is closed. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes and <i>Exec</i> system call is invoked with file "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_10" target="_blank">here</a>. "pgm1.xsm" will create a new file according to the PID of the process and read 100 numbers from file "num.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 consecutive numbers (PID-3)*100+1 to (PID-3)*100+100.<br><br>
+
+    <b style="color:#26A65B">Assignment 4:</b> Run the program provided <a href="test_prog.html#test_program_11" target="_blank">here</a> using shell in the context of a user. The program will create a file with name as "numbers.dat" and permission as <i>open access</i> and open the file. The program also invokes <i>Semget</i> for a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". <!--After all processes complete writing to the file "numbers.dat" (Share count becomes 1300), --><i>Exec</i> system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. "pgm2.xsm" will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers from X*1000 to X*1000+99, where X &isin; {3,4..15}. The numbers written by a process in the newly created file need not be the same numbers the process has written in "numbers.dat" file. <br><br>  
+
+
+    <code>Note :</code>To run the program provided by the user, Shell process first invokes <i>fork</i> to create a child process. Shell will wait until this first child process completes its execution. When the first child exits, shell will resume execution even if some processes created by the given program are running in the background. This can lead to the following interesting situation.  Suppose that all active processes execept idle, login and shell were swapped out and the shell is waiting for terminal input from the user. In this case, the OS will not swap in any process till the shell wakes up (why?).  Consequently, the swapped out processes will not run until the shell wakes up.  Hence, you will have to issue some command to shell, so the system keeps on running.  
+<br>                    
   </div>
   </div>
   <!--===========Ending stage 27 ===============-->

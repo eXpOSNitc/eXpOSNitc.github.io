@@ -107,11 +107,11 @@
                   </a>
                   
                </li>
-               <li>
+              <!-- <li>
                   <a href="Downloads.html" target="_blank" title="Downloads" data-toggle="" class="no-submenu">
                      <em class="fa fa-download"></em>
                      <span class="item-text">Downloads</span>
-                  </a>               </li>
+                  </a>               </li>-->
                <li>
                   <a href="faq.html" title="FAQ" data-toggle="" class="no-submenu">
                      <em class="fa fa-question"></em>
@@ -126,7 +126,7 @@
                   </a>
                                  </li>
                <li>
-                  <a href="http://xosnitc.github.io" title="Read about XOS" class="pull-right no-submenu" data-toggle="">
+                  <a href="http://xosnitc.github.io" title="Read about XOS" class=" no-submenu" >
                      <em class="fa fa-link"></em>
                      <span class="item-text">Read about XOS</span>
                   </a>
@@ -146,7 +146,7 @@
       
       <!-- END aside-->
       <!-- START Main section-->
-      <section id="philosophy" style="text-align:justify;font-size:15px">
+      <section id="philosophy" style="text-align:justify;font-size:17px">
          <!-- START Page content-->
          <div class="content-wrapper">
             <div class="row">
@@ -165,7 +165,7 @@
 				  <p>There are three central principles that have been kept in mind in designing the eXpOS educational tool:</p>
 				  <ol type="a">
 					  <li><a href="https://en.wikipedia.org/wiki/Edsger_W._Dijkstra" target="_blank">“Separation of concerns”</a></li>
-                 <li><a href="https://en.wikipedia.org/wiki/Albert_Einstein" target="_blank">“Things shall be made as simple as possible, but no simpler”</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Albert_Einstein" target="_blank">“Things shall be made as simple as possible, but no simpler”</a></li>
                  <li><a href="https://en.wikipedia.org/wiki/Fred_Brooks" target="_blank">“Build to learn” rather than “learn to build.”</a></li>
 				  </ol>
 				  <p>These thoughts have translated into the following decisions:</p>
@@ -187,7 +187,7 @@
 						</ol>
 					  </li>
 
-					  <li>The OS code has to be completely written by the student with no built-in code given, except for a bootstrap ROM code and code implementing an <a href="http://exposnitc.github.io/abi.html#library">application level library interface</a>. The programming support has been kept minimal to avoid high level programming tools hiding too many low level issues from the OS programmer. Essentially, the student has to do “low level programming” on a “high level hardware".</li>
+					  <li>The OS code has to be completely written by the student with no built-in code given, except for a bootstrap ROM code and code implementing an <a href="abi.html#library">application level library interface</a>. The programming support has been kept minimal to avoid high level programming tools hiding too many low level issues from the OS programmer. Essentially, the student has to do “low level programming” on a “high level hardware".</li>
 
 					  <li>The system is designed to help the student appreciate the functioning of a “sufficiently complex” operating system and <b>not</b> to help him/her gain experience with real operating systems programming. The architecture, the OS, the API, ABI etc. are all different from any of the existing real systems or standards in use, but designed to make the task of programming the OS as simple as possible.</li>
 				  </ol>	  
@@ -196,23 +196,23 @@
 					
 					<p>Since the operating system kernel is a software that forms a layer between the hardware and the application program, the first major hurdle that a student faces while writing an OS is in understanding the complexities of the underlying hardware.</p>
 					
-               <p>The eXpOS package simplifies this by providing a hypothetical simple-to-program hardware abstraction – the <a href="http://exposnitc.github.io/support_tools-files/xsm-simulator.html" target="_blank">XSM Machine</a>. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines - is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple to learn <a href="http://exposnitc.github.io/support_tools-files/spl.html" target="_blank">SPL language</a> (which is just an enriched XSM assembler).  </p>
+               <p>The eXpOS package simplifies this by providing a hypothetical simple-to-program hardware abstraction – the <a href="arch_spec.html" target="_blank">XSM Machine</a>. What makes XSM simple is that its memory words can store an arbitrary string or a number. This means that data formatting – one of the major technicalities while working with machines - is simplified. Further simplifications include the assumption that each disk block fits into exactly one memory page etc. The OS code can be written by programming the machine using a simple to learn <a href="support_tools-files/spl.html" target="_blank">SPL language</a> (which is just an enriched XSM assembler).  </p>
 					
-					<p>The second interface of the OS is its upward interface – the interface to application programs. This interface, called the application binary interface (<a href="http://exposnitc.github.io/abi.html" target="_blank"> ­ABI </a>), defines the low level system call interface between the application and the OS, the virtual address space model for an application, the format of executable files etc. The ABI too is kept  minimal. It is easy to load executables into the memory. Only small programs are permitted. Parameter passing between applications and the system calls is also extremely simple.</p>
+					<p>The second interface of the OS is its upward interface – the interface to application programs. This interface, called the application binary interface (<a href="abi.html" target="_blank"> ­ABI </a>), defines the low level system call interface between the application and the OS, the virtual address space model for an application, the format of executable files etc. The ABI too is kept  minimal. It is easy to load executables into the memory. Only small programs are permitted. Parameter passing between applications and the system calls is also extremely simple.</p>
 
-					<p>The eXpOS <a href="http://exposnitc.github.io/abi.html" target="_blank"> ­ABI </a> is too primitive to support application programs in the C programming language. Hence we provide a separate language (called <a href="http://exposnitc.github.io/support_tools-files/expl.html" target="_blank">ExpL</a>) using which applications can be created and compiled. The ExpL compiler given to the student supports the eXpOS high level application program interface (<a href="http://exposnitc.github.io/os_spec.html#collapse1" target="_blank">API</a>). We note here that, implementing an ExpL compiler for the eXpOS ABI on the XSM machine would be an instructive exercise for an undergraduate compiler design laboratory.</p>
+					<p>The eXpOS <a href="abi.html" target="_blank"> ­ABI </a> is too primitive to support application programs in the C programming language. Hence we provide a separate language (called <a href="http://silcnitc.github.io/expl.html" target="_blank">ExpL</a>) using which applications can be created and compiled. The ExpL compiler given to the student supports the eXpOS high level application program interface (<a href="os_spec.html#collapse1" target="_blank">API</a>). We note here that, implementing an ExpL compiler for the eXpOS ABI on the XSM machine would be an instructive exercise for an undergraduate compiler design laboratory.</p>
 
-					<p>We are of the view that insisting the student to work with real systems diverts his/her attention to the details of various “formats, standards and interfaces" which often comes in the way of appreciating the underlying principles of OS design. eXpOS simplifies matters by providing minimal interfaces that are just sufficient to achieve the required functionality.</p>
+					<p>We are of the view that insisting the student to work with real systems diverts his/her attention to the details of various “formats, standards and interfaces" which often comes in the way of appreciating the underlying principles of OS design. eXpOS separates concerns by providing minimal interfaces that are just sufficient to achieve the required functionality.</p>
 		
 					<p>We had tried our best to ensure that the spirit of the subject matter is not lost. However there have been compromises. The multi-user support, the file system and device handling are very primitive. Address space of a process is small and cannot expand at run time. Going further in these directions would make it difficult for the project to be completed in a semester. Some of these extensions are not “in principle” hard, once the basic OS is built. However topics such as pre-emptive multitasking, fault tolerance, system security etc. are beyond the scope of this project.</p>
 
-               <p>The development methodology suggested is to start from scratch with a simple bootstrap loader. Routines for handling the timer, disk and I/O devices shall be added next. A file system can now be built on top of this basic structure.   Single process operation will be possible at this stage. Following this, modules to support mult-tasking, Interprocess communication and process synchronization shall be added. Muli-user support may be added next and finally demand paging shall be implemented. The <a href="Roadmap.html"target="_blank">roadmap</a> guides the student systematically through these stages, asking him/her to follow the links and learn the concepts relevant to the OS modules developed in each stage.</p>
+               <p>The development methodology suggested is to start from scratch with a simple bootstrap loader.  Routines for handling the timer, disk and I/O devices shall be added next. A simple program loader that can load and execute applications from the disk can be written at this point. Single process operation will be possible at this stage. Following this, modules to support multi-tasking, Interprocess communication and process synchronization can be added. A file system can now be built on top of this structure.     Multi-user support may be added next and finally full scale virtual memory management with swapping and demand paging shall be implemented. (A final stage adding support for multiprocessor operation is also intended.) The <a href="Roadmap.html"target="_blank">roadmap</a> guides the student systematically through these stages, asking him/her to follow the links and learn the concepts relevant to the OS modules developed in each stage.</p>
 					
 					<p>It is our belief that the experiment will provide the student with a feel for how the OS modules for process management, memory management, file management, device management, inter-process communication, process sychronization, demand paging and user management can be glued together to form a functional operating system. An appreciation for the Operating System's hardware interface, application interface and run time library linkage is also intended.</p>
 		
 					<p>The project presumes that the student has undergone a basic sophomore course in computer organization and data structures and that student is <i>unlikely</i> to be familar with the principles of compilers. It is not expected that the student has a high level of proficiency in programming or computer hardware. The required background on paging hardware, interrupts, run­time stack of application programs etc. are provided as reading material at appropriate places in the project roadmap. The parameter passing convention of ExpL as well as the system call interface are pretty simple so that students will have no serious difficulty in extracting parameters inside system calls and sending back return values to the application, despite not having undergone a compiler design course.</p>
 					
-					<p>eXpOS evolved from an earlier version (called <a href="http://xosnitc.github.io/" target="_blank">XOS</a>) which was successfully used for undergraduate instruction at the department of Computer Science and Engineering, NIT Calicut. eXpOS extends XOS with multi­user support, co­operative multi­tasking, interrupt based disk transfer and interprocess communication facility. Both these platforms were developed by teams of undergraduate CSE students of NIT Calicut through a series of undergraduate major projects. Maintenance and user support for the system are being provided by a team of volunteers through a <a href="https://groups.google.com/forum/#!forum/xos-users" target="_blank">user's mailing list</a>.</p>
+					<p>eXpOS evolved from an earlier version (called <a href="http://xosnitc.github.io/" target="_blank">XOS</a>) which was successfully used for undergraduate instruction at the department of Computer Science and Engineering, NIT Calicut. eXpOS extends XOS with multi­user support, co­operative multi­tasking, interrupt based disk transfer and interprocess communication facility. Both these platforms were developed by teams of undergraduate CSE students of NIT Calicut through a series of undergraduate major projects. <!--Maintenance and user support for the system are being provided by a team of volunteers through a <a href="https://groups.google.com/forum/#!forum/xos-users" target="_blank">user's mailing list</a>-->.</p>
 
 					<h3>Acknowledgement</h3>
 	                <p>We thank GitHub for providing the free for use platform on which this tutoring system has been hosted. We also thank an uncountable collecton of individuals who have supported the work in one form or the other.</p> 
@@ -221,9 +221,9 @@
 	                <p>eXpOS by <a href="http://athena.nitc.ac.in/~kmurali/">Dr. Murali Krishnan K</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>. Based on a work at <a href="https://github.com/eXpOSNitc/">https://github.com/eXpOSNitc</a></p> 
 	              	
 	              	<h3>The Team</h3>
-		            <p>XOS/eXpOS was contributed by 11 teams in National Institute of Technology, Calicut from 2010 onwards under the guidance of Dr. K Murali Krishnan (kmurali@nitc.ac.in).
+		            <p>XOS/eXpOS was contributed by 15 teams in National Institute of Technology, Calicut from 2010 onwards under the guidance of Dr. K Murali Krishnan (kmurali@nitc.ac.in).
 		            <br/>
-		            <span style="color:red">Disclaimer:</span> The reports provided below may contain errors that are not corrected.	
+		           <!-- <span style="color:red">Disclaimer:</span> The reports provided below may contain errors that are not corrected.-->	
 		             </p>
 
 		               
@@ -298,7 +298,7 @@
 										    </tr>
 										    <tr>
 										    <td>Anjana Babu, Christin V Jose, Kurian Jacob, Leny W V</td>
-System Level Compiler and Application Level Compiler.</td>
+</td>
 										    </tr>
 										    <tr>
 										    <td>Aleena Thomas, Reshma Sreekumar, Reshma Thomas</td>

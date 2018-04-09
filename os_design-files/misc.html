@@ -111,34 +111,37 @@
                <br>
                <br>                                      
              
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
                                                 
-             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes. It initializes data structures, loads root file, disk free list, etc into the memory. </p>
+             <p><i>Description</i>: OS Startup Code is loaded from disk to memory by the ROM Code on machine startup. Its main function is to prepare the machine for executing the processes. It initializes data structures, loads root file, disk free list, etc into the memory. OS startup code invokes <a href="../os_modules/Module_7.html" target="_blank">Boot Module</a> to help the booting.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 
 <pre>
+
   Load IDLE process and boot module from disk to memory. See <a href="../os_implementation.html" target="_blank">disk/memory organization</a>.
-  Set SP to (userarea pagenumber of idle) * 512 + 1 and call module 7. //running the boot module in the context of idle.
+  Set SP to (user area page number of idle) * 512 + 1 and invoke module 7. //running the boot module in the context of idle.
 
   // after returning from the boot module
+
   /* Initialize the IDLE process.*/
 
-  Initialize the Page table base register to PAGE_TABLE_BASE.
-  Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set the valid bit to 0. // idle doesn't invoke any library function
-  Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set valid bit to 1 and write bit to 0. 
-  Set remaining code page entries to -1 and valid bit to 0.
-  Set the first stack page entry to 70 and valid bit to 1, write bit to 1. Set second stack page entry to -1 and valid bit to 0.
-
-  Initialize the <a href="../os_design-files/process_table.html" target="_blank">process table</a> for IDLE process.
-  Initialize the Tick, pid, userid as 0, state as RUNNING,
-  user area page number as 76 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
-  PTBR to PAGE_TABLE_BASE and PTLR as 10.
-
+  <a data-toggle="collapse" href="#collapse2">Initialize the Page table for IDLE process (PID = 0)</a>
+<div id="collapse2" class="panel-collapse collapse">
+        Initialize the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> and PTLR to 10.
+        Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set auxiliary information for these pages to "0000". 
+        // idle doesn't invoke any library function.   
+        Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set auxiliary information for valid code pages to "0100". 
+        Set remaining code page entries to -1 and auxiliary information to "0000".
+        Set the first stack page entry to 70 and auxiliary information for this page to "0110".
+        Set second stack page entry to -1 and auxiliary information to "0000".</div>
+  <a data-toggle="collapse" href="#collapse4">Initialize the process table for IDLE process.</a>
+<div id="collapse4" class="panel-collapse collapse">
+        Initialize the fields of <a href="../os_design-files/process_table.html" target="_blank">process table</a> as -  TICK, PID and USERID as 0, STATE as RUNNING,
+        USER AREA PAGE NUMBER as 76 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+        PTBR to PAGE_TABLE_BASE and PTLR as 10.</div>
   Store the IP value (from the header of the IDLE) on top of first user stack page [70*512] = [69*512 +1].
 
-  Schedule IDLE process for excecution.
+  Schedule IDLE process for excecution. (Return to user mode.)
 
 </pre>
 
@@ -180,26 +183,38 @@
          <div class="heading">
               <h2 >Shell Process</h2>
                <br>
-               <br>                                      
-             
-             <p>Arguments: None</p>
-            <p>Return Value:None</p>
+               <br>                                    
                                                 
-             <p><i>Description</i>: It is created by the init process to act like a console. It accepts a filename, forks itself and execs the file given as filename. These steps are repeated to accept and execute other files from the console. </p>
+             <p><i>Description</i>: It is created by the init process to act like a console. It accepts a command from the console. If the commnad is halt, shell shutdown the system using Shutdown system call. If the given command is built in shell command, corresponding system call will be executed with after reading suitable arguments from the console. If the command is a executable file, shell 
+              forks itself and Exec the file given as command. These steps are repeated to accept and execute other files from the console.</p>
              <p>Typically in eXpOS, the shell process acts as the init process.</p>
              
-             <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser </a> implemention of eXpOS, the login process acts as the init process, which then executes the shell process.</p>
+             <p><font color="red">*</font> In <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank"> Multiuser</a> implemention of eXpOS, the login process acts as the init process, which then executes the shell process with PID = 2.</p>
+             <p style="text-indent: 0px">Complete ExpL code for Shell program is provided <a href="../test_prog.html#test_program_7" target="_blank">here</a>.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> 1 <b>do</b></p>
-             <p style="text-indent: 4em;"> Get the program to be executed using read system call </p>
-             <p style="text-indent: 4em;"> if the shutdown instruction is received, invoke shutdown system call. </p>
-             <p style="text-indent: 4em;"> childPID = fork(); </p>
-             <p style="text-indent: 4em;"> <b>If</b> (childPID == 0) &nbsp;&nbsp;/*Only child process will do the exec */</p>
-             <p style="text-indent: 8em;"> Execute the program given by read.</p>
-             <p style="text-indent: 4em;"> <b>else</b> Wait for child to finish execution.   &nbsp; &nbsp; /* Using Wait system Call*/</p>
-             <p> endwhile</p>
-                          
+<pre>   <b>while</b> TRUE <b>do</b>
+
+      command = read from console command to be executed. 
+      <b>if</b> command == halt
+         invoke shutdown system call.
+      <b>endif</b>
+
+      <b>if</b> command is built in shell command //eg- Logout, Remusr, Newusr etc 
+         Read the required arguments from the console according to the built in shell command
+         Invoke the corresponding system call with arguments.
+      <b>else</b>
+         childPID = fork(); 
+
+         <b>if</b> (childPID == 0) /*Only child process will do the exec */
+            Execute given command using <i>Exec</i> system call.
+         <b>else</b>
+            Wait for child to finish execution.   /* Using Wait system Call*/
+         <b>endif</b>
+      <b>endif</b> 
+   
+   <b> endwhile</b>
+             </pre>             
          </div>
 		</div>
 		</div>
@@ -224,8 +239,9 @@
              <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 0.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             <p><b>while</b> 1 <b>do</b></p>
-            <p><b>endwhile</b></p>
+<pre>   <b>while</b> TRUE <b>do</b>  //infinite loop
+
+   <b>endwhile</b></pre>
          </div>
 		</div>
 		</div>
@@ -247,18 +263,18 @@
              <p><i>Description</i>: The login process is the first process scheduled for execution. It is used to login a user.The login process waits invoking the (terminal) read system call for a username and password to be input from the console. The login process executes the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#multiusersystemcalls" target="_blank">Login system call</a> with the username and the password as the arguments. The login system call verifies the user and creates a new <a href ="http://exposnitc.github.io/os_design-files/misc.html#shell" target="_blank" >shell process</a>.The original login process waits for the shell to exit, to login the next user. The login process is the init process in <a href = "http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">Multiuser</a> extension to eXpOS.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
-             
-             <p><b>while</b> 1 <b>do</b></p>
-             <p style="text-indent: 4em;">username = read from console</p>
-             <p style="text-indent: 4em;">password = read from console</p>
-             <p style="text-indent: 4em;">Retval = Login (username, password)</p>             
-             <p style="text-indent: 4em;">if Retval = -1</p>
-             <p style="text-indent: 8em;">	Write to console "Invalid username or password"</p>             
-             <p style="text-indent: 4em;">else if Retval = -2</p>
-             <p style="text-indent: 8em;">	Write to console "Permission denied"</p>             
-             <p style="text-indent: 4em;">endif</p>
-             <p><b>endwhile</b></p>
-             
+<pre>   <b>while</b> TRUE <b>do</b>
+
+      username = read from console
+      password = read from console
+      Retval = Login (username, password)             
+      <b>if</b> Retval = -1
+         Write to console "Invalid credentials"             
+      <b>else if</b> Retval = -2
+         Write to console "Permission denied"             
+      <b>endif</b>
+
+   <b>endwhile</b></pre>
              
              
          </div>

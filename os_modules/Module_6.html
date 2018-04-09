@@ -157,8 +157,6 @@
 <h3>Swap Out</h3>
 <i> <b>Description </b></i>: Invoked when the physical memory is critically low. The function chooses a process to swap out, and free it's memory by moving it to the disk. PID of the currently running process is passed as an argument.<br><br>
 <pre>
-If the current process is the IDLE process, return.
-
 Set the PAGING_PROCESS field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> to PID of the current process 
 to indicate that the system is going to perform paging.
 /* The <a href="../os_modules/Module_5.html">scheduler</a> will schedule only this process and the idle process when swapout in ongoing. */
@@ -213,8 +211,6 @@ Called by the timer interrupt.<br><br>
 <i> <b>Description </b></i>: Invoked when the physical memory is high enough that a process can be swapped in. If a suitable process is found, it is loaded back to the main memory. PID of the currently running process is passed as an argument.<br><br>
 
 <pre>
-If the current process is the IDLE process, return.
-
 If there are processes waiting for memory or if there are no processes in the swapped state, Return.
 /* Check the WAIT_MEM_COUNT and SWAPPED_COUNT fields of the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
 

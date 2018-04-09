@@ -146,11 +146,11 @@ pre span:before {
        <table class="table table-bordered">
                                                     <tr>
                                                         <td><b>Input<b></td>
-                                                        <td>Executable file name/string "halt"</td>
+                                                        <td>Executable file name/string "Shutdown"</td>
                                                     </tr> 
                                                     <tr>
                                                         <td><b>Output</b></td>
-                                                        <td>Executes given xsm program/halt system if input is "halt"</td>
+                                                        <td>Executes given xsm program/halt system if input is "Shutdown"</td>
                                                     </tr>
                                                   </table>
                                                 <p style="text-indent: 0px"><b>Description :</b> shell version II without the multiuser</p><br>
@@ -164,9 +164,9 @@ pre span:before {
 <span>begin</span>
 <span>          a=1;</span>
 <span>          while(a == 1) do</span>
-<span>              temp = exposcall("Write",-2,"Enter -");</span>
+<span>              temp = exposcall("Write",-2,"---Enter---");</span>
 <span>              temp = exposcall("Read",-1, input);</span>
-<span>              if(input != "halt") then</span>
+<span>              if(input != "Shutdown") then</span>
 <span>                  pid = exposcall("Fork");</span>
 <span>                  if(pid < 0) then</span>
 <span>                      temp = exposcall("Write",-2, "Fork Failure");</span>
@@ -574,60 +574,43 @@ pre span:before {
                                                         <td>Ouput of corresponding to shell command or executable file.</td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> The given program will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is then traversed from the start to the end and numbers are printed to the terminal.</p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> Shell program given below reads command from console. If the command is halt, then program will invoke Shutdown system call. If the command is built in shell command, then shell will read suitable number of arguments from the console and corresponding system call is invoked from shell itself. If the command is an executable file, shell will fork and exec with the given executable file. </p>
+                                                <p>Note that the shell program should fit in 2 blocks/pages provided in <a href="os_implementation.html" target="_blank">disk/memory organization</a>. The program given below is optimized to fits in 2 blocks/pages. In order to optimize the code, the program violates some of the type checkings. Even with type checking errors, the program will still compile and execute correctly. Also some system calls are invoked with arguments, even though the system call does not need any arguments. This will not cause any problem as these arguments will simply be ignored in the corresponding system call. </p><br>
 <div><pre>
 <span>int main()</span>
 <span>{</span>
 <span>decl</span>
-<span>          int temp, pid, a, flag;</span>
-<span>          string input, username, password, uid, name;</span>
+<span>          int temp, pid, a, flag, retcom;</span>
+<span>          string input, username, password;</span>
 <span>enddecl</span>
 <span>begin</span>
 <span>          a=1;</span>
 <span>          while(a == 1) do</span>
+<span>              temp = exposcall("Write",-2, "---Enter---");</span>
 <span>              temp = exposcall("Read",-1, input);</span>
 <span>              flag=0;</span>
-<span>              if(input == "halt") then</span>
+<span>              if(input == "Logout" OR input == "Shutdown") then</span>
 <span>                  flag=1;</span>
-<span>                  name="Shutdown";</span>
 <span>              endif;</span>
-<span>              if(input == "logout") then</span>
+<span>              if(input == "Remusr" OR input == "Getuid" OR input == "Getuname") then</span>
 <span>                  flag=1;</span>
-<span>                  name="Logout";</span>
+<span>                  temp = exposcall("Read",-1, username);</span>
 <span>              endif;</span>
-<span>              if(flag==1) then</span>
-<span>                   temp= exposcall(name);</span>
-<span>              endif;</span>
-<span>              if(input == "newusr") then</span>
-<span>                  flag=2;</span>
-<span>                  name="Newusr";</span>
-<span>              endif;</span>
-<span>              if(input == "setpwd") then</span>
-<span>                  flag=2;</span>
-<span>                  name="Setpwd";</span>
-<span>              endif;</span>
-<span>              if(flag==2) then</span>
+<span>              if(input == "Newusr" OR input == "Setpwd") then</span>
+<span>                  flag=1;</span>
 <span>                  temp = exposcall("Read",-1, username);</span>
 <span>                  temp = exposcall("Read",-1, password);</span>
-<span>                  temp= exposcall(name, username, password);</span>
 <span>              endif;</span>
-<span>              if(input == "remusr") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Rewusr";</span>
-<span>              endif;</span>
-<span>              if(input == "getuid") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Getuid";</span>
-<span>              endif;</span>
-<span>              if(input == "getuname") then</span>
-<span>                  flag=3;</span>
-<span>                  name="Getuname";</span>
-<span>              endif;</span>
-<span>              if(flag==3) then</span>
-<span>                  temp = exposcall("Read",-1, username);</span>
-<span>                  temp= exposcall(name, username);</span>
-<span>              endif;</span>
-<span>              if(flag == 0) then</span>
+<span>              if(flag==1) then</span>
+<span>                  retcom = exposcall(input, username, password);</span>
+<span>                  if(retcom < 0) then</span>
+<span>                      temp = exposcall("Write",-2, "BAD COMMAND");</span>
+<span>                  else</span>
+<span>                      if(input == "Getuid" OR input == "Getuname") then</span>
+<span>                          temp = exposcall("Write",-2, retcom);</span>
+<span>                      endif;</span>
+<span>                  endif;</span>
+<span>              else</span>
 <span>                  pid = exposcall("Fork");</span>
 <span>                  if(pid < 0) then</span>
 <span>                      temp = exposcall("Write",-2, "Fork Fail");</span>
@@ -665,11 +648,11 @@ pre span:before {
                                                         <td>-</td>
                                                     </tr> 
                                                     <tr>
-                                                        <td><b>Output</b></td>
-                                                        <td>100 integers - PID*100+1 to PID*100+100</td>
+                                                        <td><b>Output </b></td>
+                                                        <td>100 integers - PID*100+1 to PID*100+100. </td>
                                                     </tr>
                                                   </table>
-                                                <p style="text-indent: 0px"><b>Description :</b> This shell program is imporvised version of shell program given before. The shell program supports the execution of built-in shell commands and executable files provided in <a href="os_spec-files/shell_spec.html" target="_blank">eXpOS shell specification</a>.  </p><br>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program given in above link will first create a linked list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is later traversed and numbers are printed to the console. Run this program using the shell.  </p><br>
 <div><pre>
 <span>type</span>
 <span>List</span>
@@ -713,6 +696,320 @@ pre span:before {
 <span>              temp= exposcall("Write",-2,iter);</span>
 <span>              p=p.next;</span>
 <span>          endwhile;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
+
+<div class="panel-body" id="test_program_9"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">9. Test Program 9 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output </b></td>
+                                                        <td>Out of 13 processes created, if N processes complete execution, then N data files each containing 100 consecutive integers (PID-3)*100+1 to PID-3)*100+100 are created. </td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "num.dat" with open permission. Integers 1 to 1300 are written to this file and file is closed. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes and Exec system call is invoked with file "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_10" target="_blank">here</a>. </p><br>
+<div><pre>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp, fd, permission, iter, pid;</span>
+<span>          string filename;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          filename="num.dat";</span>
+<span>          permission=1;</span>
+<span>          temp=exposcall("Create",filename,permission);</span>
+<span>          fd=exposcall("Open",filename);</span>
+<span>          if(fd>=0) then</span>
+<span>              iter=1;</span>
+<span>              while(iter<=1300) do</span>
+<span>                  temp=exposcall("Write",fd, iter);</span>
+<span>                  iter=iter+1;</span>
+<span>              endwhile;</span>
+<span>              temp=exposcall("Close",fd);</span>
+<span>              pid=exposcall("Fork");</span>
+<span>              pid=exposcall("Fork");</span>
+<span>              pid=exposcall("Fork");</span>
+<span>              pid=exposcall("Fork");</span>
+<span>              temp = exposcall("Exec","pgm1.xsm");</span>
+<span>          else</span>
+<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
+<span>          endif;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
+<div class="panel-body" id="test_program_10"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">10. Test Program 10 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output (For each 13 proceesses)</b></td>
+                                                        <td>A file will be created containing 100 consecutive numbers (PID-3)*100+1 to (PID-3)*100+100  </td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> This program can not be run individualy. The test program 9 will invoke Exec with below given program with name "pgm1.xsm". Make sure to compile and save this program as "pgm1.xsm". Below given program will create a new file according to the PID of the process and read 100 numbers from file "num.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 consecutive numbers (PID-3)*100+1 to PID-3)*100+100.</p><br>
+<div><pre>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>          int temp, fdread, fdwrite, permission, pid, offset, data, iter;</span>
+<span>          string filename;</span>
+<span>enddecl</span>
+<span>begin</span>
+<span>          pid=exposcall("Getpid");</span>
+<span>          if(pid==3) then</span>
+<span>              filename="3.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==4) then</span>
+<span>              filename="4.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==5) then</span>
+<span>              filename="5.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==6) then</span>
+<span>              filename="6.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==7) then</span>
+<span>              filename="7.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==8) then</span>
+<span>              filename="8.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==9) then</span>
+<span>              filename="9.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==10) then</span>
+<span>              filename="10.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==11) then</span>
+<span>              filename="11.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==12) then</span>
+<span>              filename="12.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==13) then</span>
+<span>              filename="13.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==14) then</span>
+<span>              filename="14.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==15) then</span>
+<span>              filename="15.dat";</span>
+<span>          endif;</span>
+<span></span>
+<span>          permission=1;</span>
+<span>          temp=exposcall("Create",filename,permission);</span>
+<span>          fdwrite=exposcall("Open",filename);</span>
+<span>          fdread=exposcall("Open","num.dat");</span>
+<span>          if(fdread>=0 AND fdwrite>=0) then</span>
+<span>              offset=(pid-3)*100;</span>
+<span>              temp=exposcall("Seek",fdread,offset);</span>
+<span>              iter=0;</span>
+<span>              while(iter<100) do</span>
+<span>                  temp=exposcall("Read",fdread, data);</span>
+<span>                  temp=exposcall("Write",fdwrite, data);</span>
+<span>                  iter=iter+1;</span>
+<span>              endwhile;</span>
+<span>              temp=exposcall("Close",fdread);</span>
+<span>              temp=exposcall("Close",fdwrite);</span>
+<span>          else</span>
+<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
+<span>          endif;</span>
+<span>          return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
+
+<div class="panel-body" id="test_program_11"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">11. Test Program 11 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td> -              </td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output </b></td>
+                                                        <td> Out of 13 processes created, if N processes complete execution, then N data files each containing 100 consecutive integers from X*1000+1  to X*1000+100 (where X &isin; {3,4..15}) are created.  </td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b> The program will create a file with name "numbers.dat" with open permission and open the file. The program also invokes Semget to acquire a shared semaphore. The program will then invoke <i>Fork</i> system call four times, back to back to create 13 processes. The 13 processes now share a file open instance and a semaphore. Each process will write 100 numbers consecutatively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". Exec system call is invoked with file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>. </p><br>
+<div><pre>
+<!--<span>type</span>
+<span>Share</span>
+<span>{</span>
+<span>          int count;</span>
+<span>}</span>
+<span>endtype</span>-->
+<span>decl</span>
+<span>          int fd, temp, permission, data, semid, iter, pid, endval, count;</span>
+<span>          string filename;</span>
+<!--<span>          Share numbers;</span>-->
+<span>enddecl</span>
+<span>int main()</span>
+<span>{</span>
+<span>begin</span>
+<span>        filename="numbers.dat";</span>
+<span>        permission=1;</span>
+<span>        temp = exposcall("Create",filename, permission);</span>
+<span>        semid = exposcall("Semget");</span>
+<!--<span>        temp = exposcall("Heapset");</span>
+<span>        numbers= exposcall("Alloc",1);</span>
+<span>        numbers.count=0;</span>-->
+<span>        fd=exposcall("Open",filename);</span>
+<span>        if(fd>=0) then</span>
+<span>            pid=exposcall("Fork");</span>
+<span>            pid=exposcall("Fork");</span>
+<span>            pid=exposcall("Fork");</span>
+<span>            pid=exposcall("Fork");</span>
+<span>            if(pid<0) then</span>
+<span>                temp=exposcall("Write", -2, "NO PCB");</span>
+<span>            endif;</span>
+<span>            pid=exposcall("Getpid");</span>
+<span>            data=pid*1000+1;</span>
+<span>            endval=data+99;</span>
+<span>            temp=exposcall("SemLock", semid);</span>
+<span>            while(data<=endval) do</span>
+<span>                temp=exposcall("Write",fd, data);</span>
+<span>                data=data+1;</span>
+<span>            endwhile;</span>
+<!--<span>            numbers.count=numbers.count+100;</span>-->
+<span>            temp=exposcall("SemUnLock", semid);</span>
+<span>            temp=exposcall("Close",fd);</span>
+<span>        else</span>
+<span>            temp=exposcall("Write",-2, "OPEN FAIL");</span>
+<span>        endif;</span>
+<!--<span>        iter=1;</span>
+<span>        while(iter==1) do</span>
+<span>            temp=exposcall("SemLock", semid);</span>
+<span>            count=numbers.count;</span>
+<span>            temp=exposcall("SemUnLock", semid);</span>
+<span>            if(count==1300) then</span>-->
+<span>        temp=exposcall("Exec", "pgm2.xsm");</span>
+<!--<span>            endif;</span>
+<span>        endwhile;</span>--> 
+<span>        return 0;</span>
+<span>end</span>
+<span>}</span>
+</pre>
+       </div>
+
+</div>
+
+
+<div class="panel-body" id="test_program_12"  >
+              <br><br>
+              <hr>
+              <br><br>
+       <b style="font-size: 20px;">12. Test Program 12 </b><br><br>
+       <table class="table table-bordered">
+                                                    <tr>
+                                                        <td><b>Input</b></td>
+                                                        <td>-</td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><b>Output (For each 13 proceesses)</b></td>
+                                                        <td>A file will be created containing 100 consecutive numbers from data file "numbers.dat". </td>
+                                                    </tr>
+                                                  </table>
+                                                <p style="text-indent: 0px"><b>Description :</b>  This program can not be run individualy. Test program 11 will invoke Exec with below given program with name "pgm2.xsm". Make sure to compile and save this program as "pgm2.xsm". Below given program will create a new file according to the PID of the process and read 100 numbers from file "numbers.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file. After successful execution, there should be 13 data files each containing 100 numbers each X*1000 -X*1000+99, where X=[3,4..15]. The numbers written by a process in the newly created file need not be the same numbers the process has written in "numbers.dat" file.</p><br>
+<div><pre>
+<span>decl</span>
+<span>          int data;</span>
+<span>          int fdread, fdwrite, temp, permission, offset, pid, iter;</span>
+<span>          string filename, newfile;</span>
+<span>enddecl</span>
+<span>int main()</span>
+<span>{</span>
+<span>begin</span>
+<span>          fdread=exposcall("Open", "numbers.dat");</span>
+<span>          pid=exposcall("Getpid");</span>
+<span>          if(pid==3) then</span>
+<span>              newfile="three.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==4) then</span>
+<span>              newfile="four.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==5) then</span>
+<span>              newfile="five.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==6) then</span>
+<span>              newfile="six.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==7) then</span>
+<span>              newfile="seven.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==8) then</span>
+<span>              newfile="eight.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==9) then</span>
+<span>              newfile="nine.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==10) then</span>
+<span>              newfile="ten.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==11) then</span>
+<span>              newfile="eleven.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==12) then</span>
+<span>              newfile="twelve.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==13) then</span>
+<span>              newfile="thirteen.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==14) then</span>
+<span>              newfile="fourteen.dat";</span>
+<span>          endif;</span>
+<span>          if(pid==15) then</span>
+<span>              newfile="fifteen.dat";</span>
+<span>          endif;</span>
+<span>          temp=exposcall("Create", newfile, 1);</span>
+<span>          fdwrite=exposcall("Open", newfile);</span>
+<span>          if(fdread>=0 AND fdwrite>=0) then</span>
+<span>              offset=(pid-3)*100;</span>
+<span>              temp=exposcall("Seek",fdread, offset);</span>
+<span>              iter=0;</span>
+<span>              while(iter<=99) do</span>
+<span>                    temp=exposcall("Read",fdread, data);</span>
+<span>                    temp=exposcall("Write",fdwrite, data);</span>
+<span>                    iter=iter+1;</span>
+<span>              endwhile;</span>
+<span>              temp=exposcall("Close",fdread);</span>
+<span>              temp=exposcall("Close",fdwrite);</span>
+<span>          else</span>
+<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
+<span>          endif;</span>
+<span></span>
 <span>          return 0;</span>
 <span>end</span>
 <span>}</span>
