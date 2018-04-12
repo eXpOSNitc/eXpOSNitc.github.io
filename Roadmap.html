@@ -378,7 +378,7 @@
                             </li>
                             <li>
                               Start by formatting the disk to the eXpOS file system format in the XFS interface using <b>fdisk</b> command.<br/> 
-                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="http://exposnitc.github.io/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/>
+                              The <i>fdisk</i> command converts the raw disk into the filesystem format recognised by the eXpOS operating system. It initialises the disk data structures such as <a href="/os_design-files/disk_ds.html" target="_blank">disk free list, inode table, user table and root file </a> .<br/>
                               Type the following commands in the xfs-interface prompt.
                                 <div> 
                                 <pre># fdisk 
@@ -424,7 +424,7 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and <a href="http://exposnitc.github.io/os_design-files/misc.html#login" target="_blank">INIT program</a> (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
+                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and <a href="os_design-files/misc.html#login" target="_blank">INIT program</a> (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused). 
                             </li>
 
                             
@@ -459,7 +459,7 @@ To cool in the peppermint wind.</pre>
                                   A disk block will be allocated for the file (as <tt>sample.dat</tt> contains less than 512 words) and corresponding to this allocated block (here block 69 - this is because the 1<sup>st</sup> free block is allocated by the allocator), an entry will be marked as 1 (used) in the <a href="os_design-files/disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.
                                 </li>
                                 <li>
-                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="http://exposnitc.github.io/os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The <a href="http://exposnitc.github.io/os_spec-files/multiuser.html" target="_blank">permission</a> is set to open(1). Note that any file in eXpFS file system is permitted to have a maximum of four data blocks.
+                                  An entry in the <a href="os_design-files/disk_ds.html#inode_table"  target="_blank"> Inode Table</a> will be created for this file. Inode Table contains information such as the file type, file name, file size, userid, permission and the block numbers of the data blocks of the file. The <a href="os_spec-files/multiuser.html" target="_blank">owner</a> of data files loaded through <i>xfs-interface</i> is the <i>root</i>. Userid is the index of the user entry in the <a href="os_design-files/disk_ds.html#user_table">User Table</a>. The userid of <i>root</i> is 1 and hence the userid field in the <i>inode table</i> is set to 1 for all data files loaded through the <i>xfs interface</i>. The <a href="os_spec-files/multiuser.html" target="_blank">permission</a> is set to open(1). Note that any file in eXpFS file system is permitted to have a maximum of four data blocks.
                                 </li>
                                 <li>
                                   An entry for this file will be made in the <a href="os_design-files/disk_ds.html#root_file"  target="_blank">Root File</a> also.
@@ -600,8 +600,8 @@ peppermint wind</pre></div>
 
                           <p><b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and note the changes for the entries for this file in <i>inode table, root file and disk free list</i> .</p>
-                          <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand <a href="http://exposnitc.github.io/arch_spec-files/machine_organisation.html" target="_blank">Machine Organisation</a> .</p>    
-                          <p><b style="color:#26A65B">Assignment 4 : </b> Read and understand <a href="http://exposnitc.github.io/arch_spec-files/instruction_set.html" target="_blank">XSM Instruction set</a>.</p>     
+                          <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand <a href="arch_spec-files/machine_organisation.html" target="_blank">Machine Organisation</a> .</p>    
+                          <p><b style="color:#26A65B">Assignment 4 : </b> Read and understand <a href="arch_spec-files/instruction_set.html" target="_blank">XSM Instruction set</a>.</p>     
  			
             
                        </div>
@@ -643,7 +643,7 @@ peppermint wind</pre></div>
                             When the XSM machine is started up, the <a href="arch_spec-files/machine_organisation.html#Boot ROM" target="_blank"> ROM Code</a>, which resides in page 0 of the memory, is executed. It is hard-coded into the machine. That is, the ROM code at physical address 0 (to 511) is "already there" when machine starts up. The ROM code is called the "Boot ROM" in OS literature. Boot ROM code does the following operations :
                             <ol style="list-style-type:decimal;margin-left:10vw">
                               <li>Loads block 0 of the disk to page 1 of the memory (physical address 512).</li>
-                              <li>After loading the block to memory, it sets the value of the register <a href ="http://exposnitc.github.io/arch_spec-files/machine_organisation.html" target="_blank">IP</a> (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
+                              <li>After loading the block to memory, it sets the value of the register <a href ="arch_spec-files/machine_organisation.html" target="_blank">IP</a> (Instruction Pointer) to 512 so that the next instruction is fetched from location 512 (page 1 in memory starts from location 512).</li>
                             </ol>
                           </p> 
                           <p>In this stage, you will write a small assembly program to print "HELLO_WORLD" using XSM Instruction set and load it into block 0 of the disk using XFS-Interface as the <b>OS Startup Code</b>. As described above, this OS Startup Code is loaded from disk block 0 to memory page 1 by the ROM Code on machine startup and is then executed. </p>
