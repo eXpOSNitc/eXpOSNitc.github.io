@@ -179,81 +179,79 @@
                       <li><b style="font-size:16px;color:#009100">(1) </b><b><i>Syntax</i></b> : <tt> step / s </tt><br/>
                           <b><i>Semantics</i></b> : </i> The execution proceeds by a single step.</li>
 					<br/>
-                              <li><b style="font-size:16px;color:#009100">(2) </b><b><i>Syntax</i> : </i></b><tt> continue / c </tt><br/>
+                      <li><b style="font-size:16px;color:#009100">(2) </b><b><i>Syntax</i></b> : <tt> step / s <N></tt><br/>
+                          <b><i>Semantics</i></b> : </i> The execution proceeds by N number of steps.</li>
+					<br/>
+                              <li><b style="font-size:16px;color:#009100">(3) </b><b><i>Syntax</i> : </i></b><tt> continue / c </tt><br/>
                             <b><i>Semantics</i> : </i></b> The execution proceeds till the next <tt>breakpoint</tt> (BRKP) instruction.</li>
 					<br/>
-                            <li><b style="font-size:16px;color:#009100">(3) </b><b><i>Syntax</i></b> : </i><tt> reg / r </tt><br/>
+                              <li><b style="font-size:16px;color:#009100">(4) </b><b><i>Syntax</i> : </i></b><tt> continue / c <N></tt><br/>
+                            <b><i>Semantics</i> : </i></b> The execution proceeds till the next N'th occurance of the <tt>breakpoint</tt> (BRKP) instruction.</li>
+					<br/>
+                            <li><b style="font-size:16px;color:#009100">(5) </b><b><i>Syntax</i></b> : </i><tt> reg / r </tt><br/>
                        <b><i>Semantics</i></b> : </i> Displays the contents of all the machine registers namely <tt>IP, SP, BP, PTBR, PTLR, EIP, EC, EPN, EMA, R0-R19</tt> in that order.<br/>
                     </li>
 					<br/>
 					<li>
-                        <b style="font-size:16px;color:#009100">(4) </b><b><i>Syntax</i></b> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
+                        <b style="font-size:16px;color:#009100">(6) </b><b><i>Syntax</i></b> : </i><tt> reg / r &lt;register_name&gt; </tt><br/>
                     <b><i>Semantics</i></b> : </i> Displays the contents of the specified register.<br/>
 					    Sample usage: <tt>r R5, reg PTLR</tt></li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(5) </b><b><i>Syntax</i></b> : </i><tt> reg / r &lt;register_name_1&gt; &lt;register_name_2&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the contents of the registers from &lt;register_name_1&gt; to &lt;register_name_2&gt; in the order specified in <b style="font-size:16px;color:#009100">(3)</b>.</li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(6) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(7) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Writes the contents of the memory page &lt;page_num&gt; to the file "mem" in the XSM folder.<br/> 
 					    Sample usage: <tt>mem 5, m 20 </tt></li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(7) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
+<li><b style="font-size:16px;color:#009100">(8) </b><b><i>Syntax</i></b> : </i><tt> mem / m &lt;page_num_1&gt; &lt;page_num_2&gt; </tt> :<br/>
 <b><i>Semantics</i></b> : </i> Writes the contents of the memory from pages &lt;page_num_1&gt; to &lt;page_num_2&gt; to the file "mem" in XSM folder.<br/>
 					    Sample usage: <tt>mem 5 8, m 0 10 </tt></li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(8) </b><b><i>Syntax</i></b> : </i><tt> pcb / p </tt><br/>
+<li><b style="font-size:16px;color:#009100">(9) </b><b><i>Syntax</i></b> : </i><tt> pcb / p </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Process Table entry of the process with the state as RUNNING.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(9) </b><b><i>Syntax</i></b> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(10) </b><b><i>Syntax</i></b> : </i><tt> pcb / p &lt;pid&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Process Table entry of the process with the given <tt>&lt;pid&gt;</tt>. </li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(10) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt </tt><br/>
+<li><b style="font-size:16px;color:#009100">(11) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Page Table at the location pointed by <tt>PTBR</tt> (Page Table Base Register).</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(11) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt &lt;pid&gt; </tt> :<br/>
+<li><b style="font-size:16px;color:#009100">(12) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt &lt;pid&gt; </tt> <br/>
 <b><i>Semantics</i></b> : </i> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(12) </b><b><i>Syntax</i></b> : </i><tt> filetable / ft </tt><br/>
+<li><b style="font-size:16px;color:#009100">(13) </b><b><i>Syntax</i></b> : </i><tt> filetable / ft </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the System Wide Open File Table.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(13) </b><b><i>Syntax</i></b> : </i><tt> memfreelist / mf </tt><br/>
+<li><b style="font-size:16px;color:#009100">(14) </b><b><i>Syntax</i></b> : </i><tt> memfreelist / mf </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Memory Free List.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(14) </b><b><i>Syntax</i></b> : </i><tt> diskfreelist / df </tt><br/>
+<li><b style="font-size:16px;color:#009100">(15) </b><b><i>Syntax</i></b> : </i><tt> diskfreelist / df </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the memory copy of the Disk Free List.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(15) </b><b><i>Syntax</i></b> : </i><tt> inodetable / it </tt><br/>
+<li><b style="font-size:16px;color:#009100">(16) </b><b><i>Syntax</i></b> : </i><tt> inodetable / it </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the memory copy of the Inode Table.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(16) </b><b><i>Syntax</i></b> : </i><tt> usertable / ut </tt><br/>
+<li><b style="font-size:16px;color:#009100">(17) </b><b><i>Syntax</i></b> : </i><tt> usertable / ut </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the memory copy of the User Table.</li>
 					<br/>
 
-<li><b style="font-size:16px;color:#009100">(17) </b><b><i>Syntax</i></b> : </i><tt> location / l &lt;address&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(18) </b><b><i>Syntax</i></b> : </i><tt> val / v &lt;address&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the content at memory address (Address Translation takes place if used in USER mode)</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(18) </b><b><i>Syntax</i></b> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(19) </b><b><i>Syntax</i></b> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, program execution is stopped and the debug interface is invoked. Atmost 16 watch points can be set.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(19) </b><b><i>Syntax</i></b> : </i><tt> watchclear  / wc </tt><br/>
+<li><b style="font-size:16px;color:#009100">(20) </b><b><i>Syntax</i></b> : </i><tt> watchclear  / wc </tt><br/>
 <b><i>Semantics</i></b> : </i> Clears all the watch points.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(20) </b><b><i>Syntax</i></b> : </i><tt> exit / e </tt><br/>
+<li><b style="font-size:16px;color:#009100">(21) </b><b><i>Syntax</i></b> : </i><tt> exit / e </tt><br/>
 <b><i>Semantics</i></b> : </i> Exits the debug prompt and halts the machine.</li>
 					<br/>
 
-<li><b style="font-size:16px;color:#009100">(21) </b><b><i>Syntax</i></b> : </i><tt> val / v &lt;address&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays content of the specified memory address.</li>
-
-<br/>
 <li><b style="font-size:16px;color:#009100">(22) </b><b><i>Syntax</i></b> : </i><tt> help / h </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays commands.</li>
-<br/>
-<li><b style="font-size:16px;color:#009100">(22) </b><b><i>Syntax</i></b> : </i><tt> val  / v &lt;physical_address&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the content of the physical address specified.</li>
-
+<b><i>Semantics</i></b> : </i> Displays commands in brief.</li>
 				</ul>
+
+                <br>
+                <p><b>Note:</b> Simply pressing the Return key at the debug prompt will re-execute the previous command.</p>
 				</div>
                             </div>
                           </div>
