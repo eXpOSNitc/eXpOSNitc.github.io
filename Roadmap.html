@@ -1096,9 +1096,9 @@ Since we have only one user process for now, we will write the interrupt 10 hand
 
 <li>Compile the program</li>
 
-<li>Load the compiled code as INT 10
+<li>Load the compiled code as INT 10 from the xfs-interface
 
-<pre>load --int=10 ../spl/progs/haltprog.xsm</pre>
+<pre>load --int=10 ../spl/spl_progs/haltprog.xsm</pre>
 
 </li>
 
@@ -1205,7 +1205,7 @@ The loadi instruction will suspend the execution of the XSM machine till the dis
     As IP cannot be set explicitly, push 0, which is the value of starting IP to the top of the stack, and IRET instruction will implicitly set the IP to this value. </p>
 <p>
 
-    Since the OS Startup Code runs in KERNEL mode, the physical address of SP must be used 
+    Since the OS Startup Code runs in KERNEL mode, physical address must be used 
     to access the top of the stack. Stack of INIT process is allocated at physical page number 76.
     Its corresponding physical address is 76 * 512. The stack pointer must be set to point to this address so that IRET fetches the correct address.
 
@@ -1370,7 +1370,7 @@ Thus, the OS must do the following to ensure correct run time linkage of library
 <ol style="list-style-type:lower-alpha;margin-left:20px">
 <li> The library code must be pre-loaded to disk blocks 13 and 14 before OS startup. 
 The library code can be found in the expl folder in eXpOs package. 
-Load it into the XSM disk using the command
+Load it into the XSM disk using the xfs-interface
 <div><pre>load --library ../expl/library.lib</pre></div> </li>
 <li> During OS start-up, this code must be loaded to memory pages 63 and 64.  </li>
 <li> When each application is loaded for execution,  the logical pages 0 and 1 must be mapped to physical pages 63 and 64.</li>
@@ -1558,7 +1558,8 @@ ireturn;
 # exit</pre>
 		</div>
 		</li>
-<li> Run the XSM machine with timer enabled</li>
+<li> Recompile and reload the OS Startup code.</li>
+<li> Run the XSM machine with timer enabled.</li>
 
 <pre>cd $HOME/myexpos/xsm
 ./xsm --timer 2</pre>

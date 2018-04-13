@@ -183,8 +183,8 @@ INT number		// Invoke the corresponding INT
  
 <p><h4><b>2. Actions done by the System call service routine upon entry</b></h4></p>  
 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Set the MODE field in process table entry of the current process to KERNEL. </p> 
-&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Extract the system call number and the arguments from the user stack. </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">a. Extract the system call number and the arguments from the user stack. </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">b. Set the MODE field in process table entry of the process to the system call number.</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">c. Switch from the user stack to the kernel stack.</p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">d. Identify the system call using the system call number and transfer control to the system call code</p>
 <br>
@@ -232,7 +232,7 @@ SP   <- User Area Page Number * 512 - 1
 <p><h4><b>3. Actions done by the System call service routine before returning from the system call</b></h4></p>  
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Store the return value in the user stack</p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">b. Set the stack pointer (SP) to top of the user stack </p>
-&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Set the MODE field in process table entry of the current process to USER. </p> 
+&nbsp;&nbsp;&nbsp;<p style="margin:0">c. Set the MODE field in process table entry of the current process to 0. </p> 
 &nbsp;&nbsp;&nbsp;<p style="margin:0">d. Return to the user program using the IRET machine instruction</p>
 <br>
  <div class="container-fluid fig_code">
