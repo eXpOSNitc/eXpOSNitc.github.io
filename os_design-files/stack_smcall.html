@@ -135,6 +135,28 @@ The system call module must also change the stack to its kernel stack upon entry
 of return.</p>
 
 
+<div class="container col-md-12">
+<div class="section_area" style="background:#dff0d8">
+<div style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px">
+<b>Note:</b>  The algorithms described in the <a href="../os_design.html">design page</a> stipulates that
+each system call sets the <a href="process_table.html">MODE flag</a> to the appropriate <a href="Sw_interface.html">system call number</a>
+and switches to the kernel stack.
+<br>
+<br>
+However, if the same (software) interrupt contains multiple system calls,
+code duplication can be avoided by
+setting  the MODE flag and switching to kernel stack immediately upon entry
+into the interrupt handler, before control is transferred to the appropriate
+system call function.
+</br>
+</br>
+The interrupt handler can reset the MODE flag and switch back to the user stack
+after return from the system call function,
+before returning to user mode.
+</div>
+</div>
+</div>
+
 <br>
 <p style="margin:0"><h4><b> 1. Actions done by the user process before executing an INT instruction </b></h4></p>
 &nbsp;&nbsp;&nbsp;<p style="margin:0">a. Push the registers in use to the stack</p> 
