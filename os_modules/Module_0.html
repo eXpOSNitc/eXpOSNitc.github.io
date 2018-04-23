@@ -204,9 +204,15 @@
   </tr>
 
 </table>  
-                     
 <p>*Release function for the disk is implimented in the disk interrupt handler.</p>
+   <br>
+   <br>
+                           <div style="background: url(../img/os-modules/ResourceManager.png); height: 602px; width: 631px; margin-left: auto; margin-right: auto;">
+                           <a class="btn" href="Module_5.html" style="position: absolute; height: 120px; width: 270px; margin-top: 120px; margin-left: 360px"></a>
+                           </div>
+                     
 
+   <br>
 <h3> Acquire Buffer</h3>
 <!-- Move to Another module if necessary -->
 <i> <b>Description </b></i>: Acquire the buffer corresponding to buffer number given as input. Assumes a valid PID and a valid buffer  number are given.<br><br>
@@ -214,8 +220,8 @@
 
 while ( Buffer is locked ){   /* Check the Locking PID field in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> */
     Set state of the process as ( WAIT_BUFFER , Buffer Number );
-    Invoke the scheduler;
-    }
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
+}
 
 Lock the Buffer by setting the PID of the current process in the Locking PID field
 in the <a href="/os_design-files/mem_ds.html#buffer_table" target="_blank">Buffer Status Table</a> ;
@@ -258,9 +264,9 @@ Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Man
 <pre>
 
 while ( disk is locked ){        /* Check the <i>Status</i> field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table</a>. */
-        Set state of the process as ( WAIT_DISK , - );
-        Invoke the scheduler;
-        }
+    Set state of the process as ( WAIT_DISK , - );
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
+}
 
 Lock the disk by setting PID and the status field in the <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">Disk Status Table.</a>
 
@@ -280,9 +286,9 @@ Called by BufRead and BufWrite functions in the <a href="Module_3.html">File Man
 <pre>
 
 while ( inode is locked ){   /* Check the Lock field in the <a href="../os_design-files/mem_ds.html#file_lock_status_table" target="_blank">File Status Table</a>. */
-        Set state of the process as ( WAIT_FILE , Inode Index );
-        Invoke the scheduler;
-    }
+    Set state of the process as ( WAIT_FILE , Inode Index );
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
+} 
 
 If inode becomes invalid, return -1. /* File was deleted by the time the inode was acquired */
 
@@ -355,8 +361,8 @@ Called by the <a href="../os_design-files/semaphore_algos.html#semrelease">Semre
 
 while ( Terminal device is locked ){    /* Check the Status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a> */
     Set state of the process as ( WAIT_TERMINAL , - );
-    Invoke the scheduler;
-    }
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
+}
     
 Lock the Terminal device by setting the Status and PID fields in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>.
 

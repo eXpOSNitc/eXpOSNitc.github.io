@@ -173,6 +173,12 @@
   </tr>
 
    </table>    
+   <br>
+   <br>
+                           <div style="background: url(../img/os-modules/DeviceManager.png); height: 342px; width: 981px;">
+                           <a class="btn" href="Module_0.html" style="position: absolute; height: 180px; width: 270px; margin-top: 120px; margin-left: 0px"></a>
+                           <a class="btn" href="Module_5.html" style="position: absolute; height: 120px; width: 270px; margin-top: 120px; margin-left: 710px"></a>
+                           </div>
 
                
    <h3>Disk Store</h3>
@@ -188,7 +194,7 @@
     
     Set the state as (WAIT_DISK, - );
     
-    Invoke the scheduler module;
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
     
     return;
 </pre>
@@ -208,7 +214,7 @@ Called by Shutdown, Buffer Read and Buffer Write.<br>
     
     Set the state as (WAIT_DISK, - );
     
-    Invoke the scheduler module;
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
     
     return;
 </pre>
@@ -246,7 +252,7 @@ Called by the Write system call.
     
     Set the state as (WAIT_TERMINAL, - );
     
-    Invoke the scheduler module;
+    Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
 
     Copy the word from the <b>Input Buffer</b> of the <a href="../os_design-files/process_table.html">Process Table</a> of the process corresponding to PID
     to the memory address provided.
