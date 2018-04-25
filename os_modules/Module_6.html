@@ -158,9 +158,18 @@
                            <a class="btn" href="Module_4.html" style="position: absolute; height: 170px; width: 270px; margin-top: 120px; margin-left: 0px"></a>
                            <a class="btn" href="Module_2.html" style="position: absolute; height: 300px; width: 270px; margin-top: 120px; margin-left: 710px"></a>
                            </div>
+                           <br>
                      
 <h3>Swap Out</h3>
-<i> <b>Description </b></i>: Invoked when the physical memory is critically low. The function chooses a process to swap out, and free it's memory by moving it to the disk. PID of the currently running process is passed as an argument.<br><br>
+<i> <b>Description </b></i>: Invoked when the physical memory is critically low. The function chooses a process to swap out, and free it's memory by moving it to the disk. PID of the currently running process is passed as an argument.<br>
+<br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/swap_out.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Swap Out</i></figcaption>
+                           </figure>
+
+                           <br><br>
 <pre>
 Set the PAGING_PROCESS field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> to PID of the current process 
 to indicate that the system is going to perform paging.
@@ -211,9 +220,18 @@ Called by the timer interrupt.<br><br>
 1. What is the reasoning behind the order of choosing the process to swap out? Why is a process in WAIT_PROCESS swapped out ahead of a process waiting for the terminal? What about processes waiting for the disk? <br>
 2. Why is swapping not possible from the idle process?
 
-
+<br><br>
 <h3>Swap In</h3>
-<i> <b>Description </b></i>: Invoked when the physical memory is high enough that a process can be swapped in. If a suitable process is found, it is loaded back to the main memory. PID of the currently running process is passed as an argument.<br><br>
+<i> <b>Description </b></i>: Invoked when the physical memory is high enough that a process can be swapped in. If a suitable process is found, it is loaded back to the main memory. PID of the currently running process is passed as an argument.<br>
+
+<br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/swap_in.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Swap In</i></figcaption>
+                           </figure>
+
+                           <br><br>
 
 <pre>
 If there are processes waiting for memory or if there are no processes in the swapped state, Return.
