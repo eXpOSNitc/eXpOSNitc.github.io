@@ -130,6 +130,13 @@
                                            The semaphores of a process are shared with it's child processes. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>.</p>
                                            <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and must be reset before exiting from the system call.</p>
               <br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/semget.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Semget</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
              <div><h4>Algorithm:</h4></div>
 	     <pre>
 Set the MODE_FLAG in the <a href="process_table.html" target="_blank">Process Table</a> to 17 and <a href="stack_smcall.html">switch</a> to kernel stack.
@@ -189,6 +196,13 @@ Return the Per-process Resource Table entry index. &nbsp;&nbsp;/* Semaphore Desc
                                                 <p><i>Description </i>: This system call is used to release a semaphore descriptor held by the process. Data Structures updated are <a href="process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> and <a href="mem_ds.html#sem_table" target="_blank">Semaphore table</a>. The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
               
               <br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/semrelease.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Semrelease</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
              <div><h4>Algorithm:</h4></div>
             <pre> 
 Set the MODE_FLAG in the <a href="process_table.html" target="_blank">Process Table</a> to 18 and <a href="stack_smcall.html">switch</a> to kernel stack.

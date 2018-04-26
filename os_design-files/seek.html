@@ -128,12 +128,20 @@
                                                 <p><b><i>Description</i></b> : The Seek operation allows the application program to change the value of the file pointer so that subsequent Read/Write is performed from a new position in the file. The new value of the file pointer is determined by adding the offset to the current value. (A negative Offset will move the pointer backwards). An Offset of 0 will reset the pointer to the beginning of the file. </p>
 
                                                 <p>If a positive offset goes beyond the size of the file, the seek position will be set to the file size (in the <a href="../os_design-files/disk_ds.html#inode_table">inode table</a> entry). A negative offset leading to LSeek value below 0 will give an error.</p>
-                                                <br>
+                                                
                                                 <!--   Include if necessary ( When Swap comes in)
 
                                                 <p>The data structures modified are <a href="process_table.html" target="_blank">Process Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
                                                 --> 
+                                                <br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/Seek.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Seek</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
 
              <div><h4><b>Algorithm</b>:</h4></div>
 <pre>

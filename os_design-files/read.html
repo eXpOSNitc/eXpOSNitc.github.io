@@ -125,13 +125,22 @@
                                                         <td>File pointer has reached the end of file</td>
                                                     </tr> 
                                                 </table>
-                                                <p><i><b>Description</b></i> : The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer. After each read operation, the file pointer advances to the next word in the file.</p> <br>
+                                                <p><i><b>Description</b></i> : The Read operation reads one word from the position pointed by the file pointer and stores it into the buffer. After each read operation, the file pointer advances to the next word in the file.</p> 
 
                                                 <!--
                                                 <p>The data structures modified are <a href="mem_ds.html#ts_table" target="_blank">Terminal Status Table</a>, <a href="process_table.html" target="_blank">Process Table</a>, <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>, <a href="mem_ds.html#buffer_table" target="_blank">Buffer Table</a>, <a href="mem_ds.html#ds_table" target="_blank">Disk Status Table</a>, <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a> and <a href="process_table.html#per_process_table" target="_blank">Per-Process Resource Table</a>.</p>
                                                 <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p>
 
                                                 -->
+<br>
+                                                <figure style="text-align: center;">
+                           <img src="../img/roadmap/FileRead.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Read</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
+
              <div><h4><b>Algorithm</b>:</h4></div>
 	     <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 7, 

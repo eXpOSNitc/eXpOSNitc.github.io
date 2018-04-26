@@ -177,11 +177,11 @@ The values of <i>file size</i>​ of the file and disk blocks containing the fil
 <p>When the loaded code is executed, the code will require more memory. Hence, each process is given a ​<b>memory address space</b>​ called the logical or virtual address space of the process. The eXpOS ABI stipulates that the address space of a process starts from logical address 0 and ends at logical address 5119 (10 pages – numbered logical page 0 to logical page 9 of the process.)
 </p>
 
-<p>Physical pages are allocated using ​<i>GetFreePage</i> ​function of the ​<a href="../os_modules/module_2.html" target="_blank">Memory Manager Module</a>. The memory pages allocated to a process need not be contiguous. Hence, ​<b>there must be a table for each process that describes the mapping of logical pages to physical pages</b>.​ This table is called the ​<b>per-process page table​</b>. The code of the executable program will contain reference to logical addresses, which has to be translated to physical addresses when the program is executed. This translation is done by the ​<a href="../arch_spec-files/paging_hardware.html" target="_blank">paging hardware​</a> of the XSM machine. This documentation assumes that the user is familiar with paging hardware (see <a href="../arch_spec.html" target="_blank">XSM tutorial</a> for more details). Hence, we will not describe page tables or the details of paging here. What is important here is the fact that the mapping of logical pages to physical pages is maintained in the per-process page table.</p>
+<p>Physical pages are allocated using ​<i>GetFreePage</i> ​function of the ​<a href="../os_modules/Module_2.html" target="_blank">Memory Manager Module</a>. The memory pages allocated to a process need not be contiguous. Hence, ​<b>there must be a table for each process that describes the mapping of logical pages to physical pages</b>.​ This table is called the ​<b>per-process page table​</b>. The code of the executable program will contain reference to logical addresses, which has to be translated to physical addresses when the program is executed. This translation is done by the ​<a href="../arch_spec-files/paging_hardware.html" target="_blank">paging hardware​</a> of the XSM machine. This documentation assumes that the user is familiar with paging hardware (see <a href="../arch_spec.html" target="_blank">XSM tutorial</a> for more details). Hence, we will not describe page tables or the details of paging here. What is important here is the fact that the mapping of logical pages to physical pages is maintained in the per-process page table.</p>
 
 <p>The OS expects that the application program logically divides the 10 page logical address space of a process into four parts a) ​<b>library</b>​ (logical pages 0 and 1), b) ​<b>heap</b> (logical pages 2, 3), c) ​<b>code</b>​ (or sometimes called “text” in OS jargon) (logical pages 4,5,6,7) and d) ​<b>stack</b>​ (logical pages 8,9). (These conventions are listed out in the <a href="../abi.html" target="_blank">ABI documentation</a> and application programs (or program compilers) are expected to follow these regulations when preparing the executable file).</p>
 
-<p>The ​<i>Exec</i> system call uses the ​<i>DiskLoad</i> function of the ​<a href="../os_modules/module_4.html" target="_blank">Device Manager Module</a>​ to load the contents of the executable file specified into logical pages 4,5,6 and 7. (That is, the disk blocks will be loaded to the physical pages corresponding to these logical pages). Logical pages 0 and 1 are mapped to the eXpOS ​<a href="../abi.html" target="_blank">run time library​</a>. The OS pre-loads the library into memory pages 63 and 64 at boot time. The ​<i>Exec</i> system call sets the page table entries for the logical pages 0 and 1 of each process to physical pages 63 and 64. Pages are allocated using the <i>GetFreePage</i>​ function of the ​Memory Manager Module​ for stack and heap regions of memory during program loading.
+<p>The ​<i>Exec</i> system call uses the ​<i>DiskLoad</i> function of the ​<a href="../os_modules/Module_4.html" target="_blank">Device Manager Module</a>​ to load the contents of the executable file specified into logical pages 4,5,6 and 7. (That is, the disk blocks will be loaded to the physical pages corresponding to these logical pages). Logical pages 0 and 1 are mapped to the eXpOS ​<a href="../abi.html" target="_blank">run time library​</a>. The OS pre-loads the library into memory pages 63 and 64 at boot time. The ​<i>Exec</i> system call sets the page table entries for the logical pages 0 and 1 of each process to physical pages 63 and 64. Pages are allocated using the <i>GetFreePage</i>​ function of the ​Memory Manager Module​ for stack and heap regions of memory during program loading.
 </p>
 
 <br><br>
@@ -202,7 +202,7 @@ page is called the ​<a href="../os_design-files/process_table.html#user_area" 
 </p>
 
 
-<p>There are some issues that were left out in the above description. ​<i>Exec</i> system call can be run only by an existing process. The system call <a href="https://en.wikipedia.org/wiki/Overlay_(programming)​" target="_blank">overlays</a> the existing program with the newly loaded program and continues to run with the same process id and user id. From an implementation point of view, this means that the newly loaded program uses the same process data structures - process table, page table, resource table and disk map table - of process that invokes ​<i>Exec</i>. Part of the contents of these tables that define attributes of the process like the process id and user id are also retained.
+<p>There are some issues that were left out in the above description. ​<i>Exec</i> system call can be run only by an existing process. The system call <a href="https://en.wikipedia.org/wiki/Exec_(system_call)" target="_blank">overlays</a> the existing program with the newly loaded program and continues to run with the same process id and user id. From an implementation point of view, this means that the newly loaded program uses the same process data structures - process table, page table, resource table and disk map table - of process that invokes ​<i>Exec</i>. Part of the contents of these tables that define attributes of the process like the process id and user id are also retained.
 </p>
 
 <p>After completion of its work, ​<i>Exec</i>​ system call transfers control to the starting address newly loaded code, so that the newly loaded program begins execution immediately in the <a href="../os_design-files/process_table.html#state" target="_blank">RUNNING state</a>.</p>
@@ -217,7 +217,7 @@ page is called the ​<a href="../os_design-files/process_table.html#user_area" 
 <br><br>
 <p>The process table is a global data structure that has an entry for each process. Each process is assigned a unique ​<b>process id</b>​ (called PID). The PID of a process is the index of the process's entry in the process table. The fields of the process table entries include​ <b>user-id</b>​ of the user executing the process (the semantics of user-id will not be discussed here), pointer to the ​<b>page table</b> of the process, index of the <b>inode</b>​ of the executable file that is loaded as the process, index of the ​<b>user area page​</b> etc. The field ​<b>input-buffer</b>​ is a one word buffer used to store data read from terminal by the process. The field <b>tick</b>​ is used to keep track of “how long” the process has been in the memory (and will not be discussed here).</p>
 
-<p style="text-indent: 0px">Most of the fields are self explanatory and are described <a href="../os_design-files/process_table.html​" target="_blank">here</a>.</p>
+<p style="text-indent: 0px">Most of the fields are self explanatory and are described <a href="../os_design-files/process_table.html" target="_blank">here</a>.</p>
 </div>
 
 
@@ -255,8 +255,18 @@ page is called the ​<a href="../os_design-files/process_table.html#user_area" 
 <p>After initializing process meta-data in child’s process table and setting up the address space of the child, <b><i>Fork</i> sets the state of the child process as CREATED</b>​.</p>
 
 <p>After completing the work, ​<i>Fork</i> returns to the parent and the parent process continues execution immediately. The OS scheduler will put the child to execution in due course of round robin scheduling.</p>
+<br><br>
 
-<p>The ​<b>Exit system call</b> results in​ <b>termination</b>​ of a process. <i>Exit</i> calls the ​<i>Exit Process</i> function of the <a href="../os_modules/Module_1,html" target="_blank">process manager module</a> to release all the memory (and swap pages if any) pages allocated to the process and close all open file and semaphore instances. The data structures allocated to the process are also released. ​<i>Exit</i>​ finally invokes the scheduler to run other processes.</p>
+<figure style="text-align: center;">
+                           <img src="../img/roadmap/fork.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Fork</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
+
+
+<p>The ​<b>Exit system call</b> results in​ <b>termination</b>​ of a process. <i>Exit</i> calls the ​<i>Exit Process</i> function of the <a href="../os_modules/Module_1.html" target="_blank">process manager module</a> to release all the memory (and swap pages if any) pages allocated to the process and close all open file and semaphore instances. The data structures allocated to the process are also released. ​<i>Exit</i>​ finally invokes the scheduler to run other processes.</p>
 
 <p>The first two processes - IDLE and INIT are hand created by the OS during boot loading. All further processes created through <i>Fork</i> operations from the INIT process and its descendent processes.</p>
 

@@ -124,11 +124,21 @@
                                                         <td>File is open</td>
                                                     </tr> 
                                              </table>
-                                                <p><i><b>Description</b></i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file. Delete command fails also if the file to be deleted does not belong to the current user and it has exclusive permissions.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   <br>
+                                                <p><i><b>Description</b></i> : The Delete operation takes as input a filename and deletes it. It returns with an error if any instance of the file is open in the system or if the file is not a DATA file. Delete command fails also if the file to be deleted does not belong to the current user and it has exclusive permissions.  Otherwise, it deletes the root entry for the file name, invalidates the Inode Table entry for the file, releases the disk blocks allocated to the file and returns 0.  </p>   
                                                 <!--   Include if necessary ( When Swap comes in)
 
                                                 <p>The data structures modified are <a href="disk_ds.html#inode_table" target="_blank">Inode Table</a>, <a href="disk_ds.html#root_file" target="_blank">Root file</a> and <a href="disk_ds.html#disk_free_list" target="_blank">Disk Free List</a>.</p>
                                                  <p>The mode flag in the <a href="process_table.html" target="_blank">Process Table</a> has to be set to Kernel mode when the process enters the system call and reset before exiting from the system call.</p> -->
+
+<br>
+<figure style="text-align: center;">
+                           <img src="../img/roadmap/delete.png" style="display:block;margin-left:auto;margin-right:auto" >
+                           <br>
+                           <figcaption style="font-size: 16px">Control flow diagram for <i>Delete</i> system call</figcaption>
+                           </figure>
+
+                           <br><br>
+
              <div><h4><b>Algorithm </b> :</h4></div>
             <pre>
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry to 4, 
