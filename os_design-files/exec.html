@@ -161,6 +161,8 @@ Load the first code page into memory by invoking the <b>get_code_page()</b> func
 <a data-toggle="collapse"   href="#collapse1">Set the Page Table and Disk Map Table entries of the process.</a>
 <div id="collapse1" class="panel-collapse collapse">
                 Set the Page Table entries for library. Set the valid bit to 1 and write bit to 0.
+                /* Since the ExpL compler uses the library for even basic operations like read/write, 
+                the library flag is ignored, and we link the library to all loaded programs */
 
                 Invalidate the page table entries for heap. &nbsp;&nbsp; 
                 /* Memory will be allocated when page fault occurs */

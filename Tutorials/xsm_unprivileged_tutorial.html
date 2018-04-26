@@ -118,63 +118,93 @@
 Paging specification</a> and <a href="http://exposnitc.github.io/virtual_machine_spec.html" target="_blank">
 Virtual address space model</a> before reading further.  
  </p>
- 
+<br> 
 <p>
 In the privileged mode, a memory address refers to the actual physical memory address.  
-For instance, the instruction sequence:
+For instance, the instruction sequence:</p>
 <div>
 <pre>MOV SP, 1000
 PUSH R0</pre>
 </div>
-will first set SP to 1001 and transfer the contents of register R0 to the memory location 1001.  
+<br>
+<p>The first instruction sets stack pointer register SP to 1000. The PUSH instruction will first increment  SP (to value 1001) 
+and then transfers contents of the register R0 to the top of the stack - that is - to the memory location 1001 pointed to by SP.  
 </p>
+<br>
 <p>
-However, the PUSH and other instructions have a different behaviour when executed in unprivileged mode. 
+<b>However, PUSH and other <a href="../arch_spec-files/instruction_set.html">unprivileged instructions</a> have a different behaviour when executed in unprivileged mode. </b>
 PUSH will increment SP to 1001 as before, but the memory address to which contents of R0 is copied is determined 
 in a different way. The machine will treat the contents of SP as a logical address, find out the 
-physical address corresponding to the logical address 1001 using page table address translation and 
-transfer contents of R0 to that location.  
+physical address corresponding to the logical address 1001 using the <b>address translation mechanism</b> of XSM and 
+transfer contents of R0 to that location.  We discribe the address translation process below.
 </p>
+<br>
+<h2>Address Translation</h2>
+<br>
+<br>
 <p>
 <b>The translation of a logical address to physical address is done completely by the machine's paging hardware.</b>  
-The sequence of steps involved may be abstractly described by the following steps, which will be described in 
+The sequence of steps involved may abstractly be described by the following steps, which will be described in 
 detail with examples soon:    
-<br>
-1. Given logical address – find logical page number and offset specified by the address.
-<br>
-2. Search the page table to find the physical page number from the logical page number.
-<br>
-3. Multiply physical page number by page size to find physical page address.
-<br>
-4. physical address =  physical page address + offset.
 </p>
+<br>
+<ol>
+<li><p>Given a logical address – <b>find the logical page number and offset</b> specified by the address.</p></li>
+<li><p>Search the page table to <b>find the physical page number</b> from the logical page number.</p></li>
+<li><p>Multiply physical page number by page size to <b>find the physical page address</b>.</p></li>
+<li><p><b>physical address =  physical page address + offset</b>.</p></li>
+</ol>
+</p>
+<br>
 <p>
-The machine assumes that the PTBR register holds the (starting) address of the page table in memory. 
+<b>The machine assumes that the PTBR register holds the base(starting) address of the <a href="../os_design-files/process_table.html#per_page_table">page table</a> in memory. </b>
  Since PTBR register can be accessed only in privileged mode,  your code must have set the PTBR register
- to store the address of the page table before entering unprivileged mode execution.  Moreover, you also must 
- set appropriate values in the page table before you code execute an IRET instruction to switch the machine to 
- unprivileged mode to get the address translation work the way you would like it to.   
+ to store the address of the page table before entering unprivileged mode execution.  Moreover, to get the address translation hardware to work 
+ the way you want it to, your must write privilaged code to
+ set appropriate values in the page table before executing an IRET instruction to switch the machine to 
+ unprivileged mode .   
  Thus, some setup work needs to be done in the privileged mode before a switch to unprivileged mode.  
 </p>
-
+<br>
 <p>
-How does the machine translate a logical address – say 1001- to the physical address? 
+How does the machine translate a logical address – say 1001- to the corresponding physical address? 
  The machine does the following sequence of actions.   
  Let us assume that PTBR contains value – say 3000, set previously.  
+</p>
 <br>
-a. calculate  logical_page_number = logical_address DIV page_size = (1001 DIV 512)=1.  
 <br>
-b. calculate  offset = logical_address MOD page_size = (1001 MOD 512) = 489.  
+<ol>
+<li><p>Calculate,
 <br>
-c. Find the page_table_address  = contents of PTBR = 3000.
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;logical_page_number = logical_address DIV page_size 
+ <br>
+  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;= (1001 DIV 512) = 1.  </p></li>
+<li><p>Calculate,
 <br>
-d. Find physical_page_number = value stored in address (page_table_address + 2 x logical_page_number)=
-value stored in address (3000 + 2 x 1) = value stored in address 3002.
-Suppose that this value is 7.  (The minimum value possible is 0 and the maximum value possible is 63 – why?).  
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;offset = logical_address MOD page_size 
+ <br>
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;= (1001 MOD 512) 
+ <br>
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;= 489. </p> </li>
+<li><p>Find,
 <br>
-e.  Calculate Physical_address = physical_page_number x page_size + offset = 7 x 512 + 489 = 4073.   
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;the page_table_address  = contents of PTBR = 3000.</p></li>
+<li><p>Find, 
 <br>
-Thus, PUSH R0 will transfer contents of R0 to the physical address 4073.  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;physical_page_number = value stored in address (page_table_address + 2 x logical_page_number)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;= value stored in address (3000 + 2 x 1) <br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;= value stored in address 3002.<br>
+ &emsp;&emsp; Suppose that this value is 7.  (The minimum value possible is 0 and the maximum value possible is 63 – why?). </p> </li>
+<li><p>Calculate,
+<br>
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;physical_address = physical_page_number x page_size + offset 
+ <br>
+ &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; = 7 x 512 + 489 = 4073.  </p> </li>
+</ol>
+<br>
+<br>
+<p>
+Thus, the instruction PUSH R0 in the code shown in the beginning will transfer contents of R0 to the physical address 4073.  
 </p>
 <p>
 There are several points to mention here.  The PUSH operation will be successful only if the 
@@ -187,10 +217,11 @@ To get a better picture of the unprivileged mode execution, we need to digress b
  theoretical concepts.    
 </p>
 <br>
+
+
+	<h2>Paging and virtual memory</h2>
 <br>
-
-
-	<h4><b>Paging and virtual memory</b></h4>
+<br>
 
 <p>
 First of all, as an OS designer, why should you learn to run the machine in unprivileged mode at all?  
