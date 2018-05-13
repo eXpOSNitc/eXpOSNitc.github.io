@@ -176,13 +176,17 @@
                     <br> 
                     <br> 
                            <div style="background: url(../img/os-modules/FileManager.png); height: 419px; width: 981px;">
+                           <a class="btn" href="#buffered_write" style="position: absolute; height: 40px; width: 240px; margin-top: 60px; margin-left: 370px"></a>
+                           <a class="btn" href="#buffered_read" style="position: absolute; height: 40px; width: 240px; margin-top: 120px; margin-left: 370px"></a>
+                           <a class="btn" href="#open" style="position: absolute; height: 40px; width: 240px; margin-top: 180px; margin-left: 370px"></a>
+                           <a class="btn" href="#close" style="position: absolute; height: 40px; width: 240px; margin-top: 240px; margin-left: 370px"></a>
 
                            <a class="btn" href="Module_4.html" style="position: absolute; height: 165px; width: 270px; margin-top: 120px; margin-left: 0px"></a>
                            <a class="btn" href="Module_0.html" style="position: absolute; height: 300px; width: 270px; margin-top: 120px; margin-left: 710px"></a>
                            </div>
 
                
-   <h3> Buffered Write </h3>
+   <h3 id="buffered_write"> Buffered Write </h3>
    <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word provided is written into the offset position of the buffer.<br> Buffer managemnet is handled by this function internally.<br><br>
 
 <pre>
@@ -223,7 +227,7 @@ Called by the Write system call.
 
 
 
- <h3> Buffered Read </h3>
+ <h3 id="buffered_read"> Buffered Read </h3>
  <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The word present at the offset position of the buffer is copied to the Memory address provided as input. Buffer management is handled by this function internally.<br> <br>
 NOTE: Physical memory address must be provided. <br> <br>
 <pre>
@@ -263,7 +267,7 @@ NOTE: Physical memory address must be provided. <br> <br>
 
 Called by the Read system call. <br> <br><br>
            
-   <h3> Open </h3>
+   <h3 id="open"> Open </h3>
    <i> <b>Description </b></i>: Locates the file in the inode table and makes an entry in the Open File Table. Returns the Open File Table index or an error code if file does not exist or the table is full. On a successfull open, the file status table entry of the file is incremented.<br>
    <br>
    <b>Note:</b> This function must not be called unless a the calling process has a free entry available in the <a href="../os_design-files/process_table.html#per_process_table">per-process resource table</a> to store the open file table index returned by this function.<br><br>
@@ -299,7 +303,7 @@ Question:
 
 Called by the open system call.
 
-<h3> Close </h3>
+<h3 id="close"> Close </h3>
    <i> <b>Description </b></i>: Closes the open instance of a file. Assumes a valid Open File Table index is given as input. <br><br> 
 
 <pre>
