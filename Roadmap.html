@@ -2373,14 +2373,14 @@ loadi(70,12);</pre></div>
 	Set the Page Table entries for init as done in previous stages with PTBR as PAGE_TABLE_BASE+20.</li>
 
 
-<li> As noted earlier, set up <a href="os_design-files/process_table.html" target="_blank"> Process Table </a>entries for idle from address PROCESS_TABLE and 
+<li> As noted earlier, <a href="os_design-files/process_table.html" target="_blank"> Process Table </a>entries for idle starts from address PROCESS_TABLE and 
      init from PROCESS_TABLE + 16.  Set the PID field in the Process Table entry to 0 for idle 
      and 1 for init.</li>
 	
 <li>	
 The process being currently scheduled is said to be in <a href="support_tools-files/constants.html" target="_blank">RUNNING</a> state.
 The bootstrap loader will schedule the init process first. 
-Thus, in the OS startup code, set the idle process to "CREATED" state and INIT process to "RUNNING" state.
+Thus, in the OS startup code, set the STATE field in process table entry of the idle process to "CREATED" and INIT process to "RUNNING".
 The CREATED state indicates that the process had never been scheduled for execution
 previously.  The need for a separate CREATED state will be explained later.    
 Subsequent "re-scheduling" will be done by the timer interrupt handler. According to process table, STATE field occupies 2 words. In case of RUNNING and CREATED states, second word is not required. See <a href="os_design-files/process_table.html#state" target="_blank">process
@@ -2394,7 +2394,7 @@ states</a>.
 	
 		<li>Set the UPTR field in the Process Table entry for idle
 		 to 8*512 which is the logical address of user SP. 
-		(These steps were explained in detail in Stage 7). </li>
+		(The reasoning behind this step was explained in detail in Stage 7). </li>
 		
 		<li>Set the KPTR field of the process table for idle to 0.</li>
 
@@ -2451,7 +2451,7 @@ will be empty when a process returns to user mode as there is no kernel context 
 		The scheduler will be implemented in the timer interrupt handler. After saving the context of the currently executing process in its kernel stack, the scheduler must switch to the kernel stack to that of the next process to be scheduled.  The context of the next process has to be loaded to the registers and then control of execution can be transferred to the process. Detailed intructions for scheduling are given below.</p><br>
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Switch from the user stack to kernel stack of the currently executing process and save the register context 
-			 using the backup instructions as done in stage 9.</li>
+			 using the <a href="arch_spec-files/instruction_set.html#backup"><b>backup</b></a> instruction as done in stage 9.</li>
 			
 			<li>Obtain the PID of currently executing process from <a href="os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table </a>.
 
@@ -2801,7 +2801,7 @@ loadi(51,64);</pre></div> </li>
 				Write an SPL program for the scheduler module (module 5) as given below:  
 				<ol style="list-style-type: decimal; margin-left: 2px">
 					<li>Obtain the PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
-					<li>Push the BP of the current process on top of the kernel stack. //This will be explained in the later stages  when the scheduler is also invoked from other modules not only timer.</li>
+					<li>Push the BP of the current process on top of the kernel stack. (See Note2 below)
 					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry corresponding to the current PID.</li>
 					<li>Save SP % 512 in the kernel stack pointer field, also PTBR and PTLR into the corresponding fields in the Process Table entry.</li>
 					<li>Iterate through the Process Table entries, starting from the succeeding entry of the current process to find a process in READY or CREATED state.</li>
@@ -2823,6 +2823,17 @@ loadi(51,64);</pre></div> </li>
 				<br>
              <code>Note: </code>In later stages you will modify the scheduler module to the final form given  <a href="os_modules/Module_5.html" target="_blank">here</a>.
 			</p><br>
+			<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px" >
+            <p> <b>Note2:</b> 
+           In the present stage, the scheduler module is called only from the time interrupt handler.  The timer interrupt handler already contains the instruction to backup the register context of the current process.  Hence, the scheduler does not have to worry about having to save the user register context (including the value of the BP register) of the current process.     What then is the need for the scheduler to push the BP register?  
+<br>
+The reason is that, in later stages, the scheduler may be called from <b>kernel modules</b> other than the timer interrupt routine in later stages.  Such calls typically happen when an application invokes a <b>system call</b> and the system call routine invokes a kernel module which in turn invokes the scheduler.  Whenever this is the case, the OS kernel expects that the application saves all the user mode registers <b>except the BP register</b> before making the system call.  
+<br>
+For instance, if the application is written in ExpL and compiled using the ExpL compiler given to you, the compiler saves all the user registers <b>except BP</b> before making the system call.  The ExpL compiler expects that the OS will save the value of the BP register before scheduling another application process.  This explains why the scheduler needs to save the BP register before a context switch.    
+            
+            </p>
+            </div>
+<br>
 
 			<b>Modifications to INT 10 handler </b><br><br>
 			 <p> The ExpL compiler sets every user program to execute the INT 10 instruction (exit system call) at the end of execution to terminate the process gracefully. In previous stages, we wrote an INT 10 routine containing just a halt instruction.  Hence, if any process invoked INT 10 upon exit, the machine would halt and no other process would execute further.  However, to allow multiple processes to run till completion, INT 10 must terminate only the process which invoked it, and schedule other surviving processes.  (INT 10 shall set the state of the dying process to TERMINATED).  If all processes except idle are in TERMINATED state, then INT 10 routine can halt the system.   </p>
