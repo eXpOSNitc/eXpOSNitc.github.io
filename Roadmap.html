@@ -2380,7 +2380,7 @@ loadi(70,12);</pre></div>
 <li>	
 The process being currently scheduled is said to be in <a href="support_tools-files/constants.html" target="_blank">RUNNING</a> state.
 The bootstrap loader will schedule the init process first. 
-Thus, in the OS startup code, set the STATE field in process table entry of the idle process to "CREATED" and INIT process to "RUNNING".
+Thus, in the OS startup code, set the STATE field in process table entry of the idle process to <a href="support_tools-files/constants.html" target="_blank">CREATED</a> and INIT process to <a href="support_tools-files/constants.html" target="_blank">RUNNING</a>.
 The CREATED state indicates that the process had never been scheduled for execution
 previously.  The need for a separate CREATED state will be explained later.    
 Subsequent "re-scheduling" will be done by the timer interrupt handler. According to process table, STATE field occupies 2 words. In case of RUNNING and CREATED states, second word is not required. See <a href="os_design-files/process_table.html#state" target="_blank">process
@@ -2801,7 +2801,7 @@ loadi(51,64);</pre></div> </li>
 				Write an SPL program for the scheduler module (module 5) as given below:  
 				<ol style="list-style-type: decimal; margin-left: 2px">
 					<li>Obtain the PID of the current process from the <a href="os_design-files/mem_ds.html#ss_table" target="_blank"> System Status Table </a>.</li>
-					<li>Push the BP of the current process on top of the kernel stack. (See Note2 below)
+					<li>Push the BP of the current process on top of the kernel stack. (See the box below)
 					<li>Obtain the <a href="os_design-files/process_table.html">Process Table</a> entry corresponding to the current PID.</li>
 					<li>Save SP % 512 in the kernel stack pointer field, also PTBR and PTLR into the corresponding fields in the Process Table entry.</li>
 					<li>Iterate through the Process Table entries, starting from the succeeding entry of the current process to find a process in READY or CREATED state.</li>
@@ -2824,10 +2824,12 @@ loadi(51,64);</pre></div> </li>
              <code>Note: </code>In later stages you will modify the scheduler module to the final form given  <a href="os_modules/Module_5.html" target="_blank">here</a>.
 			</p><br>
 			<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px" >
-            <p> <b>Note2:</b> 
+            <p> 
            In the present stage, the scheduler module is called only from the time interrupt handler.  The timer interrupt handler already contains the instruction to backup the register context of the current process.  Hence, the scheduler does not have to worry about having to save the user register context (including the value of the BP register) of the current process.     What then is the need for the scheduler to push the BP register?  
 <br>
-The reason is that, in later stages, the scheduler may be called from <b>kernel modules</b> other than the timer interrupt routine in later stages.  Such calls typically happen when an application invokes a <b>system call</b> and the system call routine invokes a kernel module which in turn invokes the scheduler.  Whenever this is the case, the OS kernel expects that the application saves all the user mode registers <b>except the BP register</b> before making the system call.  
+<br>
+The reason is that, in later stages, the scheduler may be called from <a href="os_design.html"><b>kernel modules</b></a> other than the timer interrupt routine.  Such calls typically happen when an application invokes a <a href="os_design.html"><b>system call</b></a> and the system call routine invokes a kernel module which in turn invokes the scheduler.  Whenever this is the case, the OS kernel expects that the application saves all the user mode registers <b>except the BP register</b> before making the system call.  
+<br>
 <br>
 For instance, if the application is written in ExpL and compiled using the ExpL compiler given to you, the compiler saves all the user registers <b>except BP</b> before making the system call.  The ExpL compiler expects that the OS will save the value of the BP register before scheduling another application process.  This explains why the scheduler needs to save the BP register before a context switch.    
             
