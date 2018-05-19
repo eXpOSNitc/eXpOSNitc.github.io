@@ -2858,9 +2858,9 @@ For instance, if the application is written in ExpL and compiled using the ExpL 
                           <div class="section_area">
                           <ul class="list-group">
                            <li class="list-group-item">
-<a data-toggle="collapse"  href="#collapseq6"><b>Q1.</b> Is it always the case that scheduler module is invoked only from the timer interrupt routine?</a>
+<a data-toggle="collapse"  href="#collapseq6"><b>Q1.</b> When does the OS kernel invoke the scheduler from some routine other than the timer interrupt handler?</a>
                             <div id="collapseq6" class="panel-collapse collapse">
-	    In the present stage - YES.  However, in later stages, if a process gets blocked inside a kernel module (waiting for some resource), then the process will set its state to "WAITING" and will invoke the scheduler.  Later when the process is back in READY state (as the resource becomes free) and the scheduler selects the process for running, execution returns to the instruction following the call to the scheduler in the kernel module.      
+	    In later stages, if a process gets blocked inside a kernel module (waiting for some resource), then the process will set its state to "WAITING" and will invoke the scheduler.  Later when the process is back in READY state (as the resource becomes free) and the scheduler selects the process for running, execution returns to the instruction following the call to the scheduler in the kernel module.      
 		</div>
 </li>
                           </ul>
