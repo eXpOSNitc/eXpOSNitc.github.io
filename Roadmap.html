@@ -2698,7 +2698,7 @@ the INIT process never goes through the CREATED state.
 				<li>Write an ExpL program to print the even numbers from 1-100. Load this even program as an executable.
 				<pre>load --exec < path to even.xsm > </pre> 
 				Dump the <a href="os_design-files/disk_ds.html#inode_table" target="_blank"> inode table </a> using 
-				<i>dump --inodetable</i> command in xfs-interface. 
+				<i>dump --inodeusertable</i> command in xfs-interface. 
 				Check the disk address of code blocks of even.xsm. 
 				</li>
 
@@ -2709,8 +2709,11 @@ the INIT process never goes through the CREATED state.
 		
 		<ol style="list-style-type:decimal;margin-left:2px">
 			<li>Load the code pages of the even program from disk to memory.</li>
-			<li>Set the Process Table entry and Page Table entries for setting up a process for the 
-			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialize the process state as CREATED in the process table entry for the even process. Set the PID field in the process table entry to 2.</li>
+			<li>Set the <a href="os_design-files/process_table.html">Process Table</a> entry and <a href="os_design-files/process_table.html#per_page_table">Page Table</a> entries for setting up a process for the 
+			even program. You should set up the PTBR, PTLR, UPTR, KPTR, User Area Page Number etc. and also initialize the process state as CREATED in the process table entry for the even process. Set the PID field in the process table entry to 2.
+            <br><i>Make sure that you do not allot memory pages that are already allotted to some other process or reserved for the operating system.</i>
+            </li>
+
 			<li>Set the starting IP of the new process on top of its user stack.</li>
 			<li>We will implement the scheduler as a seperate module that can be invoked from the timer ISR (Interrupt Service Routine).  
 			<!--Such stand alone subroutines are implemented as <a href="os_modules/Module_Design.html" target="_blank"> kernel modules </a> in eXpOS.-->   The eXpOS design stipulates that 
