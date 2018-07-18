@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
 
     <!-- CSS
-    ================================================== -->       
+    ================================================== -->
     <!-- Bootstrap css file-->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
@@ -24,37 +24,37 @@
     <!-- Superslide css file-->
     <link rel="stylesheet" href="../css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="../css/slick.css" rel="stylesheet"> 
+    <link href="../css/slick.css" rel="stylesheet">
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="../css/animate.css">  
+    <link rel="stylesheet" href="../css/animate.css">
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <link rel="stylesheet" href="../css/elastic_grid.css">
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>
     <!-- Default Theme css file -->
     <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="../style.css" rel="stylesheet">
-   
+
     <!-- Google fonts -->
     <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
     <link href='../css/varela.css' rel='stylesheet' type='text/css'>
     <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
   </head>
-  <body> 
+  <body>
      <!-- BEGAIN PRELOADER -->
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
     <!-- END PRELOADER -->
 
-  
+
     <!--=========== BEGIN HEADER SECTION ================-->
     <header id="header">
       <!-- BEGIN MENU -->
       <div class="menu_area">
-        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation">
           <div class="container">
           <div class="navbar-header">
             <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
@@ -69,29 +69,29 @@
 
             <!-- TEXT BASED LOGO -->
             <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
-            
-                              
+
+
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li>
               <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
                <li><a href="../faq.html" target="_blank">FAQ</a></li>
-              <li><a hhref="../About_us.html">About Us</a></li>                                     
-            </ul>           
+              <li><a hhref="../About_us.html">About Us</a></li>
+            </ul>
           </div>
-          </div>     
-        </nav>  
+          </div>
+        </nav>
       </div>
       <!-- END MENU -->
 
-      
+
     </header>
-		<!--=========== End HEADER SECTION ================--> 
-		
-		
-    
+		<!--=========== End HEADER SECTION ================-->
+
+
+
 <!--=========== BEGIN SECTION 4================-->
     <section id="multiuser">
     <br>
@@ -101,7 +101,7 @@
         <div class="row">
           <div class="col-lg-12 col-md-12">
             <div class="about_area">
-             
+
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 <h2 >Multi-user Extension to eXpOS</h2>
@@ -110,40 +110,40 @@
                 <p>This document specifies the extended features provided by eXpOS to support multiple users. </p>
 		<p>The extended eXpOS allows a maximum of MAX_USER_NUM users. Each user is alloted a unique <b>userid</b>. Every process is assigned the userid, corresponding to the user executing the process. Two special processes hand created by the kernel at boot-­time are given the special userid ­0. These processes are the <a href="http://exposnitc.github.io/os_design-files/misc.html#idle" target="_blank" >idle process </a> and the <a href="http://exposnitc.github.io/os_design-files/misc.html#login" target="_blank">login process</a> and are called the <b>kernel processes</b>. At the end of system bootstrap, the login process is scheduled for execution. The present version of eXpOS sets MAX_USER_NUM to 16.</p>
 		<p>The login process waits invoking the (terminal) read system call for a username and password to be input from the console. Both username and password are strings. The login process executes the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#multiusersystemcalls" target="_blank">Login system call</a> with the username and the password as the arguments. The login system call verifies the user and creates a new <a href ="http://exposnitc.github.io/os_design-files/misc.html#shell" target="_blank" >shell process</a>. (In practice, the shell is preloaded into memory during OS startup and the login process sets the shell ready to run.) The shell is assigned the userid of the logged in user (by the Login system call).  The login process thereafter goes to sleep and will wake up only upon execution of the logout system call.
-		
+
 		All descendent processes of the shell inherit the userid of the shell. Note that Login is the only system call that can set the userid of a process. eXpOS requires one user to logout before another user can login. Hence user processes with multiple userid values will not execute simultaneously.
-		When the shell process executes the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#multiusersystemcalls">logout system call</a>, all processes of the user are terminated and the login process is woken up.  The login process then proceeds to login the next user.  
-		
-		
-		
-		
-		
+		When the shell process executes the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#multiusersystemcalls">logout system call</a>, all processes of the user are terminated and the login process is woken up.  The login process then proceeds to login the next user.
+
+
+
+
+
 		<b>eXpOS specification allows only the login process to execute the login system call. Other multiuser system calls except <i>getuid</i> and <i>getuname</i> can be executed only from the shell.</b> The high level interface of the login system call is given  <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html#multiusersystemcalls" target="_blank"> here</a>.</p>
 	      <p>Two special users, the <b>kernel </b> and the <b>root</b>, defined by eXpOS, are assigned <b>userid 0</b> and <b>userid 1</b> respectively. Root is the user with administrative privileges. The shutdown system call can be executed only from the shell of the root user. </p>
 	      <p>The system calls for adding a user or removing an existing user from the system can be executed only by the root. A new user is created using <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">newusr</a> system call. An existing user can be deleted by the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">remusr</a> system calls. The special users­, root and kernel, cannot be removed.
 	      A user can change his/her password using <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">setpwd</a> system call which takes username and password as arguments. A user, other than the root is allowed to change only his/her own password. Root can change the password of any user, including itself.
 	      The <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">getuid</a> system call returns the user id of the current user. The <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">getuname</a> system call returns the username corresponding to a userid.</p>
 	      <p>The API specification of all the multi­user system calls can be seen <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">here</a>.</p>
-	      
+
 	      <div id="file_access_permissions">
 	      <h2 >File Access Permissions</h2>
 	      <br/>
           <br/>
-	      <p>When a file is created by a process using the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">Create</a> system call, the process can set its permission to <b>exclusive/open-access</b>, to restrict access permissions. When a file is created with it's permission set to exclusive, <b>write and delete system calls</b> to that file will fail if executed by any user  other than the owner of the file or the root. Open-access files have no such restrictions. The root can modify/delete any file (except the root file) irrespective of the permissions. Kernel processes have unrestricted access to all <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">system calls</a>. A process may invoke any file system call on a file which does not have the exclusive flag set. The root file has default userid 0 and permission exclusive.</p>
-<p><font color="red">*</font>By default, the owner of all executable files is set to kernel. File access permissions are not used for executable files.</p>
-<p><font color="red">**</font>The owner of any data file preloaded into the system through xfs-interface is set to root and permission to open-access. Hence there is no access restriction to these files.</p>
+	      <p>When a file is created by a process using the <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">Create</a> system call, the process can set its permission to <b>exclusive(value = 0)/open-access(value = 1)</b>, to restrict access permissions. When a file is created with it's permission set to exclusive, <b>write and delete system calls</b> to that file will fail if executed by any user  other than the owner of the file or the root. Open-access data files have no such restrictions. <b>The root can modify/delete any data file (but not the root file or executable files) irrespective of the permissions</b>. Kernel processes (Idle and Init/Login) have unrestricted access to all <a href="http://exposnitc.github.io/os_spec-files/systemcallinterface.html" target="_blank">system calls</a>.  The root file has default userid 0 (kernel) and permission exclusive (value = 0).</p>
+<p><font color="red">*</font> By default, the owner of all executable files is set to kernel (value = 0). File access permissions are not used for executable files. They can only be created externally and loaded using the external interface (see <a href="../support_tools-files/xfs-interface.html" target="_blank">XFS Interface</a> for XSM architecture.)</p>
+<p><font color="red">**</font> The owner of any data file preloaded into the system through xfs-interface is set to root and permission to open-access. Hence there is no access restriction to these files.</p>
 </div>
               </div>
 
-            
+
           </div>
-        </div>       
+        </div>
       </div>
         <a href="../os_spec.html"><img src="../img/spec_icon.jpg"  style="float:right;margin-right: 80px;"/></a>
     </section>
     <!--=========== END SECTION 4================-->
-    
-		   
+
+
       <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
@@ -161,20 +161,20 @@
 
      <!-- Javascript Files
      ================================================== -->
-  
+
      <!-- initialize jQuery Library -->
     <script src="../js/jquery.min.js"></script>
     <!-- Google map -->
     <script src="../js/map_js.js"></script>
     <script src="../js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
-    <script src="../js/wow.min.js"></script> 
+    <script src="../js/wow.min.js"></script>
     <!-- Bootstrap js -->
     <script src="../js/bootstrap.min.js"></script>
     <!-- superslides slider -->
     <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
     <!-- slick slider -->
-    <script src="../js/slick.min.js"></script>    
+    <script src="../js/slick.min.js"></script>
     <!-- for circle counter -->
     <script src='../js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->
