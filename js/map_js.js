@@ -3,11 +3,11 @@
 window.google = window.google || {};
 google.maps = google.maps || {};
 (function() {
-  
+
   function getScript(src) {
-    document.write('<' + 'script src="' + src + '"><' + '/script>');
+    //document.write('<' + 'script src="' + src + '"><' + '/script>');
   }
-  
+
   var modules = google.maps.modules = {};
   google.maps.__gjsload__ = function(name, text) {
     modules[name] = text;

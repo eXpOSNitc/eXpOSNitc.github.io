@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/png" href="img/favicon.jpg"/>
 
     <!-- CSS
-    ================================================== -->       
+    ================================================== -->
     <!-- Bootstrap css file-->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
@@ -24,18 +24,18 @@
     <!-- Superslide css file-->
     <link rel="stylesheet" href="css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="css/slick.css" rel="stylesheet"> 
+    <link href="css/slick.css" rel="stylesheet">
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="css/animate.css">  
+    <link rel="stylesheet" href="css/animate.css">
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="css/elastic_grid.css"> 
+    <link rel="stylesheet" href="css/elastic_grid.css">
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='css/jquery.circliful.css'>
     <!-- Default Theme css file -->
     <link id="orginal" href="css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="style.css" rel="stylesheet">
-   
+
     <!-- Google fonts -->
     <link href='css/opensans.css' rel='stylesheet' type='text/css'>
     <link href='css/varela.css' rel='stylesheet' type='text/css'>
@@ -48,19 +48,19 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body> 
+  <body>
      <!-- BEGAIN PRELOADER -->
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
     <!-- END PRELOADER -->
 
-  
+
     <!--=========== BEGIN HEADER SECTION ================-->
     <header id="header">
       <!-- BEGIN MENU -->
       <div class="menu_area">
-        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation">
           <div class="container">
           <div class="navbar-header">
             <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
@@ -75,193 +75,193 @@
 
             <!-- TEXT BASED LOGO -->
             <a class="navbar-brand" href="index.html">eXpOS<span>NITC</span></a>
-            
-                              
+
+
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
               <li><a href="./index.html">Home</a></li>
-              <li><a href="./documentation.html" target="_blank">Documentation</a></li> 
+              <li><a href="./documentation.html" target="_blank">Documentation</a></li>
               <li><a href="./Roadmap.html" target="_blank">Roadmap</a></li>
                <li><a href="faq.html" target="_blank">FAQ</a></li>
-              <li><a href="About_us.html" target="_blank">About Us</a></li>                                     
-            </ul>           
+              <li><a href="About_us.html" target="_blank">About Us</a></li>
+            </ul>
           </div>
-          </div>     
-        </nav>  
+          </div>
+        </nav>
       </div>
       <!-- END MENU -->
 
-      
+
     </header>
-    <!--=========== End HEADER SECTION ================--> 
-    
+    <!--=========== End HEADER SECTION ================-->
+
     <!--heading of the page---->
      <div class="container" style="margin-top: 80px;">
 		 <br>
 		 <br>
 
                 <h1 >XSM Virtual Machine Model</h1>
-    
-     </div>     
-    
+
+     </div>
+
     <!--=========== BEGIN Intro SECTION ================-->
-    
+
     <section id="about" style="text-align:justify">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 col-md-12">
-        
+
               <!-- START ABOUT HEADING -->
                <div class="heading">
                 <h2 >Scope of the Document</h2>
                 <br/>
                 <br/>
-                <p>The Virtual Machine model defines the view of the machine to user mode programs. User mode programs are executed in the unprivileged mode.  Consequently,  the privileged mode instructions cannot be used by them. Their memory view and registers available are also limited.  This restricted model is discussed below.</p>  
-				
-				<h2 >Virtual Machine Organisation</h2>              
+                <p>The Virtual Machine model defines the view of the machine to user mode programs. User mode programs are executed in the unprivileged mode.  Consequently,  the privileged mode instructions cannot be used by them. Their memory view and registers available are also limited.  This restricted model is discussed below.</p>
+
+				<h2 >Virtual Machine Organisation</h2>
 				<br/>
                 <br/>
-                <p>The XSM virtual machine model defines the machine model provided by XSM to a program running in <b>user mode</b>. This model comprises of a restricted subset of the machine registers, a restricted instruction set and a restricted memory address space (called the <b>virtual/logical address space</b>). </p>  
+                <p>The XSM virtual machine model defines the machine model provided by XSM to a program running in <b>user mode</b>. This model comprises of a restricted subset of the machine registers, a restricted instruction set and a restricted memory address space (called the <b>virtual/logical address space</b>). </p>
                 <br>
                 <br>
-                
-				<h4 class="panel-title">Registers</h4>              
+
+				<h4 class="panel-title">Registers</h4>
                 <br/>
                 <p>The XSM architecture maintains several registers and ports, each capable of storing a number/string, out of which, only some are accessible in unprivileged mode.  The registers available in the unprivileged mode are</p>
-				
+
 				<table class="table table-bordered" >
                    <tr class="success">
                       <th style="border: 1px solid black">Registers</th>
                       <th style="border: 1px solid black">Purpose</th>
                   </tr>
-                  
+
                   <tr >
                       <td style="border: 1px solid black">R0-R19</td>
                       <td style="border: 1px solid black">General purpose program registers</td>
                   </tr>
-                  
+
                   <tr >
                       <td style="border: 1px solid black">BP, SP, IP</td>
                       <td style="border: 1px solid black">Base, Stack and Instruction Pointers</td>
                   </tr>
-                  
+
               </table>
-              
-              <h4 class="panel-title">Virtual (Memory) Address Space</h4>              
-				
+
+              <h4 class="panel-title">Virtual (Memory) Address Space</h4>
+
                 <br/>
                 <p>The virtual (or logical) memory addresses that can be generated by a user mode program is determined by the value
-of the PTLR register.  The virtual address space of a user mode program is a contiguous address space starting from 
-0 to 512*PTLR-1. The virtual addreses generated by a user mode program are translated into physical addresses by the <a href="../arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a> of XSM. The user mode program is oblivious to the address translation.</p>  
+of the PTLR register.  The virtual address space of a user mode program is a contiguous address space starting from
+0 to 512*PTLR-1. The virtual addreses generated by a user mode program are translated into physical addresses by the <a href="../arch_spec-files/paging_hardware.html" target="_blank">address translation scheme</a> of XSM. The user mode program is oblivious to the address translation.</p>
 
 				<p>Operating systems using the XSM architecture typically specifies the maximum value of PTLR permitted
 for its user processes and divide the allocated address space for an application into library, code,
 data, stack, heap etc.</p>
 
-		<figure><img src="img/addr_transln.png" style="display:block;margin-left:auto;margin-right:auto"></img>	
+		<figure><img src="img/addr_transln.png" style="display:block;margin-left:auto;margin-right:auto"></img>
 
-                
-                <h2 >Interrupts</h2>              
+
+                <h2 >Interrupts</h2>
 				<br/>
                 <br/>
 
-				<p>Software Interrupts (traps) are the mechanisms by which user mode programs can transfer control to the code that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available to a user mode program (Interrupt 4 - Interrupt 18).</p>    
+				<p>Software Interrupts (traps) are the mechanisms by which user mode programs can transfer control to the code that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available to a user mode program (Interrupt 4 - Interrupt 18).</p>
 
-				<h2 >Instruction Set</h2>              
+				<h2 >Instruction Set</h2>
 				<br/>
                 <br/>
 
 				<p>Every instruction in XSM is two words long.  The unprivileged instructions are categorized into :</p>
               </div>
-            
+
             </div>
           </div>
         </div>
-  
+
     </section>
     <!--=========== END Intro SECTION ================-->
 
-    
+
     <!--=========== BEGIN contents SECTION ================-->
     <div class="container">
 		<div class="section_area">
     <ul class="list-group">
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse1">Data Transfer Instructions</a>
     <div id="collapse1" class="panel-collapse collapse">
-                
-                    <p>Family of instructions concerned with moving data between a register and a	register/memory location/ integer or string constant. The MOV instruction supports data transfer through various addressing modes.</p>                                             
-               
+
+                    <p>Family of instructions concerned with moving data between a register and a	register/memory location/ integer or string constant. The MOV instruction supports data transfer through various addressing modes.</p>
+
             </div></li>
-   
+
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse2">Arithmetic Instructions</a>
     <div id="collapse2" class="panel-collapse collapse">
-                
-                    <p>Arithmetic Instructions perform arithmetic operations on registers containing 	integers. If the register contains a non-integer value, an exception is raised. The arithmetic instructions are ADD, SUB, MUL, DIV, MOD, INR and DCR.</p> 
+
+                    <p>Arithmetic Instructions perform arithmetic operations on registers containing 	integers. If the register contains a non-integer value, an exception is raised. The arithmetic instructions are ADD, SUB, MUL, DIV, MOD, INR and DCR.</p>
 	</div></li>
-   
+
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse3">Logical Instructions</a>
     <div id="collapse3" class="panel-collapse collapse">
-                
-                    <p>Logical instructions are used for comparing values in registers. Strings can also 	be compared according to the lexicographic ordering of ASCII. Logical instructions are GT, LT, EQ, NE, GE and LE. </p>                                             
-               
+
+                    <p>Logical instructions are used for comparing values in registers. Strings can also 	be compared according to the lexicographic ordering of ASCII. Logical instructions are GT, LT, EQ, NE, GE and LE. </p>
+
             </div></li>
- 
+
 	<li class="list-group-item"><a data-toggle="collapse"  href="#collapse4">Branching Instructions</a>
     <div id="collapse4" class="panel-collapse collapse">
-                
+
                     <p>Branching is achieved by changing the value of the IP to the word address of the target instruction specified by target_address.</p>
 
-<p>The branching instructions are JZ, JNZ, JMP</p>                                             
-               
+<p>The branching instructions are JZ, JNZ, JMP</p>
+
             </div></li>
-   
+
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse5">Stack Instructions</a>
     <div id="collapse5" class="panel-collapse collapse">
 
-<p>The stack instructions are PUSH and POP.</p>               
-                                                               
-    </div></li>            
+<p>The stack instructions are PUSH and POP.</p>
+
+    </div></li>
 
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse6">Subroutine Instructions</a>
     <div id="collapse6" class="panel-collapse collapse">
 
-				<p>The subroutine instructions provide a mechanism for procedure invocations. The subroutine instructions are CALL and RET.</p>               
-                                                               
-    </div></li>            
+				<p>The subroutine instructions provide a mechanism for procedure invocations. The subroutine instructions are CALL and RET.</p>
+
+    </div></li>
 
    <li class="list-group-item"><a data-toggle="collapse"  href="#collapse7">Debug Instruction</a>
     <div id="collapse7" class="panel-collapse collapse">
-					<p>The machine when run in debug mode invokes the debugger when this 	instruction is executed. This instruction can be used for debugging system 	code. The instruction for entering the debug mode is BRKP.</p>             
-                                                               
-    </div></li> 
-    
+					<p>The machine when run in debug mode invokes the debugger when this 	instruction is executed. This instruction can be used for debugging system 	code. The instruction for entering the debug mode is BRKP.</p>
+
+    </div></li>
+
        <li class="list-group-item"><a data-toggle="collapse"  href="#collapse8">Software Interrupt</a>
     <div id="collapse8" class="panel-collapse collapse">
-					<p>Generates an interrupt to the kernel with n (4 to 18) as a parameter. The instruction for triggering interrupt is INT n, where n is the interrupt routine number.</p>             
-                                                               
-    </div></li>                       
+					<p>Generates an interrupt to the kernel with n (4 to 18) as a parameter. The instruction for triggering interrupt is INT n, where n is the interrupt routine number.</p>
+
+    </div></li>
 <br>
 <br>
 <br>
 The details  of the semantics of these instructions is given in <a href="arch_spec-files/instruction_set.html" target="_blank">here</a>.
 </ul>
 </div>
- 
+
  </div>
-          
-          
+
+
     <!--=========== END SECTION ================-->
 
-  
 
- 
+
+
 
      <!--=========== BEGIN FOOTER ================-->
      <footer id="footer">
        <div class="container">
          <div class="row">
-<a style="float: right" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="../img/creativecommons.png" /></a>
+<a style="float: right" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="./img/creativecommons.png" /></a>
            <div class="col-lg-6 col-md-6 col-sm-6">
              <div class="footer_left">
                <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
@@ -274,20 +274,20 @@ The details  of the semantics of these instructions is given in <a href="arch_sp
 
      <!-- Javascript Files
      ================================================== -->
-  
+
      <!-- initialize jQuery Library -->
     <script src="js/jquery.min.js"></script>
     <!-- Google map -->
     <script src="js/map_js.js"></script>
     <script src="js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
-    <script src="js/wow.min.js"></script> 
+    <script src="js/wow.min.js"></script>
     <!-- Bootstrap js -->
     <script src="js/bootstrap.min.js"></script>
     <!-- superslides slider -->
     <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
     <!-- slick slider -->
-    <script src="js/slick.min.js"></script>    
+    <script src="js/slick.min.js"></script>
     <!-- for circle counter -->
     <script src='js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->

@@ -1,10 +1,10 @@
-/**	
-	* SinglePro HTML 1.0	
+/**
+	* SinglePro HTML 1.0
 	* Template Scripts
 	* Created by WpFreeware Team
 
 	Custom JS
-	
+
 	1. Superslides Slider
 	2. Fixed Top Menubar
 	3. Featured Slider
@@ -17,10 +17,10 @@
 	10. CLIENTS SLIDER
 	11. Google Map
 	12. SCROLL TOP BUTTON
-	13. PRELOADER 
-	14. MENU SCROLL 
-	15. MOBILE MENU CLOSE 	
-	
+	13. PRELOADER
+	14. MENU SCROLL
+	15. MOBILE MENU CLOSE
+
 **/
 
 jQuery(function($){
@@ -33,8 +33,8 @@ jQuery(function($){
       animation: 'slide',
       play: '5000'
     });
-	
-	
+
+
 	/* ----------------------------------------------------------- */
 	/*  2. Fixed Top Menubar
 	/* ----------------------------------------------------------- */
@@ -42,9 +42,9 @@ jQuery(function($){
 	// For fixed top bar
        $(window).scroll(function(){
         if($(window).scrollTop() >100 /*or $(window).height()*/){
-            $(".navbar-fixed-top").addClass('past-main');   
+            $(".navbar-fixed-top").addClass('past-main');
         }
-    else{    	
+    else{
       $(".navbar-fixed-top").removeClass('past-main');
       }
     });
@@ -53,13 +53,13 @@ jQuery(function($){
 	/* ----------------------------------------------------------- */
 	/*  3. Featured Slider
 	/* ----------------------------------------------------------- */
-	
+
 
     $('.featured_slider').slick({
       dots: true,
-      infinite: true,      
+      infinite: true,
       speed: 800,
-      arrows:false,      
+      arrows:false,
       slidesToShow: 1,
       slide: 'div',
       autoplay: true,
@@ -102,7 +102,7 @@ jQuery(function($){
 	(function ($) {
 		$.fn.countTo = function (options) {
 			options = options || {};
-			
+
 			return $(this).each(function () {
 				// set options for current element
 				var settings = $.extend({}, $.fn.countTo.defaults, {
@@ -112,58 +112,58 @@ jQuery(function($){
 					refreshInterval: $(this).data('refresh-interval'),
 					decimals:        $(this).data('decimals')
 				}, options);
-				
+
 				// how many times to update the value, and how much to increment the value on each update
 				var loops = Math.ceil(settings.speed / settings.refreshInterval),
 					increment = (settings.to - settings.from) / loops;
-				
+
 				// references & variables that will change with each update
 				var self = this,
 					$self = $(this),
 					loopCount = 0,
 					value = settings.from,
 					data = $self.data('countTo') || {};
-				
+
 				$self.data('countTo', data);
-				
+
 				// if an existing interval can be found, clear it first
 				if (data.interval) {
 					clearInterval(data.interval);
 				}
 				data.interval = setInterval(updateTimer, settings.refreshInterval);
-				
+
 				// initialize the element with the starting value
 				render(value);
-				
+
 				function updateTimer() {
 					value += increment;
 					loopCount++;
-					
+
 					render(value);
-					
+
 					if (typeof(settings.onUpdate) == 'function') {
 						settings.onUpdate.call(self, value);
 					}
-					
+
 					if (loopCount >= loops) {
 						// remove the interval
 						$self.removeData('countTo');
 						clearInterval(data.interval);
 						value = settings.to;
-						
+
 						if (typeof(settings.onComplete) == 'function') {
 							settings.onComplete.call(self, value);
 						}
 					}
 				}
-				
+
 				function render(value) {
 					var formattedValue = settings.formatter.call(self, value, settings);
 					$self.html(formattedValue);
 				}
 			});
 		};
-		
+
 		$.fn.countTo.defaults = {
 			from: 0,               // the number the element should start at
 			to: 0,                 // the number the element should end at
@@ -174,7 +174,7 @@ jQuery(function($){
 			onUpdate: null,        // callback method for every time the element is updated
 			onComplete: null       // callback method for when the element finishes updating
 		};
-		
+
 		function formatter(value, settings) {
 			return value.toFixed(settings.decimals);
 		}
@@ -205,10 +205,10 @@ jQuery(function($){
 		  return value.toFixed(options.decimals).replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
 		}
 	  });
-	  
+
 	  // start all the timers
-	  $('.timer').each(count);  
-	  
+	  $('.timer').each(count);
+
 	  function count(options) {
 		var $this = $(this);
 		options = $.extend({}, options || {}, $this.data('countToOptions') || {});
@@ -216,7 +216,7 @@ jQuery(function($){
 	  }
 	});
 
-	
+
 
 	/* ----------------------------------------------------------- */
 	/*  7. TEAM SLIDER
@@ -301,9 +301,9 @@ jQuery(function($){
 
 	$('.testimonial_slider').slick({
       dots: true,
-      infinite: true,      
+      infinite: true,
       speed: 800,
-      arrows:false,      
+      arrows:false,
       slidesToShow: 1,
       slide: 'li',
       autoplay: true,
@@ -355,12 +355,12 @@ jQuery(function($){
 	/*  11. Google Map
 	/* ----------------------------------------------------------- */
 
-	  var zoom= $('#map_canvas').gmap('option', 'zoom');
-      
+	  /*var zoom= $('#map_canvas').gmap('option', 'zoom');
+
       $('#map_canvas').gmap().bind('init', function(ev, map) {
         $('#map_canvas').gmap('addMarker', {'position': '57.7973433,12.0502107', 'bounds': true});
         $('#map_canvas').gmap('option', 'zoom', 13);
-      });
+      });*/
 
 
 	/* ----------------------------------------------------------- */
@@ -376,7 +376,7 @@ jQuery(function($){
 	      $('.scrollToTop').fadeOut();
 	    }
 	  });
-	   
+
 	  //Click event to scroll to top
 
 	  $('.scrollToTop').click(function(){
@@ -386,8 +386,8 @@ jQuery(function($){
 
 
 	/* ----------------------------------------------------------- */
-	/*  13. PRELOADER 
-	/* ----------------------------------------------------------- */ 
+	/*  13. PRELOADER
+	/* ----------------------------------------------------------- */
 
 	  jQuery(window).load(function() { // makes sure the whole site is loaded
       $('#status').fadeOut(); // will first fade out the loading animation
@@ -397,7 +397,7 @@ jQuery(function($){
 
 
 	/* ----------------------------------------------------------- */
-	/*  14. MENU SCROLL 
+	/*  14. MENU SCROLL
 	/* ----------------------------------------------------------- */
 
 	//MENU SCROLLING WITH ACTIVE ITEM SELECTED
@@ -419,7 +419,7 @@ jQuery(function($){
 	menuItems.click(function(e){
 	  var href = $(this).attr("href"),
 	      offsetTop = href === "#" ? 0 : $(href).offset().top-topMenuHeight+1;
-	  $('html, body').stop().animate({ 
+	  $('html, body').stop().animate({
 	      scrollTop: offsetTop
 	  }, 900);
 	  e.preventDefault();
@@ -429,7 +429,7 @@ jQuery(function($){
 	$(window).scroll(function(){
 	   // Get container scroll position
 	   var fromTop = $(this).scrollTop()+topMenuHeight;
-	   
+
 	   // Get id of current scroll item
 	   var cur = scrollItems.map(function(){
 	     if ($(this).offset().top < fromTop)
@@ -438,24 +438,24 @@ jQuery(function($){
 	   // Get the id of the current element
 	   cur = cur[cur.length-1];
 	   var id = cur && cur.length ? cur[0].id : "";
-	   
+
 	   if (lastId !== id) {
 	       lastId = id;
 	       // Set/remove active class
 	       menuItems
 	         .parent().removeClass("active")
 	         .end().filter("[href=#"+id+"]").parent().addClass("active");
-	   }           
+	   }
 	})
 
 
 	/* ----------------------------------------------------------- */
-	/*  15. MOBILE MENU ACTIVE CLOSE 
-	/* ----------------------------------------------------------- */ 
+	/*  15. MOBILE MENU ACTIVE CLOSE
+	/* ----------------------------------------------------------- */
 
 	$('.navbar-nav').on('click', 'li a', function() {
 	  $('.navbar-collapse').collapse('hide');
 	});
 
-	
+
 });
