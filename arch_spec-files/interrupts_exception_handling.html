@@ -137,7 +137,10 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
       mode, the address in SP is treated as a logical address and the machine performs
       <a href="paging_hardware.html" target="_blank">address translation </a>to calculate the physical address corresponding to the SP value.  </li>
 
-  <li>Set IP to value 2048 and the machine switches to privileged mode.
+  <li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
+    handler.  The vector table entry for timer interrupt is located at physical address 493 in page 0
+    (ROM) of XSM and the  value 2048 is preset in this location.  Hence, the IP register gets value
+    2048 and the machine switches to privileged mode.
       Consequently, the next instruction will be fetched from physical address 2048, and
       the machine will continue execution in previliged mode (without peforming address translation).  </li>
   </ol>
@@ -173,7 +176,10 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
          <a href="paging_hardware.html" target="_blank">address translation </a>to calculate
          the physical address corresponding to the SP value.  </li>
 
-     <li>Set IP to value 3072 and the machine switches to privileged mode.
+     <li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
+       handler.  The vector table entry for timer interrupt is located at physical address 494 in page 0
+       (ROM) of XSM and the  value 3072 is preset in this location.  Hence, the IP register gets value
+       3072 and the machine switches to privileged mode.
          Consequently, the next instruction will be fetched from physical address 3072, and
          the machine will continue execution in previliged mode (without peforming address translation).  </li>
      </ol>
@@ -213,7 +219,10 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
             <a href="paging_hardware.html" target="_blank">address translation </a>to calculate
             the physical address corresponding to the SP value.  </li>
 
-        <li>Set IP to value 4096 and the machine switches to privileged mode.
+        <li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
+          handler.  The vector table entry for timer interrupt is located at physical address 495 in page 0
+          (ROM) of XSM and the  value 4096 is preset in this location.  Hence, the IP register gets value
+          4096 and the machine switches to privileged mode.
             Consequently, the next instruction will be fetched from physical address 4096, and
             the machine will continue execution in previliged mode (without peforming address translation).  </li>
         </ol>
@@ -230,6 +239,17 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
     synchronous console input where the machine doesn't raise an interrupt but waits for the user
     to enter the data before proceeding to the next instruction.</p>
 </div>
+
+<br>
+<h4><b>Race Conditions</b></h4>
+<p>
+  After the execution of an instruction in unpreviliged mode, suppose the machine finds that
+  multiple interrupts are pending - say the disk, console and timer interrupts are simultaniously
+  due, then the machine executes the interrupts in the following order - first timer,
+  second disk and third console.  After executing the first handler, the machine returns to
+  unpreviliged mode and immedietely pushes the same IP value back to the stack and executes
+  the next pending interrupt and so on till all pending interrupts are processed.
+</p>
 
 <br>
 <h4><b>Exceptions</b></h4>

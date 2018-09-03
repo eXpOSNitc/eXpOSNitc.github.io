@@ -330,7 +330,7 @@
 
 
                           <p>
- 							The eXpOS package that you had downloaded in the previous stage consists mainly of a machine simulator. The machine is called the <a href="/support_tools-files/xsm-simulator.html" target="_blank">eXperimental String Machine (XSM)</a> and consists of a processor, memory and disk. Some support tools that help you to program the machine are also provided.</p>
+ 							The eXpOS package that you had downloaded in the previous stage consists mainly of a machine simulator. The machine is called the <b>eXperimental String Machine (XSM)</b> and consists of a processor, memory and disk. Some support tools that help you to program the machine are also provided.</p>
 
 
 
@@ -424,7 +424,7 @@
 No of Free Blocks = 443
 Total No of Blocks = 512</pre>
                               </div>
-                              The first 69 blocks (blocks 0 to 68) are reserved for <a href="./os_design.html"  target="_blank">Disk Structures</a>, <a href="./os_design.html"  target="_blank">OS routines</a>, <a href="./os_design-files/misc.html#shell"  target="_blank">Shell Code</a>, <a href="./os_design-files/misc.html#idle"  target="_blank">Idle Code</a> and <a href="os_design-files/misc.html#login" target="_blank">INIT program</a> (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence it is marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused).
+                              The first 69 blocks (blocks 0 to 68) are reserved for stroing various OS data structures and routines as well as Idle code, INIT program, etc (see <a href="os_implementation.html" target="_blank">Disk Organization)</a>. Hence the Disk Free List entries for these are marked as 1 (used) and the remaining entries for blocks 69 to 511 are 0 (unused).
                             </li>
 
 
@@ -600,8 +600,8 @@ peppermint wind</pre></div>
 
                           <p><b style="color:#26A65B">Assignment 1 : </b> Copy the contents of Root File (from Block 5 of XFS disk) to a UNIX file <tt>$HOME/myexpos/root_file.txt</tt> and verify that an entry for <tt>sample.dat</tt> is made in it also.</p>
                           <p><b style="color:#26A65B">Assignment 2 : </b> Delete the <tt>sample.dat</tt> from the XSM machine using xfs-interface and note the changes for the entries for this file in <i>inode table, root file and disk free list</i> .</p>
-                          <p><b style="color:#26A65B">Assignment 3 : </b> Read and understand <a href="arch_spec-files/machine_organisation.html" target="_blank">Machine Organisation</a> .</p>
-                          <p><b style="color:#26A65B">Assignment 4 : </b> Read and understand <a href="arch_spec-files/instruction_set.html" target="_blank">XSM Instruction set</a>.</p>
+                          <p><b style="color:#26A65B">Assignment 3 : </b> Have a quick look at <a href="arch_spec-files/machine_organisation.html" target="_blank"> XSM Machine Organisation </a> . (Do not spend more than 15 minutes)</p>
+                          <p><b style="color:#26A65B">Assignment 4 : </b> Have a quick look at <a href="arch_spec-files/instruction_set.html" target="_blank">XSM Instruction set</a>. (Do not spend than 15 minutes).</p>
 
 
                        </div>
@@ -714,7 +714,7 @@ binary programs need to be supplied).</p>
                           </div>
                           </div>
 			  <p><b style="color:#26A65B">Assignment 1 : </b>Write an assembly program to print numbers from 1 to 20 and run it as the OS Startup code.</p>
-                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand <a href="support_tools-files/spl.html" target="_blank">SPL specification</a>.</p>
+                          <p><b style="color:#26A65B">Assignment 2 : </b> Read and understand <a href="support_tools-files/spl.html" target="_blank">SPL specification</a>. (Do not spend more than 15 minutes)</p>
 			<!--<p><b style="color:#26A65B">Assignment 3 : </b> Read and understand the tutorial on <a href="Tutorials/xsm-instruction-cycle.html" target="_blank">XSM Instruction Execution Cycle</a>.</p>-->
                           </div>
                           </div>
@@ -951,7 +951,58 @@ endwhile; </pre>
                       </div>
 		<!-- End Learning Objectives-->
 
-<b> Before proceeding further, it is absolutely necessary to completely understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a>.</p> </b>
+<b> Before proceeding further, understand the tutorial on <a href="Tutorials/xsm_unprivileged_tutorial.html" target="_blank">  XSM Unprivileged Mode Execution</a> and try to solve the following question that test your understanding.</p> </b>
+
+<div class="container col-md-12">
+<div class="section_area">
+<ul class="list-group">
+  <li class="list-group-item">
+  <b>Q1.</b>  Suppose the machine is executing in unprivileged mode.  Assume that  the following are some of the register values:  <br>
+  IP:  3000, PTBR:  29696, SP: 5000, PTLR:  10
+  </li>
+ <li class="list-group-item">
+  <a data-toggle="collapse"  href="#collapseq31">
+    <b>a)</b> Which physical memory location will contain the physical page number of the page from which the machine will fetch the next instruction?
+  </a>
+  <div id="collapseq31" class="panel-collapse collapse">
+    29706.
+  </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq32">
+   <b>b)</b> Suppose further that the memory location 29714 contains value 100.  What will be the physical memory address from which the XSM machine will fetch the next instruction?
+ </a>
+ <div id="collapseq32" class="panel-collapse collapse">
+   51640.
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq33">
+   <b>c)</b> Suppose the instruction stored at memory address 5160 is  JMP 3080, which all registers will be updated?
+ </a>
+ <div id="collapseq33" class="panel-collapse collapse">
+   IP will be updated to 3080.
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq34">
+   <b>d)</b> Suppose the instruction stored in memory address was MOV R0,[4096]. From which physical address will value be fetched and transferred to register R0? Assume that the value stored in memory address 29712 is 75.
+ </a>
+ <div id="collapseq34" class="panel-collapse collapse">
+    38400
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq35">
+   <b>e)</b> Suppose the instruction stored at memory address 5160 was MOV R0, [7000], what will happen?
+ </a>
+ <div id="collapseq35" class="panel-collapse collapse">
+   The machine will try to translate the logical address 7000 to the corresponding physical address.  The logical page number 7000/512 = 13.  However, since the PTLR value is 10 and the logical page number exceeds the value of PTLR, this is an illegal memory access.  Consequently, the machine will generate an exception. You will learn about exceptions in later stages.
+ </div>
+</li>
+</ul>
+</div>
+</div>
 
 		<p>  In the previous stages, you wrote and executed system programs in privileged (kernel) mode. In this stage, you will write a user program in assembly code and execute it in unprivileged (user) mode.
 		</p>
@@ -1256,9 +1307,7 @@ SP = 2*512;</pre>
 You will have to modify the user program as well as the os startup code.
   </p>
     <br>
-
 	</ol>
-
 
 		<!--========= Stage descrptions ends here ===========-->
                 </div>
@@ -1507,8 +1556,67 @@ SP = 8*512;
                       </div>
 		<!-- End Learning Objectives-->
 <p>
- <b>Read and understand the <a  href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM tutorial on Interrupts and Exception handling</a> before proceeding further. (Read only the Timer Interrupt part.)
+ <b>Read and understand the <a  href="Tutorials/xsm_interrupts_tutorial.html" target="_blank">XSM tutorial on Interrupts and Exception handling</a> before proceeding further. (Read only the Timer Interrupt part.). Try to solve the following question that tests your understanding.
 </b></p>
+
+<div class="container col-md-12">
+<div class="section_area">
+<ul class="list-group">
+  <li class="list-group-item">
+  <b>Q1.</b>  Suppose the XSM machine was executing in unprivileged mode and just after
+  instruction at logical address 3000 was fetched and executed, the machine found that
+  the timer interrupt was pending.  Suppose that at this time, the values of the
+  some of the machine registers were as the following :<br>
+  IP:  3000.<br>
+  PTBR:  29696<br>
+  SP 5000
+  </li>
+ <li class="list-group-item">
+  <a data-toggle="collapse"  href="#collapseq26">
+    <b>a)</b> Which physical memory location will contain the physical page number to which return address will be stored by the machine before transferring control to the timer interrupt handler?
+  </a>
+  <div id="collapseq26" class="panel-collapse collapse">
+    29714  (Why?)  It is absolutely necessary that you read the <a href="http://exposnitc.github.io/Tutorials/xsm_unprivileged_tutorial.html" target="_blank"> XSM unpreveleged mode execution tutorial </a> if you are not able to solve this question yourself.
+  </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq27">
+   <b>b)</b> Suppose further that the memory location 29714 contains value 35.  What will be the physical memory address to which the XSM machine will copy the value of the next instruction to be executed?
+ </a>
+ <div id="collapseq27" class="panel-collapse collapse">
+   18313.  (Again if you are not able to solve the problem yourself, you must read the <a href="http://exposnitc.github.io/Tutorials/xsm_unprivileged_tutorial.html" target="_blank">XSM unpreveleged mode execution tutorial </a>)
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq28">
+   <b>c)</b> What will be the value stored into the location 18313  by the machine?
+ </a>
+ <div id="collapseq28" class="panel-collapse collapse">
+   3002.  This is the (logical) address of the next instruction to be executed after return from the interrupt handler. Note the each XSM instruction occupies two words in memory and hence the next instruction's address is at 3002 (and not 3001).
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq29">
+   <b>d)</b> What value will the SP and IP registers contain after the execution of the INT instruction?
+ </a>
+ <div id="collapseq29" class="panel-collapse collapse">
+    SP=5001 and IP=2048
+ </div>
+</li>
+<li class="list-group-item">
+ <a data-toggle="collapse"  href="#collapseq30">
+   <b>e)</b> What will be the physical address from which the machine will fetch the next instruction?
+ </a>
+ <div id="collapseq30" class="panel-collapse collapse">
+   2048.  Since the machine switches to privileged mode once the interrupt handler
+is entered, the next instruction will be fetched from the address pointed to by IP register
+without performing address translation.
+ </div>
+</li>
+</ul>
+</div>
+</div>
+
 <p>
 If the XSM simulator is run with the the timer set to some value - say 20, then every time the machine completes execution of 20 instructions in user mode, the timer device will send a hardware signal that interrupts machine execution.  The machine will push the IP value of the next user mode instruction to the stack and pass control to the the timer interrupt handler at physical address 2048.
 </p>

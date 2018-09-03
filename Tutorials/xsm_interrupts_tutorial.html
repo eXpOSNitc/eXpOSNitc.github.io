@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg"/>
 
     <!-- CSS
-    ================================================== -->       
+    ================================================== -->
     <!-- Bootstrap css file-->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <!-- Font awesome css file-->
@@ -24,37 +24,37 @@
     <!-- Superslide css file-->
     <link rel="stylesheet" href="../css/superslides.css">
     <!-- Slick slider css file -->
-    <link href="../css/slick.css" rel="stylesheet"> 
+    <link href="../css/slick.css" rel="stylesheet">
     <!-- smooth animate css file -->
-    <link rel="stylesheet" href="../css/animate.css">  
+    <link rel="stylesheet" href="../css/animate.css">
     <!-- Elastic grid css file -->
-    <link rel="stylesheet" href="../css/elastic_grid.css"> 
+    <link rel="stylesheet" href="../css/elastic_grid.css">
     <!-- Circle counter cdn css file -->
-    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>    
+    <link rel='stylesheet prefetch' href='../css/jquery.circliful.css'>
     <!-- Default Theme css file -->
     <link id="orginal" href="../css/themes/eucalyptus-theme.css" rel="stylesheet">
     <!-- Main structure css file -->
     <link href="../style.css" rel="stylesheet">
-   
+
     <!-- Google fonts -->
     <link href='../css/opensans.css' rel='stylesheet' type='text/css'>
     <link href='../css/varela.css' rel='stylesheet' type='text/css'>
     <link href='../css/montserrat.css' rel='stylesheet' type='text/css'>
 
   </head>
-  <body> 
+  <body>
      <!-- BEGAIN PRELOADER -->
     <div id="preloader">
       <div id="status">&nbsp;</div>
     </div>
     <!-- END PRELOADER -->
 
-  
+
     <!--=========== BEGIN HEADER SECTION ================-->
     <header id="header">
       <!-- BEGIN MENU -->
       <div class="menu_area">
-        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation"> 
+        <nav class="navbar navbar-default navbar-fixed-top past-main" role="navigation">
           <div class="container">
           <div class="navbar-header">
             <!-- FOR MOBILE VIEW COLLAPSED BUTTON -->
@@ -69,29 +69,29 @@
 
             <!-- TEXT BASED LOGO -->
             <a class="navbar-brand" href="../index.html">eXpOS<span>NITC</span></a>
-            
-                              
+
+
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul id="top-menu" class="nav navbar-nav navbar-right main_nav">
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../documentation.html" target="_blank">Documentation</a></li> 
-              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li> 
+              <li><a href="../documentation.html" target="_blank">Documentation</a></li>
+              <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
                <li><a href="../faq.html" target="_blank">FAQ</a></li>
-              <li><a href="../About_us.html" target="_blank">About Us</a></li>                                     
-            </ul>           
+              <li><a href="../About_us.html" target="_blank">About Us</a></li>
+            </ul>
           </div>
-          </div>     
-        </nav>  
+          </div>
+        </nav>
       </div>
       <!-- END MENU -->
 
 
-      
+
     </header>
-    <!--=========== End HEADER SECTION ================--> 
-    
-   
+    <!--=========== End HEADER SECTION ================-->
+
+
     <!-- Beginning of section -->
 
    <section id="expfs">
@@ -102,30 +102,31 @@
         <div class="row">
           <div class="col-lg-12 col-md-12">
             <div class="about_area">
-             
+
                 <!-- START ABOUT HEADING -->
               <div class="heading">
                 <h2 >XSM Interrupts and Exception Handling</h2>
                 <br>
+                <br>
 				<p>
-                We have seen that an application program can transfer control to a privileged mode 
-                trap handler using the INT instruction.  Hardware interrupts (or simply interrupts) are useful 
-                to transfer control into handlers that must be run on the occurrence of hardware events.  
+                We have seen that an application program can transfer control to a privileged mode
+                trap handler using the INT instruction.  Hardware interrupts (or simply interrupts) are useful
+                to transfer control into handlers that must be run on the occurrence of hardware events.
 				</p><p>
-XSM machine supports three hardware interrupts.  
-<b>The timer interrupt handler, disk interrupt handler and the console interrupt handler.</b>
-The addresses of these handlers are stored in locations 493, 494 and 495 of the ROM and are preset to 
-values 2048, 3072 and 4096.  Thus, the OS bootstrap code must load the timer interrupt handler into 
-memory starting from 2048, disk interrupt handler from address 3072 and console interrupt handler from 4096.</p>  
+XSM machine supports three hardware interrupts - timer interrupt, disk interrupt and console
+interrupt.  Associated with each interrupt, there is
+an interrupt handler routine.   These handler routines are called
+<b>timer interrupt handler, disk interrupt handler and the console interrupt handler</b>
+respectively.
+The addresses of these handlers are stored in locations 493, 494 and 495 of the ROM and are preset to
+values 2048, 3072 and 4096.  Thus, the OS bootstrap code must load the timer interrupt handler into
+memory starting from 2048, disk interrupt handler from address 3072 and console interrupt handler from 4096.</p>
 <br><br>
 <div id="timer_interrupt">
-<br>
-<br>
-<br>
 <b style="font-size: 20px" >Timer Interrupt</b>
 <br>
-<p>XSM has a timer device which can be set to interrupt the machine at regular intervals of time.  
-You can run the XSM simulator with the option - - timer:</p>  
+<p>XSM has a timer device which can be set to interrupt the machine at regular intervals of time.
+You can run the XSM simulator with the option - - timer:</p>
 <div><pre>xsm  --timer 10
 </pre></div>
 <p>
@@ -133,20 +134,76 @@ Then, every time the machine completes executing ten instructions in unprivilege
 <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
 <li>Push the IP value into the top of the stack.</li>
 
-<li>Set IP to value 2048 and change mode to privileged.  Hence, next instruction will be fetched from address 2048.</li>
+<li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
+  handler.  The vector table entry for timer interrupt is located at physical address 493 in page 0
+  (ROM) of XSM and the  value 2048 is preset in this location.  Hence, the IP register gets value
+  2048.  The machine then switches to to privileged mode and address translation is disabled.
+  Hence, next instruction will be fetched from physical address 2048. (See Boot ROM and Boot block section in <a href="../arch_spec-files/machine_organisation.html" target="_blank"> XSM Machine Organisation </a> documentation)</li>
 </ol>
 <p>
-Note that the action is similar to the INT instruction except that the application does not invoke the timer handler using the INT instruction.  In fact, the application does not have any control over the process.</p> 
+Note that the action is similar to the INT instruction except that the application does not invoke the timer handler using the INT instruction.  In fact, the application does not have any control over the process.</p>
  <p>
 	  <b>Interrupts are disabled when machine runs in the privileged mode so that there are no race conditions.</b>
-  After return from the timer interrupt handler, the next entry into the handler occurs only after the machine
-   executes another ten instructions in user mode.  
+  After returning from the timer interrupt handler, the next entry into the handler occurs only after the machine
+   executes another ten instructions in user mode.
 </p><p>
-The timer device can be used to ensure that privileged code gets control of the machine at regular 
-intervals of time.  This is necessary to ensure that an application once started is not allowed to run 
-"forever."  In a time-sharing environment, <b>the timer handler invokes the scheduler of 
-the OS to do a context switch</b> to a different process when one process has completed its time quantum. </p> 
-<br><br>
+The timer device can be used to ensure that privileged code gets control of the machine at regular
+intervals of time.  This is necessary to ensure that an application once started is not allowed to run
+"forever."  In a time-sharing environment, <b>the timer handler invokes the scheduler of
+the OS to do a context switch</b> to a different process when one process has completed its time quantum. </p>
+
+<div class="container col-md-12">
+<div class="section_area" style="margin-bottom: 20px; background:#dff0d8">
+<div style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; margin-right: 10px">
+<b> Important Note:</b>
+<p>
+  In real machines, timer, disk and console are devices that are external to the CPU.
+(This is why the <a href="http://exposnitc.github.io/arch_spec-files/machine_organisation.html" target="_blank"> XSM machine model </a> draws them outside the machine's CPU).
+Such devices are generally attached to <a href="https://simple.wikipedia.org/wiki/Device_controller" target="_blank"> programmable device-controllers </a> in the computer system's <a href="https://en.wikipedia.org/wiki/Motherboard" target="_blank"> mother-board </a> containing the CPU.
+These devices are typically either I/O mapped (via ports) or
+<a href="https://en.wikipedia.org/wiki/Memory-mapped_I/O" target="_blank"> memory mapped </a>
+and the exact configuration is determined by the hardware
+manufacturer. The hardware manufacturer supplies a <a href="https://en.wikipedia.org/wiki/Device_driver" target="_blank">device driver software </a> for each of these device controllers and the device driver software is typically loaded into memory
+along with the OS kernel during machine bootstrap. (Often the device drivers run as part of the kernel)
+Each device driver contains a set of functions
+that can be invoked from the OS kernel.   These
+device driver functions in turn contain code that issues commands to the
+respective device controllers. Finally, the device controllers contain the
+software and hardware to make  the device physically behave in the required way
+based on the commands received.
+</p>
+<img src="../img/os-design/xsm_machine_model.jpg" style="float:center; margin-right: 100px; margin-left:75px;">
+<p>
+  Thus, in a real systems, the OS loads into the memory
+the timer device's driver during bootstrap.
+(Here, the driver is assumed to have been pre-loaded into the disk.  However modern systems also permit drivers to be loaded at run time without re-booting the OS)
+After this, some kernel boot code will invoke the appropriate
+functions of the device driver to perform initial configuration of
+the timer device so as to interrupt the machine at regular intervals of time.
+The timer device will have some output wire that (after passing through
+several intermediate hardware circuits) connects to some interrupt pin of
+the CPU.  The OS bootstrap
+code will instruct the device driver to configure the device in such manner that
+the device sends a signal to the interrupt pin at regular intervals of time.  Each time
+such signal is received,  the CPU saves the next
+instruction's IP value to the stack and transfers control to the interrupt routine.
+</p>
+
+<p>
+Thus, it is important to understand that the XSM machine is a software simulated machine
+and hence deviates from real systems.  No real life CPU comes with hardware that counts
+the number of instructions and invoke the timer interrupt handler after a pre-set number of
+instructions as XSM machine does.  The same comment holds for the disk and the console interrupts as well.
+</p>
+
+</div>
+</div>
+
+</div>
+
+
+<br>
+<br>
 </div>
 <div id="disk_and_console_interrupts">
 <br>
@@ -155,86 +212,93 @@ the OS to do a context switch</b> to a different process when one process has co
 <b style="font-size: 20px" >Disk and Console Interrupts</b>
 <br>
 <p>
-The other two interrupt handlers are associated with the disk and the console.  
-The XSM privileged instructions load(page_num,block_num) and store(block_num, page_num) are used for transfer of data from disk to memory and memory to disk.  The actual data transfer involves time delay as disk access is slow. <b>On encountering a load/store instruction, the XSM machine will start a disk transfer, increment IP by two and fetch the next instruction without waiting for the data transfer to be completed. When the actual disk-memory data transfer is completed, the disk controller will raise the disk interrupt.</b> Similarly, the IN instruction initiates a console input but will not suspend machine execution till some input is read.  Machine execution proceeds to the next instruction in the program.  When the user enters data, the data is transferred to port P0, and a console interrupt is raised by the console device.    
+The other two interrupt handlers are associated with the disk and the console.
+The XSM privileged instructions load(page_num,block_num) and store(block_num, page_num) are used for transfer of data from disk to memory and memory to disk.  The actual data transfer involves time delay as disk access is slow. <b>On encountering a load/store instruction, the XSM machine will start a disk transfer, increment IP by two and fetch the next instruction without waiting for the data transfer to be completed. When the actual disk-memory data transfer is completed, the disk controller will raise the disk interrupt.</b> Similarly, the IN instruction initiates a console input but will not suspend machine execution till some input is read.  Machine execution proceeds to the next instruction in the program.  When the user enters data, the data is transferred to port P0, and a console interrupt is raised by the console device.
 </p>
 
 <p>
-<b>After the execution of each instruction in unprivileged mode, the machine checks whether a pending 
-disk/console/timer interrupt.  If so, the machine pushes the address of the next instruction to the 
-stack and transfers control to the interrupt handler</b> (just as in the case of the timer interrupt).  
+<b>After the execution of each instruction in unprivileged mode, the machine checks whether a pending
+disk/console/timer interrupt.  If so, the machine does the following actions:
+<ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
+<li>Push the IP value into the top of the stack.</li>
+
+<li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
+  handler.  The vector table entry for timer interrupt is located at physical address 493 in page 0
+  (ROM) of XSM and the  value 2048 is preset in this location.  Hence, the IP register gets value
+  2048.  The machine then switches to to privileged mode and address translation is disabled.
+  Hence, next instruction will be fetched from physical address 2048. (See Boot ROM and Boot block section in <a href="../arch_spec-files/machine_organisation.html" target="_blank"> XSM Machine Organisation </a> documentation)</li>
+</ol>
+<!--pushes the address of the next instruction to the
+stack and transfers control to the interrupt handler</b> (just as in the case of the timer interrupt).
 As noted previously, the OS must load the disk interrupt handler into the two pages starting at memory page
- 6 (address 3072), and console interrupt handler into the two pages starting at memory page 8 (address 4096).   
- This is normally done during OS start-up.  
+ 6 (address 3072), and console interrupt handler into the two pages starting at memory page 8 (address 4096).
+ This is normally done during OS start-up.-->
 </p>
 
 <p>
-<b>The XSM machine enables interrupts only when the machine is executing in unprivileged mode.</b>(If a previously initiated load/store/IN operation is completed while XSM is running in privileged mode, 
+<b>The XSM machine enables interrupts only when the machine is executing in unprivileged mode.</b>(If a previously initiated load/store/IN operation is completed while XSM is running in privileged mode,
 the machine waits for next transition to unprivileged mode before processing the interrupt.)</p>
 <br>
 <br>
 </div>
 <div id="exception_handling_in_XSM" >
-<br>
-<br>
-<br>
 <b style="font-size: 20px" >Exception handling in XSM   </b>
 <br>
 <p>
-What must happen when an application running in unprivileged mode contains an illegal instruction or a 
-divide by zero instruction or an instruction that tries to write data into a logical address outside its 
-address space?  
+What must happen when an application running in unprivileged mode contains an illegal instruction or a
+divide by zero instruction or an instruction that tries to write data into a logical address outside its
+address space?
 </p>
 <p>
-	Clearly, the machine must not halt, for otherwise, one application will be able to halt the whole system. The correct action must be to transfer control to some privileged mode handler. This privileged mode handler is the exception handler.   The exception handler code must start at memory address 1024. (page 2).   
+	Clearly, the machine must not halt, for otherwise, one application will be able to halt the whole system. The correct action must be to transfer control to some privileged mode handler. This privileged mode handler is the exception handler.   The exception handler code must start at memory address 1024. (page 2).
 </p>
 <p>
-While an application is running in unprivileged mode on the XSM machine, if any of the following events occur, 
+While an application is running in unprivileged mode on the XSM machine, if any of the following events occur,
 the XSM machine raises an exception.
 <br>
 a)  <b>Illegal Memory Access:</b>    Occurs when any address generated by the application lies outside its logical address space. This also occurs when the process tries to write into pages whose Write access bit is not set in the page table. Recall that the logical page number generated for a valid instruction should be between 0 and the value of (512 * PTLR) - 1.<br> b) <b>Illegal instructions:</b>  Occurs an application tries to execute an instruction not belonging to the instruction set or when an operand/data in an instruction is not legal.  (Example:  MOV 4 R0,
 MOV IP,  4)<br>
 c) <b>Arithmetic exception:</b>  If there is a division by zero.   (Example:  DIV R0, 0)
-<br>In all the above cases, the typical action is for the exception handler code is to pass control to other privileged mode OS routines to terminate the application and schedule other applications.  
+<br>In all the above cases, the typical action is for the exception handler code is to pass control to other privileged mode OS routines to terminate the application and schedule other applications.
 <br>
 d)  <b>Page fault:</b>  This is the most significant exception handling function that must be understood clearly. A page fault occurs if an instruction contains an address whose page table entry is not valid.
 </p>
 <p>
-Page fault exception can occur either during instruction fetch or operand fetch.  Suppose during execution of an application, the value of IP reaches value – say  3000.  The next fetch will try to translate the logical address 3000 to physical address using the page table.  The logical page number corresponding to address 3000 is 3000 DIV 512 = 5.  The machine must look up the page table entry corresponding to logical page 5.  
+Page fault exception can occur either during instruction fetch or operand fetch.  Suppose during execution of an application, the value of IP reaches value – say  3000.  The next fetch will try to translate the logical address 3000 to physical address using the page table.  The logical page number corresponding to address 3000 is 3000 DIV 512 = 5.  The machine must look up the page table entry corresponding to logical page 5.
 If the valid bit for this entry is set to 0, the page reference is invalid. In this case, the machine will raise an exception.
 </p>
 <p>
-The second possibility for a page fault to occur is during operand fetch.  Suppose an instruction is 
-successfully fetched – say MOV R0, [5000].   To execute the instruction, the machine will try to translate the 
-logical address 5000 using page table.  As in the previous case, if the page is not valid, then the machine 
-raises an exception.  
+The second possibility for a page fault to occur is during operand fetch.  Suppose an instruction is
+successfully fetched – say MOV R0, [5000].   To execute the instruction, the machine will try to translate the
+logical address 5000 using page table.  As in the previous case, if the page is not valid, then the machine
+raises an exception.
 </p>
 <p>
 	When the machine raises an exception, the following occurs:
 <br>
-1.  SP incremented, and the logical address of the current instruction is pushed onto the stack.  
-(The instruction failed to execute correctly.  So, upon return - if ever there is one - the same instruction 
+1.  SP incremented, and the logical address of the current instruction is pushed onto the stack.
+(The instruction failed to execute correctly.  So, upon return - if ever there is one - the same instruction
 must be re-executed.)
 <br>
 <br>
-2.  IP is set to value 1024 and machine switches to privileged mode.  Thus, the next instruction will be 
+2.  IP is set to value 1024 and machine switches to privileged mode.  Thus, the next instruction will be
 fetched from the exception handler.
 <br>
 <br>
-3.  The machine sets several CPU registers with values that describe (to the exception handler) the cause 
+3.  The machine sets several CPU registers with values that describe (to the exception handler) the cause
 of the exception.  These are explained below:
 <br>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;a) <b>EIP</b> (Exception IP):  The logical IP value of the unprivileged mode instruction that caused the 
-exception is stored in this register.   For example, if the instruction MOV R0, [5000], fetched from IP=3000 
-caused an exception because the logical page corresponding to address 5000 (logical page 8) was invalid, 
-the EIP will be loaded with value 3000.    
+&nbsp;&nbsp;&nbsp;&nbsp;a) <b>EIP</b> (Exception IP):  The logical IP value of the unprivileged mode instruction that caused the
+exception is stored in this register.   For example, if the instruction MOV R0, [5000], fetched from IP=3000
+caused an exception because the logical page corresponding to address 5000 (logical page 8) was invalid,
+the EIP will be loaded with value 3000.
 <br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;b) <b>EPN</b> (Exception Page Number):  The logical page number that caused the page fault is stored in this register.
-  In the above example, if MOV R0, [5000] caused a page fault because logical page 8 was invalid, then EPN will 
-  have value 8.  Note that if the instruction fetch caused a page fault (say IP=3000), then EPN would have 
-  contained value 5.  
+  In the above example, if MOV R0, [5000] caused a page fault because logical page 8 was invalid, then EPN will
+  have value 8.  Note that if the instruction fetch caused a page fault (say IP=3000), then EPN would have
+  contained value 5.
 <br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;c) <b>EC</b> (Exception Cause):  The EC register will indicate the cause of the exception – values are set as below.
@@ -253,16 +317,16 @@ the EIP will be loaded with value 3000.
 <br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;d) <b>EMA</b> (Exception memory address):  The value of this register is relevant only in the case of illegal
- memory access. The illegal memory which was tried to be accessed is stored in the register. Either the 
+ memory access. The illegal memory which was tried to be accessed is stored in the register. Either the
  address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.<br><br>
  See also the <a href="../arch_spec-files/interrupts_exception_handling.html">link</a> for more information about interrupts and exception handling.
 </div>
-</div> 
+</div>
 
              </div>
            </div>
          </div>
-    </section> 
+    </section>
 
 
 
@@ -287,20 +351,20 @@ the EIP will be loaded with value 3000.
 
      <!-- Javascript Files
      ================================================== -->
-  
+
      <!-- initialize jQuery Library -->
     <script src="../js/jquery.min.js"></script>
     <!-- Google map -->
     <script src="../js/map_js.js"></script>
     <script src="../js/jquery.ui.map.js"></script>
      <!-- For smooth animatin  -->
-    <script src="../js/wow.min.js"></script> 
+    <script src="../js/wow.min.js"></script>
     <!-- Bootstrap js -->
     <script src="../js/bootstrap.min.js"></script>
     <!-- superslides slider -->
     <script src="../js/jquery.superslides.min.js" type="text/javascript"></script>
     <!-- slick slider -->
-    <script src="../js/slick.min.js"></script>    
+    <script src="../js/slick.min.js"></script>
     <!-- for circle counter -->
     <script src='../js/jquery.circliful.min.js'></script>
     <!-- for portfolio filter gallery -->
@@ -313,4 +377,3 @@ the EIP will be loaded with value 3000.
     <script src="../js/custom.js"></script>
   </body>
 </html>
-
