@@ -224,7 +224,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
           (ROM) of XSM and the  value 4096 is preset in this location.  Hence, the IP register gets value
           4096 and the machine switches to privileged mode.
             Consequently, the next instruction will be fetched from physical address 4096, and
-            the machine will continue execution in previliged mode (without peforming address translation).  </li>
+            the machine will continue execution in previleged mode (without peforming address translation).  </li>
         </ol>
         <p>Thus the occurance of the console interrupt results in machine execution to be
           transferred to the console interrupt handler (INT 3) stored in page 8-9. As noted above, the macro
@@ -243,7 +243,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
 <br>
 <h4><b>Race Conditions</b></h4>
 <p>
-  After the execution of an instruction in unpreviliged mode, suppose the machine finds that
+  After the execution of an instruction in unpriviliged mode, suppose the machine finds that
   multiple interrupts are pending - say the disk, console and timer interrupts are simultaniously
   due, then the machine executes the interrupts in the following order - first timer,
   second disk and third console.  After executing the first handler, the machine returns to
