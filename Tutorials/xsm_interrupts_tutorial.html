@@ -163,13 +163,12 @@ Such devices are generally attached to <a href="https://simple.wikipedia.org/wik
 These devices are typically either I/O mapped (via ports) or
 <a href="https://en.wikipedia.org/wiki/Memory-mapped_I/O" target="_blank"> memory mapped </a>
 and the exact configuration is determined by the hardware
-manufacturer. The hardware manufacturer supplies a <a href="https://en.wikipedia.org/wiki/Device_driver" target="_blank">device driver software </a> for each of these device controllers and the device driver software is typically loaded into memory
-along with the OS kernel during machine bootstrap. (Often the device drivers run as part of the kernel)
-Each device driver contains a set of functions
-that can be invoked from the OS kernel.   These
+manufacturer. The hardware manufacturer supplies a <a href="https://en.wikipedia.org/wiki/Device_driver" target="_blank">device driver software </a> for each of these device controller. The device driver software is typically loaded into memory
+along with the OS kernel during machine bootstrap. Thus, the device drivers run as part of the kernel.
+Each device driver contains a set of functions that can be invoked from the OS kernel.  These
 device driver functions in turn contain code that issues commands to the
-respective device controllers. Finally, the device controllers contain the
-software and hardware to make  the device physically behave in the required way
+respective device controller. Finally, the device controller contains the
+software and hardware necessary to make the device physically behave in the required way
 based on the commands received.
 </p>
 <img src="../img/os-design/xsm_machine_model.jpg" style="float:center; margin-right: 100px; margin-left:75px;">
@@ -217,7 +216,7 @@ The XSM privileged instructions load(page_num,block_num) and store(block_num, pa
 </p>
 
 <p>
-<b>After the execution of each instruction in unprivileged mode, the machine checks whether a pending
+After the execution of each instruction in unprivileged mode, the machine checks whether a pending
 disk/console/timer interrupt.  If so, the machine does the following actions:
 <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
 <li>Push the IP value into the top of the stack.</li>

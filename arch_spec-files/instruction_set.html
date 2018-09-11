@@ -161,7 +161,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 </li>
 -->
                                                 </ul>
-                                                <br><p><b>For all the above instructions, Ri/Rj may be any register except IP. </b></p>
+                                                <br><p>For all the above instructions, Ri/Rj may be any register <b>except IP</b>. </p>
+                                                <p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +190,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 <li>2. <b>INR, DCR</b><br><i>Syntax</i> : OP Ri<br><i>Semantics</i> : Increments/Decrements the value of register Ri by 1.
 </li>
 </ul>
-<br><p><b>For all the above instructions, Ri/Rj may be any register except IP. </b></p>
+<br><br><p>For all the above instructions, Ri/Rj may be any register <b>except IP</b>. </p>
+<p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
 
 
                                             </div>
@@ -215,7 +217,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 <i>Syntax</i> : OP Ri, Rj<br>
 <i>Semantics</i> : Stores 1 in Ri if the value stored in Ri is less than/greater than/equal to/not equal to/greater than or equal to/less than or equal to that in Rj. Ri is set to 0 otherwise.
 
-<br><p><b>Ri/Rj may be any register except IP. </b></p>
+<br><br><p>For all the above instructions, Ri/Rj may be any register <b>except IP</b>. </p>
+<p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -246,7 +249,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 
 </li>
                                        </ul>
-          <br><p><b>For all the above instructions, Ri/Rj may be any register except IP. </b></p>
+          <br><<br><p>For all the above instructions, Ri/Rj may be any register <b>except IP</b>. </p>
+          <p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
 
                                             </div>
                                         </div>
@@ -270,7 +274,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 </li><br>
 <li>2. <b>POP</b><br><i>Syntax</i> : POP Ri<br><i>Semantics</i> : Copy contents of the location pointed to by SP into Ri and decrement SP by 1.
 </li></ul>
-                                                <br>        <p> <b>For both these instructions Ri may be any register except IP. </b></p>
+                                                <br>        <br><p>For all the above instructions, Ri/Rj may be any register <b>except IP</b>. </p>
+                                                <p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
 
                                             </div>
                                         </div>
@@ -292,7 +297,8 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                                                 <ul>  <li>1. <b>CALL</b><br>
 <i>Syntax</i> : CALL target_address / Ri<br>
 <i>Semantics</i> : Increments SP by 1, transfers IP + 2 to location pointed to by SP and jumps to instruction specified by target_address/Ri.
-
+<br><br><p>For the CALL instruction, Ri/Rj may be any register <b>except IP</b>. </p>
+                                                <p><b>Note:</b>  Only registers R0-R19, SP and BP shall be used in code that executes in unpreviliged mode. An <a href="interrupts_exception_handling.html#exceptions" target="_blank">exception </a>(illegal instruction) will be generated otherwise.</p>
 </li><br>
 <li>2. <b>RET</b><br><i>Syntax</i> : RET<br><i>Semantics</i> : Sets IP to the value pointed to by SP and decrements SP.
 </li></ul>
@@ -339,7 +345,7 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 
                                                 <ul>  <li>
 <i>Syntax</i> : INT n<br>
-<i>Semantics</i> : Generates an interrupt to the kernel with n (4 to 18) as a parameter. This involves a <b>change of mode from user to kernel mode</b>. It also disables the interrupts. The Stack Pointer is first incremented, the physical address of SP is calculated and the (virtual) address of the next instruction after the current value of IP is stored into that location (See <a href="paging_hardware.html" target="_blank" >Address Translation</a>). After this, the execution mode is switched to Kernel mode. Note that, INT can be invoked only from the User Mode. The IP value must contain a virtual address and hence, the value pushed into stack is a virtual address and not a physical address. Finally, the IP value is set according to the value of n as specified <a href="machine_organisation.html" target="_blank">here</a>.
+<i>Semantics</i> : Generates an interrupt to the kernel with n (4 to 18) as a parameter. This involves a <b>change of mode from user to kernel mode</b>. It also disables the interrupts. The Stack Pointer is first incremented, the physical address of SP is calculated and the (virtual) address of the next instruction after the current value of IP is stored into that location (See <a href="paging_hardware.html" target="_blank" >Address Translation</a>). After this, the execution mode is switched to Kernel mode. <b>Note that, INT can be invoked only from the User Mode.</b> The IP value must contain a virtual address and hence, the value pushed into stack is a virtual address and not a physical address. Finally, the IP value is set according to the value of n as specified <a href="machine_organisation.html" target="_blank">here</a>.
 <br>
 
 </li>
