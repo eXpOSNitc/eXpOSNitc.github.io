@@ -115,7 +115,7 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
 
 <p>XSM supports a total of 19 interrupts.  Each interrupt is identified by its number between 0 and 18.  Among these, Interrupt 0 is the exception handler, Interrupt 1 is the timer interrupt, Interrupt 2 is the disk controller interrupt and Interrupt 3 is the console interrupt. Interrupts 1, 2 and 3 are hardware interrupts. The interrupts 4 to 18 are software interrupts.  Software interrupts occur when they are invoked by a program in execution.  A program can invoke a software interrupt using the INT machine instruction.   However, <i>hardware interrupts</i> and the <i>exception handler</i> cannot be invoked from user mode programs.</p>
 
-<p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table given in <a href="machine_organisation.html#content" target="_blank" >Memory Organisation</a>.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>
+<p>Associated with each interrupt/exception, there is an interrupt handler.    When an interrupt occurs, the corresponding handler is executed.  XSM specification reserves two contiguous memory pages for loading each interrupt handler according to the table given in <a href="machine_organisation.html#content" target="_blank" >Memory Organisation</a>.  When an interrupt/exception occurs, the machine transfers control to the beginning of the first page of the corresponding handler.  It is the responsibility of the OS/Kernel programmer to store the interrupt handler routines in the disk and load them to the corresponding pages at the time of system startup.</p>
 
 <p>
 Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps each interrupt number to a corresponding address (of the interrupt handler). The vector table is stored starting from physical address 492 of the ROM memory. Locations 492,493,494 and 495 stores the addresses of exception handler, timer interrupt handler, disk interrupt handler and console interrupt handler. Location 496 contains the address of the first software interrupt handler - INT 4, location 497 contains address of INT 5 handler and so on. When the machine encounters an INT n instruction, the corresponding ROM location is searched for the handler address and IP is set to this value. Since the values are hard-coded in the ROM code of the XSM simulator given to you, you cannot change the addresses of these handlers. See <a href="../arch_spec-files/machine_organisation.html#Boot ROM" target="_blank">here</a> for more details about Boot ROM and interrupt vector table.
@@ -132,8 +132,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
   and a timer interrupt is raised.  At that point, the machine executes the following
   actions:</p>
   <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
-  <li>Increment the value of the SP register and push the value in the IP register into
-      the memory address pointed to by SP.  Since the machine is executing in unpreviliged
+  <li><b><sup>*</sup></b>Increment the value of the SP register and push the value in the IP register into the memory address pointed to by SP.  Since the machine is executing in unpreviliged
       mode, the address in SP is treated as a logical address and the machine performs
       <a href="paging_hardware.html" target="_blank">address translation </a>to calculate the physical address corresponding to the SP value.  </li>
 
@@ -144,6 +143,10 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
       Consequently, the next instruction will be fetched from physical address 2048, and
       the machine will continue execution in previliged mode (without peforming address translation).  </li>
   </ol>
+  <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the 
+    range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
+
+  </p>
 <p>  Thus the occurance of the timer interrupt results in machine execution to be
   transferred to the timer interrupt handler (INT 1) stored in page 4-5.</p>
 
@@ -170,19 +173,22 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
     a disk interrupt (INT2) is raised and execution is passed to the disk interrupt handler
      in page 6. --></p>
      <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
-     <li>Increment the value of the SP register and push the value in the IP register into
+     <li><b><sup>*</sup></b>Increment the value of the SP register and push the value in the IP register into
          the memory address pointed to by SP.  Since the machine is executing in unpreviliged
          mode, the address in SP is treated as a logical address and the machine performs
          <a href="paging_hardware.html" target="_blank">address translation </a>to calculate
          the physical address corresponding to the SP value.  </li>
 
-     <li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
-       handler.  The vector table entry for timer interrupt is located at physical address 494 in page 0
+     <li>Set IP to value stored in the interrupt vector table entry for the disk interrupt
+       handler.  The vector table entry for disk interrupt is located at physical address 494 in page 0
        (ROM) of XSM and the  value 3072 is preset in this location.  Hence, the IP register gets value
        3072 and the machine switches to privileged mode.
          Consequently, the next instruction will be fetched from physical address 3072, and
          the machine will continue execution in previliged mode (without peforming address translation).  </li>
      </ol>
+     <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
+  
+    </p>
      <p>Thus the occurance of the disk interrupt results in machine execution to be
        transferred to the disk interrupt handler (INT 2) stored in page 6-7. As noted above, the macros
        LOAD/STORE are used to send requests to the Disk Controller.</p>
@@ -213,19 +219,23 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
        a disk interrupt (INT2) is raised and execution is passed to the disk interrupt handler
         in page 6. --></p>
         <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
-        <li>Increment the value of the SP register and push the value in the IP register into
+        <li><b><sup>*</sup></b>Increment the value of the SP register and push the value in the IP register into
             the memory address pointed to by SP.  Since the machine is executing in unpreviliged
             mode, the address in SP is treated as a logical address and the machine performs
             <a href="paging_hardware.html" target="_blank">address translation </a>to calculate
             the physical address corresponding to the SP value.  </li>
 
-        <li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
-          handler.  The vector table entry for timer interrupt is located at physical address 495 in page 0
+        <li>Set IP to value stored in the interrupt vector table entry for the console interrupt
+          handler.  The vector table entry for console interrupt is located at physical address 495 in page 0
           (ROM) of XSM and the  value 4096 is preset in this location.  Hence, the IP register gets value
           4096 and the machine switches to privileged mode.
             Consequently, the next instruction will be fetched from physical address 4096, and
             the machine will continue execution in previleged mode (without peforming address translation).  </li>
         </ol>
+        <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the 
+          range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
+      
+        </p>
         <p>Thus the occurance of the console interrupt results in machine execution to be
           transferred to the console interrupt handler (INT 3) stored in page 8-9. As noted above, the macro
           instruction
@@ -247,16 +257,83 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
   multiple interrupts are pending - say the disk, console and timer interrupts are simultaniously
   due, then the machine executes the interrupts in the following order - first timer,
   second disk and third console.  After executing the first handler, the machine returns to
-  unpreviliged mode and immedietely pushes the same IP value back to the stack and executes
-  the next pending interrupt and so on till all pending interrupts are processed.
+  unpreviliged mode and immedietely executes steps (1) and (2) in the next interrupt and so on till all pending interrupts are processed.
+</p>
+
+<p>
+  As noted above, if an exception occurs at the point of handling any of the above interrupts, the exception is handled first.
 </p>
 
 <br>
 <h4 id="exceptions"><b>Exceptions</b></h4>
-<p>Exceptions are anomalous situations which changes the normal flow of execution. The machine raises an exception when it runs in <b>user mode</b> and encounters an anomalous situation during program execution like division by zero or  generation of an invalid address.   All exceptions raise Interrupt 0. A detailed discussion on various conditions leading to the machine raising an exception are  below.</p>
+<p>Exceptions are anomalous situations which changes the normal flow of execution. The machine raises an exception when it runs in <b>user mode</b> and encounters an anomalous situation during program execution like division by zero or generation of an invalid address.   All exceptions raise Interrupt 0.</p>
 
-
+<p>The XSM Register set consists of four special registers for storing the details regarding exceptions. The exception registers are as shown below</p>
+<ul style="text-indent: 5em;font-size:16px;">
+<li>1. <b>Exception IP (EIP)</b> : Stores the value of IP at the point where the exception occurred.</li>
+<br>
+<li>2. <b>Exception Page Number (EPN)</b> : This field is relevant when a Page Fault Exception occurs. The logical page number which caused a page fault exception is stored here.</li>
+<br>
+<li>3. <b>Exception Cause (EC)</b> : This field indicates a number which corresponds to the cause of the exception. Exceptions can be caused when the following events occur.
+<ul style="text-indent: 10em;">
+<br>
+<li>(i). Page Fault : The value stored in the EC register for this exception is 0.</li>
+<li>(ii). Illegal instruction : The value stored in the EC register for this exception is 1.</li>
+<li>(iii). Illegal memory access : The value stored in the EC register for this exception is 2.</li>
+<li>(iv). Arithmetic exception : The value stored in the EC register for this exception is 3.</li>
+</ul>
+</li>
+<br>
+<li>4. <b>Exception Memory Address (EMA)</b> : Exception Memory Address register is relevant only in the case of illegal memory access. The illegal
+memory which was tried to be accessed is stored in the register. This field is relevant only when either the address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.</li>
+</ul>
+<br>
+<p>
+    A detailed discussion on various conditions leading to the machine raising an exception are  below:-
+</p>
+<br>
 <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+  <li>
+    <b>Illegal instruction </b> - occurs when one of the following conditions occur:-
+    <ol type='a'>
+    <li>
+       Destination of a MOV  operation is a constant. 
+    </li>
+    <li>
+       A register/port not allowed in user mode is accessed.
+    </li>
+    <li>
+       A privileged mode instruction is executed. 
+    </li>
+    <li>
+       There is an instruction that does not belong to XSM instruction set or an instruction is given with more/less  operands than allowed - syntax error. 
+    </li>
+    <li>
+       INT n instruction - n is not in the valid range (4-18). 
+    </li>
+  </ol>
+  <br>
+   When one of the above events occur, the machine does the following:-
+   <br><ol>
+     <li>
+       EIP is set to the value of the IP register, from which instruction that caused the exception was fetched.
+     </li>
+     <li>
+       EPN contents are not valid for this exception.
+     </li>
+     <li>
+       EC is set to value 1 corresponding to illegal instruction. 
+     </li>
+     <li>
+       EMA contents are not valid for this exception.
+     </li>
+     <li>
+        Set IP to value stored in the interrupt vector table entry for the exception handler. The vector table entry for exception handler is located at physical address 492 in page 0 (ROM) of XSM and the value 1024 is preset in this location. Hence, the IP register gets value 1024 and the machine switches to privileged mode. Consequently, the next instruction will be fetched from physical address 1024, and the machine will continue execution in previleged mode (without peforming address translation).
+    </li>
+   </ol>
+  </li>
+
+<br>
         <li><b>Illegal Memory Access </b>- occurs when one of the following conditions occur:- 
           <ol type='a'>
             <li>
@@ -266,7 +343,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
               RET/POP executed with SP not between 0 and PTLR*512-1.
             </li>
             <li>
-              CALL/INT/PUSH/hardware interrupt executed with SP not between -1 and  PTLR*512-2.<b><sup>*</sup></b>
+              CALL/INT/PUSH/hardware interrupt executed with SP not between -1 and  PTLR*512-2.
             </li>
             <li>
               JZ/JNZ/JMP Instruction is executed with IP value not in the range 0 to PTLR*512-1.
@@ -291,101 +368,83 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
               EMA is set to logical address that caused the illegal memory access.
             </li>
             <li>
-              Increments SP.
-            </li>
-            <li>
-              Push the current value of IP register to the physical memory address referenced by SP (obtained by performing address translation). 
+                Set IP to value stored in the interrupt vector table entry for the exception handler. The vector table entry for exception handler is located at physical address 492 in page 0 (ROM) of XSM and the value 1024 is preset in this location. Hence, the IP register gets value 1024 and the machine switches to privileged mode. Consequently, the next instruction will be fetched from physical address 1024, and the machine will continue execution in previleged mode (without performing address translation).
             </li>
           </ol>
-          <b><sup>*</sup></b><i>Important Note: </i> In this case, the machine directly transfers control to the exception handler without pushing the contents of the IP register into the stack. Any pending interrupt will be execueted only after the machine returns to unprivilegeed mode from the exception handler. This is because the location into which the value of IP register has to be stored is not in the range of valid logical address space (0 - PTLR*512-1).
         </li>
          <br>
-         <li>
-           <b>Illegal instructions </b> - occurs when one of the following conditions occur:-
-           <ol type='a'>
-           <li>
-              Destination of a MOV  operation is a constant. 
-           </li>
-           <li>
-              A register/port not allowed in user mode is accessed.
-           </li>
-           <li>
-              A privileged mode instruction is executed. 
-           </li>
-           <li>
-              There is an instruction that does not belong to XSM instruction set or an instruction is given with more/less  operands than allowed - syntax error. 
-           </li>
-           <li>
-              INT n instruction - n is not in the valid range (4-18). 
-           </li>
-         </ol>
-         <br>
-          When one of the above events occur, the machine does the following:-
-          <br><ol>
-            <li>
-              EIP is set to the value of the IP register, from which instruction that caused the exception was fetched.
-            </li>
-            <li>
-              EPN contents are not valid for this exception.
-            </li>
-            <li>
-              EC is set to value 1 corresponding to illegal memory access. 
-            </li>
-            <li>
-              EMA contents are not valid for this exception.
-            </li>
-            <li>
-              Increments SP.
-            </li>
-            <li>
-              Push the current value of IP register to the physical memory address referenced by SP (obtained by performing address translation). 
-            </li>
-          </ol>
-         </li>
-		 
+
+     <li><b>Arithmetic exception </b>- Occurs during DIV/MOD instruction with the second operator having value zero. 
+      <br>
+      <br>
+      When an arithmetic exception occurs, the machine does the following:-
+      <br><ol>
+        <li>
+          EIP is set to the value of the IP register, from which instruction that caused the exception was fetched.
+        </li>
+        <li>
+          EPN contents are not valid for this exception.
+        </li>
+        <li>
+          EC is set to value 3 corresponding to arithmetic exception. 
+        </li>
+        <li>
+          EMA contents are not valid for this exception.
+        </li>
+        <li>
+            Set IP to value stored in the interrupt vector table entry for the exception handler. The vector table entry for exception handler is located at physical address 492 in page 0 (ROM) of XSM and the value 1024 is preset in this location. Hence, the IP register gets value 1024 and the machine switches to privileged mode. Consequently, the next instruction will be fetched from physical address 1024, and the machine will continue execution in previleged mode (without performing address translation).
+        </li>
+      </ol>
+      </li>
+      <br>
+      <li><b>Page Fault </b>- Occurs when <b>none</b> of the conditions above hold, and the <a href="paging_hardware.html" target="_blank"> valid bit </a> of the page referenced is set to 0.
+      <br>
+      <br>
+      When one of the above events occur, the machine does the following:-
+      <br><ol>
+        <li>
+          EIP is set to the logical page number of the page accessed, that caused the page fault exception.
+        </li>
+        <li>
+          EPN contents are not valid for this exception.
+        </li>
+        <li>
+          EC is set to value 0 corresponding to illegal memory access. 
+        </li>
+        <li>
+          EMA contents are not valid for this exception.
+        </li>
+        <li>
+            Set IP to value stored in the interrupt vector table entry for the exception handler. The vector table entry for exception handler is located at physical address 492 in page 0 (ROM) of XSM and the value 1024 is preset in this location. Hence, the IP register gets value 1024 and the machine switches to privileged mode. Consequently, the next instruction will be fetched from physical address 1024, and the machine will continue execution in previleged mode (without performing address translation).
+        </li>
+      </ol>
 		 <br>
-		 <li><b>Page Fault </b>- Occurs when the page accessed by the process is not available in the memory. (See <a href="paging_hardware.html" target="_blank" >Paging Hardware</a>)</li>
-		 <br>
-		 <li><b>Arithmetic exception </b>- Occurs when the divisor is 0. </li>
-		 <br>
-		 <!--li><b>Illegal Write </b>- Occurs when the prcoess tries to write into pages whose Write access bit is not set in the page table (See <a href="paging_hardware.html" target="_blank" >Paging Hardware</a>).</li>
-		 <br-->
+    </li>
 </ul>
 
-	<p>When an exception occurs while the machine is executing in User mode, the machine transfers control of execution – pushes the instruction pointer to user stack and changes the value of IP to page number 2 (address = 1024) where the Exception Handler Routine resides.</p>
-
-	<p>The XSM Register set consists of five special registers for storing the details regarding exceptions. The exception Registers are as shown below</p>
-<ul style="text-indent: 5em;font-size:16px;">
-<li>1. <b>Exception IP (EIP)</b> : Stores the value of IP at the point where the exception occurred.</li>
-<br>
-<li>2. <b>Exception Page Number (EPN)</b> : This field is relevant when a Page Fault Exception occurs. The logical page number which caused a page fault exception is stored here.</li>
-<br>
-<li>3. <b>Exception Cause (EC)</b> : This field indicates a number which corresponds to the cause of the exception. Exceptions can be caused when the following events occur.
-<ul style="text-indent: 10em;">
-<br>
-<li>(i). Page Fault : The value stored in the EC register for this exception is 0.</li>
-<li>(ii). Illegal instruction : The value stored in the EC register for this exception is 1.</li>
-<li>(iii). Illegal memory access : The value stored in the EC register for this exception is 2.</li>
-<li>(iv). Arithmetic exception : The value stored in the EC register for this exception is 3.</li>
-<!--li>(v). Illegal Write : The value stored in the EC register for this exception is 4.</li-->
-</ul>
-</li>
-<br>
-<!--li>4. <b>Exception Virtual Address (EVA)</b> : Exception Virtual Address register stores the virtual address which caused the exception.</li>
-<br-->
-<li>4. <b>Exception Memory Address (EMA)</b> : Exception Memory Address register is relevant only in the case of illegal memory access. The illegal
-memory which was tried to be accessed is stored in the register. This field is relevant only when either the address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.</li>
-</ul>
 <br>
 <h4><b>Software Interrupts</b></h4>
-<p>Software Interrupts (traps) are the primary mechanisms by which a user mode program transfers control to the corresponding interrupt handler that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt using the IRET instruction, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available (Interrupt 4 - Interrupt 18).</p>
+<p>Software Interrupts are the primary mechanisms by which a user mode program transfers control to the corresponding interrupt handler that runs in the kernel mode. Software interrupt service routines typically contain the OS code for various system calls. Upon return from a software interrupt using the IRET instruction, execution resumes from the next instruction in the user mode program. A total of 15 software interrupts are available (Interrupt 4 - Interrupt 18). Note that <b>user mode programs cannot invoke the hardware interrupt routines</b>.</p>
 
+<p> 
+  When an <i>INT n</i> (n in the range 4-18) instruction occurs, the machine executes the following actions:
+</p>
+         <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
+         <li><b><sup>*</sup></b>Increment the value of the SP register and push the value in the IP + 2 (logical address of the next instruction to be executed upon return from the interrupt handler) into the memory address pointed to by SP. Since the machine is executing in unpreviliged
+             mode, the address in SP is treated as a logical address and the machine performs
+             <a href="paging_hardware.html" target="_blank">address translation </a>to calculate
+             the physical address corresponding to the SP value. </li>
+ 
+         <li>Set IP to value stored in the vector table entry for the corresponding interrupt. The vector table entry for <i>INT n</i> is located at physical address <i>492 + n</i> in page 0 (ROM) of XSM and the values are preset as specified in the <a href="machine_organisation.html" target="_blank">Boot ROM and Boot Block section</a> of XSM Machine Organisation documentation.  Hence, the IP register gets the value preset in the interrupt vector table and the machine switches to privileged mode. Consequently, the next instruction will be fetched from the preset value, and the machine will continue execution in previleged mode (without peforming address translation).  </li>
+         </ol>
+         <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the 
+           range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
+       
+         </p>
 
-<p>In Kernel mode, hardware interrupt (Interrupts 0, 1, 2 and 3) routines may also be invoked just like software interrupt routines. Note that user mode programs can not invoke the hardware interrupt routines.</p>
-
-<p>If a software interrupt is invoked from the kernel mode, the address of the next instruction is pushed into the
-stack and the interrupt handler is executed.  If the return from a software/hardware interrupt routine is to a program
-in kernel mode, the RET instruction must be used instead of the IRET instruction to ensure that execution continues in the kernel mode upon return <a href="instruction_set.html#privileged_instruction" target="_blank" >(see instruction set)</a>.</p>
+<p>
+  Note: <b> INT instruction cannot be executed when the machine is executing in privileged mode.</b> (see <a href="instruction_set.html" target="_blank">instruction set</a>)
+</p>
 </div>
 
 

@@ -302,7 +302,7 @@ Hence in eXpOS, each process has a kernel stack in addition to user stack. We ma
                             <br>
                             <h4 class="panel-title" style="padding-top: 20px">PER-PROCESS RESOURCE TABLE</h4>                          
                           <div class="panel-body">
-                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. For every instance of a file opened (or a semaphore acquired) by the process, it stores the index of the Open File Table (or Semaphore Table) entry for the file (or semaphore) is stored in this table. One word is used to store the resource identifier which indicates whether the resource opened by the process is a <a href="../support_tools-files/constants.html">FILE</a> or a <a href="../support_tools-files/constants.html">SEMAPHORE</a>. Open system call sets the values of entries in this table for a file.</p>
+                              <p>The Per-Process Resource Table has 8 entries and each entry is of 2 words. <b>The last 16 words of the User Area Page are reserved for this</b>. For every instance of a file opened (or a semaphore acquired) by the process, it stores the index of the Open File Table (or Semaphore Table) entry for the file (or semaphore) is stored in this table. One word is used to store the resource identifier which indicates whether the resource opened by the process is a <a href="../support_tools-files/constants.html">FILE</a> or a <a href="../support_tools-files/constants.html">SEMAPHORE</a>. Open system call sets the values of entries in this table for a file.</p>
  
  
  <p>The per-process resource table entry has the following format. </p>

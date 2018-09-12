@@ -2964,7 +2964,7 @@ loadi(51,64);</pre></div> </li>
 
 
 
-        	<p>	Modify the timer interrupt routine as explained above using the algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>.
+        	<p>	Modify the timer interrupt routine as explained above using the algorithm given <a href="os_design-files/timer.html" target="_blank">here</a>. (Ignore the part relating to the swapping operation as it will be dealt in a later stage.)
         	</p>
 
 
@@ -3735,7 +3735,7 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
    <p>Instead of the loadi statement used to load the disk block to the memory page, invoke the <b>Disk Load</b> function present in the <a href="os_modules/Module_4.html" target="_blank">device manager module</a>.</p>
 
-   <p>We will initialize another data strucutre as well in this stage. This is the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. (This step can be deferred to later stages, but since the work involved is simple, we will finish it here).  The per-process resource table stores the information about the files and semaphores which a process is currently using. For each process, per-process resource table is stored in the user area page of the process. This table has 8 entries with 2 words each, in total it occupies 16 words. In exec, after reacquiring the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> for the new process, per-process resource table should be initialized in this user area page. Since the newly created process has not opened any files or semaphores, each entry in the per-process table is initialized to -1.</p>
+   <p>We will initialize another data strucutre as well in this stage. This is the <a href="os_design-files/process_table.html#per_process_table" target="_blank">per-process resource table</a>. (This step can be deferred to later stages, but since the work involved is simple, we will finish it here).  The per-process resource table stores the information about the files and semaphores which a process is currently using. For each process, per-process resource table is stored in the user area page of the process. This table has 8 entries with 2 words each, in total it occupies 16 words. <i>We will reserve the last 16 words of the User Area Page to store the per-process Resource Table of the process.</i> In exec, after reacquiring the <a href="os_design-files/process_table.html#user_area" target="_blank">user area page</a> for the new process, per-process resource table should be initialized in this user area page. Since the newly created process has not opened any files or semaphores, each entry in the per-process table is initialized to -1.</p>
    </li>
 
 
