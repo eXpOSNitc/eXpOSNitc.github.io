@@ -134,9 +134,9 @@ Switch to the Kernel Stack. 	/* See <a href="stack_smcall.html">kernel stack man
 Save the value of SP to the USER SP field in the <a href="process_table.html">Process Table</a> entry of the process.
 Set the value of SP to the beginning of User Area Page.
 
-Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
+Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction and push EIP onto the kernel stack.
 
-<b>If</b> the exception is not caused by a page fault  /* Check the <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Cause registers</a> */
+<b>If</b> (the exception is not caused by a page fault or user stack is full)  /* Check the <a href="../Tutorials/xsm_interrupts_tutorial.html">Exception Cause registers</a> */
              Display the cause of the exception.
 	     Terminate the process using <b>exit_process()</b> module function in the <a href="../os_modules/Module_1.html">Process Manager</a> module.
 	     Invoke the scheduler by calling the <b>switch_context()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
@@ -157,13 +157,14 @@ else if (page corresponds to a heap page)
 	and auxiliary information to referenced and valid. Also set the write bit to 1.
 	/* Heap is writable */
 
-Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
+Pop EIP from the kernel stack and restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
 
 Reset the MODE_FLAG back to 0.
 Restore SP to the USER SP stored in the process table.
+Increment SP and store EIP onto the location pointed to by SP.
 
 ireturn.
-
+</pre>
              </div>
              </div>
              <br><br>

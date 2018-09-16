@@ -3921,12 +3921,13 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
 
                            <br>
     	<p style="text-indent: 0px">
-    		1) Set the MODE FLAG to -1 in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process, indicating in exception handler.
-    		2) Switch to the kernel stack and backup the register context.<br>
-    		3) If the cause of the exception is other than page fault (EC is not equal to 0) then print a meaningful error message. Then invoke the <b>Exit Process</b> function to halt the process and invoke the scheduler. <br>
+    		1) Set the MODE FLAG to -1 in the <a href="os_design-files/process_table.html" target="_blank">process table</a> of the current process, indicating in exception handler.<br>
+    		2) Switch to the kernel stack and backup the register context and push EIP onto the stack.<br>
+    		3) If the cause of the exception is other than page fault (EC is not equal to 0) or if the user stack is full (when userSP is PTLR*512-1, the return address can't be pushed onto the stack), then print a meaningful error message. Then invoke the <b>Exit Process</b> function to halt the process and invoke the scheduler. <br>
     		4) If page fault is caused due to a code page, then get the code block number to be loaded from the <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map table</a>. For this block, invoke the <b>Get Code Page</b> function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this code page,  set the page number to memory page obtained from <b>Get Code Page</b> function and auxiliary information to "1100".<br>
     		5) If page fault is caused due to a heap page, then invoke the Get Free Page function present in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update the page table entry for this heap page,  set the page number to memory page obtained from Get Free Page function and auxiliary information to "1110".<br>
-    		6) Reset the MODE FLAG to 0. Restore the register context, change to the user stack and return to the user mode.</p>
+        6) Reset the MODE FLAG to 0. Pop EIP from the stack and restore the register context.<br>
+        7) Change to the user stack. Increment the stack pointer, store the EIP value onto the location pointed to by SP and return to the user mode.</p>
 
     		 <p>The Exception handler implementation given above is final. The full algorithm is given <a href="os_design-files/exe_handler.html" target="_blank">here</a>.
     		</p><br>

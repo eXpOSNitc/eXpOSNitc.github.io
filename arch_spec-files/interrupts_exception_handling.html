@@ -272,7 +272,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
 <ul style="text-indent: 5em;font-size:16px;">
 <li>1. <b>Exception IP (EIP)</b> : Stores the value of IP at the point where the exception occurred.</li>
 <br>
-<li>2. <b>Exception Page Number (EPN)</b> : This field is relevant when a Page Fault Exception occurs. The logical page number which caused a page fault exception is stored here.</li>
+<li>2. <b>Exception Page Number (EPN)</b> : This field is relevant when a <b>Page Fault Exception</b> occurs. The logical page number which caused a page fault exception is stored here.</li>
 <br>
 <li>3. <b>Exception Cause (EC)</b> : This field indicates a number which corresponds to the cause of the exception. Exceptions can be caused when the following events occur.
 <ul style="text-indent: 10em;">
@@ -284,7 +284,7 @@ Note:  Internally XSM machine has an <i> interrupt vector table </i> that maps e
 </ul>
 </li>
 <br>
-<li>4. <b>Exception Memory Address (EMA)</b> : Exception Memory Address register is relevant only in the case of illegal memory access. The illegal
+<li>4. <b>Exception Memory Address (EMA)</b> : Exception Memory Address register is relevant only in the case of <b>illegal memory access</b>. The illegal
 memory which was tried to be accessed is stored in the register. This field is relevant only when either the address referred to is outside the range 0 - 512*(PTLR-1) or a write is attempted to a page which is read-only.</li>
 </ul>
 <br>
@@ -403,13 +403,13 @@ memory which was tried to be accessed is stored in the register. This field is r
       When one of the above events occur, the machine does the following:-
       <br><ol>
         <li>
-          EIP is set to the logical page number of the page accessed, that caused the page fault exception.
+          EIP is set to the value of the IP register, from which instruction that caused the exception was fetched.
         </li>
         <li>
-          EPN contents are not valid for this exception.
+          EPN contains the logical page number of the page accessed, that caused the exception.
         </li>
         <li>
-          EC is set to value 0 corresponding to illegal memory access. 
+          EC is set to value 0 corresponding to page fault. 
         </li>
         <li>
           EMA contents are not valid for this exception.
@@ -437,9 +437,7 @@ memory which was tried to be accessed is stored in the register. This field is r
  
          <li>Set IP to value stored in the vector table entry for the corresponding interrupt. The vector table entry for <i>INT n</i> is located at physical address <i>492 + n</i> in page 0 (ROM) of XSM and the values are preset as specified in the <a href="machine_organisation.html" target="_blank">Boot ROM and Boot Block section</a> of XSM Machine Organisation documentation.  Hence, the IP register gets the value preset in the interrupt vector table and the machine switches to privileged mode. Consequently, the next instruction will be fetched from the preset value, and the machine will continue execution in previleged mode (without peforming address translation).  </li>
          </ol>
-         <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the 
-           range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
-       
+         <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section above on exception handling).
          </p>
 
 <p>
