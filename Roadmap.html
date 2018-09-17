@@ -140,6 +140,12 @@
       <a href="#navtop" title="Go back up"> <span style="color:grey">Top &uarr;</span></a>
     </div>
 
+    <!-- Float to collapse all -->
+
+    <div class="up grid col-one-third" style="float: left; position: fixed; top: 20vh; right: 2vw;">
+      <a data-toggle="collapse"  data-target="#collapse1,#collapse2,#collapse3,#collapse4,#collapse5,#collapse6,#collapse7,#collapse8,#collapse9,#collapse10,#collapse11,#collapse12,#collapse13,#collapse14,#collapse15,#collapse16,#collapse17,#collapse18,#collapse19,#collapse20,#collapse21,#collapse22,#collapse23,#collapse24,#collapse25,#collapse26,#collapse27">
+      <span class="fa fa-bars fa-2x"></span></a>
+    </div>
 
     <section id="about" style="text-align:justify">
       <div class="container">
@@ -227,8 +233,7 @@
 
 
                 </div>
-                </div>
-
+                </div> -->
 
                   <!--========= Stage descrptions starts here ==========-->
 
@@ -2349,7 +2354,8 @@ end
 ./expl samples/numbers.expl</pre></div></li>
 
 <p>The ExpL compiler will write the target executable code into the file assemblycode.xsm.  (You will have to
-save the file to a different name before compiling the next ExpL program).</p>
+save the file to a different name before compiling the next ExpL program).
+<br> <b>Note:</b> The present version of ExpL compiles &lt;filename&gt;.expl into &lt;filename&gt;.xsm. A copy of this target file is also wriiten into the file <i>assemblycode.xsm</i> for backward compatibility.</p>
 
 
 
@@ -3849,13 +3855,16 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
       <p> The register EIP saves the logical IP value of the instruction which has raised the exception. The register EPN stores the logical page number of the address that has caused the page fault. <b>Note that eXpOS is designed such that, page fault exception can only occur for heap and code pages.</b> Library pages are shared by all processes so they are always present in the memory. Stack pages are neccessary to run a process and are accessed more frequently. So both library and stack pages for a process should be present in the memory.
       Based on the value present in Exception Page Number (EPN) register, the exception handler finds out whether page fault has caused for heap or code page. When page fault has occured for heap page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the <b>Get Free Page</b> function in <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. If the page fault has occured for a code page, then the exception handler invokes the <b>Get Code Page</b> function in memory manager module. The page table of the process is updated to store the page number obtained from Get Code Page or Get Free Page functions. After handling the page fault exception, the exception handler restores the register context, switches to user stack and returns to user mode.</p><br>
 
-<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"><p>Upon return to user mode, the instruction which caused the
-      exception is re-executed.  This is because the XSM machine
-      pushes the address of this instruction into the stack as the
-      return address before transfering control to the exception handler.
-      This is the correct execution semantics as the machine had
-      failed to complete execution of the instruction that generated the
-      exception.  An OS can implement <b>Demand Paging</b>, as we will be doing here, only if the underlying machine hardware supports re-execution of the instruction that caused a page fault.</p></div><br>
+<div style="background-color: #dff0d8; padding: 24px; border-radius: 24px"><p>Upon return to user mode, the instruction in the application that caused the
+      exception must be re-executed. This indeed is the correct execution semantics as the machine had
+      failed to execute the instruction that generated the
+      exception. The XSM hardware sets the address of the instruction in
+      the EIP register at the time of entering the exception.
+      After completing the actions 
+      of the exception handler,  
+      the OS must place this address on the top of the application program's stack
+      before returning control back to user mode.
+       An OS can implement <b>Demand Paging</b>, as we will be doing here, only if the underlying machine hardware supports re-execution of the instruction that caused a page fault.</p></div><br>
 
 
 <p>
@@ -3950,7 +3959,22 @@ the <i>load</i> instruction abstracts <a href="https://en.wikipedia.org/wiki/Asy
                             <div id="collapseq15" class="panel-collapse collapse">
 	     No. Page fault can occur in two situations. One possibility is during insturction fetch - if the instruction pointer points to an invalid page.  In this case, the missing virtual page number (EPN) corresponds to the logical page number of the EIP. The second possibility is during instruction execution when an operand fetch/memory write accesses a page that is not loaded.  In this case EPN will indicate the page number of the missing page, and not the logical page number corresponding to EIP value.
 		</div>
-		</li></ul>
+    </li>
+    <li class="list-group-item">
+
+      <a data-toggle="collapse"  href="#collapseq15a"><b>Q2.</b> Why does the exception handler terminate the process when the userSP value is PTLR*512-1 ? </a>
+          <div id="collapseq15a" class="panel-collapse collapse">
+             The XSM machine doesn't push the return address into the user stack when the exception occurs, instead it stores the address in the EIP register. Hence, for the exception handler to return to the instruction which caused the exception, the EIP register value must be pushed onto the top of the user stack of the program. However, when the application's stack is full (userSP = PTLR*512-1), there is no stack space left to place the return address and the only sensible action for the OS is to terminate the process.  
+          </div>
+          </li>
+          <li class="list-group-item">
+
+            <a data-toggle="collapse"  href="#collapseq15b"><b>Q2.</b> Why does the exception handler save the contents of the EIP register immediately into the kernel stack upon entry into the exception handler? </a>
+                <div id="collapseq15b" class="panel-collapse collapse">
+                   The execption handler may block for a disk read and invoke the scheduler during it's course of execution.   The value of the EIP register must be stored before scheduling other processes as the current value will be overwritten by the machine if an exception occurs in another application that is scheduled in this way.  
+                </div>
+                </li>
+  </ul>
                           </div>
                           </div>
 
