@@ -227,6 +227,12 @@ Called by fork and exec system calls. Also called by exception handler on page f
 
     <b>If</b> Mem Free List entry becomes 0, increment the MEM_FREE_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
     
+    loop through the process table{ 
+      if (the process state is ( WAIT_MEM , _ ) ){
+            Set state of process as (READY , _ )
+        }
+    }
+
     return;
 </pre>
 Called by the Free page table and Free UArea Page functions.
