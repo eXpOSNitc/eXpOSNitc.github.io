@@ -180,11 +180,12 @@
                           <div class="panel-body">
                               <p>The tuple can take the following values</p>
                       <ul style="list-style-type: circle;line-height: 25px;margin-left: 100px;">
+                          <li>(ALLOCATED,___) - The PCB Entry for the process has been allocated, but the process has not been created yet, because the Fork system call has not completed the creation of the new process.</li>
                           <li>(CREATED,___) – The process has been created in memory and data structures set up, but has never been scheduled. The fork system call creates the child process in CREATED state.
 
                           <li>(RUNNING,___) – The process is in execution.  This field is set by the scheduler when a process is scheduled.</li>
                           <li>(READY,___) – The process is ready to be scheduled.</li>
-                          <li>(WAIT_PROCESS,WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID. This field is set by WAIT system call. </li>
+                          <li>(WAIT_PROCESS, WAIT_PID) – The process is waiting for a signal from another process whose PID is WAIT_PID. This field is set by WAIT system call. </li>
                           <li>(WAIT_FILE, INODEINDEX) - The process is blocked for a file whose index in the inode table is INODEINDEX. </li>
                           <li>(WAIT_DISK,___) - The process is blocked because of one of the following reasons:  a) It is waiting for disk to complete a disk-memory transfer operation it had initiated OR  b) It wants to execute a disk transfer, but the disk is busy, handling a disk-memory transfer request issued by some other process. The disk interrupt handler changes the state from (WAIT_DISK,___) to (READY,___), after it has completed the disk transfer. </li>
                           <li>(WAIT_SEMAPHORE,SEMTABLEINDEX) - The process is waiting for a semaphore that was locked by some other process. </li>

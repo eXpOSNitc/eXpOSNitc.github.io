@@ -5704,7 +5704,7 @@ userSP=SP;</pre>
                         process table entry (<a href="os_design-files/process_table.html#state" target="_blank">STATE</a>
                         field is set to <a href="support_tools-files/constants.html">TERMINATED</a>) can be found out
                         by looping through all process table entries. Initialize the PID to the index of the free
-                        entry. Initialize PTBR to the starting address of the page table for that process (obtained
+                        entry. Set the STATE to <a href="support_tools-files/constants.html">ALLOCATED</a>. Initialize PTBR to the starting address of the page table for that process (obtained
                         using index) and PTLR to 10. Return the index to the caller.</p>
                       <p style="text-indent: 0px"><code>Note :</code>The implementation of above <b>Get Pcb Entry</b>
                         module function is final version.</p><br>
@@ -5822,6 +5822,20 @@ userSP=SP;</pre>
                                 page table of the parent. Subsequent instruction fetch cycles continue to proceed by
                                 translating the value of IP using the PTBR value, which points to the page table of the
                                 parent process. The parent process continues execution till a context switch occurs.
+                              </div>
+                            </li>
+
+                            <li class="list-group-item">
+
+                              <a data-toggle="collapse" href="#collapseq18a"><b>Q4.</b> 
+                              What would go wrong if the Get Pcb Entry function sets the state 
+                              of a newly allocated PCB entry to CREATED instead of ALLOCATED </a>
+                              <div id="collapseq18a" class="panel-collapse collapse">
+                              The fork system call which invokes the Get Pcb Entry function for the child process might
+                              block before completing process creation (if the  
+                              Get Free Page function finds no free page in memory and
+                              invokes the scheduler).  In such case, the scheduler must not try to run
+                              the new process as its creation is not complete.  
                               </div>
                             </li>
 
@@ -6474,7 +6488,11 @@ userSP=SP;</pre>
                       necessarily in sequential order.
                       <br><br>
 
-
+                      <b style="color:#26A65B">Assignment 2: </b> The ExpL programs given here describes a <i>parent.expl</i> program and a <i>child.expl</i> program. The <i>parent.xsm</i> program will create 8 child processes by invoking <i>Fork</i> 3 times. Each of the child processes will print the process ID (PID) and then, invokes the <i>Exec</i> system call to execute the program <i>"child.xsm"</i>. The <i>child.xsm</i> program stores numbers from <i>PID*100</i> to <i>PID*100 + 9</i> onto a linked list and prints them to the console (each child process will have a seperate heap as the Exec system call alocates a seperate heap for each process). Compile the programs given in the link above and execute the parent program (<i>parent.xsm</i>) using the shell. The program must print all numbers from <i>PID*100</i> to <i>PID*100+9</i>, where PID = 2 to 9, but not necessarily in sequential order. Also, calculate the <b>maximum memory usage, number of disk access and number of context switches</b> (by modifying the OS Kernel code).
+                    <br><br>
+                      
+                      <b style="color:#26A65B">Assignment 3: </b> The two ExpL programs given here perform merge sort in two different ways. The first one is done in a sequential manner and the second one, in a concurrent approach. Values from 1 to 64 are stored in decreasing order in a linked list and are sorted using a recursive merge sort function. In the concurrent approach, the process is forked and the merge sort function is called recursively for the two sub-lists from the two child processes. Compile the programs given in the link above and execute each of them using the shell. The program must print values from 1 to 64 in a sorted manner. Also, calculate the <b>maximum memory usage, number of contexts switches and the number of switches to KERNEL mode</b>.
+                    <br><br>
 
                     </div>
                   </div>
@@ -7851,7 +7869,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                       file operations on them <br> 5) List all users using "lu.xsm" executable file <br> 6) Logout and
                       again login as root user <br> 7) Remove files owned by the new user using excutable file command
                       "ru.xsm" from the shell of root.<br>
-                      You can furthur test the system by running all build-in shell commands and excutable files
+                      You can further test the system by running all build-in shell commands and excutable files
                       commands to make sure that implementation is correct.<br>
                       <br>
 

@@ -1017,6 +1017,420 @@ pre span:before {
 
 </div>
 
+<div class="panel-body" id="test_program_13"  >
+  <br><br>
+  <hr>
+  <br><br>
+<b style="font-size: 20px;">13. Test Program 13 </b><br><br>
+<table class="table table-bordered">
+                                        <tr>
+                                            <td><b>Input</b></td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Output (For each 8 processes with PID = 2 to 9)</b></td>
+                                            <td>Return values from Fork system call and integers from PID*100 to PID*100+9.</td>
+                                        </tr>
+                                      </table>
+                                    <p style="text-indent: 0px"><b>Description :</b> This program calls fork 3 times creating 8 child processes. Each process prints the value returned from the last Fork system call and Exec system call is invoked with file "child.xsm". The "chils.xsm" program stores numbers from PID*100 to PID*100+9 onto a linked list and prints them to the console. </p><br>
+<div>
+  parent.expl
+  <pre>
+<span>int main()</span>
+<span>{</span>
+<span>	decl</span>
+<span>		int temp,pid;</span>
+<span>	enddecl</span>
+<span></span>
+<span>	begin</span>
+<span>		pid = exposcall("Fork");</span>
+<span>		pid = exposcall("Fork");</span>
+<span>		pid = exposcall("Fork");</span>
+<span></span>
+<span>		if(pid==-1) then</span>
+<span>			temp=exposcall("Write", -2, "Fork Error");</span>
+<span>		else</span>
+<span>			temp=exposcall("Write", -2, pid);</span>
+<span>		endif;</span>
+<span></span>
+<span>		temp = exposcall("Exec", "child.xsm");</span>
+<span></span>
+<span>		return 0;</span>
+<span>	end</span>
+<span>}</span>
+  </pre>
+  <br>
+  child.expl
+  <pre>
+<span>type</span>
+<span>  List</span>
+<span>  {</span>
+<span>    int data;</span>
+<span>    List next;</span>
+<span>  }</span>
+<span>endtype</span>
+<span></span>
+<span>decl</span>
+<span>	List head, p, q;</span>
+<span>enddecl</span>
+<span></span>
+<span>int main()</span>
+<span>{</span>
+<span>decl</span>
+<span>	int x, temp, pid, counter;</span>
+<span>enddecl</span>
+<span></span>
+<span>begin</span>
+<span>	x = initialize();</span>
+<span>	pid = exposcall("Getpid");</span>
+<span></span>
+<span>	head=null;</span>
+<span>	counter=0;</span>
+<span>	while(counter<10) do</span>
+<span>		p=alloc();</span>
+<span>		p.data=pid*100 + counter;</span>
+<span>		p.next=null;</span>
+<span></span>
+<span>		if(head==null) then</span>
+<span>			head=p;</span>
+<span>			q=p;</span>
+<span>		else</span>
+<span>			q.next=p;</span>
+<span>			q=q.next;</span>
+<span>		endif;</span>
+<span></span>
+<span>		counter=counter+1;</span>
+<span>	endwhile;</span>
+<span></span>
+<span>	p=head;</span>
+<span>	while(p!=null) do</span>
+<span>		write(p.data);</span>
+<span>		p=p.next;</span>
+<span>	endwhile;</span>
+<span></span>
+<span>	return 0;</span>
+<span>end</span>
+<span>}</span>
+  </pre>
+</div>
+
+</div>
+
+<div class="panel-body" id="test_program_14"  >
+  <br><br>
+  <hr>
+  <br><br>
+<b style="font-size: 20px;">14. Test Program 14 (Merge Sort) </b><br><br>
+<table class="table table-bordered">
+                                        <tr>
+                                            <td><b>Input</b></td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Output</b></td>
+                                            <td>Print numbers from 1 to 64 in ascending order.</td>
+                                        </tr>
+                                      </table>
+                                    <p style="text-indent: 0px"><b>Description :</b> These two ExpL programs perform merge sort in two different ways. The first one is done in a sequential manner and the second one, in a concurrent approach. Values from 1 to 64 are stored in decreasing order in a linked list and are sorted using a recursive merge sort function. In the concurrent approach, the process is forked and the merge sort function is called recursively for the two sub-lists from the two child processes.  </p><br>
+
+<div>
+  merge_sort.expl (Sequential)
+  <pre>
+      <span>type</span>
+      <span>  List</span>
+      <span>  {</span>
+      <span>    int data;</span>
+      <span>    List next;</span>
+      <span>  }</span>
+      <span>endtype</span>
+      <span></span>
+      <span>decl</span>
+      <span>    List head;</span>
+      <span>    List mergeSort(List top);</span>
+      <span>    List sort(List a, List b);</span>
+      <span>enddecl</span>
+      <span></span>
+      <span>List mergeSort(List top)</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    List slow, fast, a, b;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    if((top!=null) AND (top.next!=null)) then</span>
+      <span>      slow=top;</span>
+      <span>      fast=top.next;</span>
+      <span></span>
+      <span>      //Divide the list into two parts</span>
+      <span>      while(fast!=null) do</span>
+      <span>        fast=fast.next;</span>
+      <span>        if(fast!=null) then</span>
+      <span>          slow=slow.next;</span>
+      <span>          fast=fast.next;</span>
+      <span>        endif;</span>
+      <span>      endwhile;</span>
+      <span></span>
+      <span>      a=top;</span>
+      <span>      b=slow.next;</span>
+      <span>      slow.next=null;</span>
+      <span></span>
+      <span>      //Recursively call merge sort</span>
+      <span>      a=mergeSort(a);</span>
+      <span>      b=mergeSort(b);</span>
+      <span></span>
+      <span>      //Merge the two lists</span>
+      <span>      top=sort(a, b);</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    return top;</span>
+      <span>  end</span>
+      <span>}</span>
+      <span></span>
+      <span>List sort(List a, List b)</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    List result;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    result=null;</span>
+      <span></span>
+      <span>    if(a==null) then</span>
+      <span>      result=b;</span>
+      <span>    endif;</span>
+      <span>    if(b==null) then</span>
+      <span>      result=a;</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    if(a!=null AND b!=null) then</span>
+      <span>      if(a.data<=b.data) then</span>
+      <span>        result=a;</span>
+      <span>        result.next=sort(a.next, b);</span>
+      <span>      else</span>
+      <span>        result=b;</span>
+      <span>        result.next=sort(a, b.next);</span>
+      <span>      endif;</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    return result;</span>
+      <span>  end</span>
+      <span>}</span>
+      <span></span>
+      <span>int main()</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    int x, counter;</span>
+      <span>    List p, q;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    x = initialize();</span>
+      <span></span>
+      <span>    //Storing values in descending order</span>
+      <span>    head=null;</span>
+      <span>    counter=0;</span>
+      <span>    while(counter<64) do</span>
+      <span>      p=alloc();</span>
+      <span>      p.data=64-counter;</span>
+      <span>      p.next=null;</span>
+      <span></span>
+      <span>      if(head==null) then</span>
+      <span>        head=p;</span>
+      <span>        q=p;</span>
+      <span>      else</span>
+      <span>        q.next=p;</span>
+      <span>        q=q.next;</span>
+      <span>      endif;</span>
+      <span></span>
+      <span>      counter=counter+1;</span>
+      <span>    endwhile;</span>
+      <span></span>
+      <span>    //Calling Merge Sort</span>
+      <span>    head=mergeSort(head);</span>
+      <span></span>
+      <span>    //Printing Values</span>
+      <span>    p=head;</span>
+      <span>    while(p!=null) do</span>
+      <span>      write(p.data);</span>
+      <span>      p=p.next;</span>
+      <span>    endwhile;</span>
+      <span>    return 1;</span>
+      <span>  end</span>
+      <span>}</span>
+  </pre>
+  <br>
+  merge_sort.expl (Concurrent)
+  <pre>
+      <span>type</span>
+      <span>  List</span>
+      <span>  {</span>
+      <span>    int data;</span>
+      <span>    List next;</span>
+      <span>  }</span>
+      <span>  Share</span>
+      <span>  {</span>
+      <span>    List link;</span>
+      <span>  }</span>
+      <span>endtype</span>
+      <span></span>
+      <span>decl</span>
+      <span>  int x, semid;</span>
+      <span>  List head;</span>
+      <span>  List mergeSort(List top);</span>
+      <span>  List sort(List a, List b);</span>
+      <span>enddecl</span>
+      <span></span>
+      <span>List mergeSort(List top)</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    int len, pid;</span>
+      <span>    List slow, fast, a, b;</span>
+      <span>    Share s;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    len=1;</span>
+      <span>    if((top!=null) AND (top.next!=null)) then</span>
+      <span>      x=exposcall("SemLock");</span>
+      <span>      slow=top;</span>
+      <span>      fast=top.next;</span>
+      <span></span>
+      <span>      //Divide the list into two parts</span>
+      <span>      while(fast!=null) do</span>
+      <span>        fast=fast.next;</span>
+      <span>        len=len+1;</span>
+      <span>        if(fast!=null) then</span>
+      <span>          slow=slow.next;</span>
+      <span>          fast=fast.next;</span>
+      <span>          len=len+1;</span>
+      <span>        endif;</span>
+      <span>      endwhile;</span>
+      <span></span>
+      <span>      a=top;</span>
+      <span>      b=slow.next;</span>
+      <span>      slow.next=null;</span>
+      <span>      x=exposcall("SemUnLock");</span>
+      <span></span>
+      <span>      //If size less than 4, don't Fork</span>
+      <span>      if(len<=4) then</span>
+      <span>        a=mergeSort(a);</span>
+      <span>        b=mergeSort(b);</span>
+      <span>      else</span>
+      <span>        x=exposcall("SemLock");</span>
+      <span>        s=alloc();</span>
+      <span>        x=exposcall("SemUnLock");</span>
+      <span></span>
+      <span>        pid=exposcall("Fork");</span>
+      <span></span>
+      <span>        //If Fork is not possible, do sequential</span>
+      <span>        if(pid==-1) then</span>
+      <span>          a=mergeSort(a);</span>
+      <span>          b=mergeSort(b);</span>
+      <span>        else</span>
+      <span>          s.link=null;</span>
+      <span></span>
+      <span>          //Sort from two different process</span>
+      <span>          if(pid!=0) then</span>
+      <span>            a=mergeSort(a);</span>
+      <span>          else</span>
+      <span>            b=mergeSort(b);</span>
+      <span>            s.link=b;             //Store head in shared location</span>
+      <span>            x=exposcall("Exit");</span>
+      <span>          endif;</span>
+      <span>          x=exposcall("Wait", pid);</span>
+      <span>          b=s.link;</span>
+      <span>        endif;</span>
+      <span>        free(s);</span>
+      <span>      endif;</span>
+      <span></span>
+      <span>      //Merge the two lists</span>
+      <span>      x=exposcall("SemLock", semid);</span>
+      <span>      top=sort(a, b);</span>
+      <span>      x=exposcall("SemUnLock", semid);</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    return top;</span>
+      <span>  end</span>
+      <span>}</span>
+      <span></span>
+      <span>List sort(List a, List b)</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    List result;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    result=null;</span>
+      <span></span>
+      <span>    if(a==null) then</span>
+      <span>      result=b;</span>
+      <span>    endif;</span>
+      <span>    if(b==null) then</span>
+      <span>      result=a;</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    if(a!=null AND b!=null) then</span>
+      <span>      if(a.data<=b.data) then</span>
+      <span>        result=a;</span>
+      <span>        result.next=sort(a.next, b);</span>
+      <span>      else</span>
+      <span>        result=b;</span>
+      <span>        result.next=sort(a, b.next);</span>
+      <span>      endif;</span>
+      <span>    endif;</span>
+      <span></span>
+      <span>    return result;</span>
+      <span>  end</span>
+      <span>}</span>
+      <span></span>
+      <span>int main()</span>
+      <span>{</span>
+      <span>  decl</span>
+      <span>    int x, counter;</span>
+      <span>    List p, q;</span>
+      <span>  enddecl</span>
+      <span></span>
+      <span>  begin</span>
+      <span>    x = initialize();</span>
+      <span>    semid = exposcall("Semget");</span>
+      <span></span>
+      <span>    //Storing values in descending order</span>
+      <span>    head=null;</span>
+      <span>    counter=0;</span>
+      <span>    while(counter<64) do</span>
+      <span>      p=alloc();</span>
+      <span>      p.data=64-counter;</span>
+      <span>      p.next=null;</span>
+      <span></span>
+      <span>      if(head==null) then</span>
+      <span>        head=p;</span>
+      <span>        q=p;</span>
+      <span>      else</span>
+      <span>        q.next=p;</span>
+      <span>        q=q.next;</span>
+      <span>      endif;</span>
+      <span></span>
+      <span>      counter=counter+1;</span>
+      <span>    endwhile;</span>
+      <span></span>
+      <span>    //Calling Merge Sort</span>
+      <span>    head=mergeSort(head);</span>
+      <span></span>
+      <span>    //Printing Values</span>
+      <span>    p=head;</span>
+      <span>    while(p!=null) do</span>
+      <span>      write(p.data);</span>
+      <span>      p=p.next;</span>
+      <span>    endwhile;</span>
+      <span></span>
+      <span>    x = exposcall("Semrelease");</span>
+      <span>    return 1;</span>
+      <span>  end</span>
+      <span>}</span>
+  </pre>
+</div>
+
+</div>
 
        </div>
        </div>
