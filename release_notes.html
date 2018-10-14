@@ -157,21 +157,38 @@
                     <!-- START dashboard main content-->
                     <div class="col-lg-12">
                         <ul class="list-group">
-                                <li class="list-group-item">
-                                        <a data-toggle="collapse" href="#collapse3"><b>4th October 2018</b></a>
-                                        <div id="collapse3" class="panel-collapse collapse">
-                                            The <i>Fork</i> system call had a problem - if a process forks, the parent first gets a PCB entry and then calls <i>Get Free Page</i> function to allocate pages for Stack/User Area pages for the child. If the <i>Get Free Page</i> causes the parent process to change the state to WAIT_MEM, the PCB entry allocated for the child may also be given for another process. The problem has been fixed by modifying the <i>Get Pcb Entry</i> function in <i>Process Manager</i>. Two new assignments has been added to Stage 22 (Semaphores). The changes in the sub-directories are:-
-                                            <ul class="list-group-item">
-                                                <li>
-                                                    <b>spl:</b> The constant ALLOCATED has been added to the <a href="support_tools-files/constants.html" target="_blank">SPL pre-defined constants</a>.  
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
+                            <li class="list-group-item">
+                                <a data-toggle="collapse" href="#collapse4"><b>15th October 2018</b></a>
+                                <div id="collapse4" class="panel-collapse collapse">
+                                    The code for the Stage 22 assignment problem (<a href="test_prog.html#test_program_14" target="_blank">Merge Sort</a>) has been modified to avoid the stack overflow problem. The changes in the sub-directories are:-
+                                    <ul class="list-group-item">
+                                        <li>
+                                            <b>expl:</b> Fixed a bug which caused an exception when fucntion with more than one argument was called after an exposcall with more than one argument.  
+                                        </li>
+                                        <li>
+                                            <b>xfs-interface:</b> Fixed a bug which stored the file size of data files 1 more than the actual value.
+                                        </li>
+                                        <li>
+                                            <b>xsm:</b> Fixed a bug in which the EIP value stored was 2 less than the actual value.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <a data-toggle="collapse" href="#collapse3"><b>4th October 2018</b></a>
+                                <div id="collapse3" class="panel-collapse collapse">
+                                    The <i>Fork</i> system call had a problem - if a process forks, the parent first gets a PCB entry and then calls <i>Get Free Page</i> function to allocate pages for Stack/User Area pages for the child. If the <i>Get Free Page</i> causes the parent process to change the state to WAIT_MEM, the PCB entry allocated for the child may also be given for another process. The problem has been fixed by modifying the <i>Get Pcb Entry</i> function in <i>Process Manager</i>. Two new assignments has been added to Stage 22 (Semaphores). The changes in the sub-directories are:-
+                                    <ul class="list-group-item">
+                                        <li>
+                                            <b>spl:</b> The constant ALLOCATED has been added to the <a href="support_tools-files/constants.html" target="_blank">SPL pre-defined constants</a>.  
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                             <li class="list-group-item">
                                 <a data-toggle="collapse" href="#collapse2"><b>20th September 2018</b></a>
                                 <div id="collapse2" class="panel-collapse collapse">
-                                    The algorithm for Release Page function in Memory Manager module has been modified to change the state of process from WAIT_MEM to READY when a free page is available. Makefile for myexpos directory is updated for <i>make clean</i>. The changes in the sub-directories are:-
+                                    The algorithm for <i>Release Page</i> function in <i>Memory Manager</i> module has been modified to change the state of process from WAIT_MEM to READY when a free page is available. Makefile for myexpos directory is updated for <i>make clean</i>. The changes in the sub-directories are:-
                                     <ul class="list-group-item">
                                         <li>
                                             <b>expl:</b> <br>a) Fixed a bug which caused return value of function to be overwritten when timer is called. The earlier version lowered the SP value before extracting return value from the call stack.  If any interrupt occured in the meanwhile, the value in the stack was overwritten.<br> b) Modified DIV instruction such that it doesn't call INT 10 when divisor is 0.

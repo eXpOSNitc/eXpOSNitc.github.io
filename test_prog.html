@@ -1147,7 +1147,7 @@ pre span:before {
       <span>decl</span>
       <span>    List head;</span>
       <span>    List mergeSort(List top);</span>
-      <span>    List sort(List a, List b);</span>
+      <span>    List merge(List a, List b);</span>
       <span>enddecl</span>
       <span></span>
       <span>List mergeSort(List top)</span>
@@ -1179,14 +1179,14 @@ pre span:before {
       <span>      b=mergeSort(b);</span>
       <span></span>
       <span>      //Merge the two lists</span>
-      <span>      top=sort(a, b);</span>
+      <span>      top=merge(a, b);</span>
       <span>    endif;</span>
       <span></span>
       <span>    return top;</span>
       <span>  end</span>
       <span>}</span>
       <span></span>
-      <span>List sort(List a, List b)</span>
+      <span>List merge(List a, List b)</span>
       <span>{</span>
       <span>  decl</span>
       <span>    List result;</span>
@@ -1205,10 +1205,10 @@ pre span:before {
       <span>    if(a!=null AND b!=null) then</span>
       <span>      if(a.data<=b.data) then</span>
       <span>        result=a;</span>
-      <span>        result.next=sort(a.next, b);</span>
+      <span>        result.next=merge(a.next, b);</span>
       <span>      else</span>
       <span>        result=b;</span>
-      <span>        result.next=sort(a, b.next);</span>
+      <span>        result.next=merge(a, b.next);</span>
       <span>      endif;</span>
       <span>    endif;</span>
       <span></span>
@@ -1277,7 +1277,7 @@ pre span:before {
       <span>  int x, semid;</span>
       <span>  List head;</span>
       <span>  List mergeSort(List top);</span>
-      <span>  List sort(List a, List b);</span>
+      <span>  List merge(List a, List b);</span>
       <span>enddecl</span>
       <span></span>
       <span>List mergeSort(List top)</span>
@@ -1291,7 +1291,7 @@ pre span:before {
       <span>  begin</span>
       <span>    len=1;</span>
       <span>    if((top!=null) AND (top.next!=null)) then</span>
-      <span>      x=exposcall("SemLock");</span>
+      <span>      x=exposcall("SemLock", semid);</span>
       <span>      slow=top;</span>
       <span>      fast=top.next;</span>
       <span></span>
@@ -1309,16 +1309,16 @@ pre span:before {
       <span>      a=top;</span>
       <span>      b=slow.next;</span>
       <span>      slow.next=null;</span>
-      <span>      x=exposcall("SemUnLock");</span>
+      <span>      x=exposcall("SemUnLock", semid);</span>
       <span></span>
       <span>      //If size less than 4, don't Fork</span>
       <span>      if(len<=4) then</span>
       <span>        a=mergeSort(a);</span>
       <span>        b=mergeSort(b);</span>
       <span>      else</span>
-      <span>        x=exposcall("SemLock");</span>
+      <span>        x=exposcall("SemLock", semid);</span>
       <span>        s=alloc();</span>
-      <span>        x=exposcall("SemUnLock");</span>
+      <span>        x=exposcall("SemUnLock", semid);</span>
       <span></span>
       <span>        pid=exposcall("Fork");</span>
       <span></span>
@@ -1340,12 +1340,15 @@ pre span:before {
       <span>          x=exposcall("Wait", pid);</span>
       <span>          b=s.link;</span>
       <span>        endif;</span>
+      <span></span>
+      <span>        x=exposcall("SemLock", semid);</span>
       <span>        free(s);</span>
+      <span>        x=exposcall("SemUnLock", semid);</span>
       <span>      endif;</span>
       <span></span>
       <span>      //Merge the two lists</span>
       <span>      x=exposcall("SemLock", semid);</span>
-      <span>      top=sort(a, b);</span>
+      <span>      top=merge(a, b);</span>
       <span>      x=exposcall("SemUnLock", semid);</span>
       <span>    endif;</span>
       <span></span>
@@ -1353,7 +1356,7 @@ pre span:before {
       <span>  end</span>
       <span>}</span>
       <span></span>
-      <span>List sort(List a, List b)</span>
+      <span>List merge(List a, List b)</span>
       <span>{</span>
       <span>  decl</span>
       <span>    List result;</span>
@@ -1372,10 +1375,10 @@ pre span:before {
       <span>    if(a!=null AND b!=null) then</span>
       <span>      if(a.data<=b.data) then</span>
       <span>        result=a;</span>
-      <span>        result.next=sort(a.next, b);</span>
+      <span>        result.next=merge(a.next, b);</span>
       <span>      else</span>
       <span>        result=b;</span>
-      <span>        result.next=sort(a, b.next);</span>
+      <span>        result.next=merge(a, b.next);</span>
       <span>      endif;</span>
       <span>    endif;</span>
       <span></span>
