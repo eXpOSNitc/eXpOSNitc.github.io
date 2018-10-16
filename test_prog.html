@@ -1546,9 +1546,11 @@
 <span>  enddecl</span>
 <span></span>
 <span>  begin</span>
+<span>    //Create and open the file</span>
 <span>    x=exposcall("Create", file);</span>
 <span>    fp=exposcall("Open", file, 1);</span>
 <span></span>
+<span>    //Store the numbers into the file</span>
 <span>    counter=0;</span>
 <span>    while(counter<512) do</span>
 <span>      val=4*counter+start;</span>
@@ -1556,6 +1558,7 @@
 <span>      counter=counter+1;</span>
 <span>    endwhile;</span>
 <span></span>
+<span>    //Close the file</span>
 <span>    x=exposcall("Close", fp);</span>
 <span></span>
 <span>    write("Stored");</span>
@@ -1563,7 +1566,7 @@
 <span>  end</span>
 <span>}</span>
 <span></span>
-<span>//Merging files in1 and in2 into out</span>
+<span>//Merging files "in1" and "in2" into "out"</span>
 <span>int merge(str out, str in1, str in2)</span>
 <span>{</span>
 <span>  decl</span>
@@ -1572,15 +1575,22 @@
 <span>  enddecl</span>
 <span></span>
 <span>  begin</span>
+<span>    //Create and open output file</span>
 <span>    x=exposcall("Create", out, 1);</span>
 <span>    fp=exposcall("Open", out);</span>
 <span></span>
+<span>    //Open both the input files</span>
 <span>    fp1=exposcall("Open", in1);</span>
 <span>    fp2=exposcall("Open", in2);</span>
 <span></span>
+<span>    //Read the first number from both input files</span>
+<span>    //and store them in w1 and w2</span>
 <span>    a=exposcall("Read", fp1, w1);</span>
 <span>    b=exposcall("Read", fp2, w2);</span>
 <span></span>
+<span>    //Store min(w1,w2) in output file and</span>
+<span>    //read the next number until one</span>
+<span>    //file reaches end of file</span>
 <span>    while(a!=-2 AND b!=-2) do</span>
 <span>      if(w1<=w2) then</span>
 <span>        x=exposcall("Write", fp, w1);</span>
@@ -1591,20 +1601,28 @@
 <span>      endif;</span>
 <span>    endwhile;</span>
 <span></span>
+<span>    //If second input file ends,</span>
+<span>    //copy the contents from first input file</span>
+<span>    //to the output file</span>
 <span>    while(a!=-2) do</span>
 <span>      x=exposcall("Write", fp, w1);</span>
 <span>      a=exposcall("Read", fp1, w1);</span>
 <span>    endwhile;</span>
 <span></span>
+<span>    //If first input file ends,</span>
+<span>    //copy the contents from second input file</span>
+<span>    //to the output file</span>
 <span>    while(b!=-2) do</span>
 <span>      x=exposcall("Write", fp, w2);</span>
 <span>      b=exposcall("Read", fp2, w2);</span>
 <span>    endwhile;</span>
 <span></span>
+<span>    //Close all the files</span>
 <span>    x=exposcall("Close", fp);</span>
 <span>    x=exposcall("Close", fp1);</span>
 <span>    x=exposcall("Close", fp2);</span>
 <span></span>
+<span>    //Delete the input files</span>
 <span>    x=exposcall("Delete", in1);</span>
 <span>    x=exposcall("Delete", in2);</span>
 <span></span>
@@ -1624,37 +1642,51 @@
 <span>    if(pid1!=0) then</span>
 <span>      pid2=exposcall("Fork");</span>
 <span>      if(pid2!=0) then</span>
+<span>        //Store the numbers into "temp1.dat"</span>
 <span>        x=store("temp1.dat", 1);</span>
+<span></span>
 <span>        x=exposcall("Wait", pid2);</span>
 <span>      else</span>
+<span>        //Store the numbers into "temp2.dat"</span>
 <span>        x=store("temp2.dat", 2);</span>
+<span></span>
 <span>        x=exposcall("Exit");</span>
 <span>      endif;</span>
 <span></span>
+<span>      //Merge "temp1.dat" and "temp2.dat" into "tempa.dat"</span>
 <span>      x=merge("tempa.dat", "temp1.dat", "temp2.dat");</span>
+<span></span>
 <span>      x=exposcall("Wait", pid1);</span>
 <span>    else</span>
 <span>      pid2=exposcall("Fork");</span>
 <span>      if(pid2!=0) then</span>
+<span>        //Store the numbers into "temp3.dat"</span>
 <span>        x=store("temp3.dat", 3);</span>
+<span></span>
 <span>        x=exposcall("Wait", pid2);</span>
 <span>      else</span>
+<span>        //Store the numbers into "temp4.dat"</span>
 <span>        x=store("temp4.dat", 4);</span>
+<span></span>
 <span>        x=exposcall("Exit");</span>
 <span>      endif;</span>
 <span></span>
+<span>      //Merge "temp3.dat" and "temp4.dat" into "tempb.dat"</span>
 <span>      x=merge("tempb.dat", "temp3.dat", "temp4.dat");</span>
+<span></span>
 <span>      x=exposcall("Exit");</span>
 <span>    endif;</span>
 <span></span>
+<span>    //Merge "tempa.dat" and "tempb.dat" into "merge.dat"</span>
+<span>    //which contains numbers from 1 to 2048 in sorted order</span>
 <span>    x=merge("merge.dat", "tempa.dat", "tempb.dat");</span>
 <span></span>
 <span>    return 1;</span>
 <span>  end</span>
 <span>}</span>
+</pre>
 </div>
 </div>
-
 
        </div>
        </div>
