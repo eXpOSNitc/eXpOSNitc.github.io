@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 13 (child.expl)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type
+    List
+    {
+        int data;
+        List next;
+    }
+endtype
+
+decl
+    List head, p, q;
+enddecl
+
+int main()
+{
+decl
+    int x, temp, pid, counter;
+enddecl
+
+begin
+    x = initialize();
+    pid = exposcall("Getpid");
+
+    head=null;
+    counter=0;
+    while(counter<10) do
+        p=alloc();
+        p.data=pid*100 + counter;
+        p.next=null;
+
+        if(head==null) then
+            head=p;
+            q=p;
+        else
+            q.next=p;
+            q=q.next;
+        endif;
+
+        counter=counter+1;
+    endwhile;
+
+    p=head;
+    while(p!=null) do
+        write(p.data);
+        p=p.next;
+    endwhile;
+
+    return 0;
+end
+}</pre>
+</body>
+
+</html>

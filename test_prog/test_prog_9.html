@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+int main()
+{
+decl
+    int temp, fd, permission, iter, pid;
+    string filename;
+enddecl
+
+begin
+    filename="num.dat";
+    permission=1;
+    temp=exposcall("Create",filename,permission);
+    fd=exposcall("Open",filename);
+          
+    if(fd>=0) then
+        iter=1;
+        while(iter<=1300) do
+            temp=exposcall("Write",fd, iter);
+            iter=iter+1;
+        endwhile;    
+        temp=exposcall("Close",fd);
+
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+        temp = exposcall("Exec","pgm1.xsm");
+    else
+        temp=exposcall("Write",-2, "OPEN FAIL");
+    endif;
+          
+    return 0;
+end
+}</pre>
+</body>
+
+</html>

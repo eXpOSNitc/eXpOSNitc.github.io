@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 14 (Merge Sort - Sequential)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type    
+    List    
+    {    
+        int data;    
+        List next;    
+    }    
+endtype    
+    
+decl    
+    List head;    
+    List mergeSort(List top);    
+    List merge(List a, List b);    
+enddecl    
+    
+List mergeSort(List top)    
+{    
+  decl    
+    List slow, fast, a, b;    
+  enddecl    
+    
+  begin    
+    if((top!=null) AND (top.next!=null)) then    
+      slow=top;    
+      fast=top.next;    
+    
+      //Divide the list into two parts    
+      while(fast!=null) do    
+        fast=fast.next;    
+        if(fast!=null) then    
+          slow=slow.next;    
+          fast=fast.next;    
+        endif;    
+      endwhile;    
+    
+      a=top;    
+      b=slow.next;    
+      slow.next=null;    
+    
+      //Recursively call merge sort    
+      a=mergeSort(a);    
+      b=mergeSort(b);    
+    
+      //Merge the two lists    
+      top=merge(a, b);    
+    endif;    
+    
+    return top;    
+  end    
+}    
+    
+List merge(List a, List b)    
+{    
+  decl    
+    List result;    
+  enddecl    
+    
+  begin    
+    result=null;    
+    
+    if(a==null) then    
+      result=b;    
+    endif;    
+    if(b==null) then    
+      result=a;    
+    endif;    
+    
+    if(a!=null AND b!=null) then    
+      if(a.data<=b.data) then    
+        result=a;    
+        result.next=merge(a.next, b);    
+      else    
+        result=b;    
+        result.next=merge(a, b.next);    
+      endif;    
+    endif;    
+    
+    return result;    
+  end    
+}    
+    
+int main()    
+{    
+  decl    
+    int x, counter;    
+    List p, q;    
+  enddecl    
+    
+  begin    
+    x = initialize();    
+    
+    //Storing values in descending order    
+    head=null;    
+    counter=0;    
+    while(counter<64) do    
+      p=alloc();    
+      p.data=64-counter;    
+      p.next=null;    
+    
+      if(head==null) then    
+        head=p;    
+        q=p;    
+      else    
+        q.next=p;    
+        q=q.next;    
+      endif;    
+    
+      counter=counter+1;    
+    endwhile;    
+    
+    //Calling Merge Sort    
+    head=mergeSort(head);    
+    
+    //Printing Values    
+    p=head;    
+    while(p!=null) do    
+      write(p.data);    
+      p=p.next;    
+    endwhile;    
+    return 1;    
+  end    
+}</pre>
+</body>
+
+</html>

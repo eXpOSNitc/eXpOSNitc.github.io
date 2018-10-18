@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 4 (Reader-Writer Program)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type
+Share
+{
+    int isempty;
+    int data;
+}
+endtype
+
+decl
+    Share head;
+enddecl
+
+int main()
+{
+decl
+    int temp, x, pidone, pidtwo, semid, iter;
+enddecl
+
+begin
+    x = exposcall("Heapset");
+    semid = exposcall("Semget");
+    head = exposcall("Alloc",2);
+    
+    head.isempty = 1;
+    pidone = exposcall("Fork");
+    if (pidone == 0 ) then
+        iter=1;
+        while(iter <= 100) do
+            temp = exposcall("SemLock", semid);
+
+            temp = head.isempty;
+            if(temp == 1) then
+                head.data = iter;
+                head.isempty = 0;
+                iter = iter+2;
+            endif;
+
+            temp = exposcall("SemUnLock", semid);
+        endwhile;
+    else
+        pidtwo =  exposcall("Fork");
+        if(pidtwo == 0) then
+            iter = 2;
+            while(iter <= 100) do
+                temp = exposcall("SemLock", semid);
+
+                temp = head.isempty;
+                if(temp == 1) then
+                    head.data = iter;
+                    head.isempty = 0;
+                    iter = iter+2;
+                endif;
+
+                temp = exposcall("SemUnLock", semid);
+            endwhile;
+        else
+            iter = 1;
+            while(iter <= 100) do
+                temp = exposcall("SemLock", semid);
+
+                temp = head.isempty;
+                if(temp == 0) then
+                    x = head.data;
+                    head.isempty = 1;
+                    temp = exposcall("Write",-2, x);
+                    iter = iter+1;
+                endif;
+
+                temp = exposcall("SemUnLock", semid);
+            endwhile;
+        endif;
+    endif;
+          
+    temp = exposcall("Semrelease", semid);
+    return 0;
+end
+}</pre>
+</body>
+
+</html>

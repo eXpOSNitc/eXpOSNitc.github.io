@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+decl
+    int i, semid, pid, data, temp, filedis, a;
+    string filename;
+enddecl
+
+int main()
+{
+begin
+    temp = exposcall("Read",-1,filename);
+    filedis = exposcall("Open", "numbers.dat");
+    semid = exposcall("Semget");
+
+    pid = exposcall("Fork");
+    a = 0;
+    data = -1;
+    if(pid > 0) then
+        while(a != -2)  do
+            temp = exposcall("SemLock", semid);
+            a = exposcall("Read",filedis,data);
+            temp = exposcall("Write",-2,data);
+            temp = exposcall("SemUnLock", semid);
+        endwhile;
+        
+        temp = exposcall("Semrelease", semid);
+    else
+        while(a != -2)  do
+            temp = exposcall("SemLock", semid);
+            a = exposcall("Read",filedis,data);
+            temp = exposcall("Write",-2,data);
+            temp = exposcall("SemUnLock", semid);
+        endwhile;
+
+        temp = exposcall("Semrelease", semid);
+    endif;
+    
+    return 0;
+end
+}</pre>
+</body>
+
+</html>

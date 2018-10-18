@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 11</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+decl
+    int fd, temp, permission, data, semid, iter, pid, endval, count;
+    string filename;
+enddecl
+
+int main()
+{
+begin
+    filename="numbers.dat";
+    permission=1;
+    temp = exposcall("Create",filename, permission);
+    semid = exposcall("Semget");
+    
+    fd=exposcall("Open",filename);
+    if(fd>=0) then
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+        pid=exposcall("Fork");
+            
+        if(pid<0) then
+            temp=exposcall("Write", -2, "NO PCB");
+        endif;
+            
+        pid=exposcall("Getpid");
+        data=pid*1000+1;
+        endval=data+99;
+        temp=exposcall("SemLock", semid);
+        
+        while(data<=endval) do
+            temp=exposcall("Write", fd, data);
+            data=data+1;
+        endwhile;
+            
+        temp=exposcall("SemUnLock", semid);
+        temp=exposcall("Close", fd);
+    else
+        temp=exposcall("Write", -2, "OPEN FAIL");
+    endif;
+        
+    temp=exposcall("Exec", "pgm2.xsm");
+    return 0;
+end
+}</pre>
+</body>
+
+</html>

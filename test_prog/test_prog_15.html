@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 15 (Merge Files)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+decl
+    int store(str file, int start);
+    int merge(str out, str in1, str in2);
+enddecl
+
+//Storing 512 numbers in file
+int store(str file, int start)
+{
+  decl
+    int x, fp, counter, val;
+  enddecl
+
+  begin
+    //Create and open the file
+    x=exposcall("Create", file);
+    fp=exposcall("Open", file, 1);
+
+    //Store the numbers into the file
+    counter=0;
+    while(counter<512) do
+      val=4*counter+start;
+      x=exposcall("Write", fp, val);
+      counter=counter+1;
+    endwhile;
+
+    //Close the file
+    x=exposcall("Close", fp);
+
+    write("Stored");
+    return 0;
+  end
+}
+
+//Merging files "in1" and "in2" into "out"
+int merge(str out, str in1, str in2)
+{
+  decl
+    int fp, fp1, fp2;
+    int x, a, b, w1, w2;
+  enddecl
+
+  begin
+    //Create and open output file
+    x=exposcall("Create", out, 1);
+    fp=exposcall("Open", out);
+
+    //Open both the input files
+    fp1=exposcall("Open", in1);
+    fp2=exposcall("Open", in2);
+
+    //Read the first number from both input files
+    //and store them in w1 and w2
+    a=exposcall("Read", fp1, w1);
+    b=exposcall("Read", fp2, w2);
+
+    //Store min(w1,w2) in output file and
+    //read the next number until one
+    //file reaches end of file
+    while(a!=-2 AND b!=-2) do
+      if(w1<=w2) then
+        x=exposcall("Write", fp, w1);
+        a=exposcall("Read", fp1, w1);
+      else
+        x=exposcall("Write", fp, w2);
+        b=exposcall("Read", fp2, w2);
+      endif;
+    endwhile;
+
+    //If second input file ends,
+    //copy the contents from first input file
+    //to the output file
+    while(a!=-2) do
+      x=exposcall("Write", fp, w1);
+      a=exposcall("Read", fp1, w1);
+    endwhile;
+
+    //If first input file ends,
+    //copy the contents from second input file
+    //to the output file
+    while(b!=-2) do
+      x=exposcall("Write", fp, w2);
+      b=exposcall("Read", fp2, w2);
+    endwhile;
+
+    //Close all the files
+    x=exposcall("Close", fp);
+    x=exposcall("Close", fp1);
+    x=exposcall("Close", fp2);
+
+    //Delete the input files
+    x=exposcall("Delete", in1);
+    x=exposcall("Delete", in2);
+
+    write("Merged");
+    return 0;
+  end
+}
+
+int main()
+{
+  decl
+    int x, pid1, pid2, fp;
+  enddecl
+
+  begin
+    pid1=exposcall("Fork");
+    if(pid1!=0) then
+      pid2=exposcall("Fork");
+      if(pid2!=0) then
+        //Store the numbers into "temp1.dat"
+        x=store("temp1.dat", 1);
+
+        x=exposcall("Wait", pid2);
+      else
+        //Store the numbers into "temp2.dat"
+        x=store("temp2.dat", 2);
+
+        x=exposcall("Exit");
+      endif;
+
+      //Merge "temp1.dat" and "temp2.dat" into "tempa.dat"
+      x=merge("tempa.dat", "temp1.dat", "temp2.dat");
+
+      x=exposcall("Wait", pid1);
+    else
+      pid2=exposcall("Fork");
+      if(pid2!=0) then
+        //Store the numbers into "temp3.dat"
+        x=store("temp3.dat", 3);
+
+        x=exposcall("Wait", pid2);
+      else
+        //Store the numbers into "temp4.dat"
+        x=store("temp4.dat", 4);
+
+        x=exposcall("Exit");
+      endif;
+
+      //Merge "temp3.dat" and "temp4.dat" into "tempb.dat"
+      x=merge("tempb.dat", "temp3.dat", "temp4.dat");
+
+      x=exposcall("Exit");
+    endif;
+
+    //Merge "tempa.dat" and "tempb.dat" into "merge.dat"
+    //which contains numbers from 1 to 2048 in sorted order
+    x=merge("merge.dat", "tempa.dat", "tempb.dat");
+
+    return 1;
+  end
+}</pre>
+</body>
+
+</html>

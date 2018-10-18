@@ -156,44 +156,7 @@
             </tr>
           </table>
           <p style="text-indent: 0px"><b>Description :</b> shell version II without the multiuser</p><br>
-          <div>
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, pid, a;</span>
-<span>          string input;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          a=1;</span>
-<span>          while(a == 1) do</span>
-<span>              temp = exposcall("Write",-2,"---Enter---");</span>
-<span>              temp = exposcall("Read",-1, input);</span>
-<span>              if(input != "Shutdown") then</span>
-<span>                  pid = exposcall("Fork");</span>
-<span>                  if(pid < 0) then</span>
-<span>                      temp = exposcall("Write",-2, "Fork Failure");</span>
-<span>                      continue;</span>
-<span>                  endif;</span>
-<span>                  if(pid != 0) then</span>
-<span>                      temp = exposcall("Wait",pid);</span>
-<span>                  else</span>
-<span>                      temp = exposcall("Exec",input);</span>
-<span>                      if(temp != 0) then</span>
-<span>                          temp = exposcall("Write",-2, "BAD COMMAND");</span>
-<span>                          break;</span>
-<span>                      endif;</span>
-<span>                  endif;</span>
-<span>              else</span>
-<span>                  temp = exposcall("Shutdown");</span>
-<span>                  break;</span>
-<span>              endif;</span>
-<span>          endwhile;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span></pre>
-          </div>
-
+          The code for the test program can be found <a href="test_prog/test_prog_1.html" target="_blank">here</a>
         </div>
 
 
@@ -216,54 +179,7 @@
             integers. The program reads an integer N from the console. It then creates a linked list and inserts N
             integers entered from console into the linked list in the same order. The program traverses the linked list
             and prints data to the console.</p><br>
-          <div>
-            <pre>
-<span>type</span>
-<span>List</span>
-<span>{</span>
-<span>          int data;</span>
-<span>          List next;</span>
-<span>}</span>
-<span>endtype</span>
-<span>decl</span>
-<span>          List head;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int length, x, temp;</span>
-<span>          List p, q;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>         x = exposcall("Heapset");</span>
-<span>          head=null;</span>
-<span>          x = exposcall("Read",-1,length);</span>
-<span>          q = head;</span>
-<span>          while (length!=0)  do</span>
-<span>              temp = exposcall("Read",-1,x);</span>
-<span>              p= exposcall("Alloc",2);</span>
-<span>              p.data=x;</span>
-<span>              p.next=null;</span>
-<span>              if (head == null) then</span>
-<span>                  head=p;</span>
-<span>                  q=p;</span>
-<span>              else</span>
-<span>                  q.next=p;</span>
-<span>                  q=q.next;</span>
-<span>              endif;</span>
-<span>              length=length-1;</span>
-<span>          endwhile;</span>
-<span>          p=head;</span>
-<span>          while(p!=null)  do</span>
-<span>              x=p.data;</span>
-<span>              temp= exposcall("Write",-2,x);</span>
-<span>              p=p.next;</span>
-<span>          endwhile;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span></pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_2.html" target="_blank">here</a>
         </div>
 
 
@@ -287,72 +203,7 @@
             them. The program invokes fork to create a child process. The parent and the child process reads from the
             shared linked list with different pointers and prints the data read to the console. Parent process prints
             the even numbers 2, 4, 6, 8.. and child process prints 1, 3, 5 .. </p><br>
-          <div>
-            <pre>
-<span>type</span>
-<span>List</span>
-<span>{</span>
-<span>          int data;</span>
-<span>          List next;</span>
-<span>}</span>
-<span>endtype</span>
-<span>decl</span>
-<span>          List head;</span>
-<span>          int  x, pid, temp, length;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          List p, q;</span>
-<span>          int i;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          temp = exposcall("Heapset");</span>
-<span>          head = null;</span>
-<span>          q = head;</span>
-<span>          length=1;</span>
-<span>          while (length <= 100)  do</span>
-<span>              p = exposcall("Alloc",2);</span>
-<span>              p.data = length;</span>
-<span>              p.next = null;</span>
-<span>              if (head == null) then</span>
-<span>                  head = p;</span>
-<span>                  q = p;</span>
-<span>              else</span>
-<span>                  q.next = p;</span>
-<span>                  q = q.next;</span>
-<span>              endif;</span>
-<span>              length = length+1;</span>
-<span>          endwhile;</span>
-<span>          pid = exposcall("Fork");</span>
-<span>          if(pid == 0) then</span>
-<span>              p = head;</span>
-<span>              while(p != null)  do</span>
-<span>                  x = p.data;</span>
-<span>                  temp = exposcall("Write",-2,x);</span>
-<span>                  p = p.next;</span>
-<span>                  if(p == null) then</span>
-<span>                      break;</span>
-<span>                  endif;</span>
-<span>                  p = p.next;</span>
-<span>              endwhile;</span>
-<span>          else</span>
-<span>              q = head.next;</span>
-<span>              while(q != null)  do</span>
-<span>                  x = q.data;</span>
-<span>                  temp = exposcall("Write",-2,x);</span>
-<span>                  q = q.next;</span>
-<span>                  if(q == null) then</span>
-<span>                      break;</span>
-<span>                  endif;</span>
-<span>                  q = q.next;</span>
-<span>              endwhile;</span>
-<span>          endif;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span></pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_3.html" target="_blank">here</a>
         </div>
 
 
@@ -360,7 +211,7 @@
           <br><br>
           <hr>
           <br><br>
-          <b style="font-size: 20px;">4. Test Program 4 (Reader-writer Program) </b><br><br>
+          <b style="font-size: 20px;">4. Test Program 4 (Reader-Writer Program)</b><br><br>
           <table class="table table-bordered">
             <tr>
               <td><b>Input</b></td>
@@ -380,77 +231,7 @@
             reader process and its two children are writers. One child process writes even numbers from 1 to 100 and
             other one writes odd numbers from 1 to 100 to the buffer. The parent process reads the numbers and prints
             them on to the console.</p><br>
-          <div>
-            <pre>
-<span>type</span>
-<span>Share</span>
-<span>{</span>
-<span>          int isempty;</span>
-<span>          int data;</span>
-<span>}</span>
-<span>endtype</span>
-<span>decl</span>
-<span>          Share head;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, x, pidone, pidtwo, semid, iter;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          x = exposcall("Heapset");</span>
-<span>          semid = exposcall("Semget");</span>
-<span>          head = exposcall("Alloc",2);</span>
-<span>          head.isempty = 1;</span>
-<span>          pidone = exposcall("Fork");</span>
-<span>          if (pidone == 0 ) then</span>
-<span>              iter=1;</span>
-<span>              while(iter <= 100) do</span>
-<span>                  temp = exposcall("SemLock", semid);</span>
-<span>                  temp = head.isempty;</span>
-<span>                  if(temp == 1) then</span>
-<span>                      head.data = iter;</span>
-<span>                      head.isempty = 0;</span>
-<span>                      iter = iter+2;</span>
-<span>                  endif;</span>
-<span>                  temp = exposcall("SemUnLock", semid);</span>
-<span>              endwhile;</span>
-<span>          else</span>
-<span>              pidtwo =  exposcall("Fork");</span>
-<span>              if(pidtwo == 0) then</span>
-<span>                  iter = 2;</span>
-<span>                  while(iter <= 100) do</span>
-<span>                      temp = exposcall("SemLock", semid);</span>
-<span>                      temp = head.isempty;</span>
-<span>                      if(temp == 1) then</span>
-<span>                          head.data = iter;</span>
-<span>                          head.isempty = 0;</span>
-<span>                          iter = iter+2;</span>
-<span>                      endif;</span>
-<span>                      temp = exposcall("SemUnLock", semid);</span>
-<span>                  endwhile;</span>
-<span>              else</span>
-<span>                  iter = 1;</span>
-<span>                  while(iter <= 100) do</span>
-<span>                      temp = exposcall("SemLock", semid);</span>
-<span>                      temp = head.isempty;</span>
-<span>                      if(temp == 0) then</span>
-<span>                          x = head.data;</span>
-<span>                          head.isempty = 1;</span>
-<span>                          temp = exposcall("Write",-2, x);</span>
-<span>                          iter = iter+1;</span>
-<span>                      endif;</span>
-<span>                      temp = exposcall("SemUnLock", semid);</span>
-<span>                  endwhile;</span>
-<span>              endif;</span>
-<span>          endif;</span>
-<span>          temp = exposcall("Semrelease", semid);</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_4.html" target="_blank">here</a>
         </div>
 
 
@@ -474,44 +255,7 @@
             file first. It then forks to create a child process. The content of the file with shared open instance
             (shared LSEEK) will be printed to the terminal concurrently by parent and child. To synchronize the use
             open instance between parent and child a semaphore is used.</p><br>
-          <div>
-            <pre>
-<span>decl</span>
-<span>          int i, semid, pid, data, temp, filedis, a;</span>
-<span>          string filename;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>begin</span>
-<span>          temp = exposcall("Read",-1,filename);</span>
-<span>          filedis = exposcall("Open", "numbers.dat");</span>
-<span>          semid = exposcall("Semget");</span>
-<span>          pid = exposcall("Fork");</span>
-<span>          a = 0;</span>
-<span>          data = -1;</span>
-<span>          if(pid > 0) then</span>
-<span>              while(a != -2)  do</span>
-<span>                  temp = exposcall("SemLock", semid);</span>
-<span>                  a = exposcall("Read",filedis,data);</span>
-<span>                  temp = exposcall("Write",-2,data);</span>
-<span>                  temp = exposcall("SemUnLock", semid);</span>
-<span>              endwhile;</span>
-<span>              temp = exposcall("Semrelease", semid);</span>
-<span>          else</span>
-<span>              while(a != -2)  do</span>
-<span>                  temp = exposcall("SemLock", semid);</span>
-<span>                  a = exposcall("Read",filedis,data);</span>
-<span>                  temp = exposcall("Write",-2,data);</span>
-<span>                  temp = exposcall("SemUnLock", semid);</span>
-<span>              endwhile;</span>
-<span>              temp = exposcall("Semrelease", semid);</span>
-<span>          endif;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_5.html" target="_blank">here</a>
         </div>
 
         <div class="panel-body" id="test_program_6">
@@ -536,58 +280,7 @@
             will write numbers from 1 to 100 to file - one writer will write even numbers other will write odd numbers
             and reader will read from the file and print to the console concurrently. To synchronize the use of the
             shared open instance between two writers a semaphore is used. </p><br>
-          <div>
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, x, a, pidone, pidtwo, semid, iter, data, permission, fd;</span>
-<span>          string filename;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          temp=exposcall("Read",-1,filename);</span>
-<span>          temp=exposcall("Read",-1,permission);</span>
-<span>          temp=exposcall("Create",filename, permission);</span>
-<span>          pidone = exposcall("Fork");</span>
-<span>          if (pidone != 0 ) then</span>
-<span>              fd=exposcall("Open",filename);</span>
-<span>              iter=1;</span>
-<span>              while(iter <= 100) do</span>
-<span>                  a=exposcall("Read",fd, data);</span>
-<span>                  if(a!=-2) then</span>
-<span>                      temp=exposcall("Write",-2, data);</span>
-<span>                      iter=iter+1;</span>
-<span>                 endif;</span>
-<span>              endwhile;</span>
-<span>          else</span>
-<span>              semid = exposcall("Semget");</span>
-<span>              fd=exposcall("Open",filename);</span>
-<span>              pidtwo =  exposcall("Fork");</span>
-<span>              if(pidtwo == 0) then</span>
-<span>                  iter = 1;</span>
-<span>                  while(iter <= 100) do</span>
-<span>                      temp = exposcall("SemLock", semid);</span>
-<span>                      temp=exposcall("Write",fd, iter);</span>
-<span>                      temp = exposcall("SemUnLock", semid);</span>
-<span>                      iter=iter+2;</span>
-<span>                  endwhile;</span>
-<span>              else</span>
-<span>                  iter = 2;</span>
-<span>                  while(iter <= 100) do</span>
-<span>                      temp = exposcall("SemLock", semid);</span>
-<span>                      temp=exposcall("Write",fd, iter);</span>
-<span>                      temp = exposcall("SemUnLock", semid);</span>
-<span>                      iter=iter+2;</span>
-<span>                  endwhile;</span>
-<span>              endif;</span>
-<span>              temp = exposcall("Semrelease", semid);</span>
-<span>          endif;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_6.html" target="_blank">here</a>
         </div>
 
         <div class="panel-body" id="test_program_7">
@@ -616,64 +309,7 @@
             type checking errors, the program will still compile and execute correctly. Also some system calls are
             invoked with arguments, even though the system call does not need any arguments. This will not cause any
             problem as these arguments will simply be ignored in the corresponding system call. </p><br>
-          <div>
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, pid, a, flag, retcom;</span>
-<span>          string input, username, password;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          a=1;</span>
-<span>          while(a == 1) do</span>
-<span>              temp = exposcall("Write",-2, "---Enter---");</span>
-<span>              temp = exposcall("Read",-1, input);</span>
-<span>              flag=0;</span>
-<span>              if(input == "Logout" OR input == "Shutdown") then</span>
-<span>                  flag=1;</span>
-<span>              endif;</span>
-<span>              if(input == "Remusr" OR input == "Getuid" OR input == "Getuname") then</span>
-<span>                  flag=1;</span>
-<span>                  temp = exposcall("Read",-1, username);</span>
-<span>              endif;</span>
-<span>              if(input == "Newusr" OR input == "Setpwd") then</span>
-<span>                  flag=1;</span>
-<span>                  temp = exposcall("Read",-1, username);</span>
-<span>                  temp = exposcall("Read",-1, password);</span>
-<span>              endif;</span>
-<span>              if(flag==1) then</span>
-<span>                  retcom = exposcall(input, username, password);</span>
-<span>                  if(retcom < 0) then</span>
-<span>                      temp = exposcall("Write",-2, "BAD COMMAND");</span>
-<span>                  else</span>
-<span>                      if(input == "Getuid" OR input == "Getuname") then</span>
-<span>                          temp = exposcall("Write",-2, retcom);</span>
-<span>                      endif;</span>
-<span>                  endif;</span>
-<span>              else</span>
-<span>                  pid = exposcall("Fork");</span>
-<span>                  if(pid < 0) then</span>
-<span>                      temp = exposcall("Write",-2, "Fork Fail");</span>
-<span>                      continue;</span>
-<span>                  endif;</span>
-<span>                  if(pid != 0) then</span>
-<span>                      temp = exposcall("Wait",pid);</span>
-<span>                  else</span>
-<span>                      temp = exposcall("Exec",input);</span>
-<span>                      if(temp != 0) then</span>
-<span>                          temp = exposcall("Write",-2, "BAD COMMAND");</span>
-<span>                          break;</span>
-<span>                      endif;</span>
-<span>                  endif;</span>
-<span>              endif;</span>
-<span>          endwhile;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_7.html" target="_blank">here</a>
         </div>
 
 
@@ -696,56 +332,7 @@
           <p style="text-indent: 0px"><b>Description :</b> The program given in above link will first create a linked
             list and write 100 numbers (PID*100+1 to PID*100+100) to the linked list. The linked list is later
             traversed and numbers are printed to the console. Run this program using the shell. </p><br>
-          <div>
-            <pre>
-<span>type</span>
-<span>List</span>
-<span>{</span>
-<span>          int data;</span>
-<span>          List next;</span>
-<span>}</span>
-<span>endtype</span>
-<span>decl</span>
-<span>          List head;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int endval, temp, pid, iter;</span>
-<span>          List p, q;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          temp = exposcall("Heapset");</span>
-<span>          head=null;</span>
-<span>          q = head;</span>
-<span>          pid = exposcall("Getpid");</span>
-<span>          iter = pid*100+1;</span>
-<span>          endval= iter+99;</span>
-<span>          while (iter <= endval)  do</span>
-<span>              p= exposcall("Alloc",2);</span>
-<span>              p.data=iter;</span>
-<span>              p.next=null;</span>
-<span>              if (head == null) then</span>
-<span>                  head=p;</span>
-<span>                  q=p;</span>
-<span>              else</span>
-<span>                  q.next=p;</span>
-<span>                  q=q.next;</span>
-<span>              endif;</span>
-<span>              iter=iter+1;</span>
-<span>          endwhile;</span>
-<span>          p=head;</span>
-<span>          while(p!=null)  do</span>
-<span>              iter=p.data;</span>
-<span>              temp= exposcall("Write",-2,iter);</span>
-<span>              p=p.next;</span>
-<span>          endwhile;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_8.html" target="_blank">here</a>
         </div>
 
 
@@ -770,40 +357,7 @@
             system call four times, back to back to create 13 processes and Exec system call is invoked with file
             "pgm1.xsm". The program for "pgm1.xsm" is provided <a href="test_prog.html#test_program_10" target="_blank">here</a>.
           </p><br>
-          <div>
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, fd, permission, iter, pid;</span>
-<span>          string filename;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          filename="num.dat";</span>
-<span>          permission=1;</span>
-<span>          temp=exposcall("Create",filename,permission);</span>
-<span>          fd=exposcall("Open",filename);</span>
-<span>          if(fd>=0) then</span>
-<span>              iter=1;</span>
-<span>              while(iter<=1300) do</span>
-<span>                  temp=exposcall("Write",fd, iter);</span>
-<span>                  iter=iter+1;</span>
-<span>              endwhile;</span>
-<span>              temp=exposcall("Close",fd);</span>
-<span>              pid=exposcall("Fork");</span>
-<span>              pid=exposcall("Fork");</span>
-<span>              pid=exposcall("Fork");</span>
-<span>              pid=exposcall("Fork");</span>
-<span>              temp = exposcall("Exec","pgm1.xsm");</span>
-<span>          else</span>
-<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
-<span>          endif;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+          The code for the test program can be found <a href="test_prog/test_prog_9.html" target="_blank">here</a>
         </div>
 
         <div class="panel-body" id="test_program_10">
@@ -827,80 +381,7 @@
             numbers from file "num.dat" from offset (PID-3)*100 to (PID-3)*100+99 and write to newly created file.
             After successful execution, there should be 13 data files each containing 100 consecutive numbers
             (PID-3)*100+1 to PID-3)*100+100.</p><br>
-          <div>
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>          int temp, fdread, fdwrite, permission, pid, offset, data, iter;</span>
-<span>          string filename;</span>
-<span>enddecl</span>
-<span>begin</span>
-<span>          pid=exposcall("Getpid");</span>
-<span>          if(pid==3) then</span>
-<span>              filename="3.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==4) then</span>
-<span>              filename="4.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==5) then</span>
-<span>              filename="5.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==6) then</span>
-<span>              filename="6.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==7) then</span>
-<span>              filename="7.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==8) then</span>
-<span>              filename="8.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==9) then</span>
-<span>              filename="9.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==10) then</span>
-<span>              filename="10.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==11) then</span>
-<span>              filename="11.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==12) then</span>
-<span>              filename="12.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==13) then</span>
-<span>              filename="13.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==14) then</span>
-<span>              filename="14.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==15) then</span>
-<span>              filename="15.dat";</span>
-<span>          endif;</span>
-<span></span>
-<span>          permission=1;</span>
-<span>          temp=exposcall("Create",filename,permission);</span>
-<span>          fdwrite=exposcall("Open",filename);</span>
-<span>          fdread=exposcall("Open","num.dat");</span>
-<span>          if(fdread>=0 AND fdwrite>=0) then</span>
-<span>              offset=(pid-3)*100;</span>
-<span>              temp=exposcall("Seek",fdread,offset);</span>
-<span>              iter=0;</span>
-<span>              while(iter<100) do</span>
-<span>                  temp=exposcall("Read",fdread, data);</span>
-<span>                  temp=exposcall("Write",fdwrite, data);</span>
-<span>                  iter=iter+1;</span>
-<span>              endwhile;</span>
-<span>              temp=exposcall("Close",fdread);</span>
-<span>              temp=exposcall("Close",fdwrite);</span>
-<span>          else</span>
-<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
-<span>          endif;</span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_10.html" target="_blank">here</a>
         </div>
 
 
@@ -927,67 +408,7 @@
             consecutatively (PID*1000+1 to PID*1000+100) to the file "numbers.dat". Exec system call is invoked with
             file "pgm2.xsm". The program for "pgm2.xsm" is provided <a href="test_prog.html#test_program_12" target="_blank">here</a>.
           </p><br>
-          <div>
-            <pre>
-<!--<span>type</span>
-<span>Share</span>
-<span>{</span>
-<span>          int count;</span>
-<span>}</span>
-<span>endtype</span>-->
-<span>decl</span>
-<span>          int fd, temp, permission, data, semid, iter, pid, endval, count;</span>
-<span>          string filename;</span>
-<!--<span>          Share numbers;</span>-->
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>begin</span>
-<span>        filename="numbers.dat";</span>
-<span>        permission=1;</span>
-<span>        temp = exposcall("Create",filename, permission);</span>
-<span>        semid = exposcall("Semget");</span>
-<!--<span>        temp = exposcall("Heapset");</span>
-<span>        numbers= exposcall("Alloc",1);</span>
-<span>        numbers.count=0;</span>-->
-<span>        fd=exposcall("Open",filename);</span>
-<span>        if(fd>=0) then</span>
-<span>            pid=exposcall("Fork");</span>
-<span>            pid=exposcall("Fork");</span>
-<span>            pid=exposcall("Fork");</span>
-<span>            pid=exposcall("Fork");</span>
-<span>            if(pid<0) then</span>
-<span>                temp=exposcall("Write", -2, "NO PCB");</span>
-<span>            endif;</span>
-<span>            pid=exposcall("Getpid");</span>
-<span>            data=pid*1000+1;</span>
-<span>            endval=data+99;</span>
-<span>            temp=exposcall("SemLock", semid);</span>
-<span>            while(data<=endval) do</span>
-<span>                temp=exposcall("Write",fd, data);</span>
-<span>                data=data+1;</span>
-<span>            endwhile;</span>
-<!--<span>            numbers.count=numbers.count+100;</span>-->
-<span>            temp=exposcall("SemUnLock", semid);</span>
-<span>            temp=exposcall("Close",fd);</span>
-<span>        else</span>
-<span>            temp=exposcall("Write",-2, "OPEN FAIL");</span>
-<span>        endif;</span>
-<!--<span>        iter=1;</span>
-<span>        while(iter==1) do</span>
-<span>            temp=exposcall("SemLock", semid);</span>
-<span>            count=numbers.count;</span>
-<span>            temp=exposcall("SemUnLock", semid);</span>
-<span>            if(count==1300) then</span>-->
-<span>        temp=exposcall("Exec", "pgm2.xsm");</span>
-<!--<span>            endif;</span>
-<span>        endwhile;</span>-->
-<span>        return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+          The code for the test program can be found <a href="test_prog/test_prog_11.html" target="_blank">here</a>
         </div>
 
 
@@ -1013,80 +434,7 @@
             After successful execution, there should be 13 data files each containing 100 numbers each X*1000
             -X*1000+99, where X=[3,4..15]. The numbers written by a process in the newly created file need not be the
             same numbers the process has written in "numbers.dat" file.</p><br>
-          <div>
-            <pre>
-<span>decl</span>
-<span>          int data;</span>
-<span>          int fdread, fdwrite, temp, permission, offset, pid, iter;</span>
-<span>          string filename, newfile;</span>
-<span>enddecl</span>
-<span>int main()</span>
-<span>{</span>
-<span>begin</span>
-<span>          fdread=exposcall("Open", "numbers.dat");</span>
-<span>          pid=exposcall("Getpid");</span>
-<span>          if(pid==3) then</span>
-<span>              newfile="three.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==4) then</span>
-<span>              newfile="four.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==5) then</span>
-<span>              newfile="five.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==6) then</span>
-<span>              newfile="six.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==7) then</span>
-<span>              newfile="seven.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==8) then</span>
-<span>              newfile="eight.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==9) then</span>
-<span>              newfile="nine.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==10) then</span>
-<span>              newfile="ten.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==11) then</span>
-<span>              newfile="eleven.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==12) then</span>
-<span>              newfile="twelve.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==13) then</span>
-<span>              newfile="thirteen.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==14) then</span>
-<span>              newfile="fourteen.dat";</span>
-<span>          endif;</span>
-<span>          if(pid==15) then</span>
-<span>              newfile="fifteen.dat";</span>
-<span>          endif;</span>
-<span>          temp=exposcall("Create", newfile, 1);</span>
-<span>          fdwrite=exposcall("Open", newfile);</span>
-<span>          if(fdread>=0 AND fdwrite>=0) then</span>
-<span>              offset=(pid-3)*100;</span>
-<span>              temp=exposcall("Seek",fdread, offset);</span>
-<span>              iter=0;</span>
-<span>              while(iter<=99) do</span>
-<span>                    temp=exposcall("Read",fdread, data);</span>
-<span>                    temp=exposcall("Write",fdwrite, data);</span>
-<span>                    iter=iter+1;</span>
-<span>              endwhile;</span>
-<span>              temp=exposcall("Close",fdread);</span>
-<span>              temp=exposcall("Close",fdwrite);</span>
-<span>          else</span>
-<span>              temp=exposcall("Write",-2, "OPEN FAIL");</span>
-<span>          endif;</span>
-<span></span>
-<span>          return 0;</span>
-<span>end</span>
-<span>}</span>
-</pre>
-          </div>
-
+            The code for the test program can be found <a href="test_prog/test_prog_12.html" target="_blank">here</a>
         </div>
 
         <div class="panel-body" id="test_program_13">
@@ -1106,89 +454,9 @@
           </table>
           <p style="text-indent: 0px"><b>Description :</b> This program calls fork 3 times creating 8 child processes.
             Each process prints the value returned from the last Fork system call and Exec system call is invoked with
-            file "child.xsm". The "chils.xsm" program stores numbers from PID*100 to PID*100+9 onto a linked list and
+            file "child.xsm". The "child.xsm" program stores numbers from PID*100 to PID*100+9 onto a linked list and
             prints them to the console. </p><br>
-          <div>
-            parent.expl
-            <pre>
-<span>int main()</span>
-<span>{</span>
-<span>	decl</span>
-<span>		int temp,pid;</span>
-<span>	enddecl</span>
-<span></span>
-<span>	begin</span>
-<span>		pid = exposcall("Fork");</span>
-<span>		pid = exposcall("Fork");</span>
-<span>		pid = exposcall("Fork");</span>
-<span></span>
-<span>		if(pid==-1) then</span>
-<span>			temp=exposcall("Write", -2, "Fork Error");</span>
-<span>		else</span>
-<span>			temp=exposcall("Write", -2, pid);</span>
-<span>		endif;</span>
-<span></span>
-<span>		temp = exposcall("Exec", "child.xsm");</span>
-<span></span>
-<span>		return 0;</span>
-<span>	end</span>
-<span>}</span>
-  </pre>
-            <br>
-            child.expl
-            <pre>
-<span>type</span>
-<span>  List</span>
-<span>  {</span>
-<span>    int data;</span>
-<span>    List next;</span>
-<span>  }</span>
-<span>endtype</span>
-<span></span>
-<span>decl</span>
-<span>	List head, p, q;</span>
-<span>enddecl</span>
-<span></span>
-<span>int main()</span>
-<span>{</span>
-<span>decl</span>
-<span>	int x, temp, pid, counter;</span>
-<span>enddecl</span>
-<span></span>
-<span>begin</span>
-<span>	x = initialize();</span>
-<span>	pid = exposcall("Getpid");</span>
-<span></span>
-<span>	head=null;</span>
-<span>	counter=0;</span>
-<span>	while(counter<10) do</span>
-<span>		p=alloc();</span>
-<span>		p.data=pid*100 + counter;</span>
-<span>		p.next=null;</span>
-<span></span>
-<span>		if(head==null) then</span>
-<span>			head=p;</span>
-<span>			q=p;</span>
-<span>		else</span>
-<span>			q.next=p;</span>
-<span>			q=q.next;</span>
-<span>		endif;</span>
-<span></span>
-<span>		counter=counter+1;</span>
-<span>	endwhile;</span>
-<span></span>
-<span>	p=head;</span>
-<span>	while(p!=null) do</span>
-<span>		write(p.data);</span>
-<span>		p=p.next;</span>
-<span>	endwhile;</span>
-<span></span>
-<span>	return 0;</span>
-<span>end</span>
-<span>}</span>
-  </pre>
-          </div>
-
+            The code for the <i>parent.expl</i> can be found <a href="test_prog/test_prog_13a.html" target="_blank">here</a> and the code for the <i>child.expl</i> can be found <a href="test_prog/test_prog_13b.html" target="_blank">here</a>
         </div>
 
         <div class="panel-body" id="test_program_14">
@@ -1211,306 +479,7 @@
             from 1 to 64 are stored in decreasing order in a linked list and are sorted using a recursive merge sort
             function. In the concurrent approach, the process is forked and the merge sort function is called
             recursively for the two sub-lists from the two child processes. </p><br>
-
-          <div>
-            merge_sort.expl (Sequential)
-            <pre>
-      <span>type</span>
-      <span>  List</span>
-      <span>  {</span>
-      <span>    int data;</span>
-      <span>    List next;</span>
-      <span>  }</span>
-      <span>endtype</span>
-      <span></span>
-      <span>decl</span>
-      <span>    List head;</span>
-      <span>    List mergeSort(List top);</span>
-      <span>    List merge(List a, List b);</span>
-      <span>enddecl</span>
-      <span></span>
-      <span>List mergeSort(List top)</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    List slow, fast, a, b;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    if((top!=null) AND (top.next!=null)) then</span>
-      <span>      slow=top;</span>
-      <span>      fast=top.next;</span>
-      <span></span>
-      <span>      //Divide the list into two parts</span>
-      <span>      while(fast!=null) do</span>
-      <span>        fast=fast.next;</span>
-      <span>        if(fast!=null) then</span>
-      <span>          slow=slow.next;</span>
-      <span>          fast=fast.next;</span>
-      <span>        endif;</span>
-      <span>      endwhile;</span>
-      <span></span>
-      <span>      a=top;</span>
-      <span>      b=slow.next;</span>
-      <span>      slow.next=null;</span>
-      <span></span>
-      <span>      //Recursively call merge sort</span>
-      <span>      a=mergeSort(a);</span>
-      <span>      b=mergeSort(b);</span>
-      <span></span>
-      <span>      //Merge the two lists</span>
-      <span>      top=merge(a, b);</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    return top;</span>
-      <span>  end</span>
-      <span>}</span>
-      <span></span>
-      <span>List merge(List a, List b)</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    List result;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    result=null;</span>
-      <span></span>
-      <span>    if(a==null) then</span>
-      <span>      result=b;</span>
-      <span>    endif;</span>
-      <span>    if(b==null) then</span>
-      <span>      result=a;</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    if(a!=null AND b!=null) then</span>
-      <span>      if(a.data<=b.data) then</span>
-      <span>        result=a;</span>
-      <span>        result.next=merge(a.next, b);</span>
-      <span>      else</span>
-      <span>        result=b;</span>
-      <span>        result.next=merge(a, b.next);</span>
-      <span>      endif;</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    return result;</span>
-      <span>  end</span>
-      <span>}</span>
-      <span></span>
-      <span>int main()</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    int x, counter;</span>
-      <span>    List p, q;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    x = initialize();</span>
-      <span></span>
-      <span>    //Storing values in descending order</span>
-      <span>    head=null;</span>
-      <span>    counter=0;</span>
-      <span>    while(counter<64) do</span>
-      <span>      p=alloc();</span>
-      <span>      p.data=64-counter;</span>
-      <span>      p.next=null;</span>
-      <span></span>
-      <span>      if(head==null) then</span>
-      <span>        head=p;</span>
-      <span>        q=p;</span>
-      <span>      else</span>
-      <span>        q.next=p;</span>
-      <span>        q=q.next;</span>
-      <span>      endif;</span>
-      <span></span>
-      <span>      counter=counter+1;</span>
-      <span>    endwhile;</span>
-      <span></span>
-      <span>    //Calling Merge Sort</span>
-      <span>    head=mergeSort(head);</span>
-      <span></span>
-      <span>    //Printing Values</span>
-      <span>    p=head;</span>
-      <span>    while(p!=null) do</span>
-      <span>      write(p.data);</span>
-      <span>      p=p.next;</span>
-      <span>    endwhile;</span>
-      <span>    return 1;</span>
-      <span>  end</span>
-      <span>}</span>
-  </pre>
-            <br>
-            merge_sort.expl (Concurrent)
-            <pre>
-      <span>type</span>
-      <span>  List</span>
-      <span>  {</span>
-      <span>    int data;</span>
-      <span>    List next;</span>
-      <span>  }</span>
-      <span>  Share</span>
-      <span>  {</span>
-      <span>    List link;</span>
-      <span>  }</span>
-      <span>endtype</span>
-      <span></span>
-      <span>decl</span>
-      <span>  int x, semid;</span>
-      <span>  List head;</span>
-      <span>  List mergeSort(List top);</span>
-      <span>  List merge(List a, List b);</span>
-      <span>enddecl</span>
-      <span></span>
-      <span>List mergeSort(List top)</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    int len, pid;</span>
-      <span>    List slow, fast, a, b;</span>
-      <span>    Share s;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    len=1;</span>
-      <span>    if((top!=null) AND (top.next!=null)) then</span>
-      <span>      x=exposcall("SemLock", semid);</span>
-      <span>      slow=top;</span>
-      <span>      fast=top.next;</span>
-      <span></span>
-      <span>      //Divide the list into two parts</span>
-      <span>      while(fast!=null) do</span>
-      <span>        fast=fast.next;</span>
-      <span>        len=len+1;</span>
-      <span>        if(fast!=null) then</span>
-      <span>          slow=slow.next;</span>
-      <span>          fast=fast.next;</span>
-      <span>          len=len+1;</span>
-      <span>        endif;</span>
-      <span>      endwhile;</span>
-      <span></span>
-      <span>      a=top;</span>
-      <span>      b=slow.next;</span>
-      <span>      slow.next=null;</span>
-      <span>      x=exposcall("SemUnLock", semid);</span>
-      <span></span>
-      <span>      //If size less than 4, don't Fork</span>
-      <span>      if(len<=4) then</span>
-      <span>        a=mergeSort(a);</span>
-      <span>        b=mergeSort(b);</span>
-      <span>      else</span>
-      <span>        x=exposcall("SemLock", semid);</span>
-      <span>        s=alloc();</span>
-      <span>        x=exposcall("SemUnLock", semid);</span>
-      <span></span>
-      <span>        pid=exposcall("Fork");</span>
-      <span></span>
-      <span>        //If Fork is not possible, do sequential</span>
-      <span>        if(pid==-1) then</span>
-      <span>          a=mergeSort(a);</span>
-      <span>          b=mergeSort(b);</span>
-      <span>        else</span>
-      <span>          s.link=null;</span>
-      <span></span>
-      <span>          //Sort from two different process</span>
-      <span>          if(pid!=0) then</span>
-      <span>            a=mergeSort(a);</span>
-      <span>          else</span>
-      <span>            b=mergeSort(b);</span>
-      <span>            s.link=b;             //Store head in shared location</span>
-      <span>            x=exposcall("Exit");</span>
-      <span>          endif;</span>
-      <span>          x=exposcall("Wait", pid);</span>
-      <span>          b=s.link;</span>
-      <span>        endif;</span>
-      <span></span>
-      <span>        x=exposcall("SemLock", semid);</span>
-      <span>        free(s);</span>
-      <span>        x=exposcall("SemUnLock", semid);</span>
-      <span>      endif;</span>
-      <span></span>
-      <span>      //Merge the two lists</span>
-      <span>      x=exposcall("SemLock", semid);</span>
-      <span>      top=merge(a, b);</span>
-      <span>      x=exposcall("SemUnLock", semid);</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    return top;</span>
-      <span>  end</span>
-      <span>}</span>
-      <span></span>
-      <span>List merge(List a, List b)</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    List result;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    result=null;</span>
-      <span></span>
-      <span>    if(a==null) then</span>
-      <span>      result=b;</span>
-      <span>    endif;</span>
-      <span>    if(b==null) then</span>
-      <span>      result=a;</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    if(a!=null AND b!=null) then</span>
-      <span>      if(a.data<=b.data) then</span>
-      <span>        result=a;</span>
-      <span>        result.next=merge(a.next, b);</span>
-      <span>      else</span>
-      <span>        result=b;</span>
-      <span>        result.next=merge(a, b.next);</span>
-      <span>      endif;</span>
-      <span>    endif;</span>
-      <span></span>
-      <span>    return result;</span>
-      <span>  end</span>
-      <span>}</span>
-      <span></span>
-      <span>int main()</span>
-      <span>{</span>
-      <span>  decl</span>
-      <span>    int x, counter;</span>
-      <span>    List p, q;</span>
-      <span>  enddecl</span>
-      <span></span>
-      <span>  begin</span>
-      <span>    x = initialize();</span>
-      <span>    semid = exposcall("Semget");</span>
-      <span></span>
-      <span>    //Storing values in descending order</span>
-      <span>    head=null;</span>
-      <span>    counter=0;</span>
-      <span>    while(counter<64) do</span>
-      <span>      p=alloc();</span>
-      <span>      p.data=64-counter;</span>
-      <span>      p.next=null;</span>
-      <span></span>
-      <span>      if(head==null) then</span>
-      <span>        head=p;</span>
-      <span>        q=p;</span>
-      <span>      else</span>
-      <span>        q.next=p;</span>
-      <span>        q=q.next;</span>
-      <span>      endif;</span>
-      <span></span>
-      <span>      counter=counter+1;</span>
-      <span>    endwhile;</span>
-      <span></span>
-      <span>    //Calling Merge Sort</span>
-      <span>    head=mergeSort(head);</span>
-      <span></span>
-      <span>    //Printing Values</span>
-      <span>    p=head;</span>
-      <span>    while(p!=null) do</span>
-      <span>      write(p.data);</span>
-      <span>      p=p.next;</span>
-      <span>    endwhile;</span>
-      <span></span>
-      <span>    x = exposcall("Semrelease");</span>
-      <span>    return 1;</span>
-      <span>  end</span>
-      <span>}</span>
-  </pre>
-          </div>
+            The code for the Sequential approach can be found <a href="test_prog/test_prog_14a.html" target="_blank">here</a> and the code for the Concurrent approach can be found <a href="test_prog/test_prog_14b.html" target="_blank">here</a>
         </div>
 
 
@@ -1529,219 +498,68 @@
               <td>Creates a file <i>merge.dat</i> with numbers from 1 to 2048.</td>
             </tr>
           </table>
-          <p style="text-indent: 0px"><b>Description :</b> The ExpL program first creates 4 files with values from s to 2044+s, where s=1 to 4. The program then, merges the 4 files taking 2 at a time, and finally, creates a <i>merge.dat</i> file containing numbers from 1 to 2048.</p><br>
+          <p style="text-indent: 0px"><b>Description :</b> The ExpL program first creates 4 files with values from s to
+            2044+s, where s=[1..4]. The program then, merges the 4 files taking 2 at a time, and finally, creates a <i>merge.dat</i>
+            file containing numbers from 1 to 2048.</p><br>
+            The code for the test program can be found <a href="test_prog/test_prog_15.html" target="_blank">here</a>
+        </div>
 
-          <div>
-            <pre>
-<span>decl</span>
-<span>  int store(str file, int start);</span>
-<span>  int merge(str out, str in1, str in2);</span>
-<span>enddecl</span>
-<span></span>
-<span>//Storing 512 numbers in file</span>
-<span>int store(str file, int start)</span>
-<span>{</span>
-<span>  decl</span>
-<span>    int x, fp, counter, val;</span>
-<span>  enddecl</span>
-<span></span>
-<span>  begin</span>
-<span>    //Create and open the file</span>
-<span>    x=exposcall("Create", file);</span>
-<span>    fp=exposcall("Open", file, 1);</span>
-<span></span>
-<span>    //Store the numbers into the file</span>
-<span>    counter=0;</span>
-<span>    while(counter<512) do</span>
-<span>      val=4*counter+start;</span>
-<span>      x=exposcall("Write", fp, val);</span>
-<span>      counter=counter+1;</span>
-<span>    endwhile;</span>
-<span></span>
-<span>    //Close the file</span>
-<span>    x=exposcall("Close", fp);</span>
-<span></span>
-<span>    write("Stored");</span>
-<span>    return 0;</span>
-<span>  end</span>
-<span>}</span>
-<span></span>
-<span>//Merging files "in1" and "in2" into "out"</span>
-<span>int merge(str out, str in1, str in2)</span>
-<span>{</span>
-<span>  decl</span>
-<span>    int fp, fp1, fp2;</span>
-<span>    int x, a, b, w1, w2;</span>
-<span>  enddecl</span>
-<span></span>
-<span>  begin</span>
-<span>    //Create and open output file</span>
-<span>    x=exposcall("Create", out, 1);</span>
-<span>    fp=exposcall("Open", out);</span>
-<span></span>
-<span>    //Open both the input files</span>
-<span>    fp1=exposcall("Open", in1);</span>
-<span>    fp2=exposcall("Open", in2);</span>
-<span></span>
-<span>    //Read the first number from both input files</span>
-<span>    //and store them in w1 and w2</span>
-<span>    a=exposcall("Read", fp1, w1);</span>
-<span>    b=exposcall("Read", fp2, w2);</span>
-<span></span>
-<span>    //Store min(w1,w2) in output file and</span>
-<span>    //read the next number until one</span>
-<span>    //file reaches end of file</span>
-<span>    while(a!=-2 AND b!=-2) do</span>
-<span>      if(w1<=w2) then</span>
-<span>        x=exposcall("Write", fp, w1);</span>
-<span>        a=exposcall("Read", fp1, w1);</span>
-<span>      else</span>
-<span>        x=exposcall("Write", fp, w2);</span>
-<span>        b=exposcall("Read", fp2, w2);</span>
-<span>      endif;</span>
-<span>    endwhile;</span>
-<span></span>
-<span>    //If second input file ends,</span>
-<span>    //copy the contents from first input file</span>
-<span>    //to the output file</span>
-<span>    while(a!=-2) do</span>
-<span>      x=exposcall("Write", fp, w1);</span>
-<span>      a=exposcall("Read", fp1, w1);</span>
-<span>    endwhile;</span>
-<span></span>
-<span>    //If first input file ends,</span>
-<span>    //copy the contents from second input file</span>
-<span>    //to the output file</span>
-<span>    while(b!=-2) do</span>
-<span>      x=exposcall("Write", fp, w2);</span>
-<span>      b=exposcall("Read", fp2, w2);</span>
-<span>    endwhile;</span>
-<span></span>
-<span>    //Close all the files</span>
-<span>    x=exposcall("Close", fp);</span>
-<span>    x=exposcall("Close", fp1);</span>
-<span>    x=exposcall("Close", fp2);</span>
-<span></span>
-<span>    //Delete the input files</span>
-<span>    x=exposcall("Delete", in1);</span>
-<span>    x=exposcall("Delete", in2);</span>
-<span></span>
-<span>    write("Merged");</span>
-<span>    return 0;</span>
-<span>  end</span>
-<span>}</span>
-<span></span>
-<span>int main()</span>
-<span>{</span>
-<span>  decl</span>
-<span>    int x, pid1, pid2, fp;</span>
-<span>  enddecl</span>
-<span></span>
-<span>  begin</span>
-<span>    pid1=exposcall("Fork");</span>
-<span>    if(pid1!=0) then</span>
-<span>      pid2=exposcall("Fork");</span>
-<span>      if(pid2!=0) then</span>
-<span>        //Store the numbers into "temp1.dat"</span>
-<span>        x=store("temp1.dat", 1);</span>
-<span></span>
-<span>        x=exposcall("Wait", pid2);</span>
-<span>      else</span>
-<span>        //Store the numbers into "temp2.dat"</span>
-<span>        x=store("temp2.dat", 2);</span>
-<span></span>
-<span>        x=exposcall("Exit");</span>
-<span>      endif;</span>
-<span></span>
-<span>      //Merge "temp1.dat" and "temp2.dat" into "tempa.dat"</span>
-<span>      x=merge("tempa.dat", "temp1.dat", "temp2.dat");</span>
-<span></span>
-<span>      x=exposcall("Wait", pid1);</span>
-<span>    else</span>
-<span>      pid2=exposcall("Fork");</span>
-<span>      if(pid2!=0) then</span>
-<span>        //Store the numbers into "temp3.dat"</span>
-<span>        x=store("temp3.dat", 3);</span>
-<span></span>
-<span>        x=exposcall("Wait", pid2);</span>
-<span>      else</span>
-<span>        //Store the numbers into "temp4.dat"</span>
-<span>        x=store("temp4.dat", 4);</span>
-<span></span>
-<span>        x=exposcall("Exit");</span>
-<span>      endif;</span>
-<span></span>
-<span>      //Merge "temp3.dat" and "temp4.dat" into "tempb.dat"</span>
-<span>      x=merge("tempb.dat", "temp3.dat", "temp4.dat");</span>
-<span></span>
-<span>      x=exposcall("Exit");</span>
-<span>    endif;</span>
-<span></span>
-<span>    //Merge "tempa.dat" and "tempb.dat" into "merge.dat"</span>
-<span>    //which contains numbers from 1 to 2048 in sorted order</span>
-<span>    x=merge("merge.dat", "tempa.dat", "tempb.dat");</span>
-<span></span>
-<span>    return 1;</span>
-<span>  end</span>
-<span>}</span>
-</pre>
-</div>
-</div>
-
-       </div>
-       </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
 
 
 
 
-    <!--=========== END SECTION ================-->
+  <!--=========== END SECTION ================-->
 
 
 
 
 
-     <!--=========== BEGIN FOOTER ================-->
-     <footer id="footer">
-       <div class="container">
-         <div class="row">
-<a style="float: right" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="./img/creativecommons.png" /></a>
-           <div class="col-lg-6 col-md-6 col-sm-6">
-             <div class="footer_left">
-               <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
-             </div>
-           </div>
-         </div>
-       </div>
-      </footer>
-      <!--=========== END FOOTER ================-->
+  <!--=========== BEGIN FOOTER ================-->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <a style="float: right" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License"
+            style="border-width:0" src="./img/creativecommons.png" /></a>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="footer_left">
+            <p><a href="http://www.nitc.ac.in/">National Institute of Technology, Calicut</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!--=========== END FOOTER ================-->
 
-     <!-- Javascript Files
+  <!-- Javascript Files
      ================================================== -->
 
-     <!-- initialize jQuery Library -->
-    <script src="js/jquery.min.js"></script>
-    <!-- Google map -->
-    <script src="js/map_js.js"></script>
-    <script src="js/jquery.ui.map.js"></script>
-     <!-- For smooth animatin  -->
-    <script src="js/wow.min.js"></script>
-    <!-- Bootstrap js -->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- superslides slider -->
-    <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
-    <!-- slick slider -->
-    <script src="js/slick.min.js"></script>
-    <!-- for circle counter -->
-    <script src='js/jquery.circliful.min.js'></script>
-    <!-- for portfolio filter gallery -->
-    <script src="js/modernizr.custom.js"></script>
-    <script src="js/classie.js"></script>
-    <script src="js/elastic_grid.min.js"></script>
-    <script src="js/portfolio_slider.js"></script>
+  <!-- initialize jQuery Library -->
+  <script src="js/jquery.min.js"></script>
+  <!-- Google map -->
+  <script src="js/map_js.js"></script>
+  <script src="js/jquery.ui.map.js"></script>
+  <!-- For smooth animatin  -->
+  <script src="js/wow.min.js"></script>
+  <!-- Bootstrap js -->
+  <script src="js/bootstrap.min.js"></script>
+  <!-- superslides slider -->
+  <script src="js/jquery.superslides.min.js" type="text/javascript"></script>
+  <!-- slick slider -->
+  <script src="js/slick.min.js"></script>
+  <!-- for circle counter -->
+  <script src='js/jquery.circliful.min.js'></script>
+  <!-- for portfolio filter gallery -->
+  <script src="js/modernizr.custom.js"></script>
+  <script src="js/classie.js"></script>
+  <script src="js/elastic_grid.min.js"></script>
+  <script src="js/portfolio_slider.js"></script>
 
-    <!-- Custom js-->
-    <script src="js/custom.js"></script>
-  </body>
+  <!-- Custom js-->
+  <script src="js/custom.js"></script>
+</body>
+
 </html>

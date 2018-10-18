@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 14 (Merge Sort - Concurrent)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type
+    List
+    {
+        int data;
+        List next;
+    }
+    Share
+    {
+        List link;
+    }
+endtype
+
+decl
+  int x, semid;
+  List head;
+  List mergeSort(List top);
+  List merge(List a, List b);
+enddecl
+
+List mergeSort(List top)
+{
+  decl
+    int len, pid;
+    List slow, fast, a, b;
+    Share s;
+  enddecl
+
+  begin
+    len=1;
+    if((top!=null) AND (top.next!=null)) then
+      x=exposcall("SemLock", semid);
+      slow=top;
+      fast=top.next;
+
+      //Divide the list into two parts
+      while(fast!=null) do
+        fast=fast.next;
+        len=len+1;
+        if(fast!=null) then
+          slow=slow.next;
+          fast=fast.next;
+          len=len+1;
+        endif;
+      endwhile;
+
+      a=top;
+      b=slow.next;
+      slow.next=null;
+      x=exposcall("SemUnLock", semid);
+
+      //If size less than 4, don't Fork
+      if(len<=4) then
+        a=mergeSort(a);
+        b=mergeSort(b);
+      else
+        x=exposcall("SemLock", semid);
+        s=alloc();
+        x=exposcall("SemUnLock", semid);
+
+        pid=exposcall("Fork");
+
+        //If Fork is not possible, do sequential
+        if(pid==-1) then
+          a=mergeSort(a);
+          b=mergeSort(b);
+        else
+          s.link=null;
+
+          //Sort from two different process
+          if(pid!=0) then
+            a=mergeSort(a);
+          else
+            b=mergeSort(b);
+            s.link=b;             //Store head in shared location
+            x=exposcall("Exit");
+          endif;
+          x=exposcall("Wait", pid);
+          b=s.link;
+        endif;
+
+        x=exposcall("SemLock", semid);
+        free(s);
+        x=exposcall("SemUnLock", semid);
+      endif;
+
+      //Merge the two lists
+      x=exposcall("SemLock", semid);
+      top=merge(a, b);
+      x=exposcall("SemUnLock", semid);
+    endif;
+
+    return top;
+  end
+}
+
+List merge(List a, List b)
+{
+  decl
+    List result;
+  enddecl
+
+  begin
+    result=null;
+
+    if(a==null) then
+      result=b;
+    endif;
+    if(b==null) then
+      result=a;
+    endif;
+
+    if(a!=null AND b!=null) then
+      if(a.data<=b.data) then
+        result=a;
+        result.next=merge(a.next, b);
+      else
+        result=b;
+        result.next=merge(a, b.next);
+      endif;
+    endif;
+
+    return result;
+  end
+}
+
+int main()
+{
+  decl
+    int x, counter;
+    List p, q;
+  enddecl
+
+  begin
+    x = initialize();
+    semid = exposcall("Semget");
+
+    //Storing values in descending order
+    head=null;
+    counter=0;
+    while(counter<64) do
+      p=alloc();
+      p.data=64-counter;
+      p.next=null;
+
+      if(head==null) then
+        head=p;
+        q=p;
+      else
+        q.next=p;
+        q=q.next;
+      endif;
+
+      counter=counter+1;
+    endwhile;
+
+    //Calling Merge Sort
+    head=mergeSort(head);
+
+    //Printing Values
+    p=head;
+    while(p!=null) do
+      write(p.data);
+      p=p.next;
+    endwhile;
+
+    x = exposcall("Semrelease");
+    return 1;
+  end
+}</pre>
+</body>
+
+</html>

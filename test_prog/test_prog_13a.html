@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 13 (parent.expl)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+int main()
+{
+    decl
+        int temp,pid;
+    enddecl
+
+    begin
+        pid = exposcall("Fork");
+        pid = exposcall("Fork");
+        pid = exposcall("Fork");
+
+        if(pid==-1) then
+            temp=exposcall("Write", -2, "Fork Error");
+        else
+            temp=exposcall("Write", -2, pid);
+        endif;
+
+        temp = exposcall("Exec", "child.xsm");
+        return 0;
+    end
+}</pre>
+</body>
+
+</html>

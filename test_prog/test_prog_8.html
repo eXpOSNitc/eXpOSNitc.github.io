@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test Program 8</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type
+List
+{
+    int data;
+    List next;
+}
+endtype
+
+decl
+    List head;
+enddecl
+
+int main()
+{
+decl
+    int endval, temp, pid, iter;
+    List p, q;
+enddecl
+
+begin
+    temp = exposcall("Heapset");
+    head=null;
+    q = head;
+    pid = exposcall("Getpid");
+    iter = pid*100+1;
+    endval= iter+99;
+          
+    while (iter <= endval)  do
+        p=exposcall("Alloc",2);
+        p.data=iter;
+        p.next=null;
+              
+        if (head == null) then
+            head=p;
+            q=p;
+        else
+            q.next=p;
+            q=q.next;
+        endif;
+              
+        iter=iter+1;
+    endwhile;
+          
+    p=head;
+    while(p!=null)  do
+        iter=p.data;
+        temp= exposcall("Write",-2,iter);
+        p=p.next;
+    endwhile;
+          
+    return 0;
+end
+}</pre>
+</body>
+
+</html>
