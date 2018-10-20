@@ -168,7 +168,7 @@
                 you may proceed with the roadmap without visiting these links.</p>
 
               <p>
-                  Last updated: 14th October 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
+                  Last updated: 20th October 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
               </p>
 
               <!--
@@ -5724,6 +5724,10 @@ userSP=SP;</pre>
                         <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and
                           user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of
                           the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
+
+                        <li style="padding-left: 20px">
+                          If the heap pages are not assigned for the parent process, allocate heap pages by invoking the <b>Get Free Page</b> function of the memory manager and set the page table entries for the heap to the pages acquired.
+                        </li>
 
                         <li style="padding-left: 20px">The next step in the fork system call is initialization of the
                           <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child

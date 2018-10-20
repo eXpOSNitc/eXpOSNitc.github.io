@@ -157,6 +157,11 @@ If no free entry is found, return -1.
 Invoke the <b>get_free_page()</b> function in <a href="../os_modules/Module_2.html">Memory Manager</a> module to obtain 3 
 memory pages: 2 for user stack and 1 for User Area Page of the child process.
 
+/* For the parent and child processes to share the heap, even if its not assigned.*/
+If the heap pages of the parent process are not assigned,
+then invoke the <b>get_free_page()</b> function in Memory Manager module to obtain the memory pages
+and set the page table entries for heap to the pages acquired.
+
 Copy the parent's <a href="process_table.html" target="_blank">Process Table Entry</a> except TICK, PID, PPID, USER AREA PAGE NUMBER, 
 KERNEL STACK POINTER, INPUT BUFFER, PTBR and PTLR to the child. 
 

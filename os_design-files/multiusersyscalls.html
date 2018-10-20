@@ -448,6 +448,8 @@ Return the username.
 
 	Set the state of the current process in it's process table entry as (WAIT_PROCESS, 2) /* Login waits for shell to exit */
 
+        In <a href="mem_ds.html#ss_table" target="_blank">system status table</a>, set the CURRENT_USER_ID as that of the user who is logging in.
+
 	Invoke the <b>context_switch()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
 
 	Reset the MODE_FLAG and restore SP to user stack.
@@ -509,6 +511,8 @@ Obtain the entry point IP value from the header of the shell program. Place it i
 of the stack of the shell(current process). Reset the USERSP field of the shell to 4096.
 
 Wake up the Login process by changing STATE in it's process table entry to READY.
+
+In <a href="mem_ds.html#ss_table" target="_blank">system status table</a>, reset the CURRENT_USER_ID field back to 0 (kernel).
 
 Invoke the <b>context_switch()</b> function in the <a href="../os_modules/Module_5.html">Scheduler Module</a>.
 
