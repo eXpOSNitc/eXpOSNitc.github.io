@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>m_store.expl (Test Program 16 - Merge Sort with Files)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+decl
+  int store(str file, int start);
+enddecl
+
+int store(str file, int start)
+{
+  decl
+    int x, fp, fp1, a, word, counter;
+  enddecl
+
+  begin
+    x=exposcall("Create", file, 1);
+    fp=exposcall("Open", "merge.dat");
+    fp1=exposcall("Open", file);
+
+    x=exposcall("Seek", fp, start);
+
+    counter=0;
+    a=exposcall("Read", fp, word);
+    while(a!=-2 AND counter<64) do
+      x=exposcall("Write", fp1, word);
+      a=exposcall("Read", fp, word);
+      counter=counter+1;
+    endwhile;
+
+    x=exposcall("Close", fp);
+    x=exposcall("Close", fp1);
+    return 0;
+  end
+}
+
+int main()
+{
+decl
+  int x, pid, pid1, pid2;
+  str file;
+enddecl
+
+begin
+  x=initialize();
+
+  pid=exposcall("Fork");
+  if(pid!=0) then
+    while(pid<13) do
+      x=exposcall("Wait", pid);
+      pid=pid+1;
+    endwhile;
+  else
+    x=exposcall("Fork");
+    x=exposcall("Fork");
+    x=exposcall("Fork");
+
+    pid=exposcall("Getpid");
+
+    if(pid==5) then
+      file="temp1.dat";
+    endif;
+    if(pid==6) then
+      file="temp2.dat";
+    endif;
+    if(pid==7) then
+      file="temp3.dat";
+    endif;
+    if(pid==8) then
+      file="temp4.dat";
+    endif;
+    if(pid==9) then
+      file="temp5.dat";
+    endif;
+    if(pid==10) then
+      file="temp6.dat";
+    endif;
+    if(pid==11) then
+      file="temp7.dat";
+    endif;
+    if(pid==12) then
+      file="temp8.dat";
+    endif;
+
+    pid=(pid-5)*64;
+    x=store(file, pid);
+    x=exposcall("Exit");
+  endif;
+
+  write("Stored");
+
+  pid=exposcall("Fork");
+  if(pid!=0) then
+    while(pid<13) do
+      x=exposcall("Wait", pid);
+      pid=pid+1;
+    endwhile;
+  else
+    x=exposcall("Fork");
+    x=exposcall("Fork");
+    x=exposcall("Fork");
+
+    x=exposcall("Exec", "m_sort.xsm");
+  endif;
+
+  write("Sorted");
+
+  return 1;
+end
+}</pre>
+</body>
+
+</html>

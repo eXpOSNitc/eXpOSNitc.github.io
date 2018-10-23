@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>m_sort.expl (Test Program 16 - Merge Sort with Files)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+type
+  List
+  {
+    int data;
+    List next;
+  }
+  Share
+  {
+    List link;
+  }
+endtype
+
+decl
+  int x, semid, fp;
+  List head;
+  List mergeSort(List top);
+  List merge(List a, List b);
+enddecl
+
+List mergeSort(List top)
+{
+  decl
+    int pid;
+    List slow, fast, a, b;
+    Share s;
+  enddecl
+
+  begin
+    if((top!=null) AND (top.next!=null)) then
+      slow=top;
+      fast=top.next;
+
+      while(fast!=null) do
+        fast=fast.next;
+        if(fast!=null) then
+            slow=slow.next;
+            fast=fast.next;
+        endif;
+      endwhile;
+
+      a=top;
+      b=slow.next;
+      slow.next=null;
+
+      a=mergeSort(a);
+      b=mergeSort(b);
+
+      top=merge(a, b);
+    endif;
+
+    return top;
+  end
+}
+
+List merge(List a, List b)
+{
+  decl
+    List result;
+  enddecl
+
+  begin
+    result=null;
+
+    if(a==null) then
+      result=b;
+    endif;
+    if(b==null) then
+      result=a;
+    endif;
+
+    if(a!=null AND b!=null) then
+      if(a.data<=b.data) then
+        result=a;
+        result.next=merge(a.next, b);
+      else
+        result=b;
+        result.next=merge(a, b.next);
+      endif;
+    endif;
+
+    return result;
+  end
+}
+
+int main()
+{
+  decl
+    int x, counter, pid, fp, a, word;
+    str file;
+    List p, q;
+  enddecl
+
+  begin
+    x=initialize();
+    semid=exposcall("Semget");
+    pid=exposcall("Getpid");
+
+    if(pid==5) then
+      file="temp1.dat";
+    endif;
+    if(pid==6) then
+      file="temp2.dat";
+    endif;
+    if(pid==7) then
+      file="temp3.dat";
+    endif;
+    if(pid==8) then
+      file="temp4.dat";
+    endif;
+    if(pid==9) then
+      file="temp5.dat";
+    endif;
+    if(pid==10) then
+      file="temp6.dat";
+    endif;
+    if(pid==11) then
+      file="temp7.dat";
+    endif;
+    if(pid==12) then
+      file="temp8.dat";
+    endif;
+
+    fp=exposcall("Open", file);
+
+    head=null;
+    counter=0;
+    a=exposcall("Read", fp, word);
+    while(counter<64) do
+      p=alloc();
+      p.data=word;
+      p.next=null;
+
+      if(head==null) then
+        head=p;
+        q=p;
+      else
+        q.next=p;
+        q=q.next;
+      endif;
+
+      a=exposcall("Read", fp, word);
+      counter=counter+1;
+    endwhile;
+
+    head=mergeSort(head);
+
+    x=exposcall("Seek", fp, 0);
+    p=head;
+    while(p!=null) do
+      word=p.data;
+      x=exposcall("Write", fp, word);
+      p=p.next;
+    endwhile;
+
+    x=exposcall("Close", fp);
+    x=exposcall("Semrelease");
+    return 1;
+  end
+}</pre>
+</body>
+
+</html>

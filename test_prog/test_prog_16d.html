@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>m_merge.expl (Test Program 16 - Merge Sort with Files)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="../img/favicon.jpg" />
+</head>
+
+<body>
+    <pre>
+decl
+  int merge(str out, str in1, str in2);
+enddecl
+
+int merge(str out, str in1, str in2)
+{
+  decl
+    int fp, fp1, fp2;
+    int x, a, b, w1, w2;
+  enddecl
+
+  begin
+    x=exposcall("Create", out, 1);
+    fp=exposcall("Open", out);
+
+    fp1=exposcall("Open", in1);
+    fp2=exposcall("Open", in2);
+
+    a=exposcall("Read", fp1, w1);
+    b=exposcall("Read", fp2, w2);
+
+    while(a!=-2 AND b!=-2) do
+      if(w1<=w2) then
+        x=exposcall("Write", fp, w1);
+        a=exposcall("Read", fp1, w1);
+      else
+        x=exposcall("Write", fp, w2);
+        b=exposcall("Read", fp2, w2);
+      endif;
+    endwhile;
+
+    while(a!=-2) do
+      x=exposcall("Write", fp, w1);
+      a=exposcall("Read", fp1, w1);
+    endwhile;
+
+    while(b!=-2) do
+      x=exposcall("Write", fp, w2);
+      b=exposcall("Read", fp2, w2);
+    endwhile;
+
+    x=exposcall("Close", fp);
+    x=exposcall("Close", fp1);
+    x=exposcall("Close", fp2);
+
+    x=exposcall("Delete", in1);
+    x=exposcall("Delete", in2);
+
+    return 0;
+  end
+}
+
+int main()
+{
+decl
+  int x, pid, pid1, pid2;
+enddecl
+
+begin
+  x=initialize();
+
+  pid1=exposcall("Fork");
+  if(pid1!=0) then
+    pid2=exposcall("Fork");
+    if(pid2!=0) then
+      x=merge("temp12.dat", "temp1.dat", "temp2.dat");
+      x=exposcall("Wait", pid2);
+    else
+      x=merge("temp34.dat", "temp3.dat", "temp4.dat");
+      x=exposcall("Exit");
+    endif;
+    x=merge("temp14.dat", "temp12.dat", "temp34.dat");
+    x=exposcall("Wait", pid1);
+  else
+    pid2=exposcall("Fork");
+    if(pid2!=0) then
+      x=merge("temp56.dat", "temp5.dat", "temp6.dat");
+      x=exposcall("Wait", pid2);
+    else
+      x=merge("temp78.dat", "temp7.dat", "temp8.dat");
+      x=exposcall("Exit");
+    endif;
+    x=merge("temp58.dat", "temp56.dat", "temp78.dat");
+    x=exposcall("Exit");
+  endif;
+
+  x=merge("merge.dat", "temp14.dat", "temp58.dat");
+
+  write("Merged");
+
+  return 1;
+end
+}</pre>
+</body>
+
+</html>
