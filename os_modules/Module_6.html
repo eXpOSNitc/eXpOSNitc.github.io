@@ -176,10 +176,13 @@ to indicate that the system is going to perform paging.
 /* The <a href="../os_modules/Module_5.html">scheduler</a> will schedule only this process and the idle process when swapout in ongoing. */
 
 Choose a process to swap out. (other than the IDLE, Shell or INIT)
-	Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find a process that is in the WAIT_PROCESS state.
-	If there are no processes in the WAIT_PROCESS state, find a process in the WAIT_TERMINAL state.
-	If there are no processes in the WAIT_PROCESS and WAIT_TERMINAL state, 
-                    find the non swapped non running process with the highest TICK.
+	Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find a non-swapped process that is in the WAIT_PROCESS state.
+	If there are no non-swapped processes in the WAIT_PROCESS state, find a non-swapped process in the WAIT_TERMINAL state.
+	If there are no non-swapped processes in the WAIT_PROCESS and WAIT_TERMINAL state, 
+            find process with the highest TICK which is not running, terminated, allocated or swapped.
+
+If no such process exists, 
+        set the PAGING_PROCESS back to -1 and return.
 
 Set the TICK field of the process table entry of the selected process to 0.
 /* When the process goes to swap, TICK starts again */

@@ -263,7 +263,11 @@ Called by the exit_process function.
 		/* Set the children of the process as Orphan */
 		<b>if</b>( process has PPID as that of the current process)
 			Set PPID to -1.
-	}
+        }
+        
+        /* This code is relevant only when the Pager Module is implemented  in Stage 27*/ 
+        if (MEM_FREE_COUNT > <a href="../support_tools-files/constants.html" target="_blank">MEM_HIGH</a>) 
+            Call the <b>swap_in()</b> function in the <a href="../os_modules/Module_6.html" target="_blank">Pager Module</a>.
     }
 
     Free the <a href="../os_design-files/process_table.html#per_page_table">Page Table</a> entry corresponding to the process by

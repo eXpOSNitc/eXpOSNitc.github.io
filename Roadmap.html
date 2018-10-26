@@ -168,7 +168,7 @@
                 you may proceed with the roadmap without visiting these links.</p>
 
               <p>
-                  Last updated: 23th October 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
+                  Last updated: 26th October 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
               </p>
 
               <!--
@@ -5266,9 +5266,7 @@ userSP=SP;</pre>
 
                       <p>In either case, the exception occured not because of any error from the side of the
                         application, but because the OS had not loaded the page and set the page tables. In such case,
-                        <b>the exception handler resumes the execution of the process after allocating a page in
-                          memory, attaching the page to the process (by setting page table entries appropriately) and
-                          loading the page from the disk to this memory region (if necessary).</b> </p><br>
+                        <b>the exception handler resumes the execution of the process after allocating the required page(s) for the process and attaching the page(s) to the process (by setting page table entries appropriately).  If the faulted page is a code page, the OS needs to load the page from the disk to the newly allocated memory.  </b> </p><br>
 
                       <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px">
                         <p>But why should the OS not allocate all the pages required for a process when the process is
@@ -5345,13 +5343,21 @@ userSP=SP;</pre>
                         both library and stack pages for a process should be present in the memory.
                         Based on the value present in Exception Page Number (EPN) register, the exception handler finds
                         out whether page fault has caused for heap or code page. When page fault has occured for heap
-                        page (EPN value 2 or 3), exception handler allocates a new memory page by invoking the <b>Get
+                        page (EPN value 2 or 3), exception handler allocates 2 new memory pages by invoking the <b>Get
                           Free Page</b> function in <a href="os_modules/Module_2.html" target="_blank">memory manager
                           module</a>. If the page fault has occured for a code page, then the exception handler invokes
                         the <b>Get Code Page</b> function in memory manager module. The page table of the process is
                         updated to store the page number obtained from Get Code Page or Get Free Page functions. After
                         handling the page fault exception, the exception handler restores the register context,
-                        switches to user stack and returns to user mode.</p><br>
+                        switches to user stack and returns to user mode.</p>
+
+                        <p><b>Note: </b> When page fault occurs for one heap page, the current eXpOS 
+                        design allocates two pages for the heap.  This can be optimized further to
+                        make the allocation lazier by allocating just one heap page and deferring 
+                        allocation of a second page till a page fault occurs again for the second page. 
+                        However, the lazier strategy causes some complications in the implementation of 
+                        the Fork system call in the next stage.  Here, we have chosen to keep the design simple
+                        by allocating both the heap pages when only one is demanded.   </p><br>
 
                       <div style="background-color: #dff0d8; padding: 24px; border-radius: 24px">
                         <p>Upon return to user mode, the instruction in the application that caused the
@@ -5490,10 +5496,9 @@ userSP=SP;</pre>
                             target="_blank">memory manager module</a>. Update the page table entry for this code page,
                           set the page number to memory page obtained from <b>Get Code Page</b> function and auxiliary
                           information to "1100".<br>
-                          5) If page fault is caused due to a heap page, then invoke the Get Free Page function present
-                          in the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>. Update
-                          the page table entry for thisœ heap page, set the page number to memory page obtained from
-                          Get Free Page function and auxiliary information to "1110".<br>
+                          5) If page fault is caused due to a heap page, then invoke the Get Free Page function of the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>  twice to allocate two memory pages for the heap. Update
+                          the page table entry for these heap pages, set the page numbers to the memory pages obtained from
+                          Get Free Page function and set auxiliary information to "1110".<br>
                           6) Reset the MODE FLAG to 0. Pop EIP from the stack and restore the register context.<br>
                           7) Change to the user stack. Increment the stack pointer, store the EIP value onto the
                           location pointed to by SP and return to the user mode. (Address translations needs to be done on the SP to find the stack address to which EIP is to be stored)</p>
@@ -5692,6 +5697,18 @@ userSP=SP;</pre>
                         are shared among parent and child processes, synchronization is not required for these pages as
                         their access is read only. </p>
 
+                      <p><b>Note:</b> There is a subtility to be noted here.  It can happen that
+                      the kernel has not allocated any heap pages for the parent process at the time
+                      when it invoked Fork.  This is because heap pages are allocated inside 
+                      the exception handler when a process generates a page fault exeception while
+                      trying to access the heap.  Thus a process could invoke fork before any heap 
+                      pages were allocated to it.  However, the eXpOS sharing semantics requires 
+                      that the parent and the child shares their heap pages.  Hence, to satisfy the
+                      heap sharing semantics, the OS needs to ensure during Fork  
+                      that the parent is allocated 
+                      its heap pages and these pages are shared with the child.   </p>
+                      
+
                       <figure style="text-align: center;">
                         <img src="img/roadmap/fork.png" style="display:block;margin-left:auto;margin-right:auto">
                         <br>
@@ -5710,7 +5727,7 @@ userSP=SP;</pre>
 
                       <ul style="list-style-type: disc; margin-left: 10px; ">
 
-                        <li style="padding-left: 20px">The first thing to do in the fork system call is to set the MODE
+                        <li style="padding-left: 20px">The first action to perform in the fork system call is to set the MODE
                           FLAG to the system call number and switch to the kernel stack. To get a new PID for the child
                           process, invoke the <b>Get Pcb Entry</b> function from the <a href="os_modules/Module_1.html"
                             target="_blank">process manager module</a>. Get Pcb Entry returns the index of the new
@@ -5721,13 +5738,13 @@ userSP=SP;</pre>
                           stack and return to the user mode from the fork system call. When PID is available, proceed
                           with the fork system call. </li>
 
+                          <li style="padding-left: 20px">
+                              If the heap pages are not allocated for the parent process, allocate heap pages by invoking the <b>Get Free Page</b> function of the memory manager module and set the page table entries for the heap pages of the parent process to the pages acquired.
+                          </li>
+    
                         <li style="padding-left: 20px">The child process requires new memory pages for stack (two) and
                           user area page (one). To allocate a memory page, invoke the <b>Get Free Page</b> function of
                           the <a href="os_modules/Module_2.html" target="_blank">memory manager module</a>.</li>
-
-                        <li style="padding-left: 20px">
-                          If the heap pages are not assigned for the parent process, allocate heap pages by invoking the <b>Get Free Page</b> function of the memory manager and set the page table entries for the heap to the pages acquired.
-                        </li>
 
                         <li style="padding-left: 20px">The next step in the fork system call is initialization of the
                           <a href="os_design-files/process_table.html" target="_blank">process table</a> for the child
@@ -5932,7 +5949,7 @@ userSP=SP;</pre>
 
                               <a data-toggle="collapse" href="#collapseq18a"><b>Q4.</b> 
                               What would go wrong if the Get Pcb Entry function sets the state 
-                              of a newly allocated PCB entry to CREATED instead of ALLOCATED </a>
+                              of a newly allocated PCB entry to CREATED instead of ALLOCATED? </a>
                               <div id="collapseq18a" class="panel-collapse collapse">
                               The fork system call which invokes the Get Pcb Entry function for the child process might
                               block before completing process creation (if the  
@@ -5941,6 +5958,27 @@ userSP=SP;</pre>
                               the new process as its creation is not complete.  
                               </div>
                             </li>
+
+                            <li class="list-group-item">
+
+                                <a data-toggle="collapse" href="#collapseq18b"><b>Q5.</b> 
+                                When there is a page fault for a heap page, the exception
+                                handler which you have completed in stage 19 allocates both the heap pages for the process.  Suppose you modify the exception handler to allocate only one
+                                heap page corresponding to the page requested (deferring the allocation of
+                                the second page till another exception occurs), what modification
+                                would be needed to your Fork system call code?   
+                                </a>
+                                <div id="collapseq18b" class="panel-collapse collapse">
+                                eXpOS semantics requires that the parent and the child share the heap.
+                                Hence, if the parent did not have two heap pages already allocated before
+                                Fork, the pages must be allocated at the time of Fork and shared with the child.
+                                An alternate approach would be to share only the presently allocated heap 
+                                page (if any) of the parent with the child and wait for a page fault in 
+                                either of the processes to allocate the other page.  However, in this case,
+                                care must be taken to ensure that the same page is shared between the parent
+                                and the child when one of them is allocated a                                heap page.      
+                                </div>
+                              </li>
 
                           </ul>
                         </div>
@@ -7639,12 +7677,12 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                       creates a new file with given input. It then forks to create two child processes. The two child
                       processes act as writers and parent as reader. A file open instance is shared between two writers
                       and there is separate open instance of the same file for reader. Two writers will write numbers
-                      from 1 to 100 to file - one writer will write even numbers and other will write odd numbers.
-                      Reader will read from the file and print to the console concurrently. To synchronize the use of
-                      the shared open instance between two writers a semaphore is used. The program prints integers
+                      from 1 to 100 into the file, with one writer adding even numbers and other writing odd numbers.
+                      The reader reads from the file and prints the data into the console concurrently. To synchronize the use of
+                      the shared open file between two writers a semaphore is used. The program prints integers
                       from 1 to 100, not necessarily in sequential order.<br><br>
                       <b style="color:#26A65B">Assignment 4:</b> Run the program provided <a href="test_prog.html#test_program_15"
-                      target="_blank">here</a> using shell. The program first creates 4 files with values from s to 2044+s, where s=1 to 4. The program then, merges the 4 files taking 2 at a time, and finally, creates a <i>merge.dat</i> file containing numbers from 1 to 2048. Using <i>cat.xsm</i>, print the contents of <i>merge.dat</i> and check whether it contains the numbers from 1 to 2048 in ascending order. <br><br>
+                      target="_blank">here</a> using shell. The program first creates 4 files with values from s to 4*c+s, where s=1..4 and c=0..511. The program then, merges the 4 files taking 2 at a time, and finally, creates a <i>merge.dat</i> file containing numbers from 1 to 2048. Using <i>cat.xsm</i>, print the contents of <i>merge.dat</i> and check whether it contains the numbers from 1 to 2048 in ascending order. <br><br>
 
                       <a data-toggle="collapse" href="#collapse25">
                         <span class="fa fa-times"></span> Close</a>
@@ -8451,7 +8489,9 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         by a process in the newly created file need not be the same numbers the process has written in
                         "numbers.dat" file. <br><br>
 
-                        <b style="color:#26A65B">Assignment 5:</b> Run the program (<i>merge.expl</i>) provided <a href="test_prog.html#test_program_16" target="_blank">here</a> using shell in the context of a user. The <i>merge.expl</i> program, first stores numbers from 1 to 512 in a random order into a file <i>merge.dat</i>. It then forks and executes <i>m_store.expl</i> which creates 8 files <i>temp{i}.dat</i>, where i=1..8 and stores 64 numbers each from <i>merge.expl</i>. Then, all the temporary files are sorted by executing <i>m_sort.expl</i>. Next, the first ExpL program forks and executes <i>m_merge.expl</i> which merges all the temporary files back into <i>merge.dat</i> and finally, prints the contents from 1 to 512 in ascending order. <br><br>
+                        <b style="color:#26A65B">Assignment 5:</b> Run the program (<i>merge.expl</i>) provided <a href="test_prog.html#test_program_16" target="_blank">here</a> using shell in the context of a user. The <i>merge.expl</i> program, first stores numbers from 1 to 512 in a random order into a file <i>merge.dat</i>. It then forks and executes <i>m_store.expl</i> which creates 8 files <i>temp{i}.dat</i>, where i=1..8 and stores 64 numbers each from <i>merge.expl</i>. Then, all the temporary files are sorted by executing <i>m_sort.expl</i>. Next, the first ExpL program forks and executes <i>m_merge.expl</i> which merges all the temporary files back into <i>merge.dat</i> and finally, prints the contents of the file in ascending order. If all
+                        the system calls in your OS implementation works correctly, then numbers
+                        1 to 512 will be printed out in order. <br><br>
 
 
                         <code>Note :</code>To run the program provided by the user, Shell process first invokes <i>fork</i>
@@ -8459,10 +8499,9 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         execution. When the first child exits, shell will resume execution even if some processes
                         created by the given program are running in the background. This can lead to the following
                         interesting situation. Suppose that all active processes execept idle, login and shell were
-                        swapped out and the shell is waiting for terminal input from the user. In this case, the OS
-                        will not swap in any process till the shell wakes up (why?). Consequently, the swapped out
-                        processes will not run until the shell wakes up. Hence, you will have to issue some command to
-                        shell, so the system keeps on running.
+                        swapped out and the XSM simulator is waiting for terminal input from the user
+                        into the shell. In this case, you will have to issue some command to the 
+                        shell, so that the system keeps on running.
                         <br>
 
                         <a data-toggle="collapse" href="#collapse27">

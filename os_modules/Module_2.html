@@ -199,8 +199,11 @@
 <pre>
 	Increment WAIT_MEM_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
 
-	while ( memory is full ){   /* Check the MEM_FREE_COUNT in the System Status Table */
-    		Set state of the process as ( WAIT_MEM , ____);
+  while ( memory is full ){   /* Check the MEM_FREE_COUNT in the System Status Table */
+                /* This code is relevant only when the Pager Module is implemented  in Stage 27*/ 
+                Call the <b>swap_out()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>.
+        
+                Set state of the process as ( WAIT_MEM , ____);
                 Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.
     	}
 

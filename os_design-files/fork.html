@@ -154,13 +154,14 @@ Set the value of SP to the beginning of User Area Page.
 Find a free Process Table entry by invoking the <b>get_pcb_entry()</b> function in <a href="../os_modules/Module_1.html">Process Manager</a> module. 
 If no free entry is found, return -1.
 
+/* The parent and the child must share the heap.  Hence, if 
+  heap pages were not allocated for the parent so far, allocate it now. */
+If heap pages are not allocated for the parent process,
+then allocate 2 heap pages for the parent using the <b>get_free_page()</b> function in Memory Manager module
+and set the page table entries for the heap pages of the parent.
+
 Invoke the <b>get_free_page()</b> function in <a href="../os_modules/Module_2.html">Memory Manager</a> module to obtain 3 
 memory pages: 2 for user stack and 1 for User Area Page of the child process.
-
-/* For the parent and child processes to share the heap, even if its not assigned.*/
-If the heap pages of the parent process are not assigned,
-then invoke the <b>get_free_page()</b> function in Memory Manager module to obtain the memory pages
-and set the page table entries for heap to the pages acquired.
 
 Copy the parent's <a href="process_table.html" target="_blank">Process Table Entry</a> except TICK, PID, PPID, USER AREA PAGE NUMBER, 
 KERNEL STACK POINTER, INPUT BUFFER, PTBR and PTLR to the child. 
