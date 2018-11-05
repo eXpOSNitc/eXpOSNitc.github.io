@@ -168,7 +168,7 @@
                 you may proceed with the roadmap without visiting these links.</p>
 
               <p>
-                  Last updated: 26th October 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
+                  Last updated: 5th November 2018 (see <a href="release_notes.html" target="_blank"> Release Notes</a>)
               </p>
 
               <!--
@@ -6218,7 +6218,8 @@ userSP=SP;</pre>
                           when Exit Process is invoked from <i>Exec</i> system call, it should not wake up the
                           processes waiting for the current process and also should not set the children as orphan
                           processes. Check the MODE FLAG in the process table of the current process to find out from
-                          which system call Exit Process function is invoked.</p>
+                          which system call Exit Process function is invoked. This is still not the final Exit process
+                          function. There will be minor modifications to this function in the later stages.</p>
                         <ul style="list-style-type: disc; margin-left: 10px; ">
                           <p style="text-indent: 0px">If MODE FLAG field in the <a href="os_design-files/process_table.html"
                               target="_blank">process table</a> has system call number not equal to 9 (<i>Exec</i>)
@@ -6230,11 +6231,6 @@ userSP=SP;</pre>
                           </li>
 
                         </ul>
-
-                        <p><code>Note :</code>The <b>Exit Process</b> module function implemented here is final and
-                          will not change later.</p>
-
-                        <br>
 
 
                         <b>Shutdown system call</b><br><br>
@@ -8200,13 +8196,17 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         strategies used by eXpOS to select a suitable process for swap out and swap in are discussed
                         later.</p>
 
-                      <p>When does the OS check for MEM_LOW/MEM_HIGH condition? This is done in the <a href="os_design-files/timer.html"
-                          target="_blank">timer interrupt handler</a>.
-                        Since the system enters the timer routine at regular intervals, this design ensures that
+                      <p>When does the OS check for MEM_LOW/MEM_HIGH condition? This is done at 3 different points:
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) <a href="os_design-files/timer.html" target="_blank">Timer interrupt handler</a>: Since the system enters the timer routine at regular intervals, this design ensures that
                         regular monitoring of memory status is achieved. The timer interrupt handler will
-                        call Swap-in/Swap-out function appropriately depending on the memory status. Swap-in/Swap-out
-                        will happen from the context of the currently running process (that is, the process from
-                        which timer interrupt handler was entered). We call this process as the <b>paging process</b>.</p>
+                        call Swap-in/Swap-out function appropriately depending on the memory status. 
+
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) <a href="os_modules/Module_2.html" target="_blank">Get Free Page function</a>:  The Get Free Page function is invoked whenever a process requires a memory page. If Get Free Page function finds that free memory pages are not available, then a swap out is inititated.
+
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c) <a href="os_modules/Module_1.html" target="_blank">Exit Process function</a>: When a process is terminated, the memory pages allocated to the process are released by  Exit Process function in the Process Manager module. <b>Before doing so,</b> the Exit process function checks for the availability of free pages and initiates a swap-in if memory availability is high.   
+                      </p>
+                        
+                        <p>Swap-in/Swap-out will happen from the context of the currently running process (that is, the process from which swap-in/swap-out was entered). We call this process as the <b>paging process</b>.</p>
 
                       <p><b>Once a swap-in/swap-out is initiated, the OS will not schedule any process other than
                           the paging process and the idle process until the swap-in/swap-out is completed.
@@ -8216,11 +8216,18 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         yet achieves the goal
                         of having the full quota of 16 process in concurrent execution. (Note that the size of
                         the process table in the eXpOS implementation outlined here limits the number of concurrent
-                        processes to 16 ). Note that the idle process is scheduled during swap-in/swap-out when
-                        swap-in/swap-out operation waits for a disk-memory transfer. Finally, the design ensures that
-                        swap-in/swap-out
-                        will never be initiated from the context of the idle process. Hence, the idle process
-                        will never get blocked. </p>
+                        processes to 16 ). </p> 
+                        
+                        
+                        <p> The idle process is scheduled during swap-in/swap-out when
+                        swap-in/swap-out operation waits for a disk-memory transfer. The idle process
+                        will never get blocked, and hence can always be scheduled whenever no other process is 
+                        ready to run.
+                        The design ensures that swap-in/swap-out
+                        will never be initiated from the context of the idle process. The design also ensures that before the exit of any process, 
+                        if sufficient free memory is available, a swap-in is initiated.  This check 
+                        guarentees that the kernel never enters a situation where all processes except
+                        the idle process are swapped out.  </p>
 
 
                       <br>
@@ -8379,13 +8386,29 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                             target="_blank">disk organization</a>) of the eXpOS. Get Swap Block searches for a free
                           block from <a href="support_tools-files/constants.html" target="_blank">DISK_SWAP_AREA</a>
                           (starting of disk swap area) to <a href="support_tools-files/constants.html" target="_blank">DISK_SIZE</a>-1
-                          (ending of the eXpOS disk). If a free block is found, the block number is returned. If no
-                          free block in swap area is found, -1 is returned to the caller. </p>
+                          (ending of the eXpOS disk). If a free block is found, the block number is returned. If no free block in swap area is found, -1 is returned to the caller. </p>
                         <p style="text-indent: 0px">Implement <i>Get Swap Block</i> function using the detailed
                           algorithm given in the memory manager module link above.</p><br>
 
-                        <p style="text-indent: 0px"><code>Note :</code>The implementation of module functions <b><i>Swap
-                              Out</i></b>, <b><i>Swap In</i></b>, <b><i>Get Swap Block</i></b> are final.</p><br>
+                          <li><b>Exit Process (function number = 3, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a> )</b></li>
+                          <p>
+                            Exit Process function is modified so that when it is not invoked from <i>Exec</i> system call and MEM FREE COUNT in the System Status Table is more than MEM HIGH, it should call Swap In function in Pager Module.
+                          </p>
+                          <p style="text-indent: 0px">Implement <i>Exit Process</i> function using the detailed
+                            algorithm given in the process manager module link above.
+                          </p>
+                          <br>
+
+                          <li><b>Get Free Page (function number = 1, <a href="os_modules/Module_2.html" target="_blank">Memory Manager Module</a> )</b></li>
+                          <p>
+                            Get Free Page function is modified so that when there is no more free pages available, the Swap Out function is invoked to free up some memory.
+                          </p>
+                          <p style="text-indent: 0px">Implement <i>Get Free Page</i> function using the detailed
+                            algorithm given in the memory manager module link above.
+                          </p>
+                          <br>
+
+                        <p style="text-indent: 0px"><code>Note :</code>The implementation of module functions <b><i>Swap Out</i></b>, <b><i>Swap In</i></b>, <b><i>Get Swap Block</i></b>, <b><i>Exit Process</i></b>, <b><i>Get Free Page</i></b> are final.</p><br>
 
 
                         <b>Modification to Context Switch Module (Module 5)</b><br><br>

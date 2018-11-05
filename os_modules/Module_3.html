@@ -279,7 +279,7 @@ Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inod
 Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
 If the locking fails, return -1. 
 
-If file name in the inode table entry does not match the input file name or if it is of type EXEC, <b>release_inode()</b> and return -1. 	/* Only data files can be opened */
+If the file is of type EXEC, <b>release_inode()</b> and return -1. 	/* Only data files can be opened */
 
 Find a free entry in the <a href="../os_design-files/mem_ds.html#file_table">Open File Table</a>.
 If there are no free entries, <b>release_inode()</b> and return -2.  /* Reached maximum number of open files in the system. */

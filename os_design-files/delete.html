@@ -155,7 +155,7 @@ If file is not present in the <a href="disk_ds.html#inode_table" target="_blank"
 If the file is not a DATA file, return -1.
 
 <b>If</b> the <a href="../os_spec-files/multiuser.html">exclusive permission</a> is set
-	<b>if</b> the current user is not root and the current user doesnot own the file
+	<b>if</b> the current user is not root and the current user does not own the file
 		return -1. 
 
 Acquire a lock on the file by calling the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.
@@ -176,7 +176,7 @@ Update the <a href="disk_ds.html#root_file" target="_blank">Root file</a> by inv
 
 Release the lock on the file by calling the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.
 
-Switch back to the user stack by resoting USER SP from the process table.
+Switch back to the user stack by reseting USER SP from the process table.
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
 Return from system call with 0. &nbsp;&nbsp; /* indicating success */
