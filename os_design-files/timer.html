@@ -130,19 +130,46 @@ Set the value of SP to the beginning of User Area Page.
 
 Backup the register context of the current process using the <a href="../arch_spec-files/instruction_set.html">BACKUP</a> instruction.
 
-<b>If</b> the current process is the not the IDLE process, /* Initiate swapping operation if necessary */
-{
-	<b>if</b> (MEM_FREE_COUNT < <a href="../support_tools-files/constants.html">MEM_LOW</a>)	 	/* Check the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
-		Call the <b>swap_out()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>. 
-	<b>else if</b> (MEM_FREE_COUNT > <a href="../support_tools-files/constants.html">MEM_HIGH</a>) 
-		Call the <b>swap_in()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>. 
-}
-
-Change the state of the current process in its Process Table entry from RUNNING to READY.
-
 Loop through the process table entires and increment the TICK field of each process.
 
-Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
+<b>If</b> the current process is the Swapper Daemon or swapping is initiated, /* check <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
+{
+    /* Initiate Swap In/Out, if necessary */
+
+    <b>if</b> the current process is the Swapper Daemon and Paging Status is 1,
+        Call the <b>swap_out()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>.
+
+    <b>else if</b> the current process is the Swapper Daemon and Paging Status is 2, 
+        Call the <b>swap_in()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>.
+
+    <b>else if</b> the current process is Idle and Paging Status is <b>not</b> 0,                          
+        /* Swapping is ongoing, but the daemon is blocked for some disk operation and idle is being run now */
+        Change the state of the current process in its Process Table entry from RUNNING to READY.
+        Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
+        /* Context switch module may schedule Idle again if Swapper is still blocked */
+
+    <b>else if</b> the current process is Swapper Daemon and Paging Status is 0,                          
+        /* current swapping operation complete, schedule out swapper */
+        Change the state of the current process in its Process Table entry from RUNNING to READY.
+        Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
+    
+}
+
+<b>else</b>           /* Swapping was not on now.  Check whether it must be initiated */
+{
+    <b>if</b> (MEM_FREE_COUNT < <a href="../support_tools-files/constants.html">MEM_LOW</a>)	 	/* Check the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
+        /* Swap Out to be invoked during next Timer Interrupt */
+        Set the Paging Status in System Status Table to 1.
+
+    <b>else if</b> (there are swapped out processes)            /* Check SWAPPED_COUNT in <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
+        <b>if</b> (Tick of any Swapped Out process > <a href="../support_tools-files/constants.html">MAX_TICK</a> or MEM_FREE_COUNT > <a href="../support_tools-files/constants.html">MEM_HIGH</a>)
+            /* Swap In to be invoked during next Timer Interrupt */
+            Set the Paging Status in System Status Table to 2.
+
+    Change the state of the current process in its Process Table entry from RUNNING to READY.
+    Invoke the <a href="../os_modules/Module_5.html" target="_blank">context switch module </a>.
+}
+    
 
 Restore the register context of the process using <a href="../arch_spec-files/instruction_set.html">RESTORE</a> instruction.
 

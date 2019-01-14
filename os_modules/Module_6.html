@@ -171,18 +171,14 @@
 
                            <br><br>
 <pre>
-Set the PAGING_PROCESS field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> to PID of the current process 
-to indicate that the system is going to perform paging.
-/* The <a href="../os_modules/Module_5.html">scheduler</a> will schedule only this process and the idle process when swapout in ongoing. */
-
 Choose a process to swap out. (other than the IDLE, Shell or INIT)
 	Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find a non-swapped process that is in the WAIT_PROCESS state.
-	If there are no non-swapped processes in the WAIT_PROCESS state, find a non-swapped process in the WAIT_TERMINAL state.
-	If there are no non-swapped processes in the WAIT_PROCESS and WAIT_TERMINAL state, 
+	If there are no non-swapped processes in the WAIT_PROCESS state, find a non-swapped process in the WAIT_SEMAPHORE state.
+	If there are no non-swapped processes in the WAIT_PROCESS and WAIT_SEMAPHORE state, 
             find process with the highest TICK which is not running, terminated, allocated or swapped.
 
 If no such process exists, 
-        set the PAGING_PROCESS back to -1 and return.
+        set the PAGING_STATUS back to 0 and return.
 
 Set the TICK field of the process table entry of the selected process to 0.
 /* When the process goes to swap, TICK starts again */
@@ -212,7 +208,7 @@ Set the USER AREA PAGE NUMBER field in the <a href="../os_design-files/process_t
 
 Set the SWAP_FLAG field in the process table entry of the process to 1.
 
-In the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>, increment the SWAP_COUNT and reset the PAGING_PROCESS back to -1.	
+In the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>, increment the SWAP_COUNT and reset the PAGING_STATUS back to 0.	
 /* The scheduler can now resume normal scheduling */ 
 
 return;
@@ -237,16 +233,12 @@ Called by the timer interrupt.<br><br>
                            <br><br>
 
 <pre>
-If there are processes waiting for memory or if there are no processes in the swapped state, Return.
-/* Check the WAIT_MEM_COUNT and SWAPPED_COUNT fields of the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
-
-Set the PAGING_PROCESS field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> to PID of the current process 
-to indicate that the system is going to perform paging.
-/* The <a href="../os_modules/Module_5.html">scheduler</a> will schedule only this process and the idle process */
+If there are no processes in the swapped state, Return.
+/* Check the SWAPPED_COUNT field of the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
 
 /* Find if any swapped out process can be made ready to run if brought into memory. */
 Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find the <b>swapped</b> process in the READY state with the highest TICK.
-If there is no such process in the READY state, reset the PAGING_PROCESS field to -1 and Return.
+If there is no such process in the READY state, reset the PAGING_STATUS field to 0 and Return.
 
 Set the TICK field of the process table entry of the selected process to 0.
 
@@ -273,7 +265,7 @@ Invalidate the Disk Map Table entry of the process corresponding to the pages.
 
 Set the SWAP_FLAG field in the process table entry of the process to 0.
 
-In the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>, decrement the SWAP_COUNT and reset the PAGING_PROCESS back to -1.	
+In the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>, decrement the SWAP_COUNT and reset the PAGING_STATUS back to 0.	
 /* The scheduler can now resume normal scheduling */ 
 
 return;

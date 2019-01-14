@@ -189,12 +189,12 @@
 
    /* Initialize all memory data structures */
 
-   Set the states of all processes (other than INIT, IDLE and SHELL) in the <a href="../os_design-files/process_table.html" target="_blank">process table</a> to TERMINATED.
+   Set the states of all processes (other than INIT, IDLE, SHELL and Swapper Daemon) in the <a href="../os_design-files/process_table.html" target="_blank">process table</a> to TERMINATED.
    Reset the status field in the <a href="../os_design-files/mem_ds.html#ts_table" target="_blank">terminal status table</a> and <a href="../os_design-files/mem_ds.html#ds_table" target="_blank">disk status table</a> to 0.
    Initialize the <a href="../os_design-files/mem_ds.html#mem_free_list" target="_blank">memory free list</a> by setting 0 (free) for free entries and 1 for allocated pages.
-   // presently 80 memory pages are allocated
+   // presently 82 memory pages are allocated
 
-   Initialize the fields of <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>. MEM_FREE_COUNT as 47, WAIT_MEM_COUNT as 0, SWAPPED_COUNT as 0, PAGING_PROCESS as -1.
+   Initialize the fields of <a href="../os_design-files/mem_ds.html#ss_table" target="_blank">System Status Table</a>. MEM_FREE_COUNT as 45, WAIT_MEM_COUNT as 0, SWAPPED_COUNT as 0, PAGING_STATUS as 0.
    
    Invalidate <a href="../os_design-files/process_table.html#per_process_table" target="_blank">Per Process Resource Table</a> of INIT and SHELL processes (all entries are set to -1).
 
