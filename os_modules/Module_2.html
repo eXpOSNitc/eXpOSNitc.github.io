@@ -197,14 +197,9 @@
    <i> <b>Description </b></i>: Returns the page number of a free page.<br><br>
 
 <pre>
-	Increment WAIT_MEM_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
+      Increment WAIT_MEM_COUNT field in the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a>
 
-  <a data-toggle="collapse" href="#collapse_m2">/* This code is relevant only when the Pager Module is implemented in Stage 27 */</a>
-	<div id="collapse_m2" class="panel-collapse collapse">        If ( memory is full ){
-                Call the <b>swap_out()</b> function in the <a href="../os_modules/Module_6.html">Pager Module</a>.
-        }</div>
-
-  while ( memory is full ){   /* Check the MEM_FREE_COUNT in the System Status Table */
+      while ( memory is full ){   /* Check the MEM_FREE_COUNT in the System Status Table */
         
                 Set state of the process as ( WAIT_MEM , ____);
                 Call the <b>switch_context()</b> function from the <a href="Module_5.html">Scheduler Module</a>.

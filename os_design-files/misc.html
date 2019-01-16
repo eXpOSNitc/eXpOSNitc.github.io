@@ -142,14 +142,15 @@
   Store the IP value (from the header of the IDLE) on top of first user stack page [70*512] = [69*512 +1].
 
 
-  /* Initialize the Swapper Daemon.*/
+  /* Initialize the Swapper Daemon (not relevant before Stage 27) */
 
   <a data-toggle="collapse" href="#collapse2a">Initialize the Page table for Swapper Daemon (PID = 15)</a>
   <div id="collapse2a" class="panel-collapse collapse">
+        /* Swapper Daemon is identical to Idle and shares the code for Idle */
         Initialize the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> + 20*15 and PTLR to 10.
         Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set auxiliary information for these pages to "0000". 
-        // idle doesn't invoke any library function.   
-        Set the first code page entry to 69 (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set auxiliary information for valid code pages to "0100". 
+        // swapper doesn't invoke any library function.   
+        Set the first code page entry to that of Idle (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set auxiliary information for valid code pages to "0100". 
         Set remaining code page entries to -1 and auxiliary information to "0000".
         Set the first stack page entry to 81 and auxiliary information for this page to "0110".
         Set second stack page entry to -1 and auxiliary information to "0000".</div>
@@ -158,7 +159,7 @@
         Initialize the fields of <a href="../os_design-files/process_table.html" target="_blank">process table</a> as -  TICK, USERID as 0, PID as 15, STATE as CREATED,
         USER AREA PAGE NUMBER as 82 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
         PTBR to PAGE_TABLE_BASE + 20*15 and PTLR as 10.</div>  
-  Store the IP value (from the header of the IDLE) on top of first user stack page [81*512] = [69*512 +1].
+  Store the IP value (from the header of the IDLE whose code is shared by Swapper) on top of first user stack page [81*512] = [69*512 +1].
 
   
   Set the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> and PTLR to 10.
