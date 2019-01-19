@@ -318,9 +318,14 @@ Called by the exit_process function.
 <b>For</b> each valid entry in the <a href="../os_design-files/disk_ds.html#inode_table">Inode table</a>	
 	Acquire lock on the file by calling the <b>acquire_inode()</b> function in the <a href="Module_0.html">Resource Manager</a> module.
 
-<b>For</b> each pid from 2 to MAX_PROC_NUM - 2 	/* PID 0 is idle and 1 is init */
-	<b>If</b> pid != pid of the current process AND state of the process in the process table entry is not TERMINATED
-		Call <b>exit_process()</b> function from the <a href="Module_1.html">Process Manager</a> Module.
+<b>For</b> each pid from 2 to MAX_PROC_NUM - 1 	/* PID 0 is idle and 1 is init */
+{
+    <a data-toggle="collapse" href="#collapse1">/* This code is relevant only when the Pager Module is implemented in Stage 27 */</a>
+    <div id="collapse1" class="panel-collapse collapse">    <b>If</b> pid == PID of Swapper Daemon         /* Swapper Daemon must not be TERMINATED */
+          continue;</div>
+    <b>If</b> pid != pid of the current process AND state of the process in the process table entry is not TERMINATED
+	  Call <b>exit_process()</b> function from the <a href="Module_1.html">Process Manager</a> Module.
+}
 
 <b>For</b> each valid entry in the Inode table
 	Release lock on the file by calling the <b>release_inode()</b> function in the Resource Manager module.

@@ -194,17 +194,15 @@ Invalidate the <a href="../os_design-files/process_table.html#per_page_table">Pa
 	Invalidate the Page table entry correpsonding to the page.
 }
 
-Get three free swap block by calling the <b>get_swap_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
+Get two free swap block by calling the <b>get_swap_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 
-Use the <b>disk_store()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to write the two stack pages and 
-the user area page to the disk blocks found above.
+Use the <b>disk_store()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to write the two stack pages to the disk blocks found above.
 
-Call the <b>release_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the three page.
+Call the <b>release_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the two pages.
 
-Update the Disk Map Table entry of the process to store the disk block numbers of the stack and the user area page.
+Update the Disk Map Table entry of the process to store the disk block numbers of the stack.
 
 Invalidate the Page table entries correpsonding to the two stack pages.
-Set the USER AREA PAGE NUMBER field in the <a href="../os_design-files/process_table.html">process table</a> to -1.
 
 Set the SWAP_FLAG field in the process table entry of the process to 1.
 
@@ -217,7 +215,6 @@ Called by the timer interrupt.<br><br>
 
 <b>Question:</b><br>
 1. What is the reasoning behind the order of choosing the process to swap out? Why is a process in WAIT_PROCESS swapped out ahead of a process waiting for the terminal? What about processes waiting for the disk? <br>
-2. Why is swapping not possible from the idle process?
 
 <br><br>
 <h3>Swap In</h3>
@@ -233,9 +230,6 @@ Called by the timer interrupt.<br><br>
                            <br><br>
 
 <pre>
-If there are no processes in the swapped state, Return.
-/* Check the SWAPPED_COUNT field of the <a href="../os_design-files/mem_ds.html#ss_table">System Status Table</a> */
-
 /* Find if any swapped out process can be made ready to run if brought into memory. */
 Loop through the <a href="../os_design-files/process_table.html">Process Table</a> and find the <b>swapped</b> process in the READY state with the highest TICK.
 If there is no such process in the READY state, reset the PAGING_STATUS field to 0 and Return.
@@ -251,15 +245,13 @@ Set the TICK field of the process table entry of the selected process to 0.
     Invalidate the Disk Map Table entry corresponding to the heap page.
 }
 
-Get three free memory pages by calling the <b>get_free_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
+Get two free memory pages by calling the <b>get_free_page()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module.
 
-Use the <b>disk_load()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to load the two stack pages and 
-the user area page to the memory allocated above.
+Use the <b>disk_load()</b> function in the <a href="../os_modules/Module_4.html">Device Manager</a> module to load the two stack pages to the memory allocated above.
 
 Set the Page table entries correpsonding to the two stack pages. The pages are valid, unreferenced and writable.
-Set the USER AREA PAGE NUMBER field in the <a href="../os_design-files/process_table.html">process table</a> to page number of the User Area Page.
 
-Call the <b>release_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the three swap blocks.
+Call the <b>release_block()</b> function in the <a href="../os_modules/Module_2.html">Memory Manager</a> module to deallocate the two swap blocks.
 
 Invalidate the Disk Map Table entry of the process corresponding to the pages.
 
@@ -273,7 +265,7 @@ return;
 
 Called by timer interrupt.<br><br>
 
-<b>Question: </b><br> 1. Is it possible that there are processes waiting for memory, even when MEM_FREE_COUNT > MEM_HIGH? 
+<b>Questions: </b><br> 1. Is it possible that there are processes waiting for memory, even when MEM_FREE_COUNT > MEM_HIGH? 
 <br>
 2. Why are code pages not loaded back to memory when the process is swapped in?
 <br><br>

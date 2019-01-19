@@ -6248,8 +6248,7 @@ userSP=SP;</pre>
                           when Exit Process is invoked from <i>Exec</i> system call, it should not wake up the
                           processes waiting for the current process and also should not set the children as orphan
                           processes. Check the MODE FLAG in the process table of the current process to find out from
-                          which system call Exit Process function is invoked. This is still not the final Exit process
-                          function. There will be minor modifications to this function in the later stages.</p>
+                          which system call Exit Process function is invoked. </p>
                         <ul style="list-style-type: disc; margin-left: 10px; ">
                           <p style="text-indent: 0px">If MODE FLAG field in the <a href="os_design-files/process_table.html"
                               target="_blank">process table</a> has system call number not equal to 9 (<i>Exec</i>)
@@ -6259,6 +6258,8 @@ userSP=SP;</pre>
                             processes whose state is tuple (WAIT_PROCESS, current PID). Also if the PPID of a process
                             is PID of current process, then invalidate PPID field to -1.
                           </li>
+
+                          <p><code>Note :</code>The function implemented above is final and will not change later.</p><br>
 
                         </ul>
 
@@ -7664,7 +7665,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         process manager module link above.</p>
                       <br>
                       <p style="text-indent: 0px"><code>Note :</code>The implementation of the <b><i>Shutdown</i></b>
-                        system call and <b>Kill All</b> function are final. </p><br>
+                        system call <b>Kill All</b> function is final. </p><br>
 
 
                       <b>Implementation of Shell executable file commands</b><br><br>
@@ -8181,15 +8182,13 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                       <!--End Learning Objectives-->
 
                       <br>
-                      <p>In this stage, we will learn how the limited physical memory pages of the XSM machine can be
-                        used effectively to run maximum number of concurrent processes. To achieve this, we will
-                        implement the functions <b>Swap Out</b> and <b>Swap In</b> of <a href="os_modules/Module_6.html"
-                          target="_blank">Pager module</a> (module 6). Corresponding modifications are done in <a href="os_design-files/timer.html"
+                      <p>In this stage, we will learn how the limited physical memory pages of the XSM machine can be used effectively to run the maximum number of concurrent processes. To achieve this, we will implement the functions <b>Swap Out</b> and <b>Swap In</b> of <a href="os_modules/Module_6.html"
+                          target="_blank">Pager module</a> (Module 6). Corresponding modifications are done in <a href="os_design-files/timer.html"
                           target="_blank">Timer Interrupt</a> and <a href="os_modules/Module_5.html" target="_blank">Context
                           Switch module</a> as well.</p>
 
-                      <p>ExpOS gives provision to execute 16 processes concurrently in the system and the number of
-                        memory pages available for user processes are 52 (from 76 to 127 - See <a href="os_implementation.html"
+                      <p>
+                        eXpOS gives provision to execute 16 processes concurrently in the system and the number of memory pages available for user processes are 52 (from 76 to 127 - See <a href="os_implementation.html"
                           target="_blank">memory organization</a>). Consider a case, where every process uses four
                         code, two heap, two user stack and one kernel stack pages. Then each process will need 9 memory
                         pages. In this situation, the OS will run out of memory before all 16 processes can be brought
@@ -8211,55 +8210,81 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         pages are less than MEM_LOW, eXpOS calls <b>Swap Out</b> function of <a href="os_modules/Module_6.html"
                           target="_blank">pager module</a>. <i>Swap Out</i> function selects a suitable process to swap
                         out to the disk. The memory pages used by the selected process are moved into the disk blocks
-                        and the memory pages are released (except memory pages of library). The code pages are not
-                        required to move to the disk as disk already contains copy of the code pages. However, the
-                        heap, user stack and kernel stack pages are swapped out to the swap area in the disk. eXpOS has
-                        256 reserved blocks in the disk (256 to 511 - see <a href="os_implementation.html" target="_blank">disk
-                          organization</a>) for swapping purpose. This area is called <b>swap area</b>.</p>
+                        and the memory pages (except the memory pages of the library) are released. The code pages are not
+                        required to be copied to the disk as the disk already contains a copy of the code pages. The kernel stack page of a process is also not swapped out by eXpOS. However, the
+                        heap and the user stack pages are swapped out into the disk. eXpOS has
+                        256 reserved blocks in the disk (256 to 511 - see <a href="os_implementation.html" target="_blank">disk organization</a>) for swapping purpose. This area is called <b>swap area</b>.</p>
 
-                      <p>The swapped out processes are swapped back into the disk, when available memory pages exceed
-                        certain level denoted as <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a>
-                        (MEM_HIGH is equal to 12 in present design). When available memory pages are more than
-                        MEM_HIGH, eXpOS calls <b>Swap In</b> function of pager module. <i>Swap In</i> function selects
-                        a suitable process to swap into the memory. New memory pages are allocated to the process and
-                        disk blocks corresponding to the process are loaded into the allocated memory pages. The
-                        strategies used by eXpOS to select a suitable process for swap out and swap in are discussed
-                        later.</p>
-
-                      <p>When does the OS check for MEM_LOW/MEM_HIGH condition? This is done at 3 different points:
-                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a) <a href="os_design-files/timer.html" target="_blank">Timer interrupt handler</a>: Since the system enters the timer routine at regular intervals, this design ensures that
-                        regular monitoring of memory status is achieved. The timer interrupt handler will
-                        call Swap-in/Swap-out function appropriately depending on the memory status. 
-
-                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b) <a href="os_modules/Module_2.html" target="_blank">Get Free Page function</a>:  The Get Free Page function is invoked whenever a process requires a memory page. If Get Free Page function finds that free memory pages are not available, then a swap out is inititated.
-
-                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c) <a href="os_modules/Module_1.html" target="_blank">Exit Process function</a>: When a process is terminated, the memory pages allocated to the process are released by  Exit Process function in the Process Manager module. <b>Before doing so,</b> the Exit process function checks for the availability of free pages and initiates a swap-in if memory availability is high.   
-                      </p>
+                      <p>A swapped out process is swapped back into memory, when one of the following events occur:<br>
+                          <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) A process has remained in swapped out state for more than a threshold amount of time.  
                         
-                        <p>Swap-in/Swap-out will happen from the context of the currently running process (that is, the process from which swap-in/swap-out was entered). We call this process as the <b>paging process</b>.</p>
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2) The available memory pages exceed
+                        certain level denoted by <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a>
+                        (MEM_HIGH is set to 12 in present design).<br>
+                        <br></p>
 
-                      <p><b>Once a swap-in/swap-out is initiated, the OS will not schedule any process other than
-                          the paging process and the idle process until the swap-in/swap-out is completed.
+                        <p>
+                            Each process has an associated TICK value (see <a href="os_design-files/process_table.html" target="_blank">process table</a>) which is reset
+                            whenever the process is swapped out.  The TICK value is incremented every time
+                            the system enters the timer interrupt routine.  If the TICK value of a swapped out
+                            process exceeds the value <a href="support_tools-files/constants.html#swap" target="_blank">MAX_TICK</a>, the OS decides that the process must be swapped in.
+                            A second condition when the OS decides that a process can be swapped in is when
+                            the available number of free memory pages (see MEM_FREE_COUNT in <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>) exceeds the value MEM_HIGH.  
+                        </p>
+
+                       <!-- <p>
+                        When one of the above conditions occur, 
+                        eXpOS calls <b>Swap In</b> function of the pager module. <i>Swap In</i> function selects
+                        a suitable swapped out process to swap back into the memory. New memory pages are allocated to the process and
+                        disk blocks corresponding to the process are loaded into the allocated memory pages.
+                        </p>
+                        
+                        <p>The exact details of the strategy used by eXpOS to select a suitable process for Swap In/Out will be discussed later.</p>-->
+
+                      <p>When does the OS check for MEM_LOW/MEM_HIGH condition? This is done in the
+                        <a href="os_design-files/timer.html" target="_blank">timer interrupt handler</a>. Since the system enters the timer routine at regular intervals, this design ensures that
+                        regular monitoring of TICK/MEM_FREE_COUNT is achieved.  
+                      </p>
+                        <p>
+                        We will modify the timer interrupt handler in the following way.  Whenever it is entered from the context of any process <b>except</b> a special <b>swapper daemon process</b> (to be described later), the handler will inspect the TICK status of the swapped out processes and the memory availability status in the system status table to decide whether a swap-in/swap-out must be initiated.  If swap-in/swap-out is needed, the timer will set the PAGING_STATUS field in the system status table to SWAP_IN/SWAP_OUT appropriately to inform the 
+                        scheduler about the need for a swap-in/swap-out.  The timer handler then passes control 
+                        to the scheduler. Note that the timer does not initiate any swap-in/swap-out now.  We will describe the actions performed when the timer interrupt handler is entered from the context of the swapper daemon soon below.   
+                        </p>
+               
+                        <p>
+                       We will modify the eXpOS scheduler to schedule the swapper daemon whenever PAGING_STATUS field in the system status table is set to SWAP_IN/SWAP_OUT.   
+                        The OS reserves PID=15 for the swapper daemon process.  (Thus the swapper daemon joins login, shell and idle processess as special processess initiated by the kernel.) <b>The swapper daemon shares the code of the idle process, and is essentially a duplicate 
+                        idle process running with a different PID. Its sole purpose is to set up a user context for swapping operations.</b>  A consequence of the introduction of the swapper daemon is that only 12 user applications can run concurrently now.     
+                        </p>
+                        
+
+                       <p>
+                         If the timer interrupt handler is entered from the context of the swapper daemon, then it will call the Swap-in/Swap-out functions of the pager module after inspecting
+                         the value of PAGING_STATUS in the system status table. <b>Thus, swap-in/swap out will be initiated by the timer interrupt handler only from the context of the swapper daemon.</b>  </p>
+                      
+                         <p> While swapping is ongoing, the swapper daemon may get blocked when
+                            swap-in/swap-out operation waits for a disk-memory transfer. The OS scheduler 
+                            will run the Idle process in such case. Note that the Idle process   
+                            will never get blocked, and can always be scheduled whenever no other process is 
+                            ready to run.
+                             </p>
+
+                      <p>Once a swap-in/swap-out is initiated from the timer, the OS scheduler will not schedule any process other than
+                          the swapper daemon or the idle process until the swap-in/swap-out is completed.
                           This policy is taken to avoid unpredicatable conditions that can arise if other processes
                           rapidly acquire/release memory and change the memory availability in the system while a swap
-                          operation is ongoing.</b> This design, though not very efficient, is simple to implement and
+                          operation is ongoing. This design, though not very efficient, is simple to implement and
                         yet achieves the goal
                         of having the full quota of 16 process in concurrent execution. (Note that the size of
                         the process table in the eXpOS implementation outlined here limits the number of concurrent
-                        processes to 16 ). </p> 
+                        processes to 16). </p> 
                         
-                        
-                        <p> The idle process is scheduled during swap-in/swap-out when
-                        swap-in/swap-out operation waits for a disk-memory transfer. The idle process
-                        will never get blocked, and hence can always be scheduled whenever no other process is 
-                        ready to run.
-                        The design ensures that swap-in/swap-out
-                        will never be initiated from the context of the idle process. The design also ensures that before the exit of any process, 
-                        if sufficient free memory is available, a swap-in is initiated.  This check 
-                        guarentees that the kernel never enters a situation where all processes except
-                        the idle process are swapped out.  </p>
 
+                         <p>
+                        The algorithms for Swap-in and Swap-out are implemented in the <a href="os_modules/Module_6.html" target="_blank">Pager Module</a> (Module 6).
+                      </p>
 
+                      <br>
                       <br>
                       <b style="font-size: 20px">Modifications to Timer Interrupt</b><br><br>
 
@@ -8273,21 +8298,38 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                       <br>
 
                       <br>
-                      <p> Timer interrupt is modified as follows- before invoking context switch module timer interrupt
-                        checks whether the available memory is below <a href="support_tools-files/constants.html"
-                          target="_blank">MEM_LOW</a> or above <a href="support_tools-files/constants.html" target="_blank">MEM_HIGH</a>
-                        . If the number of free memory pages is below MEM_LOW, the <b>Swap Out</b> function of <a href="os_modules/Module_6.html"
-                          target="_blank">pager module</a> is invoked to initiate swap out. If the number of available
-                        memory pages is above MEM_HIGH, the <b>Swap In</b> function of the pager module is invoked to
-                        initiate swap in of processes. <b>The process from whose context, timer interrupt invokes the
-                          module functions Swap Out and Swap In is called as paging process</b>. Note that idle process
-                        can not be a paging process.
-                        <!--The reason is the following. While swap-in/swap-out is on going, only the paging process is scheduled for execution so that the swap-in/swap-out operation is completed before.-->If
-                        paging process is blocked during swap-out/swap-in, the default process-idle is scheduled.
-                        <!--So if idle process starts paging, there is no other default process to schedule in case idle is blocked during swap-in/swap-out operation.-->
+                      <p> Timer interrupt handler is modified as follows:
+                      </p>
+                        
+                      <p>
+                        The handler must check whether the current process is the <a href="os_design-files/misc.html#swapper" target="_blank">swapper daemon</a>.  
+                        This condition can happen only when a swap operation is to be initiated.  
+                        In this case, PAGING_STATUS field of the system status table must be checked
+                        and Swap_in/Swap_out function of the pager module must be invoked appropriately (SWAP_OUT = 1 and SWAP_IN = 2).
+                    </p>  
+
+                    <p>
+                        If the current process is the idle process, there are two possibilities.
+                        If swapping is ongoing (check PAGING_STATUS), one can infer that Idle
+                        was scheduled because the swapper daemon was blocked.  In this case, the 
+                        timer must invoke the scheduler.  (The scheduler will run Idle again if
+                        the daemon is not unblocked.  Otherwise, the daemon will be scheduled.)
+                        The second possibility is that swapping was not on-going.  This case is
+                        not different from the condition to be checked when timer is entered from
+                        any process other than the paging process, and will be descibed next.
+                      </p>
+                        
+                      <p>
+                        Generally, when the timer handler is entered from a process when scheduling
+                        was not on, the handler must decide whether normal scheduling shall continue
+                        or swap-in/swap-out must be inititiated.  Swap-in must be initiated if 
+                        the value of MEM_FREE COUNT in the system status table is below MEM_LOW.
+                        Swap-out must be inititated if either a) memory availability is high (MEM_FREE_COUNT
+                        value exceeds MEM_HIGH) or b) some swapped process has TICK value exceeding 
+                        the threshold MAX_TICK.    
                       </p>
 
-
+                      <br>
                       <p>Another modification in the Timer interrupt is to increment the TICK field in the <a href="os_design-files/process_table.html"
                           target="_blank">process table</a> of every NON-TERMINATED process. When a process is created
                         by the Fork system call, the TICK value of the process is set to 0 in the process table. Each
@@ -8323,25 +8365,20 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
 
                         <br>
                         <p>Swap Out function is invoked from the <a href="os_design-files/timer.html" target="_blank">timer
-                            interrupt handler</a> and does not take any arguments. As mentioned earlier, the process
-                          which invokes Swap Out from the timer interrupt handler is referred to as the <b>paging
-                            process</b>. To indicate that swap-out is ongoing, the PID of the paging process is stored
-                          in the PAGING_PROCESS field of the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system
-                            status table</a>. This information will be useful while making scheduling decisions in the
-                          <a href="os_modules/Module_5.html" target="_blank">context switch module</a>.</p>
-                        <p>Swap Out function first chooses a suitable process for swapping out into the disk. Note that
-                          paging process will not be selected as a swap out process, as the currently running process
-                          should not be swapped out. The processes which are not running and are in WAIT_PROCESS or
-                          WAIT_TERMINAL state are considered first for swapping out (why?). When no such process is
+                            interrupt handler</a> and does not take any arguments. As mentioned earlier, the timer interrupt handler will invoke Swap Out only from the context of the <b>Swapper Daemon</b>.
+                          </p>
+
+                        <p>Swap Out function first chooses a suitable process for swapping out into the disk.  The processes which are not running and are in WAIT_PROCESS or
+                          WAIT_SEMAPHORE state are considered first for swapping out (why?). When no such process is
                           found, the process which has stayed longest in the memory is selected for swapping out into
                           the disk. To detect the processes which has stayed longest in the memory, the TICK field in
                           the <a href="os_design-files/process_table.html" target="_blank">process table</a> is used.
                           Thus the process with the highest TICK is selected for swapping out.</p>
                         <p>Now that, a process is selected to swap out, the TICK field for the selected process is
-                          initialized to 0. The code pages for the swapping-out process are released and the page table
+                          initialized to 0. (From now on, the TICK field must count for what amount of time the process has been in memory).  The code pages for the swapping-out process are released and the page table
                           entries of the code pages are invalidated. The process selected for swapping out, can have
                           shared heap pages. To simplify implementation, shared heap pages are not swapped out into the
-                          disk. Non-shared heap pages, user stack pages and kernel stack page are stored in the swap
+                          disk. Again, to simplify implementation, the kernel stack page is also not swapped out. Non-shared heap pages and user stack pages are stored in the swap
                           area in the disk. <b>Get Swap Block</b> function of the <a href="os_modules/Module_2.html"
                             target="_blank">memory manager module</a> is invoked to find free blocks in the swap area.
                           These memory pages are stored into the allocated disk blocks by invoking <b>Disk Store</b>
@@ -8349,8 +8386,13 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                           and <a href="os_design-files/process_table.html#disk_map_table" target="_blank">disk map
                             table</a> is updated with the disk numbers of corresponding pages. Memory pages of the
                           process are released using <b>Release Page</b> function of memory manager module and page
-                          table entries for these pages are invalidated. Also the SWAP FLAG in the process table of the
-                          swapped out process is set to 1, indicating that the process is swapped out. </p>
+                          table entries for these swapped out pages are invalidated. Also the SWAP FLAG in the process table of the
+                          swapped out process is set to 1, indicating that the process is swapped out. 
+                          </p>
+                          
+                          <p>
+                          <b>Finally, the PAGING_STATUS in the System Status Table is reset to 0. This step informs the scheduler that the swap operation is complete and normal scheduling can be resumed.</b></p>
+
                         <p style="text-indent: 0px">Implement <i>Swap Out</i> function using the detailed algorithm
                           given in the pager module link above.</p><br>
 
@@ -8369,29 +8411,28 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
 
                         <br>
                         <p> <b><i>Swap In</i></b> function is invoked from the <a href="os_design-files/timer.html"
-                            target="_blank">timer interrupt handler</a> and does not take any arguments. To indicate
-                          that swap-in is ongoing, the PID of the paging process is stored in the PAGING_PROCESS field
-                          in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a>.
-                          This information will be useful while making scheduling decisions in the <a href="os_modules/Module_5.html"
-                            target="_blank">context switch module</a>.</p>
-                        <p>The Swap In function selects a suitable process from the swapped out processes, to swap back
-                          into the memory as memory is now available. When selecting a suitable process for swapping
-                          into the memory, the process which has stayed for longest time in the disk and is ready to
-                          run is selected (that is, the process with the highest TICK among the swapped-out READY
-                          processes is selected).</p>
-                        <p>Now that, a process is selected to swap back into the memory, the TICK field for the
-                          selected process is initialized to 0. Code pages of the swapping-in process are not loaded
+                            target="_blank">timer interrupt handler</a> and does not take any arguments. 
+                          </p>
+                        <p>The <i>Swap In</i> function selects a swapped out process to be brought back to memory. The process which has stayed for longest time in the disk and is ready to
+                          run is selected.  That is, the process with the highest TICK among the swapped-out READY processes is selected).</p>
+                        
+                          <p>Now that, a process is selected to be swapped back into the memory, the TICK field for the
+                          selected process is initialized to 0. Code pages of the process are not loaded
                           into the memory, as these pages can be loaded later when exception occurs during execution of
-                          the process. Free memory pages for the heap, user stack and kernel stack are allocated using
+                          the process. Free memory pages for the heap and user stack are allocated using
                           the <b>Get Free Page</b> function of the <a href="os_modules/Module_2.html" target="_blank">memory
                             manager module</a> and disk blocks of the process are loaded into these memory pages using
                           the <b>Disk Load</b> function of the <a href="os_modules/Module_4.html" target="_blank">device
-                            manager module</a>. The Page table is updated for the new heap, user stack and kernel stack
+                            manager module</a>. The Page table is updated for the new heap and user stack
                           pages. The swap disk blocks used by these pages are released using <b>Release Block</b>
                           function of the memory manager module and <a href="os_design-files/process_table.html#disk_map_table"
                             target="_blank">Disk map table</a> is invalidated for these pages. Also the SWAP FLAG in
                           the process table of the swapped in process is set to 0, indicating that the process is no
                           longer swapped out.</p>
+
+                          <p>
+                              <b>Finally, the PAGING_STATUS in the System Status Table is reset to 0. This step informs the scheduler that the swap operation is complete and normal scheduling can be resumed.</b></p>
+
                         <p style="text-indent: 0px">Implement <i>Swap In</i> function using the detailed algorithm
                           given in the pager module link above.</p><br>
 
@@ -8399,8 +8440,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                           possibility that the code of the Pager module will exceed more than 2 disk blocks (more than
                           512 instructions). Try to write optimized code to fit the pager module code in 2 blocks. You
                           can use the following strategy to reduce the number of instructions. According to given
-                          algorithm for <b>Swap Out</b> function, the actions done for code pages, heap pages, stack
-                          pages (user/kernel) are written separately. This results in calling Release Page function 3
+                          algorithm for <b>Swap Out</b> function, the actions done for code pages, heap pages, user stack pages are written separately. This results in calling Release Page function 2
                           times, Get Swap Block and Disk Store functions 2 times each. Combine these actions into a
                           single while loop where each module function is called only once. The loop should traverse
                           through the page table entries one by one (except library page entries) and perform
@@ -8420,54 +8460,45 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         <p style="text-indent: 0px">Implement <i>Get Swap Block</i> function using the detailed
                           algorithm given in the memory manager module link above.</p><br>
 
-                          <li><b>Exit Process (function number = 3, <a href="os_modules/Module_1.html" target="_blank">Process Manager Module</a> )</b></li>
-                          <p>
-                            Exit Process function is modified so that when it is not invoked from <i>Exec</i> system call and MEM FREE COUNT in the System Status Table is more than MEM HIGH, it should call Swap In function in Pager Module.
-                          </p>
-                          <p style="text-indent: 0px">Implement <i>Exit Process</i> function using the detailed
-                            algorithm given in the process manager module link above.
-                          </p>
-                          <br>
 
-                          <li><b>Get Free Page (function number = 1, <a href="os_modules/Module_2.html" target="_blank">Memory Manager Module</a> )</b></li>
-                          <p>
-                            Get Free Page function is modified so that when there is no more free pages available, the Swap Out function is invoked to free up some memory.
-                          </p>
-                          <p style="text-indent: 0px">Implement <i>Get Free Page</i> function using the detailed
-                            algorithm given in the memory manager module link above.
-                          </p>
-                          <br>
-
-                        <p style="text-indent: 0px"><code>Note :</code>The implementation of module functions <b><i>Swap Out</i></b>, <b><i>Swap In</i></b>, <b><i>Get Swap Block</i></b>, <b><i>Exit Process</i></b>, <b><i>Get Free Page</i></b> are final.</p><br>
+                        <p style="text-indent: 0px"><code>Note :</code>The implementation of module functions <b><i>Swap Out</i></b>, <b><i>Swap In</i></b> and <b><i>Get Swap Block</i></b> are final.</p><br>
 
 
                         <b>Modification to Context Switch Module (Module 5)</b><br><br>
                         <p>Previously, the <a href="os_modules/Module_5.html" target="_blank">Context Switch module</a>
                           (scheduler module) would select a new process to schedule according to the Round Robin
                           scheduling algorithm. The procedure for selecting a process to execute is slightly modified
-                          in this stage. If swap-in/swap-out is ongoing (that is, if the PAGING_PROCESS field of the <a
+                          in this stage. If swap-in/swap-out is ongoing (that is, if the PAGING_STATUS field of the <a
                             href="os_design-files/mem_ds.html#ss_table" target="_blank">system status table</a> is
-                          set), the context switch module always tries to schedule the paging process so that the swap
-                          operation is completed before other processes are run. However, if the paging process is in
-                          blocked state, then the idle process (PID = 0) is scheduled. If there is no paging process
-                          then, the next READY/CREATED process which is not in swapped out state is scheduled for
-                          execution in normal Round Robin order. Finally, if no process is in READY or CREATED state,
+                          set), the context switch module schedules the Swapper Daemon (PID = 15) <b>whenever it is not blocked</b>.  If the swapper daemon is blocked (for some disk operation), then the idle process (PID = 0) must be scheduled.  (The OS design disallows scheduling any process except Idle and Swapper daemon when swapping is on-going.)   If the PAGING_STATUS is set to 0,  swapping is not on-going and hence the next READY/CREATED process which is not swapped out is scheduled in normal Round Robin order. Finally, if no process is in READY or CREATED state,
                           then the idle process is scheduled.</p>
                         <p style="text-indent: 0px">Modify Context Switch module implemented in earlier stages
                           according to the detailed algorithm given <a href="os_modules/Module_5.html" target="_blank">here</a>.</p><br><br>
-                        <b>Modifications to boot module </b><br><br>
+                        
+                          <b>Modifications to OS Startup Code </b><br><br>
+                            <p style="text-indent: 0px"> Modify <a href="os_design-files/misc.html#os_startup" target="_blank">OS Startup Code</a> to initialize the process table and page table for the Swapper Daemon (similar to the Idle Process). </p>
+
+                            <p style="text-indent: 0px">The final algorithm is given <a href="os_design-files/misc.html#os_startup" target="_blank">here</a>.</p><br><br>
+                            <br>
+                            
+  
+
+
+                          <b>Modifications to boot module </b><br><br>
 
                         <ul style="list-style-type: disc; margin-left: 10px;">
 
                           <p style="text-indent: 0px"> Modify <a href="os_modules/Module_7.html" target="_blank">Boot
                               module</a> to add the following steps : </p>
-                          <li style="padding-left: 20px">Load module 6 (Pager Module) form disk to memory pages. See <a
+                          <li style="padding-left: 20px">Load module 6 (Pager Module) form disk to memory. See <a
                               href="os_implementation.html" target="_blank">disk/memory organization</a>. </li>
-                          <li style="padding-left: 20px">Initialize the SWAPPED_COUNT field to 0 and PAGING_PROCESS
-                            field to -1 in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system
+                          <li style="padding-left: 20px">Initialize the SWAPPED_COUNT field to 0 and PAGING_STATUS
+                            field to 0 in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system
                               status table</a> to 0, as initially there are no swapped out processes.</li>
                           <li style="padding-left: 20px">Initialize the TICK field to 0 for all the 16 <a href="os_design-files/process_table.html"
                               target="_blank">process table</a> entries. </li>
+                              <li style="padding-left: 20px">Update the MEM_FREE_COUNT to 45 in the <a href="os_design-files/mem_ds.html#ss_table" target="_blank">system
+                                status table</a>. (The 2 pages are allocated for the user/kernel stack for Swapper Daemon reducing the number from 47 to 45). </li>
 
                         </ul>
 
@@ -8506,7 +8537,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         system call four times back to back. Then, the program shall use <i>Exec</i> system call to
                         execute pid.xsm file (used in <a href="#collapse21" target="_blank">stage 21</a>) to print the
                         PID of the processes. Invoking four Forks back to back is supposed to create 16 new processes,
-                        but only 13 new processes will be created as eXpOS will run out of process table entries. Run
+                        but only 12 new processes will be created as eXpOS will run out of process table entries. Run
                         this program using the shell in the context of a user. <br><br>
 
                         <b style="color:#26A65B">Assignment 2:</b> Modify the program written above to invoke <i>Exec</i>

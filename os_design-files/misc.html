@@ -259,7 +259,7 @@
 
              
                                                 
-             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the init process is fixed to be 0.</p>
+             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the idle process is fixed to be 0.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 <pre>   <b>while</b> TRUE <b>do</b>  //infinite loop
@@ -269,7 +269,6 @@
 		</div>
 		</div>
 		</section>
-		
 		
 <section id="login">
 		   <br><br><br>
@@ -303,7 +302,31 @@
          </div>
 		</div>
 		</div>
-		</section>
+    </section>
+    
+    <section id="swapper">
+        <br><br><br>
+ 
+       <div class="container">
+         <div class="row">
+          <div class="heading">
+               <h2 >Swapper Daemon</h2>
+                <br>
+                <br>                                      
+ 
+              
+                                                 
+              <p><i>Description</i>: It is a user program which is created by the bootstrap loader. This process uses the same code of the Idle process and hence has no file in the disk associated with it.  The main purpose of the swapper daemon is to serve as a user program such that the OS performs swap-in and swap-out operations in the kernel context of this process.  The PID of the swapper daemon is fixed to be 15.</p>
+               <br>
+              <div><h4>Algorithm:</h4></div>
+                <p>Identical to the Idle Process and runs with the code of the Idle Process.</p>
+          </div>
+     </div>
+     </div>
+     </section>
+
+     <br>
+     <br>
 				
 
  <!--=========== BEGIN FOOTER ================-->
