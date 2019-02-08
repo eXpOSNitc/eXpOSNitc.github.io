@@ -216,44 +216,78 @@
 					<br/>
 <li><b style="font-size:16px;color:#009100">(12) </b><b><i>Syntax</i></b> : </i><tt> pagetable / pt &lt;pid&gt; </tt> <br/>
 <b><i>Semantics</i></b> : </i> Displays the &lt;pid&gt;<sup>th</sup> Page Table. </li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(13) </b><b><i>Syntax</i></b> : </i><tt> filetable / ft </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the System Wide Open File Table.</li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(14) </b><b><i>Syntax</i></b> : </i><tt> memfreelist / mf </tt><br/>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(13) </b><b><i>Syntax</i></b> : </i><tt> diskmaptable / dmt </tt> <br/>
+  <b><i>Semantics</i></b> : </i> Displays the Disk Map Table of the process with the state as RUNNING. </li>
+            <br/>
+<li><b style="font-size:16px;color:#009100">(14) </b><b><i>Syntax</i></b> : </i><tt> diskmaptable / dmt &lt;pid&gt; </tt> <br/>
+  <b><i>Semantics</i></b> : </i> Displays the Disk Map Table of the process with the given &lt;pid&gt;. </li>
+            <br/>
+<li><b style="font-size:16px;color:#009100">(15) </b><b><i>Syntax</i></b> : </i><tt> resourcetable / rt </tt> <br/>
+  <b><i>Semantics</i></b> : </i> Displays the Per-process Resource Table of the process with the state as RUNNING. </li>
+            <br/>
+<li><b style="font-size:16px;color:#009100">(16) </b><b><i>Syntax</i></b> : </i><tt> resourcetable / rt &lt;pid&gt; </tt> <br/>
+  <b><i>Semantics</i></b> : </i> Displays the Per-process Resource Table of the process with the given &lt;pid&gt;. </li>
+            <br/>
+<li><b style="font-size:16px;color:#009100">(17) </b><b><i>Syntax</i></b> : </i><tt> filetable / ft </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Open File Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(18) </b><b><i>Syntax</i></b> : </i><tt> semtable / st </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Semaphore Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(19) </b><b><i>Syntax</i></b> : </i><tt> memfreelist / mf </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the Memory Free List.</li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(15) </b><b><i>Syntax</i></b> : </i><tt> diskfreelist / df </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the memory copy of the Disk Free List.</li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(16) </b><b><i>Syntax</i></b> : </i><tt> inodetable / it </tt><br/>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(20) </b><b><i>Syntax</i></b> : </i><tt> filestatus / fst </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the File Status Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(21) </b><b><i>Syntax</i></b> : </i><tt> diskstatus / dst </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Disk Status Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(22) </b><b><i>Syntax</i></b> : </i><tt> systemstatus / sst </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the System Status Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(23) </b><b><i>Syntax</i></b> : </i><tt> terminalstatus / tst </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Terminal Status Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(24) </b><b><i>Syntax</i></b> : </i><tt> buffertable / bt </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Buffer Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(25) </b><b><i>Syntax</i></b> : </i><tt> inodetable / it </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the memory copy of the Inode Table.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(17) </b><b><i>Syntax</i></b> : </i><tt> usertable / ut </tt><br/>
+<li><b style="font-size:16px;color:#009100">(26) </b><b><i>Syntax</i></b> : </i><tt> usertable / ut </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the memory copy of the User Table.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(27) </b><b><i>Syntax</i></b> : </i><tt> diskfreelist / df </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the memory copy of the Disk Free List.</li>
 					<br/>
-
-<li><b style="font-size:16px;color:#009100">(18) </b><b><i>Syntax</i></b> : </i><tt> val / v &lt;address&gt; </tt><br/>
-<b><i>Semantics</i></b> : </i> Displays the content at memory address without address translation.</li>
-					<br/>
-<li><b style="font-size:16px;color:#009100">(19) </b><b><i>Syntax</i></b> : </i><tt> location / l &lt;address&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(28) </b><b><i>Syntax</i></b> : </i><tt> rootfile / rf </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the memory copy of the Root File.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(29) </b><b><i>Syntax</i></b> : </i><tt> location / l &lt;address&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays the content at memory address after address translation.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(20) </b><b><i>Syntax</i></b> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
+<li><b style="font-size:16px;color:#009100">(30) </b><b><i>Syntax</i></b> : </i><tt> val / v &lt;address&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the content at memory address without address translation.</li>
+					<br/>
+<li><b style="font-size:16px;color:#009100">(31) </b><b><i>Syntax</i></b> : </i><tt> watch  / w &lt;physical_address&gt; </tt><br/>
 <b><i>Semantics</i></b> : </i> Sets a watch point to this address. Watch point is used to track changes of a particular memory location. Whenever a word which is watched is altered, program execution is stopped and the debug interface is invoked. Atmost 16 watch points can be set.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(21) </b><b><i>Syntax</i></b> : </i><tt> watchclear  / wc </tt><br/>
+<li><b style="font-size:16px;color:#009100">(32) </b><b><i>Syntax</i></b> : </i><tt> watchclear  / wc </tt><br/>
 <b><i>Semantics</i></b> : </i> Clears all the watch points.</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(33) </b><b><i>Syntax</i></b> : </i><tt> list / ls </tt><br/>
+<b><i>Semantics</i></b> : </i> List 10 instructions before and after the current instruction .</li>
+          <br/>
+<li><b style="font-size:16px;color:#009100">(34) </b><b><i>Syntax</i></b> : </i><tt> page / pg &lt;address&gt; </tt><br/>
+<b><i>Semantics</i></b> : </i> Displays the Page Number and Offset for the given &lt;address&gt;.</li>
 					<br/>
-<li><b style="font-size:16px;color:#009100">(22) </b><b><i>Syntax</i></b> : </i><tt> exit / e </tt><br/>
+<li><b style="font-size:16px;color:#009100">(35) </b><b><i>Syntax</i></b> : </i><tt> exit / e </tt><br/>
 <b><i>Semantics</i></b> : </i> Exits the debug prompt and halts the machine.</li>
 					<br/>
-
-<li><b style="font-size:16px;color:#009100">(23) </b><b><i>Syntax</i></b> : </i><tt> help / h </tt><br/>
+<li><b style="font-size:16px;color:#009100">(36) </b><b><i>Syntax</i></b> : </i><tt> help / h </tt><br/>
 <b><i>Semantics</i></b> : </i> Displays commands in brief.</li>
-				<br>
-<li><b style="font-size:16px;color:#009100">(24) </b><b><i>Syntax</i></b> : </i><tt> list / ls </tt><br/>
-<b><i>Semantics</i></b> : </i> List 10 instructions before and after the current instruction .</li>
 				</ul>
 
                 <br>
