@@ -463,20 +463,22 @@ SPL modules by including the definition in the <i>splconstants.cfg</i> file. If 
                   <h3>Goto Statement</h3>
            <p> The <b>goto</b> statement transfers control to the specified labelled statement.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>goto label / INT_n / MOD_n </b>;</tt></p>
+                    <p><tt><b>SYNTAX : </b><b>goto label / INT_n / MOD_n / constants </b>;</tt></p>
                     <pre>
                         goto label1;
                         goto INT_7;
-                        goto MOD_2;</pre>    
+                        goto MOD_2;
+                        goto MEMORY_MANAGER</pre>    
            <p><code>Note: </code><tt>label</tt> should be defined within the module.</p>
             <h3>Call Statement</h3>
            <p> The <b>call</b> statement saves procedure linking information on the stack and branches to the procedure specified by the argument.</p>
 				
-                    <p><tt><b>SYNTAX : </b><b>call label / INT_n / MOD_n </b>;</tt></p>
+                    <p><tt><b>SYNTAX : </b><b>call label / INT_n / MOD_n / constants</b>;</tt></p>
                     <pre>
                         call swap_func;
                         call INT_7;
-                        call MOD_2;</pre>
+                        call MOD_2;
+                        call MEMORY_MANAGER</pre>
            <p><code>Note: </code><tt>label</tt> should be defined within the module.</p>
            <p>Call statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">CALL machine instruction</a>.</p>
             <h3>Return Statement</h3>

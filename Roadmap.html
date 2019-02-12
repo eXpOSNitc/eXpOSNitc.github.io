@@ -3491,7 +3491,7 @@ endif;
                             interrupt routines, other modules or the OS startup code.</p>
                           <p>As modules execute in kernel mode, the kernel stack of the currently scheduled process is
                             used as the caller-stack for module invocation. XSM supports eight modules - MOD_0 to MOD_7
-                            - which can be invoked using the CALL MOD_n instruction. While switching to module, the
+                            - which can be invoked using the CALL MOD_n / CALL &lt;MODULE_NAME&gt; instruction (see <a href="support_tools-files/constants.html#interrupts" target="_blank">SPL constants</a>). While switching to module, the
                             CALL instruction pushes the IP address of the instruction following the CALL instruction on
                             the top of the kernel stack and starts execution of the corresponding module. A module
                             returns to the caller using the RET instruction (return statement in SPL) which restores
@@ -3550,7 +3550,7 @@ endif;
                             </li>
                             <li>Call module 7 (boot module) using call statement in SPL.
                               <div>
-                                <pre>call MOD_7;</pre>
+                                <pre>call BOOT_MODULE;</pre>
                               </div>
                             </li>
                             <p>/*The following code is executed after return from the boot module*/</p>
