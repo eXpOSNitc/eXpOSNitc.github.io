@@ -11,56 +11,52 @@
 
 <body>
     <pre>
-type
-List
-{
-    int data;
-    List next;
-}
-endtype
-
 decl
-    List head;
+    int temp, data, pid, count, delay;
+    int delayFunc(int delay);
 enddecl
 
-int main()
+int delayFunc(int delay)
 {
 decl
-    int endval, temp, pid, iter;
-    List p, q;
+    int num;
 enddecl
 
 begin
-    temp = exposcall("Heapset");
-    head=null;
-    q = head;
+    num = 0;
+    while(num < delay) do
+        num = num + 1;
+    endwhile;
+
+    return 0;
+end
+}
+
+int main()
+{
+begin
+    read(delay);
+
+    pid = exposcall("Fork");
+    pid = exposcall("Fork");
+    pid = exposcall("Fork");
+    pid = exposcall("Fork");
+
+    if(pid < 0) then
+        write("No PCB");
+    endif;
+
     pid = exposcall("Getpid");
-    iter = pid*100+1;
-    endval= iter+99;
-          
-    while (iter <= endval)  do
-        p=exposcall("Alloc",2);
-        p.data=iter;
-        p.next=null;
-              
-        if (head == null) then
-            head=p;
-            q=p;
-        else
-            q.next=p;
-            q=q.next;
-        endif;
-              
-        iter=iter+1;
+    count = 0;
+
+    while(count < 8) do
+        data = pid*100 + count;
+        write(data);
+        temp = delayFunc(delay);
+
+        count = count + 1;
     endwhile;
-          
-    p=head;
-    while(p!=null)  do
-        iter=p.data;
-        temp= exposcall("Write",-2,iter);
-        p=p.next;
-    endwhile;
-          
+
     return 0;
 end
 }</pre>
