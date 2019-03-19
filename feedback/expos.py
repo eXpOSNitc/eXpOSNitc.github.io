@@ -19,11 +19,12 @@ def load_csv(file):
     return data
 
 #%%
-col = "nitc"
-data = load_csv("nitc.csv")
+col = "nitc18"
+data = load_csv("nitc18.csv")
 del data[0]
 num_samples = np.shape(data)[0]
 data = np.array(data)
+data = data[data[:,2]>"Phase 2"] #eliminating samples below phase 2
 phase5 = data[data[:,2]>="Phase 5"]
 num_samples5 = np.shape(phase5)[0]
 #%%
@@ -34,13 +35,18 @@ colors=['yellowgreen','orchid', 'crimson', 'royalblue','cyan' , 'red', 'grey', '
 labels = ["Phase "+str(i) for i in range(0,8)]
 labels.reverse()
 count=[]
+labels1=[]
 for label in labels:
-    count.append(sum(data[:,2]==label))
+    num = sum(data[:,2]==label)
+    if num!=0:
+        count.append(num)
+        labels1.append(label)
+
 
 fig1, ax1 = plt.subplots()
 ax1.pie(count, autopct='%.0f%%', colors=colors)
 ax1.axis('equal')
-ax1.legend(labels, loc='upper right', bbox_to_anchor=(1.1, 0.8))
+ax1.legend(labels1, loc='upper right', bbox_to_anchor=(1.1, 0.8))
 plt.savefig(col+"q1.png", bbox_inches='tight')
 plt.close(fig1)
 #%%
@@ -147,7 +153,7 @@ plt.close()
 
 #%%
 #Q6
-labels=["sufficient", "Computer Organization / Hardware", "Compilers", "Programming"]
+labels=["Sufficient", "Computer Organization / Hardware", "Compilers", "Programming"]
 count=[]
 for label in labels:
     count.append(sum([label in val for val in data[:,7]]))
