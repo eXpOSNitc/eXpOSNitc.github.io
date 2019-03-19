@@ -7744,6 +7744,69 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                       <b style="color:#26A65B">Assignment 4:</b> Run the program provided <a href="test_prog.html#test_program_15"
                       target="_blank">here</a> using shell. The program first creates 4 files with values from s to 4*c+s, where s=1..4 and c=0..511. The program then, merges the 4 files taking 2 at a time, and finally, creates a <i>merge.dat</i> file containing numbers from 1 to 2048. Using <i>cat.xsm</i>, print the contents of <i>merge.dat</i> and check whether it contains the numbers from 1 to 2048 in ascending order. <br><br>
 
+                      <div class="container col-md-12">
+                        <div class="section_area">
+                          <ul class="list-group">
+                            <li class="list-group-item">
+                              <a data-toggle="collapse" href="#collapseq25x"><b>POSTSCRIPT: </b> How does an Operating System handle multiple devices in a uniform way?</a>
+                              <div id="collapseq25x" class="panel-collapse collapse">
+                                <p>
+                                  eXpOS supported just one file system and just two devices - the disk and the terminal. The application interface to the file system and the terminal is the same - through the Read/Write system calls. The OS presents a <b>single abstraction</b> (or interface) to the application program for file read/write and console read/write, hiding the fact that these are two completely different hardware devices.
+                                </p>
+                                <p>
+                                  Let us review one of the system calls - say the Read system call. The system call code  checks whether the read is issued for the terminal or the file system. If the read is from the terminal, then the system call redirects control to the terminal read function of the device manager. If the read is for a disk file, Read system call directly access the file system data structures to perform the system call (with appropriate calls to resource manager, and file manager for performing subtasks - See <a href="os_design-files/read.html" target="_blank">here</a>).
+                                </p>
+                                <p>
+                                  Such a simple implementation works because eXpOS is dealing with just two devices. A modern OS might be connected to several hard disks and each hard disk may contain separate file systems on different disk partitions. Similarly, a plethora of devices - mouse, printer, USB devices and so on will be connected to the system. New devices may be needed to be connected to  the system and the OS shouldn’t require re-design to accommodate each new device! How should then OS design be changed to handle such complexity?
+                                </p>
+                                <br>
+                                <p>
+                                  The general <b>principle of abstraction</b> holds the key in designing the OS for  handling a large number of devices and file systems. We first look at devices.
+                                </p>
+                                <p>
+                                  1. The OS will provide the same set of system calls to access every device -  say, Open, Close, Read, Write, Seek, etc. (Some system calls may be vaccus for some devices - for instance, a Read operation on a printer or a Write to a mouse may perform nothing).
+                                </p>
+                                <p>
+                                  2. Open system call invoked with the appropriate device/file name returns a descriptor which shall be used for further Read/Write/Seek operations to the device.
+                                </p>
+                                <p>
+                                  3. The OS expects that the manufacturer of each device supplies a device specific interface software called the <b>device driver</b>. The device driver code for each device must be loaded as part of the OS. The OS expects that each device driver contains functions Open, Close, Read, Write and Seek. For instance, Write function in the print device driver may take as input a word and may contain low level code to issue appropriate command to the printer device to print the word.
+                                </p>
+                                <p>
+                                  4. When an application invokes a system call like Read, the system call handler checks the file descriptor and identifies the correct device. It then invokes the Read function of the appropriate device driver.
+                                </p>
+                                <br>
+                                <p>
+                                  The principle involved in handling multiple file systems is similar. Each file system will be associated with a corresponding file system driver implementing Open, Close, Read, Write and Seek operations for the corresponding file system. Thus files and devices are handled in a single uniform manner.  
+                                </p>
+                                <p>
+                                  The advantage of such abstract strategy is that any number of devices can be added to the system, provided device manufacturers and file system designers comply to provide appropriate device/file system drivers with the standard interface stipulated by the OS.
+                                </p>
+                                <p>
+                                  The following figure demonstrates the flow of control in device/file operations.
+                                </p>
+                                <p>
+                                  <b>Note:</b> Each device will have a programmable device controller hardware that is connected to the machine through a port/serial bus or some such interface. The device driver issues the Write/Read command to the device controller and the device controller in turn commands the device to perform appropriate action to get the task done. Thus, in the case of a printer, the device driver will issue commands to the printer controller, which in turn controls the printer actions.
+                                </p>
+                                <br>
+                                <p>
+                                  Some additional implementation details and pointers to advanced reading concerning the above abstract principles are described below.
+                                </p>
+                                <p>
+                                  1. All modern file systems support a directory structure for file systems. (This is one major feature missing in eXpOS). In a directory file system, the filename field in the inode entry of a file will be a complete pathname describing the logical directory location of the file in the directory structure of the file system. The last part of the pathname will be the name of the file. For instance, a pathname “/usr/myfiles/hello” specifies a file with name “hello” in the directory “/usr/myfiles”.
+                                </p>
+                                <p>
+                                  2. Traditionally Operating systems have a default root file system that supports a directory structure. Other file systems are attached (mounted) as subdirectories of the root file system. When a Read/Write operation is performed on a file, the Read/Write system call checks the pathname of the file to determine which file system driver must be used for Read/Write operations. Devices are also mounted just like file systems.
+                                </p>
+
+                                <a data-toggle="collapse" href="#collapseq25x">
+                                    <span class="fa fa-times"></span> Close</a>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+
                       <a data-toggle="collapse" href="#collapse25">
                         <span class="fa fa-times"></span> Close</a>
                     </div>
