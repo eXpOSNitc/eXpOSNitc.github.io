@@ -25,6 +25,7 @@ del data[0]
 num_samples = np.shape(data)[0]
 data = np.array(data)
 data = data[data[:,2]>"Phase 2"] #eliminating samples below phase 2
+num_samples = np.shape(data)[0]
 phase5 = data[data[:,2]>="Phase 5"]
 num_samples5 = np.shape(phase5)[0]
 #%%
@@ -47,7 +48,7 @@ fig1, ax1 = plt.subplots()
 ax1.pie(count, autopct='%.0f%%', colors=colors)
 ax1.axis('equal')
 ax1.legend(labels1, loc='upper right', bbox_to_anchor=(1.1, 0.8))
-plt.savefig(col+"q1.png", bbox_inches='tight')
+plt.savefig(col+"q1.png", bbox_inches='tight', transparent=True)
 plt.close(fig1)
 #%%
 #Q2
@@ -71,7 +72,7 @@ ax2.pie(count5, autopct='%.0f%%', colors=colors)
 ax2.axis('equal')
 plt.title("Students who completed Phase 5 and above", y=-0.01)
 plt.legend(labels, loc='lower left', bbox_to_anchor=(0.8, 0.8))
-plt.savefig(col+"q2.png", bbox_inches='tight')
+plt.savefig(col+"q2.png", bbox_inches='tight', transparent=True)
 plt.close()
 
 #%%
@@ -96,7 +97,7 @@ ax2.pie(count5, autopct='%.0f%%', colors=colors)
 ax2.axis('equal')
 plt.title("Students who completed Phase 5 and above", y=-0.01)
 plt.legend(labels, loc='lower left', bbox_to_anchor=(0.8, 0.8))
-plt.savefig(col+"q3.png", bbox_inches='tight')
+plt.savefig(col+"q3.png", bbox_inches='tight', transparent=True)
 plt.close()
 
 #%%
@@ -122,7 +123,7 @@ ax2.pie(count5, autopct='%.0f%%', colors=colors)
 ax2.axis('equal')
 plt.title("Students who completed Phase 5 and above", y=-0.01)
 #plt.legend(labels, loc='lower left', bbox_to_anchor=(0, 0))
-plt.savefig(col+"q4.png", bbox_inches='tight')
+plt.savefig(col+"q4.png", bbox_inches='tight', transparent=True)
 plt.close()
 
 #%%
@@ -148,7 +149,7 @@ ax2.pie(count5, autopct='%.0f%%', colors=colors)
 ax2.axis('equal')
 plt.title("Students who completed Phase 5 and above", y=-0.01)
 #plt.legend(labels, loc='lower left', bbox_to_anchor=(0, 0))
-plt.savefig(col+"q5.png", bbox_inches='tight')
+plt.savefig(col+"q5.png", bbox_inches='tight', transparent=True)
 plt.close()
 
 #%%
@@ -184,7 +185,7 @@ for rect in rects2:
 plt.xticks(x,labels)
 plt.setp(ax2.get_xticklabels(), rotation=90, horizontalalignment='center')
 plt.title("Students who completed Phase 5 and above")
-plt.savefig(col+"q6.png", bbox_inches='tight')
+plt.savefig(col+"q6.png", bbox_inches='tight', transparent=True)
 plt.close()
 
 #%%
