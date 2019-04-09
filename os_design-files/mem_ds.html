@@ -116,7 +116,7 @@
                   <tr >
                       <td style="border: 1px solid black">INODE INDEX</td>
                       <td style="border: 1px solid black">OPEN INSTANCE COUNT</td>                      
-		      <td style="border: 1px solid black"><font color="red">LSEEK</font></td>                      
+		      <td style="border: 1px solid black">LSEEK</td>                      
                       <td style="border: 1px solid black">Unused</td>
                                             
                   </tr>
@@ -310,13 +310,14 @@
               <p> The System Status Table has the following format:</p>
               <table class="table table-bordered" >
                   <tr >
-		      <td style="border: 1px solid black"><font color="red">CURRENT_USER_ID</font></td>
+		                  <td style="border: 1px solid black">CURRENT_USER_ID</td>
                       <td style="border: 1px solid black">CURRENT_PID</td>                      		      
                       <td style="border: 1px solid black">MEM_FREE_COUNT</td>
                       <td style="border: 1px solid black">WAIT_MEM_COUNT</td>
                       <td style="border: 1px solid black">SWAPPED_COUNT</td>
                       <td style="border: 1px solid black">PAGING_STATUS</td>
-                      <td style="border: 1px solid black">Unused</td>
+                      <td style="border: 1px solid black; color:red">CURRENT_PID2</td>
+                      <td style="border: 1px solid black; color:red">LOGOUT_STATUS</td>
                                            
                   </tr>
               </table>
@@ -327,7 +328,8 @@
                    <li><b>WAIT_MEM_COUNT</b> (1 word) - specifies the number of processes waiting (blocked) for memory. </li>
                    <li><b>SWAPPED_COUNT</b> (1 word) - specifies the number of processes which are swapped. A process is said to be swapped if any of its user stack pages or its kernel stack page is swapped out.</li>
                    <li><b>PAGING_STATUS</b> (1 word) - specifies whether swapping is initiated. Swap Out/Swap In are indicated by 0 and 1, respectively. Set to 0 if paging is not in progress. </li>
-                   <li><b>Unused</b> (2 words)</li>
+                   <li style="color:red"><b>CURRENT_PID2</b> (1 word) - specifies the pid of the currently running process on the secondary core. This field is used only when eXpOS is running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine.</li>
+                   <li style="color:red"><b>LOGOUT_STATUS</b> (1 word) - specifies whether logout is initiated on the primary core. Set to 0 if logout is not initiated. This field is used only when eXpOS is running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine. </li>
                </ul>
               <p>Initially, when the table is set up by the OS startup code, the MEM_FREE_COUNT is initialized to the number of free pages available in the system, WAIT_MEM_COUNT to 0, SWAPPED_COUNT to 0 and PAGING_STATUS to 0. </p> 
 		<p><b>Note: </b>The System Status Table is present in page 57 of the memory (see <a href="../os_implementation.html">Memory Organisation</a>), and the SPL constant <a href="../support_tools-files/constants.html">SYSTEM_STATUS_TABLE</a> points to the starting address of the table.</p>
@@ -392,6 +394,46 @@
         
       </div>
     </section>
+
+    <!--=========== BEGIN access lock table SECTION ================-->
+    <section id="al_table">
+        <br><br><br>
+ 
+       <div class="container">
+         <div class="row">
+         
+             
+             <div class="heading">
+                 <h2 style="color:red">Access Lock Table</h2>
+                <br>
+               <br>
+               <p>When eXpOS runs on a two-core machine like <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a>, the OS kernel code executes parallelly on the cores.  Hence, to ensure atomicity of the resource acquire functions (of the resource manager module), as well as access/updates of OS data structures, an additional layer of access locking is introduced. The OS maintains an Access Lock Table in memory with the following fields to hold the additional locks.</p>
+        
+               <p> The Access Lock Table has the following format:</p>
+               <table class="table table-bordered" >
+               <tr>
+                   <td style="border: 1px solid black">KERN_LOCK</td>
+                   <td style="border: 1px solid black">SCHED_LOCK</td>                      		      
+                   <td style="border: 1px solid black">GLOCK</td>
+                   <td style="border: 1px solid black">Unused</td>                 
+               </tr>
+              </table>
+
+               <ul style="list-style-type: square;line-height: 25px;margin-left: 80px;font-size: 16px;">
+                <li><b>KERN_LOCK</b> (1 word) - Common access lock to be set before running any critical kernel code other than scheduling.  Before performing any kernel function, this lock must be set by the kernel module/interrupt handler so that the other core waits till the critical action is completed.
+                </li>
+                <li><b>SCHED_LOCK</b> (1 word) - Access lock to run the Scheduler Module.  if one core has set the SCHEDULE_LOCK, then upon entering the Scheduler Module, the other core executes a busy loop until execution of the Scheduler Module on the first core is completed.
+                </li>
+                <li><b>GLOCK</b> (1 word) - A general purpose lock variable that is left unused for future use.</li>
+                <li><b>Unused</b> (5 words)</li>
+              </ul>
+              <p><b>Note:</b> This data structure is used only when eXpOS is running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine.</p>
+ </div>
+                   
+         </div>
+         
+       </div>
+     </section>
  
    
     <!--=========== END mem free list SECTION ================-->
