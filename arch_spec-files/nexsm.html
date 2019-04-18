@@ -126,9 +126,9 @@
                             <br>
                             <h4><b>Dual-Core Bootstrap</b></h4>
                             <ol style="font-size:16px;">
-                                <li>When powered on, the machine starts in reset mode. The primary core starts execution and the secondary core is non-functional. Here, the functioning is similar to XSM.</li>
+                                <li>When powered on, the machine starts in <b>reset</b> mode. The primary core starts execution and the secondary core is non-functional. Here, the functioning is similar to XSM.</li>
                                 <li>The secondary core starts execution when the primary core executes a START instruction.</li>
-                                <li>Upon execution of the START instruction, the machine enters the active mode. The START instruction sets the IP value of the secondary to physical address 65536 (page 128) and secondary is powered on.</li>
+                                <li>Upon execution of the START instruction, the machine enters the <b>active</b> mode. The START instruction sets the IP value of the secondary to physical address <b>65536 (page 128)</b> and secondary is powered on.</li>
                                 <li>Normally, when the machine is powered on, the primary executes a bootstrap code which loads the initialization code for the secondary into memory page 128 before executing START.</li>
                                 <li>When the machine is running in active mode, if a RESET instruction is executed by either the primary or the secondary, then the machine goes back to reset mode and the secondary stops execution.</li>
                             </ol>
@@ -142,8 +142,8 @@
                                 NEXSM machine has 144 memory pages (as against 128 pages of XSM). The memory organization of pages 0 to 127 are exactly as in XSM. The organization of the remaining 16 pages are as:
                             </p>    
                             <ol style="font-size:16px;">
-                                <li>Page 128 and 129 are reserved for loading the bootstrap code for the second core.</li>
-                                <li>Pages 130 and 131 are reserved for an additional software interrupt INT 19.</li>
+                                <li>Page 128 and 129 are reserved for loading the <b>bootstrap</b> code for the second core.</li>
+                                <li>Pages 130 and 131 are reserved for an additional <b>software interrupt INT 19</b>.</li>
                                 <li>Pages 132 to 143 are available as free memory.</li>
                             </ol>
 
@@ -161,7 +161,7 @@
                                 <br>
                                 <i>Syntax:</i> TSL Rj, [loc]
                                 <br>
-                                <i>Semantics:</i> The contents of the memory location [loc] is copied to register Rj. The value of [loc] is set to 1. This instruction is atomic. That is, when one of the cores is executing the TSL instruction, the memory bus is locked to avoid the other processor from simultaneously accessing [loc].
+                                <i>Semantics:</i> The contents of the memory location [loc] is copied to register Rj. The value of [loc] is set to 1. This instruction is <b>atomic</b>. That is, when one of the cores is executing the TSL instruction, the <b>memory bus is locked</b> to avoid the other processor from simultaneously accessing [loc].
 
                                 <br>
                                 <br>
