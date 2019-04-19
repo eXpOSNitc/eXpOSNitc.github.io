@@ -146,7 +146,7 @@
   <!-- Float to collapse all -->
 
   <div class="up grid col-one-third" style="float: left; position: fixed; top: 20vh; right: 2vw;">
-    <a data-toggle="collapse" data-target="#collapse1,#collapse2,#collapse3,#collapse4,#collapse5,#collapse6,#collapse7,#collapse8,#collapse9,#collapse10,#collapse11,#collapse12,#collapse13,#collapse14,#collapse15,#collapse16,#collapse17,#collapse18,#collapse19,#collapse20,#collapse21,#collapse22,#collapse23,#collapse24,#collapse25,#collapse26,#collapse27">
+    <a data-toggle="collapse" data-target="#collapse1,#collapse2,#collapse3,#collapse4,#collapse5,#collapse6,#collapse7,#collapse8,#collapse9,#collapse10,#collapse11,#collapse12,#collapse13,#collapse14,#collapse15,#collapse16,#collapse17,#collapse18,#collapse19,#collapse20,#collapse21,#collapse22,#collapse23,#collapse24,#collapse25,#collapse26,#collapse27,#collapse28">
       <span class="fa fa-list-ol fa-2x"></span></a>
   </div>
 
@@ -8689,6 +8689,68 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                   </div>
                   <!--===========Ending stage 27 ===============-->
 
+                  <!--=========Begin Stage 28 ===========-->
+                  <div class="panel-heading" id="list_stage28">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#collapse28"><span class="fa fa-check-square-o"></span>Stage 28 :
+                        Multi-Core Extension (- Hours)</a>
+                    </h4>
+                  </div>
+
+                  <div id="collapse28" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <!--Begin Learning Objectives-->
+                      <div class="container col-md-12">
+                        <div class="section_area">
+                          <ul class="list-group">
+                            <li class="list-group-item" style="background:#dff0d8">
+                              <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse" href="#lo28">Learning
+                                Objectives</a>
+                              <div id="lo28" class="panel-collapse expand">
+                                <ul>
+                                  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Modifying eXpOS kernel to exploit parallelism in a two core machine.</li>
+                                  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Understanding processor synchronization in multi-core systems.</li>
+                                </ul>
+                              </div>
+                            </li>
+                            <li class="list-group-item" style="background:#dff0d8">
+                              <span class="fa fa-book"></span> &nbsp; <a data-toggle="collapse" href="#lo28a">Pre-requisite Reading</a>
+                              <div id="lo28a" class="panel-collapse expand">
+                                <ul>
+                                  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Read and understand <a href="arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (two core extension of XSM) specification.</li>
+                                  <li style="margin-bottom: -2px"><span class="fa fa-hand-o-right"></span>&nbsp;&nbsp;Read and understand design documentation for <a href="os_design-files/nexpos.html" target="_blank">neXpOS</a> on NEXSM </li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <!--End Learning Objectives-->
+
+                      <br>
+                      <p>
+                        In this stage, you will port eXpOS to a two core extension of XSM called NEXSM. The specification of the OS does not undergo any change from the point of view of the end user or the application programmer (that is, the API - high level library interface or ABI - low level system call interface are unchanged except for some insignificant updates). Thus, the upward (application) interface of the OS does not change. 
+                      </p>
+                      <p>
+                        What changes is the downward (architecture) interface. NEXSM supports a few more memory pages, a few more disk blocks and more significantly, a second core processor. The question is - how to make the best use of the available parallelism with minimal changes to the eXpOS code? 
+                      </p>
+                      <p>
+                        The bootstrap process happens on one of the cores (called the <b>primary core</b> in NEXSM specification).  The bootstrap code completes the initial set up operations and then start the other core (called <b>secondary core</b>) into parallel action.  A read only register called CORE will have value 0 in the primary and 1 in the secondary.  This allows kernel code to determine the core on which it is executing. 
+                      </p>
+                      <p>
+                        It is absolutely necessary to have a careful reading of the <a href="arch_spec-files/nexsm.html" target="_blank">NEXSM architecture specification</a> before proceeding further.
+                      </p>
+                      <p>
+                        Once the OS is up and running on the two-core machine after bootstrap, <b>each core runs the same OS code and schedules processes parallely</b>. The fundamental issue to be addressed is to ensure that <i>parallel actions of OS on the two cores do not lead the OS into an inconsistent state</i>.
+                      </p>
+                      <p>
+                        Handling concurrency is a tricky issue. Here, we impose a few conservative design level restrictions to the level of parallelism permitted so that a simple and comprehensible design is possible. The resultant design is not an efficient one, but it is sufficient to demonstrate the underlying principles. The constraints imposed are the following:
+                      </p>
+
+                      <a data-toggle="collapse" href="#collapse28">
+                        <span class="fa fa-times"></span> Close</a>
+                  </div>
+                </div>
                   <!--=========== Intoduction Section Ending ===============-->
 
   </section>

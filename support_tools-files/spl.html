@@ -154,10 +154,12 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr><td>backup</td> <td>restore</td> <td>readi</td> <td>read</td> <td>print</td></tr>
                     <tr><td>loadi</td> <td>load</td> <td>store</td> <td>do</td><td>while</td></tr>
                     <tr><td>endwhile</td> <td>break</td> <td>continue</td> <td>if</td><td>then</td> </tr>
-					<tr><td>else </td> <td>endif</td> </tr>
+					<tr><td>else </td> <td>endif</td> <td style="color:red">tsl<font color="red">*</font></td> <td style="color:red">start<font color="red">*</font></td> <td style="color:red">reset<font color="red">*</font></td> </tr>
                     
 				</table></pre>
-				</tt></p>
+        </tt>
+        <font color="red">*</font> These keywords are available only on eXpOS running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine.
+      </p>
                                 <h3>Operators and Delimiters</h3>
 				<p>	The following are the operators and delimiters in SPL
 				<pre><table style="text-align:center; width:50%">
@@ -224,7 +226,9 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr> <td>Input Port</td> <td>P0</td> </tr>
                     <tr><td>Output Port</td> <td>P1</td> </tr>
                     <tr><td>Unused Ports</td> <td>P2, P3</td> </tr>
-				</table>   
+                    <tr><td style="color:red">Core Flag<font color="red">*</font></td> <td>CORE</td></tr>
+        </table>
+        <font color="red">*</font> These keywords are available only on eXpOS running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine.
                 
                 <h3>Aliasing</h3>
 				<p>	Any register/port can be referred to by using a different name. A name is assigned to a particular register/port using the <b>alias</b> keyword. 
@@ -596,7 +600,43 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                         </div>
                     <!--end item con-->    
       
-                    
+      
+                    <!-- START SINGLE FEATURED ITEM #con -->
+                        <div class="panel panel-default ">
+                          <div class="panel-heading">
+                            <h4 class="panel-title" style="color:red">
+                              <a data-toggle="collapse" href="#nespl">
+                                <span class="fa fa-check-square-o"></span>neSPL Specification
+                              </a>
+                            </h4>
+                          </div>
+
+                          <div id="nespl" class="panel-collapse collapse">
+                            <div class="panel-body">
+                              <h3>TSL Statement</h3>
+                              <p>
+                                The contents of ADDRESS is returned and the value at ADDRESS is set to 1.
+                              </p>
+                              <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>tsl ([ADDRESS])</b></tt></p>  
+
+                              <h3>START Expression</h3>
+                              <p>The <b>start</b> instruction is used to start the parallel execution of the secondary core.</p>
+                              <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>start</b>;</tt></p>  
+                              <p>
+                                  This statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">START machine instruction</a>.
+                              </p>
+
+                              <h3>RESET Statement</h3>
+                              <p>The <b>reset</b> instruction is used to freeze the secondary core.</p>
+                              <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>reset</b>;</tt></p>
+                              <p>
+                                  This statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">RESET machine instruction</a>.
+                              </p>  
+                            </div>
+                          </div>
+                        </div>
+                    <!--end item con--> 
+                          
                       </div>
                     </div>
                 </div>

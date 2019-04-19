@@ -95,7 +95,7 @@
 
 
 
-    <!--=========== BEGIN SECTION 4================-->
+    <!--=========== BEGIN SECTION 1 ================-->
     <section id="multiuser">
         <br>
         <br>
@@ -131,12 +131,151 @@
                             <p>
                                 Disk organization is given <a href="../os_implementation.html" target="_blank">here</a>.
                             </p>
+
+                            <br>
+                            <h4><b>Memory Organization</b></h4>
+                            <p>
+                                NEXSM has 16 additional pages of memory (pages 128 to 144). The first four new pages are reserved by the machine. Pages 128 and 129 are reserved for storing the bootstrap loader for the  secondary core (called the secondary bootstrap loader). Pages 130 and 131 are reserved for a new software interrupt, INT 19. Currently INT19 is unused.
+                            </p>
+                            <p>
+                                From among the remaining 12 available pages, eXpOS reserves the next eight pages for four module handlers - Module 8, Module 9, Module 10 and Module 11. The remaining four pages can be allocated to user programs.  The memory organization is given <a href="../os_implementation.html" target="_blank">here</a>.
+                            </p>
+                            <p>
+                                The present design does not use Module 9, Module 10 and Module 11. Module 8 is called <b>Access Control Module</b>. This module contains code for synchronization between the two cores. Module 9, Module 10 and Module 11 are called TestA Module, TestB Module and TestC Module respectively. These modules are left free to provide space for testing enhancements and conducting experiments on the system.
+                            </p>
+
+                            <br>
+                            <h4><b>Design Policies</b></h4>
+                            <p>
+                                The fundamental issue to be resolved while extending the OS to a two core machine is to ensure that concurrent updates of OS data structures from the two cores do not leave the OS in an inconsistent state. Here we impose a few simple to implement design level restrictions on the level of parallelism permitted so that a simple and comprehensible design is possible. The constraints imposed are the following:
+                            </p>
+                            <p>
+                                <i>Policy 1: Atomicity constraints:</i>
+                                <br>
+                                a) A single process will never be scheduled simultaneously on both the cores.  The scheduler will be designed to ensure this policy.
+                                <br>
+                                b) Only one core will run scheduler code that involves updates to kernel data structures at a given time. This makes implementation of the first policy straight-forward.
+                                <br>
+                                c) Only one core will be executing critical  kernel code at a time. Upon entry into a system call the kernel checks whether the other core is running critical kernel code. If that is the case, then the kernel waits for the other core to finish the critical code before proceeding.   
+                            </p>
+                            <p>
+                                Atomicity is ensured using access locks. The kernel maintains a few access locks which will be set before executing critical code. Before executing any critical code, the kernel checks whether the other code has acquired the access lock and waits for the release of the lock before proceeding. The kernel sets the access lock when available and proceeds to the critical code. This procedure ensures that only one core executes critical code.
+                            </p>
+                            <p>
+                                <i>Policy 2: Hold and Wait constraints:</i> A process, after acquiring an access lock will quickly perform the required action (like updating a kernel data structure) and release the lock immediately,  before being scheduled out. Moreover, a second access lock will be acquired only after releasing the first. These constraints ensure that there will be no hold and wait or circular wait for access locks.
+                            </p>
+                            <p>
+                                It is not very difficult to see that adherence to the above policies is sufficient to ensure the consistency of the OS.
+                            </p>
+
+                            <br>
+                            <h4><b>Implementation of Access Locking</b></h4>
+                            <p>
+                                Atomicity of access locking is implemented using the hardware mechanism provided by the NEXSM machine (TSL instruction). The details follow.
+                            </p>
+
+                            <br>
+                            <h4><b>OS Data Structures</b></h4>
+                            <p>
+                                The OS uses essentially the same data structures in the single processor eXpOS system. However, to ensure atomicity of the resource acquire functions (of the resource manager module), as well as access/updates of OS data structures, an additional layer of access locking, is introduced as explained above. The OS maintains an <b>Access Lock Table</b> in memory with the following fields to hold the additional locks.
+                            </p>
+
+                            <br>
+                            <h4><b>Access Lock Table</b></h4>
+                            <p>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="border: 1px solid black"><b>Field</b></td>
+                                        <td style="border: 1px solid black"><b>Function</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">KERN_LOCK</td>
+                                        <td style="border: 1px solid black">Common access lock to be set before running any critical kernel code other than scheduling. Before performing any kernel function, this lock must be set by the kernel module/interrupt handler so that the other core waits till the critical action is completed.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">SCHED_LOCK</td>
+                                        <td style="border: 1px solid black">Access lock to run the Scheduler Module. If one core has set the SCHED_LOCK in the Scheduler Module, the other core runs in a busy loop until execution of the Scheduler Module is completed.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">GLOCK</td>
+                                        <td style="border: 1px solid black">A general purpose lock variable that is left unused for future use.</td>
+                                    </tr>
+                                </table>
+                            </p>
+                            <p>
+                                The design ensures that before running the scheduler, a process releases the KERN_LOC. The scheduler must set SCHED_LOCK before starting the scheduling process and reset the lock after scheduling actions are completed.
+                            </p>
+                            <p>
+                                The Access Lock table is allocated eight words of memory and is stored in memory locations 29576-29583, of which the last five words are unused. (see <a href="../os_implementation.html" target="_blank">memory organization</a>).  
+                            </p>
+
+                            <br>
+                            <h4><b>Access Control Module</b></h4>
+                            <p>
+                                The access control module contains the following functions:
+                                <br>AcquireKernLock()
+                                <br>AcquireSchedLock()
+                                <br>AcquireGLock()
+                                <br>RelaseLock(LockVarAddress)
+                            </p>
+                            <p>
+                                The AccessLock functions can be implemented using the TSL instruction to ensure that locking is <b>atomic</b>. The general locking logic in SPL would be the following:
+                            </p>
+                            <pre>
+Acquire****Lock() {
+    ....
+    .... 
+    while (tsl (LockVariableAddress) == 1) 
+       continue;
+    endwhile; 
+}</pre>
+                            <p>
+                                This would translate to the following XSM code (or equivalent):
+                            </p>
+                            <pre>
+L1: TSL Ri, [LockVariableAddress]
+MOV Rj, 1
+EQ Ri, Rj
+JNZ Ri, L1</pre>
+                            <p>
+                                The SPL extension NEXSM [LINK] provides constants [LINK] for identifying the access control variables in the Access Lock Table. Constants for invoking the new modules – TestA, TestB, TestC and the Access Control Module, etc., are also provided.
+                            </p>
+
+                            <br>
+                            <h4><b>Other Design Modifications</b></h4>
+                            <p>
+                                In two core operation, it might be required that both the cores schedule the IDLE process simultaneously. This happens when:
+                                <br> 1. No other process is ready, <b>OR</b>
+                                <br> 2. The OS is running the pager module or if logout system call is being executed in the primary.
+                            </p>
+                            <p>
+                                To accommodate this modification, we will create a new process IDLE2 with PID=14. The scheduler will be modified to run IDLE2 on the secondary core whenever it finds that no other process can be scheduled. The standard IDLE (PID=0) will be scheduled under similar circumstances in the primary core. <b>The scheduler will run IDLE, LOGIN, SHELL and the swapper daemon only from the primary and IDLE2 only from the secondary.</b>
+                            </p>
+
+                            <br>
+                            <h4><b>Boot Procedure</b></h4>
+                            <p>
+                                NEXSM specification stipulates that the secondary code bootstraps from the physical address 65536 (page 128) upon execution of the START instruction from the primary. Hence, <b>the bootstrap routine of the primary core must transfer the bootstrap code of the secondary from disk  block (see <a href="../os_implementation.html" target="_blank">disk organization</a>) to memory page 128 before issuing the START instruction</b>. The START instruction is issued at the end of normal bootstrap by the primary (see OS Startup code[LINK]).
+                            </p>
+                            <p>
+                                The secondary bootstrap code will schedule the IDLE2 process for execution (setting its state appropriately) and from there normal two core execution starts.
+                            </p>
+
+                            <br>
+                            <h4><b>Implementation</b></h4>
+                            <p>
+                                The major changes to be made to the single core eXpOS kernel are the following:
+                                <br> 1. Upon entry into a system call or exception handler, either from an application  or from the scheduler, <i>AcquireKernLock()</i> must be invoked.  The lock must be released before invoking the scheduler or switch back to user mode using <i>ReleaseLock(KERN_LOCK)</i>.
+                                <br> 2. The scheduler module must be modified to set <i>AcquireSchedLock()</i> before initiating scheduling actions. Upon completion of scheduling actions, the scheduler must release the lock invoking <i>ReleaseLock(SCHED_LOCK)</i> before setting any process into execution. 
+                                <br> 3. <i>Swapper daemon</i> will be invoked only from the primary core by the timer interrupt handler (as done in eXpOS). When the scheduler running on the second core finds that pager daemon was initiated from the primary (check PAGING_STATUS in <a href="mem_ds.html/#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
+                                <br> 4. The <i>Logout system call</i> will be invoked only from primary core as the shell process will be scheduled to run only on the primary. When the scheduler running on the second core finds that logout/shutdown system call is initiated, from the primary (check LOGOUT_STATUS in <a href="mem_ds.html/#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
     </section>
-    <!--=========== END SECTION 4================-->
+    <!--=========== END SECTION 1 ================-->
 
 
     <!--=========== BEGIN FOOTER ================-->
