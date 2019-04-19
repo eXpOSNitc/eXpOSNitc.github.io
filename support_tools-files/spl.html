@@ -228,7 +228,7 @@ eXpOS package is designed to follow the programming conventions specified in thi
                     <tr><td>Unused Ports</td> <td>P2, P3</td> </tr>
                     <tr><td style="color:red">Core Flag<font color="red">*</font></td> <td>CORE</td></tr>
         </table>
-        <font color="red">*</font> These keywords are available only on eXpOS running on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine.
+        <font color="red">*</font> This is an extra read-only register available only on <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a> (a two-core extension of XSM).
                 
                 <h3>Aliasing</h3>
 				<p>	Any register/port can be referred to by using a different name. A name is assigned to a particular register/port using the <b>alias</b> keyword. 
@@ -606,31 +606,46 @@ call 511;  /* Transfers control to the first page in memory */  </pre>
                           <div class="panel-heading">
                             <h4 class="panel-title" style="color:red">
                               <a data-toggle="collapse" href="#nespl">
-                                <span class="fa fa-check-square-o"></span>neSPL Specification
+                                <span class="fa fa-check-square-o"></span>SPL Specification for NEXSM
                               </a>
                             </h4>
                           </div>
 
                           <div id="nespl" class="panel-collapse collapse">
                             <div class="panel-body">
-                              <h3>TSL Statement</h3>
                               <p>
-                                The contents of ADDRESS is returned and the value at ADDRESS is set to 1.
+                                The following additonal instructions are available in SPL when 
+                                running on the <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a>, which is a two core extension for
+                                XSM.    
                               </p>
-                              <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>tsl ([ADDRESS])</b></tt></p>  
 
-                              <h3>START Expression</h3>
-                              <p>The <b>start</b> instruction is used to start the parallel execution of the secondary core.</p>
+                              <h3>TSL Expression</h3>
+                              <p>
+                                The contents of the memory location specified by ADDRESS is returned and the value at ADDRESS is set to 1.
+                              </p>
+                              <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>tsl (ADDRESS)</b></tt></p>  
+                              <p><i>Examples:</i></p>
+                              <p>
+				                      <p><tt> while( tsl(KERN_LOCK) == 1 ) do </tt></p>
+				                      <p><tt> &nbsp;&nbsp;&nbsp;&nbsp;continue; </tt></p>
+                              <p><tt> endwhile; </tt></p>  
+                              <p>
+                                  This statement translates to a sequence of instructions that uses the <a href="../arch_spec-files/nexsm.html#instr" target="_blank">TSL machine instruction</a>.
+                              </p>
+                            
+
+                              <h3>START Statement</h3>
+                              <p>The <b>start</b> instruction when executed from primary core of the <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a> will start the secondary core into parallel execution.</p>
                               <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>start</b>;</tt></p>  
                               <p>
-                                  This statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">START machine instruction</a>.
+                                  This statement translates to the <a href="../arch_spec-files/nexsm.html#instr" target="_blank">START machine instruction</a>.
                               </p>
 
                               <h3>RESET Statement</h3>
-                              <p>The <b>reset</b> instruction is used to freeze the secondary core.</p>
+                              <p>The <b>reset</b> instruction when executed from primary core of the <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a> will freeze the secondary core.</p>
                               <p><tt>&nbsp;&nbsp;&nbsp; <b>SYNTAX : </b><b>reset</b>;</tt></p>
                               <p>
-                                  This statement translates to the <a href="../arch_spec-files/instruction_set.html" target="_blank">RESET machine instruction</a>.
+                                  This statement translates to the <a href="../arch_spec-files/nexsm.html#instr" target="_blank">RESET machine instruction</a>.
                               </p>  
                             </div>
                           </div>
