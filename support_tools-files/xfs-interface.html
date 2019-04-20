@@ -255,23 +255,33 @@ load --int=console $HOME/myexpos/spl/spl_programs/console.xsm</pre>
                   </ul>
                 </li>  
 
-                <li class="list-group-item list-group-item-success"><b>XFS-Interface Instructions for NEXSM</b> <br/><br/>
-                  <ul class="list-group">
-                    <li class="list-group-item" style="color:black"> <i>Syntax</i> : <tt><b></b> &lt;pathname&gt;</tt></li>
-                    <li class="list-group-item" style="color:black"><i>Semantics</i> : It executes the set of xfs-interface commands specified in the <b>&lt;pathname&gt;</b>, sequentially. Note that, the set of commands in the file should be separated by a new line. For example,  a batch file that loads timer, disk and console interrupt handlers might appear appear as below: <br/><br/>
-                    <pre>load --int=timer $HOME/myexpos/spl/spl_programs/timer.xsm
-load --int=disk $HOME/myexpos/spl/spl_programs/disk.xsm
-load --int=console $HOME/myexpos/spl/spl_programs/console.xsm</pre>
+                <li id="nexsm" class="list-group-item list-group-item-success"><b style="color:red">XFS-Interface Instructions for NEXSM</b> <br/><br/>
+                  <p style="color:black">
+                    The following are the modifications to the XFS-interface for NEXSM:
+                  </p>
+                  <ul class="list-group"><ol>
+                    <li class="list-group-item" style="color:black">
+                      <i>Syntax</i> : <tt><b>load</b> --os=primary &lt;pathname&gt; </tt><br/>
+                      <i>Semantics</i> : Loads OS startup code for the primary core to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.
+                    </li>
+                    <li class="list-group-item" style="color:black">
+                      <i>Syntax</i> : <tt><b>load</b> --os=secondary &lt;pathname&gt; </tt><br/>
+                      <i>Semantics</i> : Loads OS startup code for the secondary core to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.
+                    </li>
+                    <li class="list-group-item" style="color:black">
+                      <i>Syntax</i> : <tt><b>load</b> --int=[4-19] &lt;pathname&gt; </tt><br/>
+                      <i>Semantics</i> : Loads the specified Interrupt routine to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.
+                    </li>
+                    <li class="list-group-item" style="color:black">
+                      <i>Syntax</i> : <tt><b>load</b> --module [0-11] &lt;pathname&gt; </tt><br/>
+                      <i>Semantics</i> : Loads the specified Module to the recognised XFS <a href="../os_implementation.html" target="_blank">disk blocks</a>.
                     </li>
                   </ul>
                 </li>
 
-            </ul>      
+              </ul>      
             
-              </div>
-
-              
-
+            </div>
           </div>
           </div>
         </div>       
