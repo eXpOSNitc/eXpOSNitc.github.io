@@ -161,27 +161,31 @@
         PTBR to PAGE_TABLE_BASE + 20*15 and PTLR as 10.</div>  
   Store the IP value (from the header of the IDLE whose code is shared by Swapper) on top of first user stack page [81*512] = [69*512 +1].
 
+
+  <font style="color:red">/* Initialize the IDLE2 (not relevant before Stage 28) */</font>
+
+  <a data-toggle="collapse" href="#collapse2b">Initialize the Page table for IDLE2 (PID = 14)</a>
+  <div id="collapse2b" class="panel-collapse collapse">
+        /* IDLE2 is identical to Idle and shares the code for Idle */
+        Initialize the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> + 20*14 and PTLR to 10.
+        Set the <a href="../os_design-files/process_table.html#per_page_table" target="_blank">page table</a> entries for library and heap to -1. Set auxiliary information for these pages to "0000". 
+        // swapper doesn't invoke any library function.   
+        Set the first code page entry to that of Idle (See <a href="../os_implementation.html" target="_blank">memory organization</a>). Set auxiliary information for valid code pages to "0100". 
+        Set remaining code page entries to -1 and auxiliary information to "0000".
+        Set the first stack page entry to 83 and auxiliary information for this page to "0110".
+        Set second stack page entry to -1 and auxiliary information to "0000".</div>
+  <a data-toggle="collapse" href="#collapse4b">Initialize the process table for IDLE2.</a>
+  <div id="collapse4b" class="panel-collapse collapse">
+        Initialize the fields of <a href="../os_design-files/process_table.html" target="_blank">process table</a> as -  TICK, USERID as 0, PID as 14, STATE as RUNNING,
+        USER AREA PAGE NUMBER as 84 (allocated from free user space), KPTR to 0, UPTR to 4096 (starting of first user stack page),
+        PTBR to PAGE_TABLE_BASE + 20*14 and PTLR as 10.</div>  
+
   
   Set the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> and PTLR to 10.
 
   Schedule IDLE process for excecution. (Return to user mode.)
 
 </pre>
-
-             <!--
-             <p>Load the software interrupts and handler routines to memory.</p>
-             <p>Load the init program to memory and set up its machine context.</p>
-             <p>Load the idle program to memory and set up its machine context.</p>
-<p>Load the Shared Library into memory.</p>
-<p>Load the root file into memory.</p>
-
-<p>if first entry in the Root File is not that of the root file, create an entry for it.</p>
-
-             <p>Load the disk data structures to the memory.</p> 
-
-<p>if first entry in Inode Table does not correspond to root file, set the first entry as the root file</p>
-             <p>Initialize all the memory data structures.</p>
-             <p>Schedule the init process for execution.</p>-->
 <br>
 <h4>Questions</h4>
 <p>1. why is the disk transfer (loading all the routines and data structures) done synchronously?</p>
@@ -259,7 +263,7 @@
 
              
                                                 
-             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the init process will be set up by the bootstrap loader.  The PID of the idle process is fixed to be 0.</p>
+             <p><i>Description</i>: It is a user program which is created and executed by the bootstrap loader. It is stored in the disk and will be loaded to memory by the bootstrap loader. The main purpose of the idle process is to run as a background process in an infinite loop. This is demanded by the OS so that the scheduler will always have a process to schedule. The page table and process table for the idle process will be set up by the bootstrap loader.  The PID of the idle process is fixed to be 0.</p>
               <br>
              <div><h4>Algorithm:</h4></div>
 <pre>   <b>while</b> TRUE <b>do</b>  //infinite loop
@@ -276,7 +280,7 @@
       <div class="container">
         <div class="row">
          <div class="heading">
-              <h2>INIT/<font color="red">Login</font> Process</h2>
+              <h2>INIT/Login Process</h2>
                <br>
                <br>                                      
 
@@ -312,10 +316,7 @@
           <div class="heading">
                <h2 >Swapper Daemon</h2>
                 <br>
-                <br>                                      
- 
-              
-                                                 
+                <br>                                                                        
               <p><i>Description</i>: It is a user program which is created by the bootstrap loader. This process uses the same code of the Idle process and hence has no file in the disk associated with it.  The main purpose of the swapper daemon is to serve as a user program such that the OS performs swap-in and swap-out operations in the kernel context of this process.  The PID of the swapper daemon is fixed to be 15.</p>
                <br>
               <div><h4>Algorithm:</h4></div>
@@ -324,6 +325,48 @@
      </div>
      </div>
      </section>
+
+    <section id="os2_startup">
+      <br><br><br>
+      <div class="container">
+        <div class="row">
+          <div class="heading">
+            <h2 style="color:red">OS Startup Code for Secondary Core</h2>
+            <br>
+            <br>                                                                        
+            <p><i>Description</i>: OS Startup Code for the secondary core is loaded from disk to memory by the <a href="../os_modules/Module_7.html" target="_blank">Boot Module</a>. Its main function is to prepare the secondary core of the machine for executing the processes.</p>
+            <br>
+            <div><h4>Algorithm:</h4></div>
+<pre>
+Store the IP value (from the header of the IDLE whose code is shared by Swapper) on top of first user stack page [83*512] = [69*512 + 1]
+
+Set SP to 8*512
+
+Set the Page table base register (PTBR) to <a href="../support_tools-files/constants.html" target="_blank">PAGE_TABLE_BASE</a> + 14*20 and PTLR to 10.
+
+Schedule IDLE2 process for excecution. (Return to user mode)
+</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="idle2">
+      <br><br><br>
+      <div class="container">
+        <div class="row">
+          <div class="heading">
+            <h2 style="color:red">IDLE Process for Secondary Core</h2>
+            <br>
+            <br>                                                                        
+            <p><i>Description</i>: It is a user program which is created by the bootstrap loader. This process uses the same code of the Idle process and hence has no file in the disk associated with it. The main purpose of the idle process is to run as a background process in an infinite loop in the secondary core. This is demanded by the OS so that the scheduler will always have a process to schedule in the secondary core, even if it schedules the IDLE in the primary core. The page table and process table for the init process will be set up by the bootstrap loader. The PID of the idle process is fixed to be 14.</p>
+            <br>
+            <div><h4>Algorithm:</h4></div>
+            <p>Identical to the Idle Process and runs with the code of the Idle Process.</p>
+          </div>
+        </div>
+      </div>
+   </section>
 
      <br>
      <br>
