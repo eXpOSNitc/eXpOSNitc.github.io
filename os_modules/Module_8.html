@@ -7,7 +7,7 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> File Manager</title>
+    <title> Access Control Module</title>
 
     <!-- Mobile Specific Metas
     ================================================== -->
@@ -121,15 +121,13 @@
                         <!-- START ABOUT HEADING -->
                         <div class="heading">
 
-                            <h2> File Manager </h2>
+                            <h2> Access Control Module </h2>
                             <br />
                             <br />
 
-                            <p> This module contains the functions that manages files.
-
+                            <p>
+                                This module contains the functions that manages access locks.
                             </p>
-                            <p><b>Important Note:</b> All functions in this module expect that the <b>inode is
-                                    locked</b> before they are called.</p>
                         </div>
 
                         <br> <br>
@@ -145,31 +143,31 @@
 
 
                             <tr>
-                                <td>BUFFERED_WRITE = 1</td>
-                                <td>Buffered Write</td>
-                                <td>Disk Block Number, Offset, Word </td>
+                                <td>ACQUIRE_KERN_LOCK = 1</td>
+                                <td>Acquire Kernel Lock</td>
+                                <td>NIL</td>
                                 <td>NIL</td>
                             </tr>
 
 
                             <tr>
-                                <td>BUFFERED_READ = 2</td>
-                                <td>Buffered Read</td>
-                                <td>Disk Block Number, Offset, Memory Address</td>
+                                <td>ACQUIRE_SCHED_LOCK = 2</td>
+                                <td>Acquire Scheduler Lock</td>
+                                <td>NIL</td>
                                 <td>NIL</td>
                             </tr>
 
                             <tr>
-                                <td>OPEN = 3</td>
-                                <td>Open</td>
-                                <td>File Name</td>
-                                <td>File Table Index, -1 or -2</td>
+                                <td>GLOCK = 3</td>
+                                <td>Acquire Glock (Unused)</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
                             </tr>
 
                             <tr>
-                                <td>CLOSE = 4</td>
-                                <td>Close</td>
-                                <td>File Table Index</td>
+                                <td>RELEASE_LOCK = 4</td>
+                                <td>Release Lock</td>
+                                <td>LockVarAddress</td>
                                 <td>NIL</td>
                             </tr>
 
@@ -194,155 +192,62 @@
                         </div>
 
 
-                        <h3 id="buffered_write"> Buffered Write </h3>
-                        <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The
-                        word provided is written into the offset position of the buffer.<br> Buffer managemnet is
-                        handled by this function internally.<br><br>
+                        <h3 id="f1"> Acquire Kernel Lock </h3>
+                        <i> <b>Description </b></i>: Acquires the KERN_LOCK, which is a common access lock to be set before running any critical kernel code other than scheduling. This function must be called before performing any kernel function, this lock must be set by the kernel module/interrupt handler so that the other core waits till the critical action is completed.<br><br>
 
-                        <pre>
-    Identify the buffer ; 			
-    /* Buffer Number = (Disk Number % 4) is a simple scheme, 
-    good enough for our purposes. More efficient schemes are used in real systems */
-    
-    Acquire the buffer by calling the Acquire_Buffer() function	
-    in the <a href="Module_0.html">Resource Manager module</a>;
-    
-    if (the buffer contains a different disk block){  			/* check block number in <a href="../os_design-files/mem_ds.html#buffer_table">Buffer Table</a>. */
-        
-        if (the buffer contents are dirty){					/* check DIRTY BIT of buffer table */
-              Write back the contents of the buffer
-              to the disk by invoking disk_store() 
-              function in the <a href="Module_4.html">device manager module</a>;
+<pre>
+    if (core is SECONDARY_CORE){
+        if (PAGING_STATUS or LOGOUT_STATUS is on){
+            Set the state of current process to READY
+
+            Call the <b>switch_context()</b> function from the <a href="Module_5.html" target="_blank">Scheduler Module</a>.
         }
-        
-        Load the required disk block into the buffer by invoking
-        the disk_load() function in the <a href="Module_4.html">device manager module</a>;
-
-        Set the new Disk block number in the Buffer table entry;
     }
-    
-    Write the contents of the word taken as input into the offset
-    location in the buffer; 
-    
-    Mark the buffer as Dirty;
-    
-    Release the buffer by calling the Release_Buffer() function
-    in the Resource Manager module;
+
+    while ( tsl (KERN_LOCK) == 1 ){
+        continue;
+    }
+
+    return;
+</pre>
+
+                        Called by all system calls, exception handler and timer interrupt handler.<br> <br><br>
+
+                        <h3 id="f2"> Acquire Scheduler Lock </h3>
+                        <i> <b>Description </b></i>: Acquires the Scheduler Lock, which is an access lock to run the Scheduler Module. This is called so that if one core has set the SCHED_LOCK in the Scheduler Module, the other core runs in a busy loop until execution of the Scheduler Module is completed.
+                        <br> <br>
+<pre>
+    while ( tsl (SCHED_LOCK) == 1 ){
+        continue;
+    }
     
     return;
 </pre>
 
-                        Called by the Write system call.
+                        Called by the Scehduler module. <br> <br><br>
 
+                        <h3 id="f3"> Acquire Glock </h3>
+                        <i> <b>Description </b></i>: Acquires the General Purpose Lock, which is a general purpose lock variable that is left unused for future use.<br><br>
 
-
-
-                        <h3 id="buffered_read"> Buffered Read </h3>
-                        <i> <b>Description </b></i>: The disk page provided is loaded to the corresponding buffer. The
-                        word present at the offset position of the buffer is copied to the Memory address provided as
-                        input. Buffer management is handled by this function internally.<br> <br>
-                        NOTE: Physical memory address must be provided. <br> <br>
-                        <pre>
-    Identify the buffer ; 			
-    /* Buffer Number = (Disk Number % 4) is a simple scheme, 
-    good enough for our purposes. More efficient schemes are used in real systems */
-    
-    Acquire the buffer by calling the Acquire_Buffer() function
-    in the <a href="Module_0.html">Resource Manager module</a>;
-    
-    if (the buffer contains a different disk block){  			/* check block number in <a href="../os_design-files/mem_ds.html#buffer_table">Buffer Table</a>. */
-        
-        if (the buffer contents are dirty){					/* check DIRTY BIT of buffer table */
-              Write back the contents of the buffer
-              to the disk by invoking disk_store() 
-              function in the <a href="Module_4.html">device manager module</a>;
-              
-              Mark the buffer as clean in the 
-              corresponding buffer table entry;
-        }
-        
-        Load the required disk block into the buffer by invoking
-        the disk_load() function in the device manager module;
-
-        Set the new Disk block number in the Buffer table entry;
+<pre>
+    while ( tsl (GLOCK) == 1 ){
+        continue;
     }
     
-    Copy the contents in the offset location in the buffer to the
-    physical address given as input; 
-        
-    Release the buffer by calling the Release_Buffer() function
-    in the Resource Manager module;
-    
     return;
-
 </pre>
 
-                        Called by the Read system call. <br> <br><br>
+<br> <br><br>
+                        <h3 id="f4"> Release Lock </h3>
+                        <i> <b>Description </b></i>: Releases the access lock provided as the argument. <br><br>
 
-                        <h3 id="open"> Open </h3>
-                        <i> <b>Description </b></i>: Locates the file in the inode table and makes an entry in the Open
-                        File Table. Returns the Open File Table index or an error code if file does not exist or the
-                        table is full. On a successfull open, the file status table entry of the file is
-                        incremented.<br>
-                        <br>
-                        <b>Note:</b> This function must not be called unless a the calling process has a free entry
-                        available in the <a href="../os_design-files/process_table.html#per_process_table">per-process
-                            resource table</a> to store the open file table index returned by this function.<br><br>
+<pre>
+    Store 0 at the address LockVarAddress.
 
-                        <pre>
-
-Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file. If the entry is not found, return -1.
-
-Call the <b>acquire_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Lock the inode */
-If the locking fails, return -1. 
-
-If the file is of type EXEC, <b>release_inode()</b> and return -1. 	/* Only data files can be opened */
-
-Find a free entry in the <a href="../os_design-files/mem_ds.html#file_table">Open File Table</a>.
-If there are no free entries, <b>release_inode()</b> and return -2.  /* Reached maximum number of open files in the system. */
-
-<b>If</b> the file name is "root" <b>then</b> 
-	Set the INODE INDEX field in the open file table entry to <a href="../support_tools-files/constants.html">INODE_ROOT</a>. 
-<b>else</b>
-	In the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File Status Table</a>, if the File Open Count is -1, set it to 1. Otherwise, increment the File Open Count.
-	Set the INODE INDEX field in the open file table entry to the inode table index of the file. 
-
-Set the OPEN INSTANCE COUNT to 1 and LSEEK to 0 in the open file table entry.
-
-Call the <b>release_inode()</b> function in the <a href="../os_modules/Module_0.html">Resource Manager</a> module.&nbsp;&nbsp; /* Free the inode */
-
-return the Open File Table Index.
-
-Question: 
-	1. Why don't we need to maintain file open count for the root file? We still need to maintain open instance count for the root file, why?
-	2. After acquiring the inode, why do we check if the input file name matches the inode table entry?
+    return;
 </pre>
 
-                        Called by the open system call.
-
-                        <h3 id="close"> Close </h3>
-                        <i> <b>Description </b></i>: Closes the open instance of a file. Assumes a valid Open File Table
-                        index is given as input. <br><br>
-
-                        <pre>
-
-Find the index of the <a href="../os_design-files/disk_ds.html#inode_table">Inode Table</a> entry of the file from the Open File Table.
-
-In the <a href="../os_design-files/mem_ds.html#file_table">Open File Table Entry</a>, decrement the Open Instance Count.
-
-If the Open Instance Count becomes 0
-	Invalidate the entry by setting all fields to -1.
-	If the file is not the "root", decrement the File Open Count in the <a href="../os_design-files/mem_ds.html#file_lock_status_table">File (Inode) Status Table</a>.
-	If the File Open Count in File Status Table becomes 0, set it to -1.
-	/* Check the INODE_INDEX field in the Open File Table entry */
-
-return;
-</pre>
-
-                        Called by the close, exit system call.
-
-
-
+                        Called by all system calls, exception handler, timer interrupt handler and scheduler.
 
                         <!--end-->
 
