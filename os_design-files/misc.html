@@ -331,9 +331,10 @@
       <div class="container">
         <div class="row">
           <div class="heading">
-            <h2 style="color:red">OS Startup Code for Secondary Core</h2>
+            <h2 style="color:red">OS Startup Code for Secondary Core<font style="color:red">*</font></h2>
             <br>
-            <br>                                                                        
+            <br>
+            <font style="color:red">*</font> This is only relevant for Stage 28.                                                                      
             <p><i>Description</i>: OS Startup Code for the secondary core is loaded from disk to memory by the <a href="../os_modules/Module_7.html" target="_blank">Boot Module</a>. Its main function is to prepare the secondary core of the machine for executing the processes.</p>
             <br>
             <div><h4>Algorithm:</h4></div>
@@ -356,9 +357,10 @@ Schedule IDLE2 process for excecution. (Return to user mode)
       <div class="container">
         <div class="row">
           <div class="heading">
-            <h2 style="color:red">IDLE Process for Secondary Core</h2>
+            <h2 style="color:red">IDLE Process for Secondary Core<font style="color:red">*</font></h2>
             <br>
-            <br>                                                                        
+            <br>  
+            <font style="color:red">*</font> This is only relevant for Stage 28.                                                                      
             <p><i>Description</i>: It is a user program which is created by the bootstrap loader. This process uses the same code of the Idle process and hence has no file in the disk associated with it. The main purpose of the idle process is to run as a background process in an infinite loop in the secondary core. This is demanded by the OS so that the scheduler will always have a process to schedule in the secondary core, even if it schedules the IDLE in the primary core. The page table and process table for the init process will be set up by the bootstrap loader. The PID of the idle process is fixed to be 14.</p>
             <br>
             <div><h4>Algorithm:</h4></div>

@@ -158,7 +158,7 @@
                             </tr>
 
                             <tr>
-                                <td>GLOCK = 3</td>
+                                <td>ACQUIRE_GLOCK = 3</td>
                                 <td>Acquire Glock (Unused)</td>
                                 <td>NIL</td>
                                 <td>NIL</td>
@@ -173,34 +173,20 @@
 
 
                         </table>
-                        <br>
-                        <br>
-                        <div style="background: url(../img/os-modules/FileManager.png); height: 419px; width: 981px;">
-                            <a class="btn" href="#buffered_write"
-                                style="position: absolute; height: 40px; width: 240px; margin-top: 60px; margin-left: 370px"></a>
-                            <a class="btn" href="#buffered_read"
-                                style="position: absolute; height: 40px; width: 240px; margin-top: 120px; margin-left: 370px"></a>
-                            <a class="btn" href="#open"
-                                style="position: absolute; height: 40px; width: 240px; margin-top: 180px; margin-left: 370px"></a>
-                            <a class="btn" href="#close"
-                                style="position: absolute; height: 40px; width: 240px; margin-top: 240px; margin-left: 370px"></a>
-
-                            <a class="btn" href="Module_4.html"
-                                style="position: absolute; height: 165px; width: 270px; margin-top: 120px; margin-left: 0px"></a>
-                            <a class="btn" href="Module_0.html"
-                                style="position: absolute; height: 300px; width: 270px; margin-top: 120px; margin-left: 710px"></a>
-                        </div>
-
-
+                        
+                        <br> <br>
                         <h3 id="f1"> Acquire Kernel Lock </h3>
-                        <i> <b>Description </b></i>: Acquires the KERN_LOCK, which is a common access lock to be set before running any critical kernel code other than scheduling. This function must be called before performing any kernel function, this lock must be set by the kernel module/interrupt handler so that the other core waits till the critical action is completed.<br><br>
+                        <i> <b>Description </b></i>: Acquires KERN_LOCK which is a common access variable to be set before running any critical kernel code (except the scheduler). Before executing any kernel module/interrupt handler,  KERN_LOCK is set (by invoking this function) so that the other core waits till the critical action is completed. After completing the critical kernel code, the <i>ReleaseLock</i> function is used to release KERN_LOCK.<br><br>
 
 <pre>
     if (core is SECONDARY_CORE){
         if (PAGING_STATUS or LOGOUT_STATUS is on){
+            // <a href="../os_design-files/nexpos.html" target="_blank">eXpOS design</a> does not permit a process to execute critical code on the secondary core when paging or logout is ongoing.
+
             Set the state of current process to READY
 
-            Call the <b>switch_context()</b> function from the <a href="Module_5.html" target="_blank">Scheduler Module</a>.
+            Call the <b>switch_context()</b> function of the Scheduler Module.
+            <b>/* Scheduler Module requires appropriate modifications before running on the <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a> */</b>
         }
     }
 
@@ -214,7 +200,7 @@
                         Called by all system calls, exception handler and timer interrupt handler.<br> <br><br>
 
                         <h3 id="f2"> Acquire Scheduler Lock </h3>
-                        <i> <b>Description </b></i>: Acquires the Scheduler Lock, which is an access lock to run the Scheduler Module. This is called so that if one core has set the SCHED_LOCK in the Scheduler Module, the other core runs in a busy loop until execution of the Scheduler Module is completed.
+                        <i> <b>Description </b></i>: Acquires SCHED_LOCK which is an access variable to be set before running the scheduler. This ensures that if one core has set SCHED_LOCK, the other core will not enter the Scheduler module until the first core completes the scheduling action. After completing the scheduling action, the <i>ReleaseLock</i> function is used to release SCHED_LOCK.
                         <br> <br>
 <pre>
     while ( tsl (SCHED_LOCK) == 1 ){
@@ -227,7 +213,7 @@
                         Called by the Scehduler module. <br> <br><br>
 
                         <h3 id="f3"> Acquire Glock </h3>
-                        <i> <b>Description </b></i>: Acquires the General Purpose Lock, which is a general purpose lock variable that is left unused for future use.<br><br>
+                        <i> <b>Description </b></i>: Acquires GLOCK which is a general purpose lock variable that is currently left unused.<br><br>
 
 <pre>
     while ( tsl (GLOCK) == 1 ){
@@ -242,7 +228,7 @@
                         <i> <b>Description </b></i>: Releases the access lock provided as the argument. <br><br>
 
 <pre>
-    Store 0 at the address LockVarAddress.
+    Store 0 to the address LockVarAddress.
 
     return;
 </pre>

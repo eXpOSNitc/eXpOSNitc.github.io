@@ -172,8 +172,6 @@ to the new UA Page, MODE, TICK and Kernel Stack Pointer to 0.
 /* Kernel Context of the child process is empty */
 
 /* PID, PTBR, PTLR fields of the child's process table is initilized by the get_pcb_entry function.*/ 
-        
-Set state of child process to (CREATED, _ ).
 
 Copy the <a href="process_table.html#per_process_table">per-process resource table</a> and <a href="process_table.html#disk_map_table">per-process disk map table</a>.
 For every open file of the parent, increment the Open Instance Count in the <a href="mem_ds.html#file_table" target="_blank">Open File Table</a>.
@@ -193,8 +191,10 @@ Store the current BP value to the begining of the kernel stack.
 /* According to the ExpL calling convention, the BP register is not saved in the user stack. 
 This value is saved here so that the context switch module can restore it when the child is run. */
        
-Set the return  value to 0 for the child process
+Set the return value to 0 for the child process
 The PID of the child process is set as the return value for the parent process
+
+Set state of child process to (CREATED, _ ).
 
 Set the MODE_FLAG in the <a href="process_table.html">process table</a> entry of the parent process to 0.
 
