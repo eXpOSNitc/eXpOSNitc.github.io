@@ -5602,7 +5602,7 @@ userSP=SP;</pre>
                         <li class="list-group-item" style="background:#dff0d8">
                           <b>Final Stages:</b>
                           <p>
-                            Stage 20-Stage 27 are the final stages of the project where you will implement all the system calls stipulated in the ABI documentation. Typically 5-6 weeks will be needed to complete these stages. At the end of the twentieth stage, basic system calls for process creation and termination – Fork, Exec and Exit will be completed.   The next two stages take up system calls implementing signals and semaphores. The next three stages address the implementation of the file system. The subsequent stages add multi-user support and virtual memory support. <font style="color:red">(A final stage (Stage 28) describing how the OS can be ported to a two-core extension of the XSM machine has been added subsequently.)</font>
+                            Stage 20-Stage 27 are the final stages of the project where you will implement all the system calls stipulated in the ABI documentation. Typically 5-6 weeks will be needed to complete these stages. At the end of the twentieth stage, basic system calls for process creation and termination – Fork, Exec and Exit will be completed.   The next two stages take up system calls implementing signals and semaphores. The next three stages address the implementation of the file system. The subsequent stages add multi-user support and virtual memory support. <font style="color:red">(An advanced stage (Stage 28) describing how the OS can be ported to a two-core extension of the XSM machine has been added subsequently.)</font>
                           </p>
                         </li>
                       </ul>
@@ -8768,7 +8768,7 @@ bit (in the buffer table) of all the buffered disk blocks of the file.
                         A new data structure called <a href="os_design-files/mem_ds.html#al_table" target="_blank"><b>access lock table</b></a> is introduced. The fields that are of interest in this data structure are the following:<br>
                         a) KERN_LOCK &nbsp;&nbsp;&nbsp;&nbsp; b) SCHED_LOCK
                       </p>
-                      <ol style="margin:1.8em">
+                      <ol style="margin-left:1.8em">
                         <li>
                           When the kernel enters a system call/exception handler (in either core),  it first checks whether KERN_LOCK=1 (If so, the value should have been set to 1 by the kernel code running on the other core). In that case, the kernel executes a <a href="https://en.wikipedia.org/wiki/Spinlock" target="_blank"><b>spin lock</b></a> (details will follow) till the kernel code running on the other core sets the lock back to zero. When the lock becomes available, the system call/exception handler sets KERN_LOCK to 1 and proceed with the normal execution of the system call. This ensures, mutual exclusion (between the two cores) for the critical code of system calls/exception handler. Since paging code is critical, KERN_LOCK is set before invoking the <a href="os_modules/Module_8.html" target="_blank">pager module</a> (from the <a href="os_design-files/timer.html" target="_blank">timer interrupt handler</a>) and set back to zero upon return from the pager module.
                         </li>

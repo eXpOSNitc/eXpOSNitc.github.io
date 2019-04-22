@@ -81,7 +81,7 @@
                             <li><a href="../documentation.html" target="_blank">Documentation</a></li>
                             <li><a href="../Roadmap.html" target="_blank">Roadmap</a></li>
                             <li><a href="../faq.html" target="_blank">FAQ</a></li>
-                            <li><a hhref="../About_us.html">About Us</a></li>
+                            <li><a href="../About_us.html">About Us</a></li>
                         </ul>
                     </div>
                 </div>
@@ -115,19 +115,97 @@
                             </p>
 
                             <br>
+                            <h4><b>Modifications to User Interface</b></h4>
+                            <p>
+                                The user interface is eXpOS undergoes no change.
+                            </p>
+
+                            <br>
+                            <h4><b>Modifications to Application Interface</b></h4>
+                            <p>
+                                The application interface specification of the eXpOS undergoes minor modification when moving to NEXSM. The version of eXpOS running on NEXSM supports an additional software interrupt INT 19. There are four system calls that gets mapped to INT 19 routine. These are:
+                            </p>
+                            <p>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="border: 1px solid black"><b>System Call Name</b></td>
+                                        <td style="border: 1px solid black"><b>System Call Number</b></td>               
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">Test4</td>
+                                        <td style="border: 1px solid black">100</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">Test5</td>
+                                        <td style="border: 1px solid black">101</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">Test6</td>
+                                        <td style="border: 1px solid black">102</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">Test7</td>
+                                        <td style="border: 1px solid black">103</td>
+                                    </tr>
+                                </table>
+                            </p>
+                            <p>
+                                The <b>high level library interface</b> to these new system calls is specified <a href="../os_spec-files/dynamicmemoryroutines.html" target="_blank">here</a>.
+                            </p>
+                            <p>
+                                The <b>low level system call interface</b> to these new system calls is specified <a href="Sw_interface.html" target="_blank">here</a>.
+                            </p>
+                            <p>
+                                Currently, these system calls are unused. They could be used for testing future enhancements to the system.
+                            </p>
+
+                            <br>
+                            <h4><b>Modifications to OS Design</b></h4>
+                            <p>
+                                The design of eXpOS undergoes changes when ported to the two-core machine.
+                            </p>
+
+                            <br>
                             <h4><b>Disk Organization</b></h4>
                             <p>
                                 NEXSM disk has 16 additional disk blocks (block numbers 512 to 527).  The OS uses these blocks for loading the following handlers:
                             </p>
-                            <ol style="font-size:16px;">
-                                <li>Block 512 and 513 - Secondary bootstrap loader.</li>
-                                <li>Block 514 and 515 - INT 19 handler.</li>
-                                <li>Block 516 and 517 - Module 8</li>
-                                <li>Block 518 and 519 - Module 9</li>
-                                <li>Block 520 and 521 - Module 10</li>
-                                <li>Block 522 and 523 - Module 11</li>
-                                <li>Block 524 to 527 - Unused.</li>
-                            </ol>
+                            <p>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="border: 1px solid black"><b>Block Number</b></td>
+                                        <td style="border: 1px solid black"><b>Contents</b></td>               
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">512-513</td>
+                                        <td style="border: 1px solid black">Secondary Bootstrap Loader</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">514-515</td>
+                                        <td style="border: 1px solid black">INT 19 handler</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">516-517</td>
+                                        <td style="border: 1px solid black">Module 8</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">518-519</td>
+                                        <td style="border: 1px solid black">Module 9</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">520-521</td>
+                                        <td style="border: 1px solid black">Module 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">522-523</td>
+                                        <td style="border: 1px solid black">Module 11</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">524-527</td>
+                                        <td style="border: 1px solid black">Unused</td>
+                                    </tr>
+                                </table>
+                            </p>
                             <p>
                                 Disk organization is given <a href="../os_implementation.html" target="_blank">here</a>.
                             </p>
@@ -135,34 +213,82 @@
                             <br>
                             <h4><b>Memory Organization</b></h4>
                             <p>
-                                NEXSM has 16 additional pages of memory (pages 128 to 144). The first four new pages are reserved by the machine. Pages 128 and 129 are reserved for storing the bootstrap loader for the  secondary core (called the secondary bootstrap loader). Pages 130 and 131 are reserved for a new software interrupt, INT 19. Currently INT19 is unused.
+                                NEXSM has 16 additional pages of memory (pages 128 to 144). The first four new pages are reserved by the machine. These are:
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="border: 1px solid black"><b>Page Number</b></td>
+                                        <td style="border: 1px solid black"><b>Contents</b></td>               
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">128-129</td>
+                                        <td style="border: 1px solid black">Secondary bootstrap loader (bootstrap loader for secondary core)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">130-131</td>
+                                        <td style="border: 1px solid black">Software interrupt, INT 19 (currently INT19 is unused)</td>
+                                    </tr>
+                                </table>
                             </p>
                             <p>
-                                From among the remaining 12 available pages, eXpOS reserves the next eight pages for four module handlers - Module 8, Module 9, Module 10 and Module 11. The remaining four pages can be allocated to user programs.  The memory organization is given <a href="../os_implementation.html" target="_blank">here</a>.
+                                Four new system calls, Test4, Test5, Test6 and Test7 are added to eXpOS and all these calls are directed to INT19 (see details <a href="../os_spec-files/dynamicmemoryroutines.html" target="_blank">here</a>). Currently the functionality of these system calls are unspecified. These are left so for testing future enhancements and conducting experiments on the system.
                             </p>
                             <p>
-                                The present design does not use Module 9, Module 10 and Module 11. Module 8 is called <b>Access Control Module</b>. This module contains code for synchronization between the two cores. Module 9, Module 10 and Module 11 are called TestA Module, TestB Module and TestC Module respectively. These modules are left free to provide space for testing enhancements and conducting experiments on the system.
+                                From among the remaining 12 available pages, eXpOS reserves the next eight pages for storing OS code as follows:
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="border: 1px solid black"><b>Page Number</b></td>
+                                        <td style="border: 1px solid black"><b>Contents</b></td>               
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">132-133</td>
+                                        <td style="border: 1px solid black">Module 8 (<a href="../os_modules/Module_8.html" target="_blank">Access Control Module</a>)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">134-135</td>
+                                        <td style="border: 1px solid black">Module 9 (TestA Module)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">136-137</td>
+                                        <td style="border: 1px solid black">Module 10 (TestB Module)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">138-139</td>
+                                        <td style="border: 1px solid black">Module 11 (TestC Module)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid black">140-143</td>
+                                        <td style="border: 1px solid black">Reserved for future use</td>
+                                    </tr>
+                                </table>
+                            </p>
+                            <p>
+                                The present design does not use Module 9, Module 10 and Module 11. Module 8 is called <b>Access Control Module</b>. This module contains code for synchronization between the two cores. Module 9, Module 10 and Module 11 are called TestA Module, TestB Module and TestC Module, respectively. These modules are left free to provide space for testing enhancements and conducting experiments on the system. The remaining four pages (140-143) are also not used. 
                             </p>
 
                             <br>
                             <h4><b>Design Policies</b></h4>
                             <p>
-                                The fundamental issue to be resolved while extending the OS to a two core machine is to ensure that concurrent updates of OS data structures from the two cores do not leave the OS in an inconsistent state. Here we impose a few simple to implement design level restrictions on the level of parallelism permitted so that a simple and comprehensible design is possible. The constraints imposed are the following:
+                                The fundamental issue to be resolved while extending the OS to a two core machine is to ensure <i>that concurrent updates of OS data structures from the two cores do not leave the OS in an inconsistent state</i>. Here we impose a few simple to implement design level restrictions on the level of parallelism permitted so that a simple and comprehensible design is possible. The constraints imposed are the following:
                             </p>
                             <p>
-                                <i>Policy 1: Atomicity constraints:</i>
-                                <br>
-                                a) A single process will never be scheduled simultaneously on both the cores.  The scheduler will be designed to ensure this policy.
-                                <br>
-                                b) Only one core will run scheduler code that involves updates to kernel data structures at a given time. This makes implementation of the first policy straight-forward.
-                                <br>
-                                c) Only one core will be executing critical  kernel code at a time. Upon entry into a system call the kernel checks whether the other core is running critical kernel code. If that is the case, then the kernel waits for the other core to finish the critical code before proceeding.   
+                                <i><b>Policy 1:</b> Atomicity constraints:</i>
+                            </p>
+                            <ol type="a" style="font-size:16px;margin-left:4em">
+                                <li>
+                                    A single process will never be scheduled simultaneously on both the cores.  The scheduler will be designed to ensure this policy.
+                                </li>
+                                <li>
+                                    Only one core will run scheduler code that involves updates to kernel data structures at a given time. This makes implementation of the first policy straight-forward.
+                                </li>
+                                <li>
+                                    Only one core will be executing critical  kernel code at a time. Upon entry into a system call the kernel checks whether the other core is running critical kernel code. If that is the case, then the kernel waits for the other core to finish the critical code before proceeding.
+                                </li>
+                            </ol>
+                            <p>
+                                Atomicity is ensured using <b>access locks</b>. The kernel maintains a few access locks which will be set before executing critical code. <b>Before executing any critical code, the kernel checks whether the other core has acquired the access lock and waits for the release of the lock before proceeding.</b> When the access lock is available, the kernel sets the access lock when available and proceeds to the critical code. This procedure ensures that only one core executes critical code.
                             </p>
                             <p>
-                                Atomicity is ensured using access locks. The kernel maintains a few access locks which will be set before executing critical code. Before executing any critical code, the kernel checks whether the other code has acquired the access lock and waits for the release of the lock before proceeding. The kernel sets the access lock when available and proceeds to the critical code. This procedure ensures that only one core executes critical code.
-                            </p>
-                            <p>
-                                <i>Policy 2: Hold and Wait constraints:</i> A process, after acquiring an access lock will quickly perform the required action (like updating a kernel data structure) and release the lock immediately,  before being scheduled out. Moreover, a second access lock will be acquired only after releasing the first. These constraints ensure that there will be no hold and wait or circular wait for access locks.
+                                <i><b>Policy 2:</b> Hold and Wait constraints:</i> A process, after acquiring an access lock will quickly perform the required action (like updating a kernel data structure) and release the lock immediately,  before being scheduled out. Moreover, a second access lock will be acquired only after releasing the first. These constraints ensure that there will be no hold and wait or circular wait for access locks.
                             </p>
                             <p>
                                 It is not very difficult to see that adherence to the above policies is sufficient to ensure the consistency of the OS.
@@ -171,7 +297,7 @@
                             <br>
                             <h4><b>Implementation of Access Locking</b></h4>
                             <p>
-                                Atomicity of access locking is implemented using the hardware mechanism provided by the NEXSM machine (TSL instruction). The details follow.
+                                Atomicity of access locking is implemented using the hardware mechanism provided by the <a href="../arch_spec-files/nexsm.html" target="_blank">NEXSM machine</a> (<a href="../arch_spec-files/nexsm.html#instr" target="_blank">TSL instruction</a>). The details follow.
                             </p>
 
                             <br>
@@ -203,21 +329,23 @@
                                 </table>
                             </p>
                             <p>
-                                The design ensures that before running the scheduler, a process releases the KERN_LOC. The scheduler must set SCHED_LOCK before starting the scheduling process and reset the lock after scheduling actions are completed.
+                                The design ensures that before running the scheduler, a process releases KERN_LOCK. The scheduler must set SCHED_LOCK before starting the scheduling process and reset the lock after scheduling actions are completed.
                             </p>
                             <p>
-                                The Access Lock table is allocated eight words of memory and is stored in memory locations 29576-29583, of which the last five words are unused. (see <a href="../os_implementation.html" target="_blank">memory organization</a>).  
+                                The <a href="mem_ds.html#al_table" target="_blank">Access Lock table</a> is allocated eight words of memory and is stored in memory locations 29576-29583, of which the last five words are unused. (see <a href="../os_implementation.html" target="_blank">memory organization</a>).  
                             </p>
 
                             <br>
                             <h4><b>Access Control Module</b></h4>
                             <p>
-                                The access control module contains the following functions:
-                                <br>AcquireKernLock()
-                                <br>AcquireSchedLock()
-                                <br>AcquireGLock()
-                                <br>ReleaseLock(LockVarAddress)
+                                The <a href="../os_modules/Module_8.html" target="_blank">access control module</a> contains functions that implement atomic set and reset operations on the kernel lock variables. The following are functions present in the access control module:
                             </p>
+                            <ol  style="font-size:16px;margin-left:2em">
+                                <li>AcquireKernLock()</li>
+                                <li>AcquireSchedLock()</li>
+                                <li>AcquireGLock()</li>
+                                <li>ReleaseLock(LockVarAddress)</li>
+                            </ul>
                             <p>
                                 The AccessLock functions can be implemented using the TSL instruction to ensure that locking is <b>atomic</b>. The general locking logic in SPL would be the following:
                             </p>
@@ -230,32 +358,27 @@ Acquire****Lock() {
     endwhile; 
 }</pre>
                             <p>
-                                This would translate to the following XSM code (or equivalent):
-                            </p>
-                            <pre>
-L1: TSL Ri, [LockVariableAddress]
-MOV Rj, 1
-EQ Ri, Rj
-JNZ Ri, L1</pre>
-                            <p>
-                                The SPL extension NEXSM [LINK] provides constants [LINK] for identifying the access control variables in the Access Lock Table. Constants for invoking the new modules – TestA, TestB, TestC and the Access Control Module, etc., are also provided.
+                                The <a href="../support_tools-files/spl.html#nexsm" target="_blank">SPL extension</a> of NEXSM provides <a href="../support_tools-files/constants.html#nexsm">constants</a> for identifying the access control variables in the Access Lock Table. Constants for invoking the new modules – TestA, TestB, TestC and the Access Control Module, etc., are also provided.
                             </p>
 
                             <br>
                             <h4><b>Other Design Modifications</b></h4>
                             <p>
-                                In two core operation, it might be required that both the cores schedule the IDLE process simultaneously. This happens when:
-                                <br> 1. No other process is ready, <b>OR</b>
-                                <br> 2. The OS is running the pager module or if logout system call is being executed in the primary.
+                                In two core operation, it might be required that both the cores schedule the IDLE process simultaneously. However, this goes against our previously stated design principle of not allowing the same process to be scheduled simultaneously on both the cores. To handle this contingency, a new process called IDLE2 with (PID=14) is created. The scheduler will be modified to run IDLE2 on the secondary core whenever it finds that no other process can be scheduled. The standard IDLE (PID=0) will be scheduled under similar circumstances in the primary core. The primary will never execute IDLE2 and the secondary will never run IDLE (PID=0).
                             </p>
                             <p>
-                                To accommodate this modification, we will create a new process IDLE2 with PID=14. The scheduler will be modified to run IDLE2 on the secondary core whenever it finds that no other process can be scheduled. The standard IDLE (PID=0) will be scheduled under similar circumstances in the primary core. <b>The scheduler will run IDLE, LOGIN, SHELL and the swapper daemon only from the primary and IDLE2 only from the secondary.</b>
+                                IDLE2 is run on the secondary when:
+                                <br> 1. No other process is ready, <b>OR</b>
+                                <br> 2. The OS is running the <a href="../os_modules/Module_6.html" target="_blank">pager module</a> or if <a href="multiusersyscalls.html#logout" target="_blank">logout system call</a> is being executed in the primary.
+                            </p>
+                            <p>
+                                In the present design, the  scheduler will run <a href="misc.html#login" target="_blank">LOGIN</a>, <a href="misc.html#shell" target="_blank">SHELL</a> and the <a href="misc.html#swapper" target="_blank">Swapper Daemon</a> processes only from the primary. The <a href="../os_modules/Module_6.html" target="_blank">pager module</a> also will be run only from the primary. These constraints simplify implementation of the kernel, but are neither necessary nor very efficient. 
                             </p>
 
                             <br>
                             <h4><b>Boot Procedure</b></h4>
                             <p>
-                                NEXSM specification stipulates that the secondary code bootstraps from the physical address 65536 (page 128) upon execution of the START instruction from the primary. Hence, <b>the bootstrap routine of the primary core must transfer the bootstrap code of the secondary from disk  block (see <a href="../os_implementation.html" target="_blank">disk organization</a>) to memory page 128 before issuing the START instruction</b>. The START instruction is issued at the end of normal bootstrap by the primary (see OS Startup code[LINK]).
+                                NEXSM specification stipulates that the secondary code bootstraps from the physical address 65536 (page 128) upon execution of the START instruction from the primary. Hence, <b>the bootstrap routine of the primary core must transfer the bootstrap code of the secondary from disk  block (see <a href="../os_implementation.html" target="_blank">disk organization</a>) to memory page 128 before issuing the START instruction</b>. The START instruction is issued at the end of normal bootstrap by the primary (see <a href="misc.html#os_startup" target="_blank">OS Startup code</a>).
                             </p>
                             <p>
                                 The secondary bootstrap code will schedule the IDLE2 process for execution (setting its state appropriately) and from there normal two core execution starts.
@@ -265,10 +388,25 @@ JNZ Ri, L1</pre>
                             <h4><b>Implementation</b></h4>
                             <p>
                                 The major changes to be made to the single core eXpOS kernel are the following:
-                                <br> 1. Upon entry into a system call or exception handler, either from an application  or from the scheduler, <i>AcquireKernLock()</i> must be invoked.  The lock must be released before invoking the scheduler or switch back to user mode using <i>ReleaseLock(KERN_LOCK)</i>.
-                                <br> 2. The scheduler module must be modified to set <i>AcquireSchedLock()</i> before initiating scheduling actions. Upon completion of scheduling actions, the scheduler must release the lock invoking <i>ReleaseLock(SCHED_LOCK)</i> before setting any process into execution. 
-                                <br> 3. <i>Swapper daemon</i> will be invoked only from the primary core by the timer interrupt handler (as done in eXpOS). When the scheduler running on the second core finds that pager daemon was initiated from the primary (check PAGING_STATUS in <a href="mem_ds.html/#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
-                                <br> 4. The <i>Logout system call</i> will be invoked only from primary core as the shell process will be scheduled to run only on the primary. When the scheduler running on the second core finds that logout/shutdown system call is initiated, from the primary (check LOGOUT_STATUS in <a href="mem_ds.html/#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
+                            </p>
+                            <ol style="font-size:16px;margin-left:1.8em">
+                                <li>
+                                    Upon entry into a system call or exception handler, either from an application  or from the scheduler, <i>AcquireKernLock()</i> must be invoked.  The lock must be released before invoking the scheduler or switch back to user mode using <i>ReleaseLock(KERN_LOCK)</i>.
+                                </li>
+                                <li>
+                                    The scheduler module must be modified to set <i>AcquireSchedLock()</i> before initiating scheduling actions. Upon completion of scheduling actions, the scheduler must release the lock invoking <i>ReleaseLock(SCHED_LOCK)</i> before setting any process into execution.
+                                </li>
+                                <li>
+                                    <i>Swapper daemon</i> will be invoked only from the primary core by the timer  interrupt handler (as done in eXpOS). When the scheduler running on the second core finds that pager daemon was initiated from the primary (check PAGING_STATUS in <a href="mem_ds.html#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
+                                </li>
+                                <li>
+                                    The <i>Logout system call</i> will be invoked only from primary core as the shell process will be scheduled to run only on the primary. When the scheduler running on the second core finds that logout/shutdown system call is initiated, from the primary (check LOGOUT_STATUS in <a href="mem_ds.html#ss_table" target="_blank">system status table</a>), it will simply schedule IDLE2.
+                                </li>
+                            </ol>
+                            
+                            <br>
+                            <p>
+                                A detailed description of the changes required to the eXpOS kernel are outlined in the Stage 28 page of the <a href="../Roadmap.html" target="_blank">Roadmap</a>.
                             </p>
                         </div>
                     </div>
