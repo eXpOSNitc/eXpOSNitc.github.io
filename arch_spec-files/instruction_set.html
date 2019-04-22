@@ -647,6 +647,81 @@ user programs execute in the unpreviliged mode,  the (incorrect) terminology has
                         </div>
                          <!--end prvileged -->
 
+                         <!-- START SINGLE FEATURED ITEM #3 -->
+                        <div class="panel panel-default " id="nexsm">
+                            <br>
+                            <br>
+                            <h4 class="panel-title" id="nexsm_instruction" style="color:red">NEXSM Additional Privileged Instructions</h4>
+  
+                            <div class="panel-body">
+                                <p>These instructions are available only on <a href="nexsm.html" target="_blank">NEXSM</a> (a two-core extension of XSM) machine. Additional Privileged Instructions in NEXSM are:</p>
+                           
+                                <!-- start privileged instructions --->
+                                <br>
+
+                                <!-- tsl -->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapsen1">TSL</a>
+                                            </h4>
+                                        </div>
+
+                                        <div id="collapsen1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p> <i>Syntax</i> : TSL Rj, [loc]</p>
+                                                <p><i>Semantics</i> : The contents of the memory location [loc] is copied to register Rj. The value of [loc] is set to 1. This instruction is <b>atomic</b>. That is, when one of the cores is executing the TSL instruction, the <b>memory bus is locked</b> to avoid the other processor from simultaneously accessing [loc]. 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end tsl -->
+
+                                <!-- start -->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapsen2">START</a>
+                                            </h4>
+                                        </div>
+
+                                        <div id="collapsen2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p> <i>Syntax</i> : START</p>
+                                                <p><i>Semantics</i> : If this instruction is executed by the primary while the machine is in reset mode, then secondary core starts parallel execution at the starting address of memory page 128 (physical address 65536). The START instruction is ignored if executed when the machine is in active mode.  
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end start -->
+
+                                <!-- reset -->
+                                <div class="panel-group" >
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                 <a data-toggle="collapse" href="#collapsen3">RESET</a>
+                                            </h4>
+                                        </div>
+
+                                        <div id="collapsen3" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <p> <i>Syntax</i> : RESET</p>
+                                                <p><i>Semantics</i> : The instruction, when executed in active mode sets the machine to reset mode. The instruction is ignored if executed in reset mode. 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end reset -->
+
+                            </div>
+                        </div>
+
               </div>
 
                       </div>
