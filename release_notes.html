@@ -158,6 +158,37 @@
                     <div class="col-lg-12">
                         <ul class="list-group">
                             <li class="list-group-item">
+                                <a data-toggle="collapse" href="#collapse10"><b>22th April 2019</b></a>
+                                <div id="collapse10" class="panel-collapse collapse">
+                                    NEXSM (a dual-core extension of XSM) is introduced. Stage 28 (Multi-Core Extension) describing how the OS can be ported to a two-core extension of the XSM machine has been added. The documentation for <a href="arch_spec-files/nexsm.html" target="_blank">NEXSM architecture specification</a> and <a href="os_design-files/nexpos.html" target="_blank">eXpOS Design for NEXSM machine</a> have been added. The changes in the sub-directories are:-
+                                    <ul class="list-group-item">
+                                        <li>
+                                            <b>expl:</b> Library is modified to include INT 19.
+                                        </li>
+                                        <li>
+                                            <b>nespl:</b> Three new instructions, <i>start</i>, <i>reset</i> and <i>tsl</i>, have been added.
+                                        </li>
+                                        <li>
+                                            <b>nexfs-interface:</b> Commands for loading Bootstrap code for secondary core, software interrupt 19 and module 8-11 are added.
+                                        </li>
+                                        <li>
+                                            <b>nexsm:</b> XSM machine is modified to simulate a two-core machine.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <a data-toggle="collapse" href="#collapse9"><b>20th January 2019</b></a>
+                                <div id="collapse9" class="panel-collapse collapse">
+                                    Stage 27 (Pager Module) has been modified. A swapper daemon is introduced as a new process similar to the idle program, with PID=15, and the Pager Module is called from the context of this process. To add fairness for the swapped out processes, if the TICK field of any swapped out process exceeds a threshold, that process is swapped in after swapping out another process in memory. The changes in the sub-directories are:-
+                                    <ul class="list-group-item">
+                                        <li>
+                                            <b>xsm:</b> A few additional commands, including commands for displaying all the data structures, is added to the XSM debugger.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
                                 <a data-toggle="collapse" href="#collapse8"><b>5th November 2018</b></a>
                                 <div id="collapse8" class="panel-collapse collapse">
                                     The changes in the sub-directories are:-
@@ -171,7 +202,7 @@
                             <li class="list-group-item">
                                 <a data-toggle="collapse" href="#collapse7"><b>26th October 2018</b></a>
                                 <div id="collapse7" class="panel-collapse collapse">
-                                    The <i>Execption Handler</i> has been modified to allocate 2 heap pages when a page fault for a heap page occurs. In Stage 27, <i>Get Free Page function</i> in <i>Memory Manager</i> and <i>Exit Process</i> function in <i>Process Manager</i> has been modified to call <i>Swap Out</i> and <i>Swap In</i> function, respectively.
+                                    The <i>Execption Handler</i> has been modified to allocate 2 heap pages when a page fault for a heap page occurs. In Stage 27 (Pager Module), <i>Get Free Page function</i> in <i>Memory Manager</i> and <i>Exit Process</i> function in <i>Process Manager</i> has been modified to call <i>Swap Out</i> and <i>Swap In</i> function, respectively.
                                 </div>
                             </li>
                             <li class="list-group-item">
