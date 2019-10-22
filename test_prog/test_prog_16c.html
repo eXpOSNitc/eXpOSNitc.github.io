@@ -167,6 +167,12 @@ int main()
 
     x=exposcall("Close", fp);
     x=exposcall("Semrelease");
+    pid=exposcall("Getpid");
+    x=pid+1;
+    while(x<13) do
+    	a=exposcall("Wait",x);
+    	x=x+1;
+    endwhile;
     return 1;
   end
 }</pre>
