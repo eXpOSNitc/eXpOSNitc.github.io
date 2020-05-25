@@ -19,8 +19,8 @@ def load_csv(file):
     return data
 
 #%%
-col = "nitc18"
-data = load_csv("nitc18.csv")
+col = "nitc19"
+data = load_csv("nitc19.csv")
 del data[0]
 num_samples = np.shape(data)[0]
 data = np.array(data)
@@ -33,7 +33,7 @@ num_samples5 = np.shape(phase5)[0]
 colors=['yellowgreen','orchid', 'crimson', 'royalblue','cyan' , 'red', 'grey', 'burlywood', 'salmon']
 #%%
 #Q1
-labels = ["Phase "+str(i) for i in range(0,8)]
+labels = ["Phase "+str(i) for i in range(0,9)]
 labels.reverse()
 count=[]
 labels1=[]
@@ -154,7 +154,7 @@ plt.close()
 
 #%%
 #Q6
-labels=["Sufficient", "Computer Organization / Hardware", "Compilers", "Programming"]
+labels=["Sufficient", "Computer Organization / Hardware", "Compilers", "Data Structures", "Programming"]
 count=[]
 for label in labels:
     count.append(sum([label in val for val in data[:,7]]))
@@ -164,7 +164,7 @@ for label in labels:
     count5.append(sum([label in val for val in phase5[:,7]]))
 
 labels[1]="Computer Organization/\nHardware"
-x=np.arange(4)
+x=np.arange(5)
 plt.figure(1, figsize=(10,5))
 ax1 = plt.subplot(121)
 rects1=ax1.bar(x, count)
