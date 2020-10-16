@@ -4121,9 +4121,9 @@ alias currentPID R2;</pre>
                               <li>currentPID and PID stored in the Terminal Status table should be same. If these are
                                 not same, then process is trying to release the terminal without acquiring it. If this
                                 case occurs, store -1 as the return value in register R0 and return from the module.</li>
-                              <li>Change the STATE field in the Terminal Status table to 0, indicating terminal is
+                              <li>Change the STATUS field in the Terminal Status table to 0, indicating terminal is
                                 released.</li>
-                              <li>Update the STATUS to READY for all processes (with valid PID) which have STATUS as
+                              <li>Update the STATE to READY for all processes (with valid PID) which have STATE as
                                 WAIT_TERMINAL.</li>
                               <li>Save 0 in register R0 indicating success.</li>
                               <li>Return to the caller.</li>
