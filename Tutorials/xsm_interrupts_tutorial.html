@@ -268,7 +268,7 @@ MOV IP,  4)<br>
 c) <b>Arithmetic exception:</b>  Occurs when there is a division/modulus by zero.   (Example:  DIV R0, 0)
 <br>In all the above cases, the typical action is for the exception handler code is to pass control to other privileged mode OS routines to terminate the application and schedule other applications.
 <br>
-d)  <b>Page fault:</b>  This is the most significant exception handling function that must be understood clearly. A page fault occurs if an instruction contains an address whose logical page number is within the range 0 to PTLR-1 and the <a href="arch_spec-files/paging_hardware.html" target="_blank"> valid bit</a> in the corresponding page table entry is set to to 0.
+d)  <b>Page fault:</b>  This is the most significant exception handling function that must be understood clearly. A page fault occurs if an instruction contains an address whose logical page number is within the range 0 to PTLR-1 and the <a href="../arch_spec-files/paging_hardware.html" target="_blank"> valid bit</a> in the corresponding page table entry is set to to 0.
 </p>
 <p>
 Page fault exception can occur either during instruction fetch or operand fetch.  Suppose during execution of an application, the value of IP reaches value – say  3000.  The next fetch will try to translate the logical address 3000 to physical address using the page table.  The logical page number corresponding to address 3000 is 3000 DIV 512 = 5.  The machine must look up the page table entry corresponding to logical page 5.
