@@ -221,15 +221,16 @@ The XSM privileged instructions load(page_num,block_num) and store(block_num, pa
 
 <p>
 After the execution of each instruction in unprivileged mode, the machine checks whether a pending
-disk/console/timer interrupt.  If so, the machine does the following actions:
+disk/console interrupt.  If so, the machine does the following actions:
 <ol style="list-style-type: decimal; margin-left: 50px; font-size: 16px">
 <li><b><sup>*</sup></b>Push the IP value into the top of the stack.</li>
 
-<li>Set IP to value stored in the interrupt vector table entry for the timer interrupt
-  handler.  The vector table entry for timer interrupt is located at physical address 493 in page 0
-  (ROM) of XSM and the  value 2048 is preset in this location.  Hence, the IP register gets value
-  2048.  The machine then switches to to privileged mode and address translation is disabled.
-  Hence, next instruction will be fetched from physical address 2048. (See Boot ROM and Boot block section in <a href="../arch_spec-files/machine_organisation.html" target="_blank"> XSM Machine Organisation </a> documentation)</li>
+<li>Set IP to value stored in the interrupt vector table entry for the corresponding interrupt
+  handler.  The vector table entry for disk interrupt is located at physical address 494 in page 0
+  (ROM) of XSM and the  value 3072 is preset in this location and for console interrupt is located at physical address 495 in page 0
+  (ROM) of XSM and the  value 4096 is preset in this location.  Hence, the IP register gets value
+  3072 for disk interrupt and 4096 for console interrupt.  The machine then switches to privileged mode and address translation is disabled.
+  Hence, next instruction will be fetched from physical address 3072 for disk interrupt and 4096 for console interupt. (See Boot ROM and Boot block section in <a href="../arch_spec-files/machine_organisation.html" target="_blank"> XSM Machine Organisation </a> documentation)</li>
 </ol>
 <p><b><sup>*</sup></b>Note: If the value in the SP register after incrementing SP is an invalid address (i.e., not in the 
   range 0 to PTLR*512-1) then the machine generates an <b>illegal memory access exception</b> (see section below on exception handling).  The machine will re-execute steps (1) and (2) immedietly after retrun to unprivileged mode, before executing any other instruction in unprivileged mode. 
